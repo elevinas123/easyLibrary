@@ -1,27 +1,36 @@
 import { useEffect, useState } from "react";
+import { loadPdfText } from "./functions/loadPdfText";
+import Text from "./Modules/BookPage/Text";
+import Chapters from "./Modules/BookPage/Chapters";
 
 function App() {
-    const [count, setCount] = useState(0);
+    const [pdfText, setPdfText] = useState("");
+    const [error, setError] = useState<null | string>(null);
+    const [fontSize, setFontSize] = useState(24);
+
     useEffect(() => {
-        const loadingTask = pdfj.getDocument(url);
-        loadingTask.promise.then((pdf) => {
-            console.log("PDF loaded");
+        const getText = async () => {
+            try {
+                const text = await loadPdfText("/test2.pdf");
+                setPdfText(text);
+            } catch (error) {
+                console.log("error", error);
+                setError("Failed to load PDF. Please try another file.");
+            }
+        };
+        getText();
+    }, []);
 
-            // Fetch the first page
-            pdf.getPage(1).then((page) => {
-                console.log("Page loaded");
+    const handleFontSizeChange = (event) => {
+        setFontSize(event.target.value);
+    };
 
-                page.getTextContent().then((textContent) => {
-                    // Process the text content
-                    textContent.items.forEach((item) => {
-                        console.log(item.str);
-                    });
-                });
-            });
-        });
-    }, [])
     return (
-        <div className="bg-black text-gray-100 h-screen w-screen">Library</div>
+        <div className="">
+                <Chapters />
+            <Text text={pdfText} fontSize={fontSize} />
+            
+        </div>
     );
 }
 
