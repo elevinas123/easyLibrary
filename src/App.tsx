@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { loadPdfText } from "./functions/loadPdfText";
 import Text from "./Modules/BookPage/Text";
 import Chapters from "./Modules/BookPage/Chapters";
+import Notes from "./Modules/BookPage/Notes";
+import RightHand from "./Modules/BookPage/RightHand";
 
 function App() {
     const [pdfText, setPdfText] = useState("");
@@ -26,10 +28,10 @@ function App() {
     };
 
     return (
-        <div className="">
-                <Chapters />
+        <div className="flex flex-row bg-zinc-800 text-gray-300">
+            <Chapters />
             <Text text={pdfText} fontSize={fontSize} />
-            
+            <RightHand />
         </div>
     );
 }
