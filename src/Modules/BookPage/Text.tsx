@@ -1,98 +1,62 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Text, Stage as StageType } from "react-konva";
-import Konva from "konva";
-
+import { Excalidraw } from "@excalidraw/excalidraw";
+import { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/types/data/transform";
+import { FONT_FAMILY } from "@excalidraw/excalidraw";
+import { AppState, BinaryFiles, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types/types";
+import { convertToExcalidrawElements } from "@excalidraw/excalidraw";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 type TextProps = {
     text: string;
     fontSize: number;
 };
 
-type TextElement = {
-    id: string;
-    text: string;
-    x: number;
-    y: number;
-    fontSize: number;
-    fontFamily: string;
-    fill: string;
-    draggable: boolean;
-};
 
-export default function KonvaText({ text, fontSize }: TextProps) {
-    const stageRef = useRef<typeof StageType | null>(null);
-    const [textElements, setTextElements] = useState<TextElement[]>([]);
+
+export default function ExcalidrawText({ text, fontSize }: TextProps) {
+    const [elements, setElements] = useState<ExcalidrawElementSkeleton[]>([]);
+    const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
+    const wordsInLine = 5;
+    const lineHeight = 30;
 
     useEffect(() => {
-        // Split the text into lines
-        const lines = text.split("\n");
+        setElements(() => {
+            let textColumns: string[] = [];
+            const splitText = text.split(" ");
+            let currentColumn: string[] = [];
 
-        // Generate new text elements for each line
-        const newTextElements = lines.map((line, index) => ({
-            id: `text-${index}-${Date.now()}`,
-            text: line,
-            x: 100, // X position
-            y: 50 + index * (fontSize + 10), // Y position, adjusted for each line
-            fontSize: fontSize,
-            fontFamily: "Arial",
-            fill: "rgb(250 250 250)", // Text color
-            draggable: true,
-        }));
-
-        setTextElements(newTextElements);
+            splitText.forEach((word, index) => {
+                currentColumn.push(word);
+                // Check if the current column is full or if it's the last word
+                if (
+                    currentColumn.length === wordsInLine ||
+                    index === splitText.length - 1
+                ) {
+                    textColumns.push(currentColumn.join(" "));
+                    currentColumn = []; // Reset for the next column
+                }
+            });
+            return textColumns.map((column, index) => ({
+                text: column,
+                x: 500,
+                y: index * lineHeight + 200,
+                fontSize: fontSize,
+                font: "normal",
+                type: "text",
+            }));
+        });
     }, [text, fontSize]);
+    
+
+    const handleSceneChange = (elements: readonly ExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
+        console.log("elements", elements)
+    }
 
     return (
-        <div className="flex flex-col h-screen w-full overflow-hidden">
-            {/* Header */}
-            <div className="h-12 p-4 flex items-center justify-center border-b ">
-                s
-            </div>
-            {/* Scrollable Content */}
-            <div className="flex justify-center w-full overflow-y-auto flex-1">
-                <div
-                    style={{ fontSize: `${fontSize}px`, lineHeight: "1.6" }}
-                    className="flex flex-col w-full max-w-3xl break-words  p-6 rounded-lg shadow-md"
-                >
-                    {/* Konva Stage */}
-                    <Stage
-                        width={window.innerWidth}
-                        height={window.innerHeight}
-                        ref={stageRef !== null && stageRef}
-                        fill={"#fffff"}
-                    >
-                        <Layer>
-                            {textElements.map((elem) => (
-                                <Text
-                                    key={elem.id}
-                                    text={elem.text}
-                                    x={elem.x}
-                                    y={elem.y}
-                                    fontSize={elem.fontSize}
-                                    fontFamily={elem.fontFamily}
-                                    fill={elem.fill}
-                                    draggable={elem.draggable}
-                                    onMouseEnter={(e) => {
-                                        const container = e.target
-                                            .getStage()
-                                            ?.container();
-                                        if (container) {
-                                            container.style.cursor = "pointer";
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        const container = e.target
-                                            .getStage()
-                                            ?.container();
-                                        if (container) {
-                                            container.style.cursor = "default";
-                                        }
-                                    }}
-                                />
-                            ))}
-                        </Layer>
-                    </Stage>
-                </div>
-            </div>
+        <div style={{ height: "100vh", width: "100%" }}>
+            <Excalidraw
+                excalidrawAPI={(api) => setExcalidrawAPI(api)}
+                onChange={handleSceneChange}
+            />
         </div>
     );
 }
