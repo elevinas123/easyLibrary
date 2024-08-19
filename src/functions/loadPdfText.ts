@@ -19,8 +19,8 @@ export const loadPdfText = async (url: string) => {
                 console.log(`Text content for page ${i}`, textContent);
 
                 const pageText = textContent.items
-                    .map((item) => removeExtraWhitespace(item.str))
-                    .join(" ");
+                    .map((item) => item.str)
+                    .join("");
                 const precessedPageText = removeExtraWhitespace(pageText)
                 console.log(`Extracted text for page ${i}`, precessedPageText);
 
