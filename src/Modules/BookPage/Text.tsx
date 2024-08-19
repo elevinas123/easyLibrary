@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Excalidraw } from "@excalidraw/excalidraw";
+import { Excalidraw, convertToExcalidrawElements } from "@excalidraw/excalidraw";
 import { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/types/data/transform";
-import { FONT_FAMILY } from "@excalidraw/excalidraw";
+
 import { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types/types";
-import { convertToExcalidrawElements } from "@excalidraw/excalidraw";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+import { v4 as uuidv4 } from "uuid";
+import { preprocessText } from "./functions/preprocessText";
 type TextProps = {
     text: string;
     fontSize: number;
@@ -23,8 +24,12 @@ export default function ExcalidrawText({ text, fontSize }: TextProps) {
     const [elements, setElements] = useState<ExcalidrawElementSkeleton[]>([]);
     const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
     const wordsInLine = 5;
+    const maxCharactersPerLine = 50
     const lineHeight = 30;
-
+    useEffect(() => {
+        console.log("fullText", text)
+    }, [text])
+    
     const addFileToCanvas = async (file, imageConfig) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -48,8 +53,9 @@ export default function ExcalidrawText({ text, fontSize }: TextProps) {
     };
 
 
-    const addImageElement = (fileId, imageConfig) => {
-        const 
+    const addImageElement = () => {
+        const fileId = uuidv4()
+        addFileToCanvas()
         const imageElement: ExcalidrawElement = {
             id: "vmjNL5jqCJPwBieun0GHp",
             type: "image",
@@ -79,52 +85,24 @@ export default function ExcalidrawText({ text, fontSize }: TextProps) {
             status: "pending",
             fileId: fileId,
             scale: [1, 1],
-        }
+        };
     };
 
 
     useEffect(() => {
-        setElements(() => {
-            let textColumns: string[] = [];
-            const splitText = text.split(" ");
-            let currentColumn: string[] = [];
-
-            splitText.forEach((word, index) => {
-                currentColumn.push(word);
-                // Check if the current column is full or if it's the last word
-                if (
-                    currentColumn.length === wordsInLine ||
-                    index === splitText.length - 1
-                ) {
-                    textColumns.push(currentColumn.join(" "));
-                    currentColumn = []; // Reset for the next column
-                }
-            });
-            return textColumns.map((column, index) => ({
-                text: column,
-                x: 500,
-                y: index * lineHeight + 200,
-                fontSize: fontSize,
-                font: "normal",
-                type: "text",
-            }));
-        });
+        setElements(preprocessText(text))
     }, [text, fontSize]);
-    
+
   
     
 
     const handleSceneChange = (elements: readonly ExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
-        console.log("elements", elements)
-        console.log("files", excalidrawAPI?.getFiles())
+        //console.log("elements", elements)
+        //console.log("files", excalidrawAPI?.getFiles())
     }
 
     return (
         <div style={{ height: "100vh", width: "100%" }}>
-            <input
-                type="file"
-                onChange={(e) => addFileToCanvas(e.target.files[0])}
-            />
             <Excalidraw
                 excalidrawAPI={(api) => setExcalidrawAPI(api)}
                 onChange={handleSceneChange}

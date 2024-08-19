@@ -1,4 +1,5 @@
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import { removeExtraWhitespace } from "../Modules/BookPage/functions/preprocessText";
 GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 export const loadPdfText = async (url: string) => {
@@ -18,12 +19,12 @@ export const loadPdfText = async (url: string) => {
                 console.log(`Text content for page ${i}`, textContent);
 
                 const pageText = textContent.items
-                    .map((item) => item.str)
+                    .map((item) => removeExtraWhitespace(item.str))
                     .join(" ");
+                const precessedPageText = removeExtraWhitespace(pageText)
+                console.log(`Extracted text for page ${i}`, precessedPageText);
 
-                console.log(`Extracted text for page ${i}`, pageText);
-
-                extractedText += pageText + "\n\n";
+                extractedText += removeExtraWhitespace(precessedPageText);
             } catch (pageError) {
                 console.error(`Error processing page ${i}:`, pageError);
             }

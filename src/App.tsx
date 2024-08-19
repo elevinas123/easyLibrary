@@ -23,9 +23,6 @@ function App() {
         getText();
     }, []);
 
-    const handleFontSizeChange = (event) => {
-        setFontSize(event.target.value);
-    };
 
     return (
         <div className="flex flex-row bg-zinc-800 text-gray-300">
