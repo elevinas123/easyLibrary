@@ -6,6 +6,7 @@ import { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 import { v4 as uuidv4 } from "uuid";
 import { preprocessText } from "./functions/preprocessText";
+import { textElementDefault } from "./elementDefaults/createTextElement";
 type TextProps = {
     text: string;
     fontSize: number;
@@ -33,7 +34,15 @@ export default function ExcalidrawText({ text, fontSize }: TextProps) {
     }, [text, fontSize]);
     useEffect(() => {
         excalidrawAPI?.updateScene({
-            elements: convertToExcalidrawElements(elements.map((item, index) => ({x: 500, y: index*30+20, text: item, type: "text", fontFamily: "bn"})))
+            elements: elements.map((item, index) => {
+                let defaultTextElement = { ...textElementDefault }
+                defaultTextElement.id = uuidv4()
+                defaultTextElement.x = 500
+                defaultTextElement.y = index * 30+ 20
+                defaultTextElement.text = item
+                defaultTextElement.fontFamily = 1;
+                return defaultTextElement
+            })
         })
         console.log("elementsNew", elements)
     }, [elements])
