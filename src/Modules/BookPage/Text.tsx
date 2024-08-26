@@ -1,78 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-    Excalidraw,
-    convertToExcalidrawElements,
-} from "@excalidraw/excalidraw";
-import { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/types/data/transform";
+import { useState } from "react";
 
-import {
-    AppState,
-    BinaryFileData,
-    BinaryFiles,
-    DataURL,
-    ExcalidrawImperativeAPI,
-} from "@excalidraw/excalidraw/types/types";
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import { v4 as uuidv4 } from "uuid";
-import { preprocessText } from "./functions/preprocessText";
-import {
-    createTextElement,
-    textElementDefault,
-} from "./elementDefaults/createTextElement";
+import Tesseract from "tesseract.js";
+
 type TextProps = {
-    text: string;
+    parahraphs: Tesseract.Paragraph[];
     fontSize: number;
 };
 
-function toDataURL(url: string): DataURL {
-    return url as unknown as DataURL; // Cast string to DataURL, assuming it's formatted correctly
-}
 
-type ImageConfig = {};
-
-export default function ExcalidrawText({ text, fontSize }: TextProps) {
-    const [elements, setElements] = useState<string[]>([]);
-    const [excalidrawAPI, setExcalidrawAPI] =
-        useState<ExcalidrawImperativeAPI | null>(null);
+export default function ExcalidrawText({ paragraphs, fontSize }: TextProps) {
+    const [elements, setElements] = useState<Tesseract.Page[]>([]);
     const wordsInLine = 5;
     const maxCharactersPerLine = 90;
     const lineHeight = 30;
 
-    useEffect(() => {
-        setElements(preprocessText(text, maxCharactersPerLine));
-    }, [text, fontSize]);
-    useEffect(() => {
-        excalidrawAPI?.updateScene({
-            elements: elements.map((item, index) =>
-                createTextElement({
-                    x: 500,
-                    y: index * 30 + 20,
-                    height: 25,
-                    width: 800,
-                    text: item,
-                    originalText: item
-                })
-            ),
-        });
-        console.log("elementsNew", elements);
-    }, [elements]);
-
-    const handleSceneChange = (
-        elements: readonly ExcalidrawElement[],
-        appState: AppState,
-        files: BinaryFiles
-    ) => {
-        console.log("elements", elements);
-        //console.log("files", excalidrawAPI?.getFiles())
-    };
-
     return (
-        <div style={{ height: "100vh", width: "100%" }}>
-            <Excalidraw
-                excalidrawAPI={(api) => setExcalidrawAPI(api)}
-                onChange={handleSceneChange}
-                theme="dark"
-            />
+        <div style={{ minHeight: "100vh", width: "100%" }}>
+            {elements.map((element) => (
+                <p className="truncate">{element}</p>
+            ))}
         </div>
     );
 }

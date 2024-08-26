@@ -1,34 +1,53 @@
+import Tesseract from "tesseract.js";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { removeExtraWhitespace } from "../Modules/BookPage/functions/preprocessText";
+import { createCanvas } from "canvas";
+
 GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 export const loadPdfText = async (url: string) => {
-        // Assuming the PDF is located in the public directory
-        const loadingTask = getDocument(url);
+    // Load the PDF document
+    const loadingTask = getDocument(url);
+    const pdf = await loadingTask.promise;
+    console.log("PDF loaded", pdf);
 
-        const pdf = await loadingTask.promise;
-        console.log("PDF loaded", pdf);
+    let extractedData: Tesseract.Page[] = [];
 
-        let extractedText = "";
-        for (let i = 1; i <= pdf.numPages; i++) {
-            try {
-                const page = await pdf.getPage(i);
-                console.log(`Page ${i} loaded`, page);
+    // Create and initialize the Tesseract.js worker
+    const worker = await Tesseract.createWorker(); // createWorker() returns a promise, but no need to await here
 
-                const textContent = await page.getTextContent();
-                console.log(`Text content for page ${i}`, textContent);
+    for (let i = 1;  i<=1;  i++) {
+        try {
+            const page = await pdf.getPage(i);
+            console.log(`Page ${i} loaded`, page);
 
-                const pageText = textContent.items
-                    .map((item) => item.str)
-                    .join("");
-                const precessedPageText = removeExtraWhitespace(pageText)
-                console.log(`Extracted text for page ${i}`, precessedPageText);
+            // Create a canvas and render the page
+            const viewport = page.getViewport({ scale: 2.0 });
+            const canvas = createCanvas(viewport.width, viewport.height);
+            const context = canvas.getContext("2d");
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport,
+            };
 
-                extractedText += removeExtraWhitespace(precessedPageText);
-            } catch (pageError) {
-                console.error(`Error processing page ${i}:`, pageError);
-            }
+            await page.render(renderContext).promise;
+            const image = canvas.toDataURL("image/png");
+
+            // Use Tesseract.js to recognize text from the image
+            const {data} = await worker.recognize(image);
+     
+
+            console.log(`Processed text for page ${i}`, data);
+
+            extractedData.push(data);
+        } catch (pageError) {
+            console.error(`Error processing page ${i}:`, pageError);
         }
-        return extractedText
+    }
 
+    await worker.terminate();
+
+    // Return the extracted text with type properties
+    console.log("extractedText", extractedData);
+    return extractedData;
 };

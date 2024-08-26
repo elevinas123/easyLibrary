@@ -4,9 +4,11 @@ import Text from "./Modules/BookPage/Text";
 import Chapters from "./Modules/BookPage/Chapters";
 import Notes from "./Modules/BookPage/Notes";
 import RightHand from "./Modules/BookPage/RightHand";
-
+import Tesseract from "tesseract.js";
+import { preprocessText } from "./Modules/BookPage/functions/preprocessText";
+const text1 = []
 function App() {
-    const [pdfText, setPdfText] = useState("");
+    const [pdfText, setPdfText] = useState<Tesseract.Paragraph[]>([]);
     const [error, setError] = useState<null | string>(null);
     const [fontSize, setFontSize] = useState(24);
 
@@ -14,7 +16,7 @@ function App() {
         const getText = async () => {
             try {
                 const text = await loadPdfText("/test2.pdf");
-                setPdfText(text);
+                setPdfText(preprocessText(text));
             } catch (error) {
                 console.log("error", error);
                 setError("Failed to load PDF. Please try another file.");
@@ -27,7 +29,7 @@ function App() {
     return (
         <div className="flex flex-row bg-zinc-800 text-gray-300">
             <Chapters />
-            <Text text={pdfText} fontSize={fontSize} />
+            <Text parahraphs={pdfText} fontSize={fontSize} />
             <RightHand />
         </div>
     );
