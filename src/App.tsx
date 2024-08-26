@@ -29,7 +29,7 @@ function App() {
     return (
         <div className="flex flex-row bg-zinc-800 text-gray-300">
             <Chapters />
-            <Text parahraphs={pdfText} fontSize={fontSize} />
+            <Text paragraphs={pdfText} fontSize={fontSize} />
             <RightHand />
         </div>
     );
