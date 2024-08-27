@@ -1,19 +1,24 @@
 import { useState } from "react";
 import Notes from "./Notes";
 import Settings from "./Settings";
+import { Note } from "./MainPage";
 
-export default function RightHand() {
-    const [selected, setSelected] = useState<"notes"| "settings">("notes");
+type RightHandProps = {
+    notes: Note[];
+};
+
+export default function RightHand({ notes }: RightHandProps) {
+    const [selected, setSelected] = useState<"notes" | "settings">("notes");
 
     const allItems = {
-        "notes": Notes,
-        "settings": Settings
-    }
-    const SelectedItem = allItems[selected]
+        notes: Notes,
+        settings: Settings,
+    };
+    const SelectedItem = allItems[selected];
 
     return (
-        <div className="flex flex-col w-96 bg-zinc-900">
-            <div className="border-b flex flex-row h-12 w-full items-center">
+        <div className="flex flex-col w-96 bg-zinc-900 text-gray-300">
+            <div className="border-b border-gray-700 flex flex-row h-12 w-full items-center">
                 <button
                     className={`p-4 ${
                         selected === "notes" ? "text-gray-300" : "text-gray-500"
@@ -34,7 +39,7 @@ export default function RightHand() {
                 </button>
             </div>
             <div className="p-4">
-                <SelectedItem />
+                <SelectedItem notes={notes} />
             </div>
         </div>
     );

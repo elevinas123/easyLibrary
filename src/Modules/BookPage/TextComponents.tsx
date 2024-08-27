@@ -10,7 +10,12 @@ type StyledTextProps = {
 
 type CharProps = {
     char: string;
+    id: string; // Unique ID for each character
+    style?: React.CSSProperties;
+    isHighlighted: boolean;
+    parentIndex: number
 };
+
 export const Paragraph: React.FC<ParagraphProps> = ({ children }) => {
     return (
         <p
@@ -30,6 +35,17 @@ export const StyledText: React.FC<StyledTextProps> = ({ children }) => {
     return <span style={{ whiteSpace: "normal" }}>{children}</span>;
 };
 
-export const Char: React.FC<CharProps> = ({ char }) => {
-    return <span className="text-xl">{char}</span>;
+
+
+export const Char: React.FC<CharProps> = ({ char, id, isHighlighted }) => {
+    return (
+        <span
+            id={id}
+            style={{
+                backgroundColor: isHighlighted ? "green" : "transparent",
+            }}
+        >
+            {char}
+        </span>
+    );
 };
