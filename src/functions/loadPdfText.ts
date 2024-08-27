@@ -16,7 +16,7 @@ export const loadPdfText = async (url: string) => {
     // Create and initialize the Tesseract.js worker
     const worker = await Tesseract.createWorker(); // createWorker() returns a promise, but no need to await here
 
-    for (let i = 1;  i<=1;  i++) {
+    for (let i = 4;  i<=16;  i++) {
         try {
             const page = await pdf.getPage(i);
             console.log(`Page ${i} loaded`, page);

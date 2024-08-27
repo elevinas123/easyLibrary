@@ -13,6 +13,7 @@
     "@excalidraw/excalidraw": "^0.17.6",
     "canvas": "^2.11.2",
     "compromise": "^14.14.0",
+    "jszip": "^3.10.1",
     "konva": "^9.3.14",
     "pdfjs-dist": "^4.5.136",
     "process": "^0.11.10",
