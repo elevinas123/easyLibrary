@@ -14,6 +14,8 @@ export type Note = {
     noteReferenceIdRanges: HighlightRange;
 };
 
+
+
 function MainPage() {
     const [bookElements, setBookElements] = useState<(HtmlObject | null)[]>([]);
     const [_, setError] = useState<string | null>(null);
@@ -22,21 +24,9 @@ function MainPage() {
         useAtom(highlightedRangeAtom);
     const [notes, setNotes] = useState<Note[]>([]);
 
-    const createNotes = (ranges: HighlightRange[]) => {
-        setNotes(
-            ranges.map((range, index) => ({
-                noteText: `Note ${index + 1}`,
-                noteId: `${index + 1}`,
-                noteReference: "Reference text", // This should be dynamic based on actual highlighted text
-                noteReferenceIdRanges: range,
-            }))
-        );
+    const createNote = (note) => {
+        setNotes((oldNotes) => [...oldNotes, note]);
     };
-
-    useEffect(() => {
-        console.log("notes", highlightedRanges)
-        createNotes(highlightedRanges);
-    }, [highlightedRanges]);
 
     const handleEpubChange = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -62,6 +52,7 @@ function MainPage() {
                 handleEpubChange={handleEpubChange}
                 bookElements={bookElements}
                 fontSize={fontSize}
+                createNote={createNote}
             />
             <RightHand notes={notes} />
         </div>

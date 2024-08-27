@@ -1,9 +1,16 @@
-import React, { useEffect } from "react";
-import { ParagraphObject, HeadingObject, HtmlObject, HighlightRange } from "./preprocessEpub";
+import React, { useEffect, useState } from "react";
+import {
+    ParagraphObject,
+    HeadingObject,
+    HtmlObject,
+    HighlightRange,
+} from "./preprocessEpub";
 import { useAtom } from "jotai";
 import { highlightedRangeAtom } from "../../atoms";
 import { Paragraph } from "./TextComponents";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import NoteCretor from "./NoteCreator";
+import { Note } from "./MainPage";
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];
@@ -11,6 +18,7 @@ type TextProps = {
     handleEpubChange: (
         event: React.ChangeEvent<HTMLInputElement>
     ) => Promise<void>;
+    createNote: (note: Note) => void;
 };
 
 const mergeHighlights = (highlights: HighlightRange[]): HighlightRange[] => {
@@ -62,17 +70,16 @@ const mergeHighlights = (highlights: HighlightRange[]): HighlightRange[] => {
     return mergedHighlights;
 };
 
-
-
-
 export default function Text({
     bookElements,
     fontSize,
     handleEpubChange,
+    createNote
 }: TextProps) {
     const [highlightedRanges, setHighlightedRanges] =
         useAtom(highlightedRangeAtom);
 
+    const [noteCreator, setNoteCreator] = useState<JSX.Element | false>(false);
     const renderContent = (
         element: ParagraphObject | HeadingObject,
         index: number
@@ -102,6 +109,17 @@ export default function Text({
 
         return null;
     };
+
+    const addNoteCreator = (highlight: HighlightRange) => {
+        setNoteCreator(
+            <NoteCretor
+                createNote={createNote}
+                highlight={highlight}
+                setNoteCreator={setNoteCreator}
+            />
+        );
+        
+    }
 
     const handleMouseUp = () => {
         console.log("handleMouseUp triggered");
@@ -149,7 +167,7 @@ export default function Text({
                 endOffset,
                 highlightedText: selection.toString(),
                 intermediateElementIds,
-                highlightId: uuidv4()
+                highlightId: uuidv4(),
             };
 
             // Update state with merged highlight ranges
@@ -166,10 +184,9 @@ export default function Text({
                 endOffset,
                 intermediateElementIds,
             });
+            addNoteCreator(newHighlight)
         }
     };
-
-
 
     useEffect(() => {
         document.addEventListener("mouseup", handleMouseUp);
@@ -181,7 +198,8 @@ export default function Text({
         console.log(highlightedRanges);
     }, [highlightedRanges]);
     return (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center relative">
+            {noteCreator}
             <input
                 type="file"
                 placeholder="Select EPUB"
