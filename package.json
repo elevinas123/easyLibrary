@@ -12,6 +12,7 @@
   "dependencies": {
     "@excalidraw/excalidraw": "^0.17.6",
     "canvas": "^2.11.2",
+    "cheerio": "^1.0.0",
     "compromise": "^14.14.0",
     "jszip": "^3.10.1",
     "konva": "^9.3.14",

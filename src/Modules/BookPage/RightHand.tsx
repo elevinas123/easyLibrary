@@ -12,7 +12,7 @@ export default function RightHand() {
     const SelectedItem = allItems[selected]
 
     return (
-        <div className="flex flex-col w-72 bg-zinc-900">
+        <div className="flex flex-col w-96 bg-zinc-900">
             <div className="border-b flex flex-row h-12 w-full items-center">
                 <button
                     className={`p-4 ${

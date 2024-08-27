@@ -19,7 +19,7 @@ export default function Chapters() {
     ];
 
     return (
-        <div className="flex flex-col w-72 bg-zinc-900">
+        <div className="flex flex-col w-96 bg-zinc-900">
             <div className="border-b flex flex-row h-12 w-full items-center justify-between px-4">
                 <button className="text-gray-300 hover:text-gray-500">
                     Back

@@ -16,7 +16,7 @@ function App() {
         if (file) {
             try {
                 const paragraphs = await readEpub(file);
-                console.log("paraghps", paragraphs)
+                console.log("paraghps", paragraphs);
                 setEpubText(paragraphs);
             } catch (error) {
                 console.log("error", error);
@@ -26,15 +26,14 @@ function App() {
     };
 
     return (
-        <div className="flex flex-row bg-zinc-800 text-gray-300">
+        <div className="flex  min-h-screen flex-row w-full bg-zinc-800 text-gray-300">
             <Chapters />
-            <input
-                type="file"
-                placeholder="Select EPUB"
-                accept=".epub"
-                onChange={handleEpubChange}
+
+            <Text
+                handleEpubChange={handleEpubChange}
+                paragraphs={epubText}
+                fontSize={fontSize}
             />
-            <Text paragraphs={epubText} fontSize={fontSize} />
             <RightHand />
         </div>
     );
