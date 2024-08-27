@@ -1,29 +1,29 @@
-import { load } from "cheerio";
+import { Cheerio, load } from "cheerio";
 
-export type CharObject = {
-    char: string;
-    id: string;
-    isHighlighted: boolean;
+export type HighlightRange = {
+    startElementId: string;
+    startOffset: number;
+    endElementId: string;
+    endOffset: number;
+    highlightedText: string; // Optional, for debugging
+    intermediateElementIds?: string[]; // New field to store IDs of elements in between
 };
 
-export type StyledTextObject = {
-    type: "styledText";
-    id: string;
-    text: CharObject[];
-    style: React.CSSProperties;
-};
 
 export type ParagraphObject = {
     type: "paragraph";
     id: string;
-    children: (CharObject | StyledTextObject)[];
+    text: string; // Store the full text of the paragraph
+    highlights: HighlightRange[]; // Store highlighted ranges within the text
+    style?: React.CSSProperties;
 };
 
 export type HeadingObject = {
     type: "heading";
     id: string;
     tagName: string;
-    children: (CharObject | StyledTextObject)[];
+    text: string; // Store the full text of the heading
+    style?: React.CSSProperties;
 };
 
 export type HtmlObject = {
@@ -39,73 +39,45 @@ export const parseHtmlToObjects = (
     html: string,
     paragraphIndex: number
 ): HtmlObject | null => {
-    if (paragraphIndex > 10) return null; // Limiting to first 5 paragraphs as per original code
+    if (paragraphIndex > 10) return null; // Limiting to first 10 paragraphs as per original code
     const $ = load(html);
-    let charIndex = 0; // Reset charIndex for each paragraph
 
-    const parseElement = (
-        element: cheerio.Element
-    ): (CharObject | StyledTextObject)[] => {
+    const parseElementText = (element: cheerio.Element): string => {
         if (element.type === "text") {
-            return element.data!.split("").map((char, i) => {
-                const id = `char-${paragraphIndex}-${charIndex++}`;
-                return {
-                    char,
-                    id,
-                    isHighlighted: false, // You can update this based on your logic
-                } as CharObject;
-            });
+            return element.data || "";
         } else if (element.type === "tag") {
             if (element.tagName === "span") {
-                const style = parseStyleString($(element).attr("style") || "");
-                const text = $(element)
-                    .text()
-                    .split("")
-                    .map((char) => {
-                        const id = `char-${paragraphIndex}-${charIndex++}`;
-                        return {
-                            char,
-                            id,
-                            isHighlighted: false, // You can update this based on your logic
-                        } as CharObject;
-                    });
-                return [
-                    {
-                        type: "styledText",
-                        id: `span-${paragraphIndex}-${charIndex}`,
-                        text,
-                        style,
-                    } as StyledTextObject,
-                ];
+                // Handle styled text within spans
+                return $(element).text();
             } else {
                 // Handle other tags as nested children
                 return $(element)
                     .contents()
-                    .map((_, child) => parseElement(child))
+                    .map((_, child) => parseElementText(child))
                     .get()
-                    .flat();
+                    .join("");
             }
         }
-        return [];
+        return "";
     };
 
     const elements: (ParagraphObject | HeadingObject)[] = $("body")
         .children()
         .map((_, elem) => {
+            const textContent = parseElementText(elem);
             if (elem.tagName === "p") {
-                const children = parseElement(elem);
                 return {
                     type: "paragraph",
-                    id: `paragraph-${paragraphIndex}-${charIndex}`,
-                    children,
+                    id: `paragraph-${paragraphIndex}-${_}`,
+                    text: textContent,
+                    highlights: [], // Initialize with no highlights
                 } as ParagraphObject;
             } else if (elem.tagName.match(/^h[1-6]$/)) {
-                const children = parseElement(elem);
                 return {
                     type: "heading",
-                    id: `heading-${paragraphIndex}-${charIndex}`,
+                    id: `heading-${paragraphIndex}-${_}`,
                     tagName: elem.tagName,
-                    children,
+                    text: textContent,
                 } as HeadingObject;
             }
         })
@@ -117,14 +89,3 @@ export const parseHtmlToObjects = (
     } as HtmlObject;
 };
 
-const parseStyleString = (styleString: string): React.CSSProperties => {
-    const style: React.CSSProperties = {};
-    const styles = styleString.split(";").filter(Boolean);
-    styles.forEach((styleRule) => {
-        const [key, value] = styleRule.split(":");
-        if (key && value) {
-            style[key.trim() as keyof React.CSSProperties] = value.trim();
-        }
-    });
-    return style;
-};

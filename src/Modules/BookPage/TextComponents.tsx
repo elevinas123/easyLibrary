@@ -1,51 +1,83 @@
 import React from "react";
+import { HighlightRange } from "./preprocessEpub";
 
 type ParagraphProps = {
-    children: React.ReactNode;
-};
-
-type StyledTextProps = {
-    children: React.ReactNode;
-};
-
-type CharProps = {
-    char: string;
-    id: string; // Unique ID for each character
+    id: string;
+    text: string;
+    highlights: HighlightRange[];
     style?: React.CSSProperties;
-    isHighlighted: boolean;
-    parentIndex: number
 };
 
-export const Paragraph: React.FC<ParagraphProps> = ({ children }) => {
+export const Paragraph: React.FC<ParagraphProps> = ({
+    id,
+    text,
+    highlights,
+    style,
+}) => {
+    const renderTextWithHighlights = () => {
+        const elements = [];
+        let lastIndex = 0;
+
+        highlights.forEach(
+            (
+                {
+                    startElementId,
+                    startOffset,
+                    endElementId,
+                    endOffset,
+                    intermediateElementIds,
+                },
+                index
+            ) => {
+                if (
+                    startElementId === id ||
+                    endElementId === id ||
+                    intermediateElementIds?.includes(id)
+                ) {
+                    const highlightStart =
+                        startElementId === id ? startOffset : 0;
+                    const highlightEnd =
+                        endElementId === id ? endOffset + 1 : text.length;
+
+                    // Add text before the highlight starts
+                    if (lastIndex < highlightStart) {
+                        elements.push(
+                            <span key={`text-${index}-${lastIndex}`}>
+                                {text.slice(lastIndex, highlightStart)}
+                            </span>
+                        );
+                    }
+
+                    // Add the highlighted text
+                    elements.push(
+                        <span
+                            key={`highlight-${index}`}
+                            className="bg-green-800"
+                        >
+                            {text.slice(highlightStart, highlightEnd)}
+                        </span>
+                    );
+
+                    lastIndex = highlightEnd;
+                }
+            }
+        );
+
+        // Add any remaining unhighlighted text after the last highlight
+        if (lastIndex < text.length) {
+            elements.push(
+                <span key={`text-end-${lastIndex}`}>
+                    {text.slice(lastIndex)}
+                </span>
+            );
+        }
+
+        return elements;
+    };
+
     return (
-        <p
-            style={{
-                marginBottom: "1.5em",
-                wordWrap: "break-word", // Prevents long words from breaking the layout
-                overflow: "hidden", // Ensures content doesn't overflow its container
-                width: "100%", // Ensure the paragraph takes the full width of its container
-            }}
-        >
-            {children}
+        <p style={style} data-id={id}>
+            {renderTextWithHighlights()}
         </p>
-    );
-};
-
-export const StyledText: React.FC<StyledTextProps> = ({ children }) => {
-    return <span style={{ whiteSpace: "normal" }}>{children}</span>;
-};
-
-
-
-export const Char: React.FC<CharProps> = ({ char, id, isHighlighted }) => {
-    return (
-        <span
-            id={id}
-            style={{
-                backgroundColor: isHighlighted ? "green" : "transparent",
-            }}
-        >
-            {char}
-        </span>
     );
 };
