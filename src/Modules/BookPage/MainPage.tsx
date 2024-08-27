@@ -16,9 +16,9 @@ export type Note = {
 
 function MainPage() {
     const [bookElements, setBookElements] = useState<(HtmlObject | null)[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [fontSize, setFontSize] = useState(24);
-    const [highlightedRanges, setHighlightedRanges] =
+    const [_, setError] = useState<string | null>(null);
+    const [fontSize] = useState(24);
+    const [highlightedRanges] =
         useAtom(highlightedRangeAtom);
     const [notes, setNotes] = useState<Note[]>([]);
 

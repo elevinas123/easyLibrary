@@ -3,6 +3,7 @@ import { ParagraphObject, HeadingObject, HtmlObject, HighlightRange } from "./pr
 import { useAtom } from "jotai";
 import { highlightedRangeAtom } from "../../atoms";
 import { Paragraph } from "./TextComponents";
+import { v4 as uuidv4 } from 'uuid';
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];
@@ -148,6 +149,7 @@ export default function Text({
                 endOffset,
                 highlightedText: selection.toString(),
                 intermediateElementIds,
+                highlightId: uuidv4()
             };
 
             // Update state with merged highlight ranges
@@ -175,7 +177,9 @@ export default function Text({
             document.removeEventListener("mouseup", handleMouseUp);
         };
     }, [highlightedRanges]);
-
+    useEffect(() => {
+        console.log(highlightedRanges);
+    }, [highlightedRanges]);
     return (
         <div className="w-full flex flex-col items-center">
             <input

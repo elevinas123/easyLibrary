@@ -7,6 +7,7 @@ export type HighlightRange = {
     endOffset: number;
     highlightedText: string; // Optional, for debugging
     intermediateElementIds?: string[]; // New field to store IDs of elements in between
+    highlightId: string
 };
 
 
