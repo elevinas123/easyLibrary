@@ -1,5 +1,6 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { Shape } from "../KonvaStage";
 
 const colors = [
     "#1e1e1e",
@@ -14,9 +15,9 @@ const colors = [
 ];
 
 type ToolBarItemProps = {
-    item: string;
-    controlItem: string;
-    changeFunction: (item: string) => void;
+    item: string | number;
+    controlItem: string | number;
+    changeFunction: any;
     style?: CSSProperties;
     children?: React.ReactNode;
 };
@@ -44,14 +45,46 @@ const ToolBarItem = ({
     );
 };
 
-export default function ToolBar() {
+type ToolBarProps = {
+    shapeId: string;
+    setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
+};
+export default function ToolBar({ shapeId, setShapes }: ToolBarProps) {
     const [strokeColor, setStrokeColor] = useState("#f08c00");
     const [backgroundColor, setBackgroundColor] = useState("transparent");
-    const [strokeWidth, setStrokeWidth] = useState("2.5");
-    const [strokeStyle, setStrokeStyle] = useState("solid");
+    const [strokeWidth, setStrokeWidth] = useState(2.5);
+    const [strokeStyle, setStrokeStyle] = useState({
+        type: "solid",
+        value: [1000],
+    });
     const [edges, setEdges] = useState("round");
-    const [opacity, setOpacity] = useState(100);
+    const [opacity, setOpacity] = useState(1);
 
+    useEffect(() => {
+        setShapes((prevShapes) =>
+            prevShapes.map((shape) =>
+                shape.id === shapeId
+                    ? {
+                          ...shape,
+                          strokeColor,
+                          backgroundColor,
+                          strokeWidth,
+                          strokeStyle,
+                          edges,
+                          opacity,
+                      }
+                    : shape
+            )
+        );
+    }, [
+        strokeColor,
+        backgroundColor,
+        strokeWidth,
+        strokeStyle,
+        edges,
+        opacity,
+        shapeId,
+    ]);
     return (
         <div className="absolute left-0 z-50 top-36 flex flex-col space-y-4 p-4 bg-zinc-900 border border-zinc-500 rounded shadow-lg max-w-xs">
             {/* Stroke Color */}
@@ -94,9 +127,9 @@ export default function ToolBar() {
                 <legend className="text-xs font-semibold">Stroke width</legend>
                 <div className="flex space-x-4 mt-2">
                     {[
-                        { title: "Thin", value: "1.25" },
-                        { title: "Bold", value: "2.5" },
-                        { title: "Extra bold", value: "3.75" },
+                        { title: "Thin", value: 1.25 },
+                        { title: "Bold", value: 2.5 },
+                        { title: "Extra bold", value: 3.75 },
                     ].map(({ title, value }) => (
                         <ToolBarItem
                             key={value}
@@ -124,18 +157,21 @@ export default function ToolBar() {
 
             {/* Stroke Style */}
             <fieldset>
-                <legend className="text-xs font-semibold">Stroke style</legend>
+                <legend className="text-xs font-semibold">Stroke width</legend>
                 <div className="flex space-x-4 mt-2">
                     {[
-                        { title: "Solid", value: "solid" },
-                        { title: "Dashed", value: "dashed" },
-                        { title: "Dotted", value: "dotted" },
-                    ].map(({ title, value }) => (
-                        <ToolBarItem
-                            key={value}
-                            item={value}
-                            controlItem={strokeStyle}
-                            changeFunction={setStrokeStyle}
+                        { type: "solid", value: [1000] },
+                        { type: "dashed", value: [2, 2] },
+                        { type: "dotted", value: [2, 4] },
+                    ].map(({ type, value }) => (
+                        <button
+                            key={type}
+                            className={`w-7 h-7 justify-center items-center flex rounded-lg border-2 bg-zinc-800 ${
+                                type === strokeStyle.type
+                                    ? "border-zinc-500 border bg-neutral-800"
+                                    : "border-transparent"
+                            }`}
+                            onClick={() => setStrokeStyle({ type, value })}
                         >
                             <svg
                                 aria-hidden="true"
@@ -149,15 +185,15 @@ export default function ToolBar() {
                                 strokeLinejoin="round"
                                 strokeWidth="2"
                             >
-                                {value === "solid" && <path d="M5 12h14" />}
-                                {value === "dashed" && (
+                                {type === "solid" && <path d="M5 12h14" />}
+                                {type === "dashed" && (
                                     <>
                                         <path d="M5 12h2" />
                                         <path d="M11 12h2" />
                                         <path d="M17 12h2" />
                                     </>
                                 )}
-                                {value === "dotted" && (
+                                {type === "dotted" && (
                                     <>
                                         <path d="M5 12v.01" />
                                         <path d="M9 12v.01" />
@@ -166,7 +202,7 @@ export default function ToolBar() {
                                     </>
                                 )}
                             </svg>
-                        </ToolBarItem>
+                        </button>
                     ))}
                 </div>
             </fieldset>
@@ -211,8 +247,8 @@ export default function ToolBar() {
                 <input
                     type="range"
                     min="0"
-                    max="100"
-                    step="10"
+                    max="1"
+                    step="0.1"
                     value={opacity}
                     onChange={(e) => setOpacity(Number(e.target.value))}
                 />
