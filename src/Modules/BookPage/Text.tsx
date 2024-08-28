@@ -10,6 +10,8 @@ import NoteCretor from "./NoteCreator";
 import { Note } from "./MainPage";
 import { HtmlElement } from "./TextComponents";
 import { mergeHighlights } from "./manageHiglights";
+import { Stage } from "react-konva";
+import KonvaStage from "./KonvaStage";
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];
@@ -103,20 +105,7 @@ export default function Text({ bookElements, createNote }: TextProps) {
             {noteCreator}
 
             <div className="w-600px break-words text-2xl font-serif ">
-                {bookElements.map((element, index) => {
-                    if (!element) return null;
-                    return (
-                        <React.Fragment key={`fragment-${index}`}>
-                            {element.elements.map((childElement) => (
-                                <HtmlElement
-                                    element={childElement}
-                                    key={childElement.id}
-                                    highlights={highlightedRanges}
-                                />
-                            ))}
-                        </React.Fragment>
-                    );
-                })}
+                <KonvaStage />
             </div>
         </div>
     );
