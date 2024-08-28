@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import {
     readEpub,
     preprocessEpub,
@@ -7,9 +7,9 @@ import {
 import JSZip from "jszip";
 import Chapters from "./Chapters";
 import RightHand from "./RightHand";
-import Text from "./Text";
 import { load } from "cheerio";
 import { extractToc } from "../../preprocess/epub/extractToc";
+import TextPage from "./Text.tsx";
 
 export type HighlightRange = {
     startElementId: string;
@@ -93,8 +93,7 @@ function MainPage() {
                 accept=".epub"
                 onChange={handleEpubChange}
             />
-            <Text
-                handleEpubChange={handleEpubChange}
+            <TextPage
                 bookElements={bookElements}
                 fontSize={24}
                 createNote={createNote}
