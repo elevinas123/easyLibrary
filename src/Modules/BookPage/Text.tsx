@@ -169,9 +169,9 @@ export default function Text({
         console.log(highlightedRanges);
     }, [highlightedRanges]);
     return (
-        <div className="w-full  flex flex-col items-center relative h-screen overflow-y-scroll">
+        <div className="w-full  flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
             {noteCreator}
-            
+
             <div className="w-1/2 break-words text-2xl font-serif ">
                 {bookElements.map((element, index) => {
                     if (!element) return null;
