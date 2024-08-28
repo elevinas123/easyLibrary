@@ -1,6 +1,5 @@
 import Tesseract from "tesseract.js";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import { removeExtraWhitespace } from "../Modules/BookPage/functions/preprocessText";
 import { createCanvas } from "canvas";
 
 GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";

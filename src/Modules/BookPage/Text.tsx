@@ -198,7 +198,7 @@ export default function Text({
         console.log(highlightedRanges);
     }, [highlightedRanges]);
     return (
-        <div className="w-full flex flex-col items-center relative">
+        <div className="w-full flex flex-col items-center overflow-hidden relative">
             {noteCreator}
             <input
                 type="file"
@@ -208,7 +208,6 @@ export default function Text({
             />
             <div
                 className="w-96"
-                style={{ overflow: "hidden", maxWidth: "100%" }}
             >
                 {bookElements.map((element, index) => {
                     if (!element) return null;

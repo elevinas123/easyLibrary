@@ -40,7 +40,6 @@ export const parseHtmlToObjects = (
     html: string,
     paragraphIndex: number
 ): HtmlObject | null => {
-    if (paragraphIndex > 10) return null; // Limiting to first 10 paragraphs as per original code
     const $ = load(html);
 
     const parseElementText = (element: cheerio.Element): string => {
@@ -74,6 +73,7 @@ export const parseHtmlToObjects = (
                     highlights: [], // Initialize with no highlights
                 } as ParagraphObject;
             } else if (elem.tagName.match(/^h[1-6]$/)) {
+                console.log("h1", textContent, paragraphIndex, _);
                 return {
                     type: "heading",
                     id: `heading-${paragraphIndex}-${_}`,
