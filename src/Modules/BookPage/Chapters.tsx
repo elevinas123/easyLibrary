@@ -26,7 +26,7 @@ export default function Chapters({ chapters }: ChaptersProps) {
                     Close
                 </button>
             </div>
-            <div className="p-4 text-gray-300 overflow-y-scroll custom-scrollbar">
+            <div className="p-4 text-gray-500 overflow-y-scroll custom-scrollbar">
                 <div className="text-lg font-semibold mb-2">
                     Table of Contents
                 </div>
@@ -34,7 +34,7 @@ export default function Chapters({ chapters }: ChaptersProps) {
                     {chapters.map((chapter, index) => (
                         <li key={index}>
                             <div
-                                className={`hover:text-gray-400 cursor-pointer`}
+                                className={`hover:text-gray-300 transition-colors duration-100 cursor-pointer`}
                                 style={{
                                     marginLeft: `${
                                         (chapter.indentLevel ?? 0) * 20

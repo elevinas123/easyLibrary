@@ -78,7 +78,7 @@ export const HtmlElement: React.FC<HtmlElementProps> = ({
     const Tag = element.type as keyof JSX.IntrinsicElements; // Dynamically set the tag name
 
     return (
-        <Tag style={element.style} data-id={element.id} toc-id={element.tocId}>
+        <Tag style={element.style} data-id={element.id} className="m-5" toc-id={element.tocId}>
             {renderTextWithHighlights()}
         </Tag>
     );
