@@ -11,6 +11,9 @@ module.exports = {
                 serif: ["Source Serif Pro", "serif"],
                 mono: ["Roboto Mono", "monospace"],
             },
+            width: {
+                "600px": "600px", // Add a custom width of 600px
+            },
         },
     },
     plugins: [],

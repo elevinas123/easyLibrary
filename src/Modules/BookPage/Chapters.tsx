@@ -26,11 +26,11 @@ export default function Chapters({ chapters }: ChaptersProps) {
                     Close
                 </button>
             </div>
-            <div className="p-4 text-gray-500 overflow-y-scroll custom-scrollbar">
+            <div className="p-4  overflow-y-scroll custom-scrollbar">
                 <div className="text-lg font-semibold mb-2">
                     Table of Contents
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 text-gray-500">
                     {chapters.map((chapter, index) => (
                         <li key={index}>
                             <div
