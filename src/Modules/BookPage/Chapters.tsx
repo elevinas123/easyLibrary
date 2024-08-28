@@ -1,4 +1,4 @@
-import { Chapter } from "./MainPage"; // Assuming you have the Chapter type defined elsewhere
+import { Chapter } from "./MainPage";
 
 type ChaptersProps = {
     chapters: Chapter[];
@@ -6,9 +6,7 @@ type ChaptersProps = {
 
 export default function Chapters({ chapters }: ChaptersProps) {
     const handleChapterClick = (chapterId: string) => {
-        const targetElement = document.querySelector(
-            `[data-id='${chapterId}']`
-        );
+        const targetElement = document.querySelector(`[id='${chapterId}']`);
         if (targetElement) {
             targetElement.scrollIntoView({
                 behavior: "smooth",

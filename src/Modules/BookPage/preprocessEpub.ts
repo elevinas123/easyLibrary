@@ -1,4 +1,5 @@
-import { Cheerio, load } from "cheerio";
+import { load } from "cheerio";
+import JSZip from "jszip";
 
 export type HighlightRange = {
     startElementId: string;
@@ -7,9 +8,8 @@ export type HighlightRange = {
     endOffset: number;
     highlightedText: string; // Optional, for debugging
     intermediateElementIds?: string[]; // New field to store IDs of elements in between
-    highlightId: string
+    highlightId: string;
 };
-
 
 export type ParagraphObject = {
     type: "paragraph";
@@ -37,48 +37,115 @@ export type HtmlObject = {
     type: "html";
     elements: HtmlElementObject[]; // Use the new generic HtmlElementObject type
 };
-export const preprocessEpub = (epub: string[]): (HtmlObject | null)[] => {
-    return epub.map((pages, index) => parseHtmlToObjects(pages, index));
-};
+export async function readEpub(file: File): Promise<string[]> {
+    const arrayBuffer = await file.arrayBuffer();
+    const zip = await JSZip.loadAsync(arrayBuffer);
 
-export const parseHtmlToObjects = (
-    html: string,
-    paragraphIndex: number
-): HtmlObject | null => {
-    const $ = load(html);
+    const opfFilePath = await findOpfFilePath(zip);
+    if (!opfFilePath) {
+        throw new Error("Unable to find content.opf file.");
+    }
 
-    const parseElementText = (element: cheerio.Element): string => {
-        if (element.type === "text") {
-            return element.data || "";
-        } else if (element.type === "tag") {
-            return $(element)
-                .contents()
-                .map((_, child) => parseElementText(child))
-                .get()
-                .join("");
+    const contentFiles = await parseOpfFile(zip, opfFilePath);
+
+    const paragraphs: string[] = [];
+    for (const file of contentFiles) {
+        const fileData = await zip.file(file.href)?.async("string");
+        if (fileData) {
+            paragraphs.push(fileData);
         }
-        return "";
-    };
+    }
 
-    const elements: HtmlElementObject[] = $("body")
-        .children()
-        .map((index, elem) => {
-            const textContent = parseElementText(elem);
-            return {
-                type: elem.tagName,
-                id: `${elem.tagName}-${paragraphIndex}-${index}`,
-                text: textContent,
-                highlights: [], // Initialize with no highlights
-                style: $(elem).attr("style")
-                    ? JSON.parse($(elem).attr("style") || "{}")
-                    : undefined, // Convert inline style to object
-            } as HtmlElementObject;
+    return paragraphs;
+}
+
+async function findOpfFilePath(zip: JSZip): Promise<string | null> {
+    const containerXml = await zip
+        .file("META-INF/container.xml")
+        ?.async("string");
+    if (containerXml) {
+        const $ = load(containerXml, { xmlMode: true });
+        const rootfileElement = $("rootfile");
+        if (rootfileElement.length > 0) {
+            return rootfileElement.attr("full-path") || null;
+        }
+    }
+    return null;
+}
+
+async function parseOpfFile(
+    zip: JSZip,
+    opfFilePath: string
+): Promise<{ id: string; href: string }[]> {
+    const opfContent = await zip.file(opfFilePath)?.async("string");
+    if (!opfContent) {
+        throw new Error("Unable to read content.opf file.");
+    }
+
+    const $ = load(opfContent, { xmlMode: true });
+
+    // Get the manifest items
+    const manifestItems: Record<string, string> = {};
+    $("manifest item").each((_, item) => {
+        const id = $(item).attr("id");
+        const href = $(item).attr("href");
+        if (id && href) {
+            manifestItems[id] = href;
+        }
+    });
+
+    // Get the spine items in the correct order
+    const spineItems = $("spine itemref")
+        .map((_, itemref) => {
+            const idref = $(itemref).attr("idref");
+            if (idref && manifestItems[idref]) {
+                return { id: idref, href: manifestItems[idref] };
+            }
+            throw new Error(`Spine references non-existent item: ${idref}`);
         })
         .get();
 
-    return {
-        type: "html",
-        elements,
-    } as HtmlObject;
-};
+    return spineItems;
+}
 
+export function preprocessEpub(epub: string[]): HtmlObject[] {
+    return epub.map((html, index) => {
+        const $ = load(html);
+
+        const elements: HtmlElementObject[] = $("body")
+            .children()
+            .map((i, elem) => {
+                const textContent = $(elem).text();
+
+                // Generate a unique ID using the format you mentioned
+                const id = `${elem.tagName}-${index}-${i}`;
+                $(elem).attr("id", id); // Assign the id back to the element
+
+                if (elem.tagName.match(/^h[1-6]$/)) {
+                    return {
+                        type: elem.tagName,
+                        id,
+                        tagName: elem.tagName,
+                        text: textContent,
+                        highlights: [],
+                    } as HtmlElementObject;
+                } else if (elem.tagName === "p") {
+                    return {
+                        type: elem.tagName,
+                        id,
+                        text: textContent,
+                        highlights: [],
+                    } as HtmlElementObject;
+                }
+
+                return null;
+            })
+            .get()
+            .filter(Boolean);
+
+        return {
+            type: "html",
+            elements,
+        };
+    });
+}
