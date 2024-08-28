@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { readEpub, preprocessEpub, HtmlObject } from "./preprocessEpub";
+import {
+    readEpub,
+    preprocessEpub,
+    HtmlObject,
+} from "../../preprocess/epub/preprocessEpub";
 import JSZip from "jszip";
 import Chapters from "./Chapters";
 import RightHand from "./RightHand";
 import Text from "./Text";
 import { load } from "cheerio";
-import { extractToc } from "./extractToc";
+import { extractToc } from "../../preprocess/epub/extractToc";
 
 export type HighlightRange = {
     startElementId: string;
@@ -27,8 +31,8 @@ export type Note = {
 export type Chapter = {
     id: string;
     title: string;
-    href: string;
-    indentLevel: number;
+    href: string | undefined;
+    indentLevel: number | null;
 };
 
 function MainPage() {
@@ -80,8 +84,15 @@ function MainPage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300">
+        <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
             <Chapters chapters={chapters} />
+            <input
+                className="absolute left-1/2 z-10 bg-gray-500"
+                type="file"
+                placeholder="Select EPUB"
+                accept=".epub"
+                onChange={handleEpubChange}
+            />
             <Text
                 handleEpubChange={handleEpubChange}
                 bookElements={bookElements}
@@ -95,12 +106,13 @@ function MainPage() {
 
 export default MainPage;
 
-function calculateIndentLevel(href: string): number {
+function calculateIndentLevel(href: string | undefined) {
+    if (!href) return null;
     // Simple example: increase indent level based on depth of href structure
     return (href.match(/\//g) || []).length;
 }
 
-async function findOpfFilePath(zip: JSZip): Promise<string | null> {
+async function findOpfFilePath(zip: JSZip) {
     const containerXml = await zip
         .file("META-INF/container.xml")
         ?.async("string");

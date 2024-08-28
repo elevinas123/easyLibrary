@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HighlightRange } from "./preprocessEpub";
+import { HighlightRange } from "../../preprocess/epub/preprocessEpub";
 import { v4 as uuidv4 } from "uuid";
 import { Note } from "./MainPage";
 

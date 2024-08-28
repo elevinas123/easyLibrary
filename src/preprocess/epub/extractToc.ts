@@ -1,11 +1,16 @@
 import { load } from "cheerio";
 import JSZip from "jszip";
 
-export async function extractToc(
-    zip: JSZip,
-    opfFilePath: string
-): Promise<{ title: string; href: string; id: string }[]> {
+export type Toc = {
+    title: string;
+    href: string | undefined;
+    id: string;
+};
+export async function extractToc(zip: JSZip, opfFilePath: string) {
     const opfContent = await zip.file(opfFilePath)?.async("string");
+    if (!opfContent) {
+        throw new Error("opfMustbeHere");
+    }
     const $opf = load(opfContent, { xmlMode: true });
 
     // EPUB 3 Navigation Document
@@ -24,14 +29,14 @@ export async function extractToc(
     throw new Error("No valid ToC found in the EPUB.");
 }
 
-async function parseEpub2Ncx(
-    zip: JSZip,
-    ncxFilePath: string
-): Promise<{ title: string; href: string; id: string }[]> {
+async function parseEpub2Ncx(zip: JSZip, ncxFilePath: string) {
     const ncxContent = await zip.file(ncxFilePath)?.async("string");
+    if (!ncxContent) {
+        throw new Error("ncxMustbeHere");
+    }
     const $ncx = load(ncxContent, { xmlMode: true });
+    const toc: Toc[] = [];
 
-    const toc = [];
     $ncx("navMap > navPoint").each((_, navPoint) => {
         const href = $ncx(navPoint).find("content").attr("src");
         const id = href?.split("#")[1] || "";
@@ -44,14 +49,14 @@ async function parseEpub2Ncx(
     return toc;
 }
 
-async function parseEpub3Nav(
-    zip: JSZip,
-    navFilePath: string
-): Promise<{ title: string; href: string; id: string }[]> {
+async function parseEpub3Nav(zip: JSZip, navFilePath: string) {
     const navContent = await zip.file(navFilePath)?.async("string");
+    if (!navContent) {
+        throw new Error("navMustbeHere");
+    }
     const $nav = load(navContent, { xmlMode: true });
 
-    const toc = [];
+    const toc: Toc[] = [];
     $nav('nav[epub\\:type="toc"] ol > li').each((_, listItem) => {
         const href = $nav(listItem).find("a").attr("href");
         const id = href?.split("#")[1] || "";

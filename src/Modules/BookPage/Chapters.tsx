@@ -36,7 +36,9 @@ export default function Chapters({ chapters }: ChaptersProps) {
                             <div
                                 className={`hover:text-gray-400 cursor-pointer`}
                                 style={{
-                                    marginLeft: `${chapter.indentLevel * 20}px`,
+                                    marginLeft: `${
+                                        (chapter.indentLevel ?? 0) * 20
+                                    }px`,
                                 }}
                                 onClick={() => handleChapterClick(chapter.id)}
                             >

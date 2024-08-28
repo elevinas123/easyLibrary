@@ -1,12 +1,18 @@
 import React from "react";
-import { HighlightRange, HtmlElementObject } from "./preprocessEpub";
+import {
+    HighlightRange,
+    HtmlElementObject,
+} from "../../preprocess/epub/preprocessEpub";
 
 type HtmlElementProps = {
     element: HtmlElementObject;
-    highlights: HighlightRange[]
+    highlights: HighlightRange[];
 };
 
-export const HtmlElement: React.FC<HtmlElementProps> = ({ element, highlights }) => {
+export const HtmlElement: React.FC<HtmlElementProps> = ({
+    element,
+    highlights,
+}) => {
     const renderTextWithHighlights = () => {
         const { text, id } = element;
         const elements = [];

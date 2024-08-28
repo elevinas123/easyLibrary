@@ -5,7 +5,7 @@ import {
     HtmlObject,
     HighlightRange,
     HtmlElementObject,
-} from "./preprocessEpub";
+} from "../../preprocess/epub/preprocessEpub";
 import { useAtom } from "jotai";
 import { highlightedRangeAtom } from "../../atoms";
 import { v4 as uuidv4 } from "uuid";
@@ -169,28 +169,21 @@ export default function Text({
         console.log(highlightedRanges);
     }, [highlightedRanges]);
     return (
-        <div className="w-full flex flex-col items-center overflow-hidden relative">
+        <div className="w-full  flex flex-col items-center relative h-screen overflow-y-scroll">
             {noteCreator}
-            <input
-                type="file"
-                placeholder="Select EPUB"
-                accept=".epub"
-                onChange={handleEpubChange}
-            />
-            <div className="w-96">
+            
+            <div className="w-1/2 break-words text-2xl font-serif ">
                 {bookElements.map((element, index) => {
                     if (!element) return null;
                     return (
                         <React.Fragment key={`fragment-${index}`}>
-                            {element.elements.map(
-                                (childElement, childIndex) => (
-                                    <HtmlElement
-                                        element={childElement}
-                                        key={childElement.id}
-                                        highlights={highlightedRanges}
-                                    />
-                                )
-                            )}
+                            {element.elements.map((childElement) => (
+                                <HtmlElement
+                                    element={childElement}
+                                    key={childElement.id}
+                                    highlights={highlightedRanges}
+                                />
+                            ))}
                         </React.Fragment>
                     );
                 })}
