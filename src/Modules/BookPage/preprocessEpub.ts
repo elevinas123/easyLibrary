@@ -29,7 +29,7 @@ export type HeadingObject = {
 export type HtmlElementObject = {
     type: string; // The tag name of the element (e.g., 'p', 'h1', 'div', etc.)
     id: string;
-    additionalId: string
+    tocId: string;
     text: string; // Store the full text of the element
     highlights: HighlightRange[]; // Store highlighted ranges within the text
     style?: React.CSSProperties;
@@ -113,7 +113,7 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
     return epub.map((html, index) => {
         const $ = load(html);
 
-        const elements: HtmlElementObject[] = $("body")
+        const elements = $("body")
             .children()
             .map((i, elem) => {
                 const textContent = $(elem).text();
@@ -121,13 +121,13 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
 
                 $(elem).attr("id", id); // Assign the id back to the element
 
-                let additionalId = "";
+                let tocId = "";
                 if (
                     elem.children.length > 1 &&
                     elem.children[0]?.name === "a" &&
                     elem.children[0]?.attribs.id
                 ) {
-                    additionalId = elem.children[0].attribs.id;
+                    tocId = elem.children[0].attribs.id;
                 }
 
                 const isHeading = /^h[1-6]$/.test(elem.tagName);
@@ -139,7 +139,7 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
                         id,
                         tagName: elem.tagName,
                         text: textContent,
-                        additionalId: additionalId,
+                        tocId: tocId,
                         highlights: [],
                     } as HtmlElementObject;
                 }

@@ -53,11 +53,7 @@ function MainPage() {
                     setError("Failed to load opfFilePath.");
                     return;
                 }
-                const toc = await extractToc(
-                    zip,
-                    opfFilePath,
-                    preprocessedEpub
-                );
+                const toc = await extractToc(zip, opfFilePath);
 
                 // Convert ToC to chapters data
                 const chaptersData = toc.map((item, index) => ({
