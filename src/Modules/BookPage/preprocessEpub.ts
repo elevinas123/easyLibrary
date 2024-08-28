@@ -26,12 +26,17 @@ export type HeadingObject = {
     text: string; // Store the full text of the heading
     style?: React.CSSProperties;
 };
-
+export type HtmlElementObject = {
+    type: string; // The tag name of the element (e.g., 'p', 'h1', 'div', etc.)
+    id: string;
+    text: string; // Store the full text of the element
+    highlights: HighlightRange[]; // Store highlighted ranges within the text
+    style?: React.CSSProperties;
+};
 export type HtmlObject = {
     type: "html";
-    elements: (ParagraphObject | HeadingObject)[];
+    elements: HtmlElementObject[]; // Use the new generic HtmlElementObject type
 };
-
 export const preprocessEpub = (epub: string[]): (HtmlObject | null)[] => {
     return epub.map((pages, index) => parseHtmlToObjects(pages, index));
 };
@@ -46,41 +51,28 @@ export const parseHtmlToObjects = (
         if (element.type === "text") {
             return element.data || "";
         } else if (element.type === "tag") {
-            if (element.tagName === "span") {
-                // Handle styled text within spans
-                return $(element).text();
-            } else {
-                // Handle other tags as nested children
-                return $(element)
-                    .contents()
-                    .map((_, child) => parseElementText(child))
-                    .get()
-                    .join("");
-            }
+            return $(element)
+                .contents()
+                .map((_, child) => parseElementText(child))
+                .get()
+                .join("");
         }
         return "";
     };
 
-    const elements: (ParagraphObject | HeadingObject)[] = $("body")
+    const elements: HtmlElementObject[] = $("body")
         .children()
-        .map((_, elem) => {
+        .map((index, elem) => {
             const textContent = parseElementText(elem);
-            if (elem.tagName === "p") {
-                return {
-                    type: "paragraph",
-                    id: `paragraph-${paragraphIndex}-${_}`,
-                    text: textContent,
-                    highlights: [], // Initialize with no highlights
-                } as ParagraphObject;
-            } else if (elem.tagName.match(/^h[1-6]$/)) {
-                console.log("h1", textContent, paragraphIndex, _);
-                return {
-                    type: "heading",
-                    id: `heading-${paragraphIndex}-${_}`,
-                    tagName: elem.tagName,
-                    text: textContent,
-                } as HeadingObject;
-            }
+            return {
+                type: elem.tagName,
+                id: `${elem.tagName}-${paragraphIndex}-${index}`,
+                text: textContent,
+                highlights: [], // Initialize with no highlights
+                style: $(elem).attr("style")
+                    ? JSON.parse($(elem).attr("style") || "{}")
+                    : undefined, // Convert inline style to object
+            } as HtmlElementObject;
         })
         .get();
 

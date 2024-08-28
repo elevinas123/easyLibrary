@@ -4,13 +4,14 @@ import {
     HeadingObject,
     HtmlObject,
     HighlightRange,
+    HtmlElementObject,
 } from "./preprocessEpub";
 import { useAtom } from "jotai";
 import { highlightedRangeAtom } from "../../atoms";
-import { Paragraph } from "./TextComponents";
 import { v4 as uuidv4 } from "uuid";
 import NoteCretor from "./NoteCreator";
 import { Note } from "./MainPage";
+import { HtmlElement } from "./TextComponents";
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];
@@ -74,41 +75,12 @@ export default function Text({
     bookElements,
     fontSize,
     handleEpubChange,
-    createNote
+    createNote,
 }: TextProps) {
     const [highlightedRanges, setHighlightedRanges] =
         useAtom(highlightedRangeAtom);
 
     const [noteCreator, setNoteCreator] = useState<JSX.Element | false>(false);
-    const renderContent = (
-        element: ParagraphObject | HeadingObject,
-        index: number
-    ) => {
-        if (element.type === "paragraph") {
-            return (
-                <Paragraph
-                    key={`paragraph-${index}`}
-                    id={element.id}
-                    text={element.text}
-                    highlights={highlightedRanges}
-                    style={element.style}
-                />
-            );
-        } else if (element.type === "heading") {
-            const HeadingTag = element.tagName as keyof JSX.IntrinsicElements;
-            return (
-                <HeadingTag
-                    key={`heading-${index}`}
-                    data-id={element.id}
-                    style={{ ...element.style, fontSize: `${fontSize}px` }}
-                >
-                    {element.text}
-                </HeadingTag>
-            );
-        }
-
-        return null;
-    };
 
     const addNoteCreator = (highlight: HighlightRange) => {
         setNoteCreator(
@@ -118,8 +90,7 @@ export default function Text({
                 setNoteCreator={setNoteCreator}
             />
         );
-        
-    }
+    };
 
     const handleMouseUp = () => {
         console.log("handleMouseUp triggered");
@@ -184,7 +155,7 @@ export default function Text({
                 endOffset,
                 intermediateElementIds,
             });
-            addNoteCreator(newHighlight)
+            addNoteCreator(newHighlight);
         }
     };
 
@@ -206,15 +177,19 @@ export default function Text({
                 accept=".epub"
                 onChange={handleEpubChange}
             />
-            <div
-                className="w-96"
-            >
+            <div className="w-96">
                 {bookElements.map((element, index) => {
                     if (!element) return null;
                     return (
                         <React.Fragment key={`fragment-${index}`}>
-                            {element.elements.map((childElement, childIndex) =>
-                                renderContent(childElement, childIndex)
+                            {element.elements.map(
+                                (childElement, childIndex) => (
+                                    <HtmlElement
+                                        element={childElement}
+                                        key={childElement.id}
+                                        highlights={highlightedRanges}
+                                    />
+                                )
                             )}
                         </React.Fragment>
                     );

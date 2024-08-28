@@ -1,20 +1,14 @@
 import React from "react";
-import { HighlightRange } from "./preprocessEpub";
+import { HighlightRange, HtmlElementObject } from "./preprocessEpub";
 
-type ParagraphProps = {
-    id: string;
-    text: string;
-    highlights: HighlightRange[];
-    style?: React.CSSProperties;
+type HtmlElementProps = {
+    element: HtmlElementObject;
+    highlights: HighlightRange[]
 };
 
-export const Paragraph: React.FC<ParagraphProps> = ({
-    id,
-    text,
-    highlights,
-    style,
-}) => {
+export const HtmlElement: React.FC<HtmlElementProps> = ({ element, highlights }) => {
     const renderTextWithHighlights = () => {
+        const { text, id } = element;
         const elements = [];
         let lastIndex = 0;
 
@@ -29,17 +23,17 @@ export const Paragraph: React.FC<ParagraphProps> = ({
                 },
                 index
             ) => {
-                if (
-                    startElementId === id ||
-                    endElementId === id ||
-                    intermediateElementIds?.includes(id)
-                ) {
-                    const highlightStart =
-                        startElementId === id ? startOffset : 0;
-                    const highlightEnd =
-                        endElementId === id ? endOffset + 1 : text.length;
+                // Check if the current element is part of the highlight range
+                const isStartElement = startElementId === id;
+                const isEndElement = endElementId === id;
+                const isIntermediateElement =
+                    intermediateElementIds?.includes(id);
 
-                    // Add text before the highlight starts
+                if (isStartElement || isEndElement || isIntermediateElement) {
+                    const highlightStart = isStartElement ? startOffset : 0;
+                    const highlightEnd = isEndElement ? endOffset : text.length;
+
+                    // Add unhighlighted text before the highlight starts
                     if (lastIndex < highlightStart) {
                         elements.push(
                             <span key={`text-${index}-${lastIndex}`}>
@@ -72,12 +66,14 @@ export const Paragraph: React.FC<ParagraphProps> = ({
             );
         }
 
-        return elements;
+        return elements.length > 0 ? elements : text;
     };
 
+    const Tag = element.type as keyof JSX.IntrinsicElements; // Dynamically set the tag name
+
     return (
-        <p style={style} data-id={id}>
+        <Tag style={element.style} data-id={element.id}>
             {renderTextWithHighlights()}
-        </p>
+        </Tag>
     );
 };
