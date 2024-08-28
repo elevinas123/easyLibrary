@@ -29,6 +29,7 @@ export type HeadingObject = {
 export type HtmlElementObject = {
     type: string; // The tag name of the element (e.g., 'p', 'h1', 'div', etc.)
     id: string;
+    additionalId: string
     text: string; // Store the full text of the element
     highlights: HighlightRange[]; // Store highlighted ranges within the text
     style?: React.CSSProperties;
@@ -116,24 +117,29 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
             .children()
             .map((i, elem) => {
                 const textContent = $(elem).text();
-
-                // Generate a unique ID using the format you mentioned
                 const id = `${elem.tagName}-${index}-${i}`;
+
                 $(elem).attr("id", id); // Assign the id back to the element
 
-                if (elem.tagName.match(/^h[1-6]$/)) {
+                let additionalId = "";
+                if (
+                    elem.children.length > 1 &&
+                    elem.children[0]?.name === "a" &&
+                    elem.children[0]?.attribs.id
+                ) {
+                    additionalId = elem.children[0].attribs.id;
+                }
+
+                const isHeading = /^h[1-6]$/.test(elem.tagName);
+                const isParagraph = elem.tagName === "p";
+
+                if (isHeading || isParagraph) {
                     return {
                         type: elem.tagName,
                         id,
                         tagName: elem.tagName,
                         text: textContent,
-                        highlights: [],
-                    } as HtmlElementObject;
-                } else if (elem.tagName === "p") {
-                    return {
-                        type: elem.tagName,
-                        id,
-                        text: textContent,
+                        additionalId: additionalId,
                         highlights: [],
                     } as HtmlElementObject;
                 }

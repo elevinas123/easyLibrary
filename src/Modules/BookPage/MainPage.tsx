@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    readEpub,
-    preprocessEpub,
-    HtmlObject,
-} from "./preprocessEpub";
+import { readEpub, preprocessEpub, HtmlObject } from "./preprocessEpub";
 import JSZip from "jszip";
 import Chapters from "./Chapters";
 import RightHand from "./RightHand";
@@ -53,6 +49,10 @@ function MainPage() {
                 // Extract ToC using preprocessed content
                 const zip = await JSZip.loadAsync(file);
                 const opfFilePath = await findOpfFilePath(zip);
+                if (!opfFilePath) {
+                    setError("Failed to load opfFilePath.");
+                    return;
+                }
                 const toc = await extractToc(
                     zip,
                     opfFilePath,
@@ -78,7 +78,6 @@ function MainPage() {
             }
         }
     };
-
 
     const createNote = (note: Note) => {
         setNotes((oldNotes) => [...oldNotes, note]);

@@ -8,6 +8,9 @@ export async function extractToc(
     preprocessedEpub: HtmlObject[]
 ): Promise<{ title: string; href: string; id: string }[]> {
     const opfContent = await zip.file(opfFilePath)?.async("string");
+    if (!opfContent) {
+        throw new Error("opfFile not found")
+    }
     const $opf = load(opfContent, { xmlMode: true });
 
     // EPUB 3 Navigation Document
