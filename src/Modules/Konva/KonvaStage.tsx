@@ -37,7 +37,7 @@ export type Shape = {
 };
 
 export default function KonvaStage() {
-    const [activeTool] = useAtom(activeToolAtom);
+    const [activeTool, setActiveTool] = useAtom(activeToolAtom);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const [currentShape, setCurrentShape] = useState<Shape | null>(null);
     const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
@@ -50,34 +50,103 @@ export default function KonvaStage() {
             const shapeNode = shapeRefs.current[selectedShapeId];
             if (shapeNode) {
                 transformerRef.current.nodes([shapeNode]);
+console.log("shapeNode", shapeNode, transformerRef)
+                // Allow resizing in all directions
+                transformerRef.current.keepRatio(false);
+                transformerRef.current.enabledAnchors([
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                    "top-center",
+                    "bottom-center",
+                    "middle-left",
+                    "middle-right",
+                ]);
+
                 transformerRef.current.getLayer().batchDraw();
             }
-            console.log("shapes", shapes, selectedShapeId);
         }
     }, [selectedShapeId]);
-    useEffect(() => {}, []);
+
+    // Manually trigger cursor change on mount
+    useEffect(() => {
+        const stage = stageRef.current;
+
+        if (stage) {
+            // Force re-attaching events
+            stage.container().style.cursor = "default";
+
+            stage.on("mouseenter", (e: any) => {
+                if (e.target === stage) return;
+                stage.container().style.cursor = "move";
+            });
+
+            stage.on("mouseleave", () => {
+                stage.container().style.cursor = "default";
+            });
+        }
+    }, [shapes]);
 
     const handleMouseDown = (e: any) => {
-        if (activeTool === "Select" || activeTool === "Pan") return;
-
         const pos = e.target.getStage().getPointerPosition();
-        const newShape: Shape = {
-            type: activeTool as ShapeType,
-            id: Date.now().toString(), // Generate a unique ID
-            x: pos.x,
-            y: pos.y,
-            width: 0,
-            height: 0,
-            strokeColor: "green",
-            backgroundColor: "red",
-            strokeWidth: 2.5,
-            strokeStyle: { type: "solid", value: [1000] },
-            opacity: 1,
-            points: [pos.x, pos.y],
-            color: "black",
-        };
 
-        setCurrentShape(newShape);
+        // Check if click is within any shape's bounding box
+        const clickedShape = shapes.find((shape) => {
+            const shapeRef = shapeRefs.current[shape.id];
+            if (shapeRef) {
+                const box = shapeRef.getClientRect();
+                return (
+                    pos.x >= box.x &&
+                    pos.x <= box.x + box.width &&
+                    pos.y >= box.y &&
+                    pos.y <= box.y + box.height
+                );
+            }
+            return false;
+        });
+
+        if (clickedShape) {
+            // Select the shape if it's clicked
+            setSelectedShapeId(clickedShape.id);
+            setCurrentShape(null)
+            console.log("shapedClicked", clickedShape, shapeRefs)
+            
+        } else if (activeTool !== "Select" && activeTool !== "Pan") {
+            // If no shape is clicked and we're drawing a new shape
+            const newShape: Shape = {
+                type: activeTool as ShapeType,
+                id: Date.now().toString(),
+                x: pos.x,
+                y: pos.y,
+                width: 0,
+                height: 0,
+                strokeColor: "green",
+                backgroundColor: "red",
+                strokeWidth: 2.5,
+                strokeStyle: { type: "solid", value: [1000] },
+                opacity: 1,
+                points: [pos.x, pos.y],
+                color: "black",
+            };
+
+            setCurrentShape(newShape);
+        }
+    };
+
+
+    const handleMouseEnter = (e: any) => {
+        const stage = e.target.getStage();
+        if (stage) {
+            stage.container().style.cursor = "move";
+        }
+    };
+
+    const handleMouseLeave = (e: any) => {
+        const stage = e.target.getStage();
+        if (stage) {
+            stage.container().style.cursor = "default";
+        }
     };
 
     const handleMouseMove = (e: any) => {
@@ -118,6 +187,7 @@ export default function KonvaStage() {
 
     const handleMouseUp = () => {
         if (currentShape) {
+            setActiveTool("Select");
             setShapes([...shapes, currentShape]);
             setCurrentShape(null);
         }
@@ -138,12 +208,12 @@ export default function KonvaStage() {
     };
 
     const handleShapeClick = (shape: Shape, ref: any) => {
-        setSelectedShapeId(shape.id);
-        shapeRefs.current[shape.id] = ref;
+        if (activeTool === "Select") {
+            setCurrentShape(null)
+            shapeRefs.current[shape.id] = ref;
+            setSelectedShapeId(shape.id);
+        }
     };
-    useEffect(() => {
-        console.log("shapes", shapes);
-    }, [shapes]);
 
     const renderShape = (shape: Shape, index: number) => {
         switch (shape.type) {
@@ -162,6 +232,8 @@ export default function KonvaStage() {
                         strokeWidth={shape.strokeWidth}
                         opacity={shape.opacity}
                         dash={shape.strokeStyle.value}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                         draggable
                         onDragEnd={handleDragEnd}
                     />
@@ -177,6 +249,8 @@ export default function KonvaStage() {
                         radius={shape.radius || 0}
                         fill={shape.color}
                         stroke="black"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                         draggable
                         onDragEnd={handleDragEnd}
                     />
@@ -189,6 +263,8 @@ export default function KonvaStage() {
                         ref={(node: any) => handleShapeClick(shape, node)}
                         points={shape.points}
                         stroke="black"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                         draggable
                         onDragEnd={handleDragEnd}
                     />
@@ -201,6 +277,8 @@ export default function KonvaStage() {
                         ref={(node: any) => handleShapeClick(shape, node)}
                         points={shape.points}
                         stroke="black"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                         draggable
                         onDragEnd={handleDragEnd}
                     />
@@ -222,7 +300,14 @@ export default function KonvaStage() {
                 <Layer>
                     {shapes.map((shape, index) => renderShape(shape, index))}
                     {currentShape && renderShape(currentShape, shapes.length)}
-                    {selectedShapeId && <Transformer ref={transformerRef} />}
+                    {selectedShapeId && (
+                        <Transformer
+                            ref={transformerRef}
+                            boundBoxFunc={(oldBox, newBox) => newBox} // Keeps bounding box functionality
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        />
+                    )}
                 </Layer>
             </Stage>
             {selectedShapeId && (
