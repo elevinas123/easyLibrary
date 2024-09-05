@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { activeToolAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
 import ToolBar from "./components/ToolBar";
-import Rectangle from "./Rectangle";
+import Rectangle from "./shapes/Rectangle";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line";
 export type StrokeStyle = {
@@ -70,6 +70,7 @@ export default function KonvaStage() {
 
     const selectShape = (id: string) => {
         if (activeTool === "Select") {
+            console.log("id", id)
             setSelectedShapeId(id);
         }
     };
@@ -112,7 +113,7 @@ export default function KonvaStage() {
                 </Layer>
             </Stage>
             {selectedShapeId && (
-                <ToolBar shapeId={selectedShapeId} setShapes={setShapes} />
+                <ToolBar shapeId={selectedShapeId} shape={shapes.filter((shape)=> shape.id === selectedShapeId)[0] || null} setShapes={setShapes} />
             )}
         </div>
     );

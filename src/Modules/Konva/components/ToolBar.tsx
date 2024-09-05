@@ -47,19 +47,25 @@ const ToolBarItem = ({
 
 type ToolBarProps = {
     shapeId: string;
+    shape: Shape | null;
     setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 };
-export default function ToolBar({ shapeId, setShapes }: ToolBarProps) {
-    const [strokeColor, setStrokeColor] = useState("#f08c00");
-    const [backgroundColor, setBackgroundColor] = useState("transparent");
-    const [strokeWidth, setStrokeWidth] = useState(2.5);
-    const [strokeStyle, setStrokeStyle] = useState({
-        type: "solid",
-        value: [1000],
-    });
+export default function ToolBar({ shapeId, shape, setShapes }: ToolBarProps) {
+    const [strokeColor, setStrokeColor] = useState(
+        shape?.strokeColor || "#f08c00"
+    );
+    const [backgroundColor, setBackgroundColor] = useState(
+        shape?.backgroundColor || "transparent"
+    );
+    const [strokeWidth, setStrokeWidth] = useState(shape?.strokeWidth || 2.5);
+    const [strokeStyle, setStrokeStyle] = useState(
+        shape?.strokeStyle || {
+            type: "solid",
+            value: [1000],
+        }
+    );
     const [edges, setEdges] = useState("round");
-    const [opacity, setOpacity] = useState(1);
-
+    const [opacity, setOpacity] = useState(shape?.opacity || 1);
     useEffect(() => {
         setShapes((prevShapes) =>
             prevShapes.map((shape) =>
@@ -83,7 +89,6 @@ export default function ToolBar({ shapeId, setShapes }: ToolBarProps) {
         strokeStyle,
         edges,
         opacity,
-        shapeId,
     ]);
     return (
         <div className="absolute left-0 z-50 top-36 flex flex-col space-y-4 p-4 bg-zinc-900 border border-zinc-500 rounded shadow-lg max-w-xs">
