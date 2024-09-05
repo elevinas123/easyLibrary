@@ -5,7 +5,7 @@ import { Rect, Transformer } from "react-konva";
 type RectangleProps = {
     shape: Shape;
     isSelected: boolean;
-    onSelect: () => void;
+    onSelect: (e: any) => void;
     onChange: (newAttrs: any) => void;
 };
 

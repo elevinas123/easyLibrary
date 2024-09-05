@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { useAtom } from "jotai";
 import { activeToolAtom } from "./konvaAtoms";
@@ -65,13 +65,21 @@ const initialRectangles: Shape[] = [
 export default function KonvaStage() {
     const [activeTool, setActiveTool] = useAtom(activeToolAtom);
     const [shapes, setShapes] = useState<Shape[]>(initialRectangles);
-    const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
+    const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
     const stageRef = useRef<any>(null);
-
-    const selectShape = (id: string) => {
-        if (activeTool === "Select") {
-            console.log("id", id)
-            setSelectedShapeId(id);
+    useEffect(() => {
+        console.log("selectedShapeIds", selectedShapeIds);
+    });
+    const selectShape = (e: any, id: string) => {
+        console.log("e", e.evt.ctrlKey);
+        if (activeTool !== "Select") {
+            return;
+        }
+        if (e.evt.ctrlKey) {
+            setSelectedShapeIds((ids) => [...ids, id]);
+        } else if (activeTool === "Select") {
+            console.log("id", id);
+            setSelectedShapeIds([id]);
         }
     };
 
@@ -88,8 +96,8 @@ export default function KonvaStage() {
                     <Rectangle
                         key={shape.id}
                         shape={shape}
-                        isSelected={shape.id === selectedShapeId}
-                        onSelect={() => selectShape(shape.id)}
+                        isSelected={selectedShapeIds.indexOf(shape.id) > -1}
+                        onSelect={(e: any) => selectShape(e, shape.id)}
                         onChange={(newAttrs: Shape) =>
                             handleChange(newAttrs, shape.id)
                         }
@@ -112,8 +120,14 @@ export default function KonvaStage() {
                     {shapes.map((shape, index) => renderShape(shape, index))}
                 </Layer>
             </Stage>
-            {selectedShapeId && (
-                <ToolBar shapeId={selectedShapeId} shape={shapes.filter((shape)=> shape.id === selectedShapeId)[0] || null} setShapes={setShapes} />
+            {selectedShapeIds && (
+                <ToolBar
+                    selectedShapeIds={selectedShapeIds}
+                    shapes={shapes.filter((shape) =>
+                        selectedShapeIds.indexOf(shape.id)
+                    )}
+                    setShapes={setShapes}
+                />
             )}
         </div>
     );
