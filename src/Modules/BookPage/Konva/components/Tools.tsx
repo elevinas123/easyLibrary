@@ -17,7 +17,7 @@ import { BiRectangle } from "react-icons/bi";
 import { CgShapeRhombus } from "react-icons/cg";
 import { useAtom } from "jotai";
 import { activeToolAtom } from "../konvaAtoms";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 
 export type DrawingToolNames =
     | "Pan"
@@ -31,7 +31,6 @@ export type DrawingToolNames =
     | "Text"
     | "Image"
     | "Eraser";
-
 
 type DrawingTools = {
     name: DrawingToolNames;

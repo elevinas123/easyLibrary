@@ -11,7 +11,7 @@ import { Note } from "./MainPage";
 import { HtmlElement } from "./TextComponents";
 import { mergeHighlights } from "./manageHiglights";
 import { Stage } from "react-konva";
-import KonvaStage from "../Konva/KonvaStage";
+import KonvaStage from "./Konva/KonvaStage";
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];

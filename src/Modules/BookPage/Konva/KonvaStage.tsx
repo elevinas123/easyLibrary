@@ -7,6 +7,7 @@ import ToolBar from "./components/ToolBar";
 import Rectangle from "./shapes/Rectangle";
 import CustomTransformer from "./shapes/CustomTransformer";
 import CircleItem from "./Circle";
+import TextItem from "./shapes/TextShape";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
 const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
@@ -21,6 +22,7 @@ export type Shape =
 export interface TextShape extends ShapeSkeleton {
     type: "Text";
     text: string;
+    fill: string;
     fontSize: number;
     fontFamily: string;
 }
@@ -189,6 +191,24 @@ export default function KonvaStage() {
                     };
                     setCurrentShape(circle);
                     break;
+                case "Text":
+                    let text: Shape = {
+                        type: activeTool,
+                        id: id,
+                        x: pos.x,
+                        y: pos.y,
+                        width: 80,
+                        height: 80,
+                        strokeColor: "green",
+                        backgroundColor: "red",
+                        strokeWidth: 2.5,
+                        opacity: 1,
+                        text: "labas",
+                        fontSize: 20,
+                        fontFamily: "Arial",
+                        fill: "white"
+                    };
+                    setCurrentShape(text);
             }
         }
     };
@@ -251,6 +271,21 @@ export default function KonvaStage() {
             case "Circle":
                 return (
                     <CircleItem
+                        key={shape.id}
+                        shape={shape}
+                        ref={(node: any) =>
+                            (shapeRefs.current[shape.id] = node)
+                        } // Store references
+                        isSelected={selectedShapeIds.indexOf(shape.id) > -1}
+                        onSelect={(e: any) => selectShape(e, shape.id)}
+                        onChange={(newAttrs: Shape) =>
+                            handleChange(newAttrs, shape.id)
+                        }
+                    />
+                );
+            case "Text": 
+                return (
+                    <TextItem
                         key={shape.id}
                         shape={shape}
                         ref={(node: any) =>

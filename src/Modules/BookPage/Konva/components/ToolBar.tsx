@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { Shape } from "../KonvaStage";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 
 const colors = [
     "#1e1e1e",

@@ -1,6 +1,6 @@
-import { useEffect, useRef, forwardRef } from "react";
+import { useEffect, useRef, forwardRef, useState } from "react";
 import { Text } from "react-konva";
-import {  TextShape } from "../KonvaStage";
+import { TextShape } from "../KonvaStage";
 
 type TextShapeProps = {
     shape: TextShape;
@@ -12,6 +12,11 @@ type TextShapeProps = {
 const TextItem = forwardRef<any, TextShapeProps>(
     ({ shape, isSelected, onSelect, onChange }, ref) => {
         const shapeRef = useRef<any>(null);
+        const [initialFontSize, setInitialFontSize] = useState(shape.fontSize); // Store original fontSize
+        const [initialDimensions, setInitialDimensions] = useState({
+            width: shape.width,
+            height: shape.height,
+        });
 
         useEffect(() => {
             if (isSelected && shapeRef.current) {
@@ -20,6 +25,40 @@ const TextItem = forwardRef<any, TextShapeProps>(
                 shapeRef.current.draggable(false); // Disable dragging when not selected
             }
         }, [isSelected]);
+
+        useEffect(() => {
+            // Set initial dimensions for scaling calculation
+            setInitialFontSize(shape.fontSize);
+            setInitialDimensions({ width: shape.width, height: shape.height });
+        }, [shape]);
+
+        const handleTransformEnd = () => {
+            const node = shapeRef.current;
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+
+            // Reset the scaling so it does not accumulate
+            node.scaleX(1);
+            node.scaleY(1);
+
+            // Calculate the new width and height after scaling
+            const newWidth = node.width() * scaleX;
+            const newHeight = node.height() * scaleY;
+
+            // Calculate the proportional font size based on width scaling
+            const scaleFactor = newWidth / initialDimensions.width;
+
+            const newFontSize = Math.max(5, initialFontSize * scaleFactor);
+
+            onChange({
+                ...shape,
+                x: node.x(),
+                y: node.y(),
+                fontSize: newFontSize,
+                width: newWidth,
+                height: newHeight,
+            });
+        };
 
         return (
             <>
@@ -44,22 +83,7 @@ const TextItem = forwardRef<any, TextShapeProps>(
                     strokeWidth={shape.strokeWidth || 0} // Optional stroke width
                     opacity={shape.opacity}
                     onClick={onSelect}
-                    onTransformEnd={(e) => {
-                        const node = shapeRef.current;
-                        const scaleX = node.scaleX();
-                        const scaleY = node.scaleY();
-
-                        node.scaleX(1);
-                        node.scaleY(1);
-
-                        onChange({
-                            ...shape,
-                            x: node.x(),
-                            y: node.y(),
-                            width: Math.max(5, node.width() * scaleX),
-                            height: Math.max(5, node.height() * scaleY),
-                        });
-                    }}
+                    onTransformEnd={handleTransformEnd} // Call our new handler
                     onDragEnd={(e) => {
                         const node = shapeRef.current;
                         onChange({
