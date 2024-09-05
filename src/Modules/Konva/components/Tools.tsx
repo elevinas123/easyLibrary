@@ -32,6 +32,7 @@ export type DrawingToolNames =
     | "Image"
     | "Eraser";
 
+
 type DrawingTools = {
     name: DrawingToolNames;
     icon: JSX.Element;

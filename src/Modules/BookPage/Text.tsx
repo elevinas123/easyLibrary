@@ -72,7 +72,7 @@ export default function Text({ bookElements, createNote }: TextProps) {
                 }
             }
             if (!startElementId || !endElementId) {
-                return
+                return;
             }
 
             const newHighlight: HighlightRange = {
@@ -104,7 +104,7 @@ export default function Text({ bookElements, createNote }: TextProps) {
         <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
             {noteCreator}
 
-            <div className="w-600px break-words text-2xl font-serif ">
+            <div className=" flex-grow break-words text-2xl font-serif ">
                 <KonvaStage />
             </div>
         </div>

@@ -76,7 +76,7 @@ export default function ToolBar({
         return;
     }
     return (
-        <div className="absolute left-0 z-50 top-36 flex flex-col space-y-4 p-4 bg-zinc-900 border border-zinc-500 rounded shadow-lg max-w-xs">
+        <div className="absolute left-72 z-50 top-36 flex flex-col space-y-4 p-4 bg-zinc-900 border border-zinc-500 rounded shadow-lg max-w-xs">
             {/* Stroke Color */}
             <div>
                 <h3 className="text-sm font-semibold">Stroke</h3>
