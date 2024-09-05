@@ -22,6 +22,18 @@ export default function Rectangle({
         if (isSelected && trRef.current) {
             // Attach transformer to the selected shape
             trRef.current.nodes([shapeRef.current]);
+            trRef.current.keepRatio(false);
+            trRef.current.enabledAnchors([
+                "top-left",
+                "top-right",
+                "bottom-left",
+                "bottom-right",
+                "top-center",
+                "bottom-center",
+                "middle-left",
+                "middle-right",
+            ]);
+
             trRef.current.getLayer().batchDraw();
         }
     }, [isSelected]);
@@ -37,7 +49,7 @@ export default function Rectangle({
                 fill={shape.backgroundColor} // Applying fill here
                 stroke={shape.strokeColor}
                 strokeWidth={shape.strokeWidth}
-                draggable
+                draggable={isSelected}
                 opacity={shape.opacity}
                 onClick={onSelect}
                 onTransformEnd={(e) => {
