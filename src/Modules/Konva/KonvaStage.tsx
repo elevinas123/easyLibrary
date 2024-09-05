@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { useAtom } from "jotai";
 import { activeToolAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
 import ToolBar from "./components/ToolBar";
 import Rectangle from "./shapes/Rectangle";
+import CustomTransformer from "./shapes/CustomTransformer";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line";
 export type StrokeStyle = {
@@ -40,7 +41,7 @@ const initialRectangles: Shape[] = [
         points: [],
         color: "red",
         strokeColor: "black",
-        backgroundColor: "yellow", // Changed to "fill" later
+        backgroundColor: "yellow",
         strokeWidth: 2,
         opacity: 0.8,
         strokeStyle: { type: "solid", value: [0] },
@@ -55,7 +56,7 @@ const initialRectangles: Shape[] = [
         points: [],
         color: "blue",
         strokeColor: "green",
-        backgroundColor: "lightblue", // Changed to "fill" later
+        backgroundColor: "lightblue",
         strokeWidth: 3,
         opacity: 0.9,
         strokeStyle: { type: "dashed", value: [5, 5] },
@@ -67,18 +68,16 @@ export default function KonvaStage() {
     const [shapes, setShapes] = useState<Shape[]>(initialRectangles);
     const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
     const stageRef = useRef<any>(null);
-    useEffect(() => {
-        console.log("selectedShapeIds", selectedShapeIds);
-    });
+    const shapeRefs = useRef<{ [key: string]: any }>({}); // Store references to all shapes
+
     const selectShape = (e: any, id: string) => {
-        console.log("e", e.evt.ctrlKey);
         if (activeTool !== "Select") {
             return;
         }
+
         if (e.evt.ctrlKey) {
             setSelectedShapeIds((ids) => [...ids, id]);
-        } else if (activeTool === "Select") {
-            console.log("id", id);
+        } else {
             setSelectedShapeIds([id]);
         }
     };
@@ -90,22 +89,16 @@ export default function KonvaStage() {
     };
 
     const renderShape = (shape: Shape, index: number) => {
-        switch (shape.type) {
-            case "Rectangle":
-                return (
-                    <Rectangle
-                        key={shape.id}
-                        shape={shape}
-                        isSelected={selectedShapeIds.indexOf(shape.id) > -1}
-                        onSelect={(e: any) => selectShape(e, shape.id)}
-                        onChange={(newAttrs: Shape) =>
-                            handleChange(newAttrs, shape.id)
-                        }
-                    />
-                );
-            default:
-                return null;
-        }
+        return (
+            <Rectangle
+                key={shape.id}
+                shape={shape}
+                ref={(node: any) => (shapeRefs.current[shape.id] = node)} // Store references
+                isSelected={selectedShapeIds.indexOf(shape.id) > -1}
+                onSelect={(e: any) => selectShape(e, shape.id)}
+                onChange={(newAttrs: Shape) => handleChange(newAttrs, shape.id)}
+            />
+        );
     };
 
     return (
@@ -118,13 +111,17 @@ export default function KonvaStage() {
             >
                 <Layer>
                     {shapes.map((shape, index) => renderShape(shape, index))}
+                    <CustomTransformer
+                        selectedShapeIds={selectedShapeIds}
+                        shapeRefs={shapeRefs.current}
+                    />
                 </Layer>
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
                     selectedShapeIds={selectedShapeIds}
                     shapes={shapes.filter((shape) =>
-                        selectedShapeIds.indexOf(shape.id)
+                        selectedShapeIds.includes(shape.id)
                     )}
                     setShapes={setShapes}
                 />

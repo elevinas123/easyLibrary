@@ -1,6 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { Shape } from "../KonvaStage";
+import { Button } from "../../../components/ui/button";
 
 const colors = [
     "#1e1e1e",
@@ -32,18 +33,18 @@ const ToolBarItem = ({
     children,
 }: ToolBarItemProps) => {
     return (
-        <button
+        <Button
             key={item}
-            className={`w-7 h-7 justify-center items-center flex rounded-lg border-2 bg-zinc-800 ${
+            className={`w-4 h-4 p-4 flex justify-center items-center rounded-lg ${
                 controlItem === item
-                    ? "border-zinc-500 border bg-neutral-800"
-                    : "border-transparent"
-            }`}
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-black"
+                    : ""
+            } bg-zinc-800`}
             style={style}
             onClick={() => updateItems({ [itemName]: item })}
         >
             {children}
-        </button>
+        </Button>
     );
 };
 
