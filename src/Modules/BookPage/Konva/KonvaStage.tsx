@@ -340,14 +340,13 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         selectedShapeIds={selectedShapeIds}
                         shapeRefs={shapeRefs.current}
                     />
+                    <CustomTransformer
+                        selectedShapeIds={selectedShapeIds}
+                        shapeRefs={shapeRefs.current}
+                    />
                 </Layer>
-                <Layer>
                     <BookTextItems bookElements={bookElements} />
-                </Layer>
-                <CustomTransformer
-                    selectedShapeIds={selectedShapeIds}
-                    shapeRefs={shapeRefs.current}
-                />
+                
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
