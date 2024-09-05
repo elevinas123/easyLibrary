@@ -1,3 +1,4 @@
+import { Button } from "../../components/ui/button";
 import { Chapter } from "./MainPage";
 
 type ChaptersProps = {
@@ -19,12 +20,10 @@ export default function Chapters({ chapters }: ChaptersProps) {
     return (
         <div className="flex flex-col w-96 bg-zinc-900 border-l border-gray-700 h-screen ">
             <div className="border-b border-gray-700 flex flex-row h-12 w-full items-center justify-between px-4">
-                <button className="text-gray-300 hover:text-gray-500">
-                    Back
-                </button>
-                <button className="text-gray-300 hover:text-gray-500">
+                <Button className="hover:text-gray-400">Back</Button>
+                <Button className="hover:text-gray-400">
                     Close
-                </button>
+                </Button>
             </div>
             <div className="p-4  overflow-y-scroll custom-scrollbar">
                 <div className="text-lg font-semibold mb-2">

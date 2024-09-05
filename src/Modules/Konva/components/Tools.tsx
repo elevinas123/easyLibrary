@@ -17,6 +17,7 @@ import { BiRectangle } from "react-icons/bi";
 import { CgShapeRhombus } from "react-icons/cg";
 import { useAtom } from "jotai";
 import { activeToolAtom } from "../konvaAtoms";
+import { Button } from "../../../components/ui/button";
 
 export type DrawingToolNames =
     | "Pan"
@@ -63,9 +64,10 @@ export default function Tools() {
     return (
         <div className=" z-50 absolute top-10 left-1/2 transform bg-zinc-900 -translate-x-1/2 flex flex-row  items-center  p-2 rounded-lg shadow-lg space-x-2">
             {tools.map((tool) => (
-                <button
+                <Button
+                    size="icon"
                     key={tool.name}
-                    className={`hover:cursor-pointer flex justify-center items-center w-10 h-10 p-2.5 rounded-lg  bg-gray-900  text-white hover:bg-zinc-800
+                    className={`hover:cursor-pointer flex justify-center items-center w-10 h-10  rounded-lg  bg-gray-900  text-white hover:bg-zinc-800
                         ${
                             activeTool === tool.name &&
                             "bg-cyan-600 hover:bg-cyan-800"
@@ -75,7 +77,7 @@ export default function Tools() {
                     title={tool.name}
                 >
                     {tool.icon}
-                </button>
+                </Button>
             ))}
         </div>
     );

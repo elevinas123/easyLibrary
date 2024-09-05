@@ -50,7 +50,7 @@ export default function KonvaStage() {
             const shapeNode = shapeRefs.current[selectedShapeId];
             if (shapeNode) {
                 transformerRef.current.nodes([shapeNode]);
-console.log("shapeNode", shapeNode, transformerRef)
+                console.log("shapeNode", shapeNode, transformerRef);
                 // Allow resizing in all directions
                 transformerRef.current.keepRatio(false);
                 transformerRef.current.enabledAnchors([
@@ -109,9 +109,8 @@ console.log("shapeNode", shapeNode, transformerRef)
         if (clickedShape) {
             // Select the shape if it's clicked
             setSelectedShapeId(clickedShape.id);
-            setCurrentShape(null)
-            console.log("shapedClicked", clickedShape, shapeRefs)
-            
+            setCurrentShape(null);
+            console.log("shapedClicked", clickedShape, shapeRefs);
         } else if (activeTool !== "Select" && activeTool !== "Pan") {
             // If no shape is clicked and we're drawing a new shape
             const newShape: Shape = {
@@ -133,7 +132,6 @@ console.log("shapeNode", shapeNode, transformerRef)
             setCurrentShape(newShape);
         }
     };
-
 
     const handleMouseEnter = (e: any) => {
         const stage = e.target.getStage();
@@ -209,7 +207,7 @@ console.log("shapeNode", shapeNode, transformerRef)
 
     const handleShapeClick = (shape: Shape, ref: any) => {
         if (activeTool === "Select") {
-            setCurrentShape(null)
+            setCurrentShape(null);
             shapeRefs.current[shape.id] = ref;
             setSelectedShapeId(shape.id);
         }
