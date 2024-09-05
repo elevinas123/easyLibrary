@@ -8,6 +8,9 @@ import Rectangle from "./shapes/Rectangle";
 import CustomTransformer from "./shapes/CustomTransformer";
 import CircleItem from "./Circle";
 import TextItem from "./shapes/TextShape";
+import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
+import BookTextItem from "./shapes/BookTextItem";
+import BookTextItems from "./shapes/BookTextItem";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
 const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
@@ -94,7 +97,10 @@ const initialRectangles: Shape[] = [
     },
 ];
 
-export default function KonvaStage() {
+type KonvaStageProps = {
+    bookElements: (HtmlObject | null)[];
+};
+export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [activeTool, setActiveTool] = useAtom(activeToolAtom);
     const [shapes, setShapes] = useState<Shape[]>(initialRectangles);
     const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
@@ -102,6 +108,9 @@ export default function KonvaStage() {
     const stageRef = useRef<any>(null);
     const shapeRefs = useRef<{ [key: string]: any }>({}); // Store references to all shapes
     const [scale, setScale] = useState(1); // State to handle scale
+    useEffect(() => {
+        console.log("bookElements", bookElements);
+    }, [bookElements]);
     const handleWheel = (e: WheelEvent) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
@@ -206,7 +215,7 @@ export default function KonvaStage() {
                         text: "labas",
                         fontSize: 20,
                         fontFamily: "Arial",
-                        fill: "white"
+                        fill: "white",
                     };
                     setCurrentShape(text);
             }
@@ -251,7 +260,6 @@ export default function KonvaStage() {
     };
 
     const renderShape = (shape: Shape) => {
-        console.log("shape", shape);
         switch (shape.type) {
             case "Rectangle":
                 return (
@@ -283,7 +291,7 @@ export default function KonvaStage() {
                         }
                     />
                 );
-            case "Text": 
+            case "Text":
                 return (
                     <TextItem
                         key={shape.id}
@@ -333,6 +341,13 @@ export default function KonvaStage() {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
+                <Layer>
+                    <BookTextItems bookElements={bookElements} />
+                </Layer>
+                <CustomTransformer
+                    selectedShapeIds={selectedShapeIds}
+                    shapeRefs={shapeRefs.current}
+                />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar

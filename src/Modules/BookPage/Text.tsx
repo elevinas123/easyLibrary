@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     HtmlObject,
     HighlightRange,
@@ -8,9 +8,7 @@ import { highlightedRangeAtom } from "../../atoms";
 import { v4 as uuidv4 } from "uuid";
 import NoteCretor from "./NoteCreator";
 import { Note } from "./MainPage";
-import { HtmlElement } from "./TextComponents";
 import { mergeHighlights } from "./manageHiglights";
-import { Stage } from "react-konva";
 import KonvaStage from "./Konva/KonvaStage";
 
 type TextProps = {
@@ -105,7 +103,7 @@ export default function Text({ bookElements, createNote }: TextProps) {
             {noteCreator}
 
             <div className=" flex-grow break-words text-2xl font-serif ">
-                <KonvaStage />
+                <KonvaStage bookElements={bookElements} />
             </div>
         </div>
     );
