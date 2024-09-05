@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { useAtom } from "jotai";
 import { activeToolAtom } from "./konvaAtoms";
@@ -69,6 +69,37 @@ export default function KonvaStage() {
     const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
     const stageRef = useRef<any>(null);
     const shapeRefs = useRef<{ [key: string]: any }>({}); // Store references to all shapes
+    const [scale, setScale] = useState(1); // State to handle scale
+
+    const handleWheel = (e: WheelEvent) => {
+        e.evt.preventDefault();
+        const stage = stageRef.current;
+
+        // Get the current scale and adjust it based on scroll direction
+        const oldScale = stage.scaleX();
+        const pointer = stage.getPointerPosition();
+
+        const scaleBy = 1.1; // Scale factor
+        const newScale =
+            e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+        setScale(newScale);
+
+        // Calculate new position to keep zoom centered on the pointer
+        const mousePointTo = {
+            x: (pointer.x - stage.x()) / oldScale,
+            y: (pointer.y - stage.y()) / oldScale,
+        };
+
+        const newPos = {
+            x: pointer.x - mousePointTo.x * newScale,
+            y: pointer.y - mousePointTo.y * newScale,
+        };
+
+        stage.scale({ x: newScale, y: newScale });
+        stage.position(newPos);
+        stage.batchDraw();
+    };
 
     const selectShape = (e: any, id: string) => {
         if (activeTool !== "Select") {
@@ -100,6 +131,18 @@ export default function KonvaStage() {
             />
         );
     };
+    useEffect(() => {
+        const stage = stageRef.current;
+        if (stage) {
+            stage.on("wheel", handleWheel); // Attach zoom on mouse wheel
+        }
+
+        return () => {
+            if (stage) {
+                stage.off("wheel", handleWheel); // Clean up listener
+            }
+        };
+    }, []);
 
     return (
         <div className="h-screen w-full relative">
@@ -108,6 +151,8 @@ export default function KonvaStage() {
                 width={window.innerWidth}
                 height={window.innerHeight}
                 ref={stageRef}
+                scaleX={scale}
+                scaleY={scale}
             >
                 <Layer>
                     {shapes.map((shape, index) => renderShape(shape, index))}
