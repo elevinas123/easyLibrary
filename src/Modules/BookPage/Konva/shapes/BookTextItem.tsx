@@ -278,6 +278,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                         x={currentX + 600}
                         width={lineWidth}
                         height={fontSize}
+                        opacity={0.5}
                         fill={"yellow"}
                     />
                 );
