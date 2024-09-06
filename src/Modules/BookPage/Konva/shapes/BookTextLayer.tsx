@@ -89,15 +89,32 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     const [processedElements, setProcessedElemets] = useState<
         ProcessedElements[]
     >([]);
+    type RenderedText = {
+        x: number;
+        y: number;
+        height: number;
+        text: string;
+        fontSize: number;
+        fill: string;
+        fontFamily: string;
+    };
     const [renderedTextElements, setRenderedTextElements] = useState<
-        JSX.Element[]
+        RenderedText[]
     >([]);
     useEffect(() => {
         setRenderedTextElements(renderText());
         console.log("rendering done");
     }, [processedElements]);
+    type RenderedHighlights = {
+        y: number;
+        x: number;
+        width: number;
+        height: number;
+        fill: string;
+        opacity: number;
+    };
     const [renderedhighlightElements, setRenderedhighlightElements] = useState<
-        JSX.Element[]
+        RenderedHighlights[]
     >([]);
     useEffect(() => {
         setRenderedhighlightElements(renderHighlights());
@@ -209,6 +226,7 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     const handleMouseUp = () => {
         setCurrentHighlightId(null);
     };
+
     const renderText = () => {
         // Process the text elements from the book
 
@@ -216,18 +234,15 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
         return processedElements.map((textElement) => {
             // Check if this textElement falls within any highlight region
 
-            return (
-                <Text
-                    x={textElement.lineX + 600}
-                    y={textElement.lineY * fontSize + 200}
-                    width={textElement.lineWidth}
-                    height={fontSize}
-                    text={textElement.text}
-                    fontSize={fontSize}
-                    fill={"white"}
-                    fontFamily="Courier New"
-                />
-            );
+            return {
+                x: textElement.lineX + 600,
+                y: textElement.lineY * fontSize + 200,
+                height: fontSize,
+                text: textElement.text,
+                fontSize: fontSize,
+                fill: "white",
+                fontFamily: "Courier New",
+            };
         });
     };
 
@@ -243,16 +258,14 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
                 let lineWidth =
                     (highlight.endX - highlight.startingX) * letterWidth +
                     letterWidth;
-                return (
-                    <Rect
-                        y={highlight.startingY * fontSize + 200}
-                        x={currentX + 600}
-                        width={lineWidth}
-                        height={fontSize}
-                        fill={"yellow"}
-                        opacity={0.5}
-                    />
-                );
+                return {
+                    y: highlight.startingY * fontSize + 200,
+                    x: currentX + 600,
+                    width: lineWidth,
+                    height: fontSize,
+                    fill: "yellow",
+                    opacity: 0.5,
+                };
             }
             const rects = [];
 
@@ -275,16 +288,14 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
                     lineWidth = highlight.endX * letterWidth + letterWidth;
                 }
 
-                rects.push(
-                    <Rect
-                        y={(highlight.startingY + i) * fontSize + 200}
-                        x={currentX + 600}
-                        width={lineWidth}
-                        height={fontSize}
-                        opacity={0.5}
-                        fill={"yellow"}
-                    />
-                );
+                rects.push({
+                    y: (highlight.startingY + i) * fontSize + 200,
+                    x: currentX + 600,
+                    width: lineWidth,
+                    height: fontSize,
+                    fill: "yellow",
+                    opacity: 0.5,
+                });
             }
             return rects;
         });
