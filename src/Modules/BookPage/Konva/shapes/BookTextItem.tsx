@@ -1,11 +1,16 @@
-import { Layer, Text } from "react-konva";
+import { Layer, Text, Rect } from "react-konva";
 import {
     HtmlElementObject,
     HtmlObject,
 } from "../../../../preprocess/epub/preprocessEpub";
+import { useState } from "react";
+import { KonvaEventObject } from "konva/lib/Node";
+
 type BookTextItemProps = {
-    bookElements: (HtmlObject | null)[]; // Contains the text and styling details
+    bookElements: (HtmlObject | null)[];
+    highlightedIndices: number[]; // Indices of highlighted characters
 };
+
 const fontSize = 24;
 const width = 1200;
 
@@ -45,42 +50,71 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
 
     const processedLines = elements.elements.flatMap((element) => {
         const lines = processTextIntoLines(element, currentIndex);
-        currentIndex += lines.length; // Increment the index by the number of lines processed
+        currentIndex += lines.length;
         return lines;
     });
 
     return processedLines;
 };
 
-const BookTextItems = ({ bookElements }: BookTextItemProps) => {
+const BookTextItems = ({
+    bookElements,
+    highlightedIndices,
+}: BookTextItemProps) => {
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        console.log("handleMouseDown", e);
+    };
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {};
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {};
     const renderText = (bookElements: (HtmlObject | null)[]) => {
-        console.log(bookElements);
-        let indexStart = 0; // Start indexing from 0 or any preferred value
-
+        let indexStart = 0;
         const processedElements = bookElements
             .filter((elements) => elements !== null)
             .flatMap((elements) => {
                 const result = processElements(elements, indexStart);
-                indexStart += result.length; // Increment the index for the next element block
+                indexStart += result.length;
                 return result;
             })
-            .filter((element, index) => index < 1000 );
+            .filter((_, index) => index < 1000);
 
-        console.log("processedElements", processedElements);
-        return processedElements.map((textElement) => (
-            <Text
-                x={textElement.lineX + 600}
-                y={textElement.lineY*fontSize + 200}
-                width={textElement.lineWidth}
-                height={fontSize}
-                text={textElement.text}
-                fontSize={fontSize}
-                fill={"white"}
-            ></Text>
-        ));
+        return processedElements.map((textElement, textIndex) => {
+            const isHighlighted = highlightedIndices.includes(textIndex); // Check if the current element is highlighted
+
+            return (
+                <>
+                    {isHighlighted && (
+                        <Rect
+                            x={textElement.lineX + 600} // Match the position of the text
+                            y={textElement.lineY * fontSize + 200}
+                            width={textElement.lineWidth}
+                            height={fontSize}
+                            fill="yellow" // Highlight color
+                            opacity={0.5} // Optional: Adjust opacity for a better visual effect
+                        />
+                    )}
+                    <Text
+                        x={textElement.lineX + 600}
+                        y={textElement.lineY * fontSize + 200}
+                        width={textElement.lineWidth}
+                        height={fontSize}
+                        text={textElement.text}
+                        fontSize={fontSize}
+                        fill={"white"}
+                    />
+                </>
+            );
+        });
     };
 
-    return <Layer>{renderText(bookElements)}</Layer>;
+    return (
+        <Layer
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+        >
+            {renderText(bookElements)}
+        </Layer>
+    );
 };
 
 export default BookTextItems;

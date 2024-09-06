@@ -345,8 +345,10 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
-                    <BookTextItems bookElements={bookElements} />
-                
+                <BookTextItems
+                    highlightedIndices={[0, 5, 10]}
+                    bookElements={bookElements}
+                />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
