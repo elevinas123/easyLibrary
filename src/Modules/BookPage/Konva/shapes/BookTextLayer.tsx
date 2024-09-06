@@ -195,7 +195,11 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     const handleMouseUp = () => {
         setCurrentHighlightId(null);
     };
-    const renderText = useCallback(() => {
+    const [renderedTextElements, setRenderedTextElements] = useState<JSX.Element[]>([])
+    useEffect(() => {
+        setRenderedTextElements(renderText())
+    }, [bookElements])
+    const renderText = () => {
         // Process the text elements from the book
 
         // Render the text elements with highlights
@@ -215,8 +219,14 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
                 />
             );
         });
-    }, [processedElements]);
-    const renderHighlights = useCallback(() => {
+    };
+    const [renderedhighlightElements, setRenderedhighlightElements] = useState<
+        JSX.Element[]
+    >([]);
+    useEffect(() => {
+        setRenderedhighlightElements(renderHighlights());
+    }, [bookElements, highlights]);
+    const renderHighlights = () => {
         return highlights.flatMap((highlight) => {
             const range = highlight.endY - highlight.startingY;
             if (range === 0) {
@@ -273,15 +283,15 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
             }
             return rects;
         });
-    }, [highlights]);
+    };
     return (
         <Layer
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
-            {renderHighlights()}
-            {renderText()}
+            {renderedhighlightElements}
+            {renderedTextElements}
         </Layer>
     );
 };
