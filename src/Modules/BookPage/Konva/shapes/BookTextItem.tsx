@@ -3,16 +3,30 @@ import {
     HtmlElementObject,
     HtmlObject,
 } from "../../../../preprocess/epub/preprocessEpub";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { v4 as uuidv4 } from "uuid";
 
 type BookTextItemProps = {
     bookElements: (HtmlObject | null)[];
-    highlightedIndices: number[]; // Indices of highlighted characters
 };
 
 const fontSize = 24;
 const width = 1200;
+// Function to measure the width of a given text using Konva's Text API
+const measureTextWidth = (
+    text: string,
+    fontFamily = "Courier New",
+    fontSize = 24
+) => {
+    const tempText = new window.Konva.Text({
+        text: text,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+        visible: false, // You don't need to render this
+    });
+    return tempText.width();
+};
 
 const processTextIntoLines = (
     element: HtmlElementObject,
@@ -57,18 +71,44 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
     return processedLines;
 };
 
-const BookTextItems = ({
-    bookElements,
-    highlightedIndices,
-}: BookTextItemProps) => {
-    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("handleMouseDown", e);
+const BookTextItems = ({ bookElements }: BookTextItemProps) => {
+    type MousePosition = {
+        baseX: number;
+        baseY: number;
+        textX: number;
+        textY: number;
     };
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {};
-    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {};
-    const renderText = (bookElements: (HtmlObject | null)[]) => {
+    type Highlight = {
+        id: string;
+        startingX: number;
+        startingY: number;
+        endX: number;
+        endY: number;
+    };
+    const [highlights, setHighlights] = useState<Highlight[]>([]);
+    const [basePosition, setMousePosition] = useState<MousePosition | null>(
+        null
+    );
+    const [processedElements, setProcessedElemets] = useState<
+        ProcessedElements[]
+    >([]);
+    const [currentHighlightId, setCurrentHighlightId] = useState<string | null>(
+        null
+    );
+    const [renderedText, setRenderedText] = useState<JSX.Element[]>([]);
+    useEffect(() => {
+        setRenderedText(renderText());
+    }, [processedElements]);
+    type ProcessedElements = {
+        text: string;
+        lineX: number;
+        lineWidth: number;
+        lineY: number;
+    };
+    useEffect(() => {
         let indexStart = 0;
-        const processedElements = bookElements
+
+        const elements = bookElements
             .filter((elements) => elements !== null)
             .flatMap((elements) => {
                 const result = processElements(elements, indexStart);
@@ -76,43 +116,119 @@ const BookTextItems = ({
                 return result;
             })
             .filter((_, index) => index < 1000);
+        setProcessedElemets(elements);
+    }, [bookElements]);
+    const calculateXPositionInText = (
+        text: string,
+        textStartingX: number,
+        mouseStartingX: number
+    ) => {
+        const textWidth = measureTextWidth(text) / text.length;
+        console.log(textWidth);
+        const posInText = Math.floor(
+            (mouseStartingX - textStartingX) / textWidth
+        );
+        return posInText;
+    };
+    useEffect(() => {
+        console.log("higlhihts", highlights);
+    }, [highlights]);
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        setCurrentHighlightId(uuidv4());
+        setHighlights((oldHighlights) => [
+            ...oldHighlights,
+            {
+                id: uuidv4(),
+                startingX: calculateXPositionInText(
+                    e.target.attrs.text,
+                    e.target.attrs.x,
+                    e.evt.x
+                ),
+                startingY: Math.floor(
+                    (e.evt.screenY - e.target.attrs.y) / fontSize
+                ),
+                endX:
+                    calculateXPositionInText(
+                        e.target.attrs.text,
+                        e.target.attrs.x,
+                        e.evt.x
+                    ) + 3,
+                endY: Math.floor((e.evt.screenY - e.target.attrs.y) / fontSize),
+            },
+        ]);
+        console.log("evt", e);
+        console.log(
+            "handleMouseDown",
+            calculateXPositionInText(
+                e.target.attrs.text,
+                e.target.attrs.x,
+                e.evt.x
+            )
+        );
+    };
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {};
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {};
+    const renderText = () => {
+        console.log("newBoook", bookElements);
+        console.log("highlights", highlights);
 
-        return processedElements.map((textElement, textIndex) => {
-            const isHighlighted = highlightedIndices.includes(textIndex); // Check if the current element is highlighted
+        // Process the text elements from the book
+
+        // Render the text elements with highlights
+        return processedElements.map((textElement) => {
+            // Check if this textElement falls within any highlight region
+            console.log("textElement", textElement);
 
             return (
-                <>
-                    {isHighlighted && (
-                        <Rect
-                            x={textElement.lineX + 600} // Match the position of the text
-                            y={textElement.lineY * fontSize + 200}
-                            width={textElement.lineWidth}
-                            height={fontSize}
-                            fill="yellow" // Highlight color
-                            opacity={0.5} // Optional: Adjust opacity for a better visual effect
-                        />
-                    )}
-                    <Text
-                        x={textElement.lineX + 600}
-                        y={textElement.lineY * fontSize + 200}
-                        width={textElement.lineWidth}
-                        height={fontSize}
-                        text={textElement.text}
-                        fontSize={fontSize}
-                        fill={"white"}
-                    />
-                </>
+                <Text
+                    x={textElement.lineX + 600}
+                    y={textElement.lineY * fontSize + 200}
+                    width={textElement.lineWidth}
+                    height={fontSize}
+                    text={textElement.text}
+                    fontSize={fontSize}
+                    fill={"white"}
+                    fontFamily="Courier New"
+                />
             );
         });
     };
+    const renderHighlights = () => {
+        return highlights.map((highlight) => {
+            const range = highlight.startingY - highlight.endY;
+            const rects = [];
 
+            for (let i = 0; i <= range; i++) {
+                let currentX = 0;
+                if (i === 0) {
+                    currentX = highlight.startingX;
+                }
+                const lineWidth =
+                    processedElements[highlight.startingY + i].text.length *
+                    measureTextWidth(
+                        processedElements[highlight.startingY + i].text
+                    );
+                console.log("width", lineWidth);
+                console.log("width", processedElements[highlight.startingY + i].text);
+                rects.push(
+                    <Rect
+                        y={(highlight.startingY + i) * fontSize + 200}
+                        x={currentX + 600}
+                        width={10}
+                        height={fontSize}
+                    />
+                );
+            }
+        });
+    };
     return (
         <Layer
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
-            {renderText(bookElements)}
+            {renderedText}
+            {renderHighlights()}
         </Layer>
     );
 };
