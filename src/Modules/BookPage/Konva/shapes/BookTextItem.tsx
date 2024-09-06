@@ -144,27 +144,26 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     e.target.attrs.x,
                     e.evt.x
                 ),
-                startingY: Math.floor(
-                    (e.evt.screenY - e.target.attrs.y) / fontSize
-                ),
+                startingY: Math.floor((e.target.attrs.y - 200) / fontSize),
                 endX:
                     calculateXPositionInText(
                         e.target.attrs.text,
                         e.target.attrs.x,
                         e.evt.x
                     ) + 3,
-                endY: Math.floor((e.evt.screenY - e.target.attrs.y) / fontSize),
+                endY: Math.floor((e.target.attrs.y - 200) / fontSize),
             },
         ]);
         console.log("evt", e);
         console.log(
-            "handleMouseDown",
+            "x",
             calculateXPositionInText(
                 e.target.attrs.text,
                 e.target.attrs.x,
                 e.evt.x
             )
         );
+        console.log("y", (e.target.attrs.y - 296) / fontSize);
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {};
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {};
@@ -194,8 +193,27 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         });
     };
     const renderHighlights = () => {
-        return highlights.map((highlight) => {
+        return highlights.flatMap((highlight, index) => {
             const range = highlight.startingY - highlight.endY;
+            if (range === 0) {
+                const letterWidth =
+                measureTextWidth(
+                    processedElements[highlight.startingY].text
+                ) / processedElements[highlight.startingY].text.length;
+                let currentX = highlight.startingX * letterWidth;
+                let lineWidth =
+                    (highlight.endX - highlight.startingX) * letterWidth
+                return (
+                    <Rect
+                        y={highlight.startingY * fontSize + 200}
+                        x={currentX + 600}
+                        width={lineWidth}
+                        height={fontSize}
+                        fill={"yellow"}
+                        opacity={0.5}
+                    />
+                );
+            }
             const rects = [];
 
             for (let i = 0; i <= range; i++) {
@@ -203,22 +221,46 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                 if (i === 0) {
                     currentX = highlight.startingX;
                 }
-                const lineWidth =
-                    processedElements[highlight.startingY + i].text.length *
-                    measureTextWidth(
-                        processedElements[highlight.startingY + i].text
-                    );
+                let lineWidth =
+                    (processedElements[highlight.startingY + i].text.length *
+                        measureTextWidth(
+                            processedElements[highlight.startingY + i].text
+                        )) /
+                    processedElements[highlight.startingY + i].text.length;
+                if (i === 0) {
+                    lineWidth -= currentX * fontSize;
+                }
+                if (i === range) {
+                    lineWidth =
+                        (highlight.endX *
+                            measureTextWidth(
+                                processedElements[highlight.startingY + i].text
+                            )) /
+                        processedElements[highlight.startingY + i].text.length;
+                }
+
+                console.log("index", index);
                 console.log("width", lineWidth);
-                console.log("width", processedElements[highlight.startingY + i].text);
+                console.log(
+                    "processedElements",
+                    processedElements[highlight.startingY + i]
+                );
+                console.log(
+                    "processedElementstext",
+                    processedElements[highlight.startingY + i].text
+                );
                 rects.push(
                     <Rect
                         y={(highlight.startingY + i) * fontSize + 200}
                         x={currentX + 600}
-                        width={10}
+                        width={lineWidth}
                         height={fontSize}
+                        fill={"yellow"}
                     />
                 );
+                console.log("rects", rects);
             }
+            return rects;
         });
     };
     return (
