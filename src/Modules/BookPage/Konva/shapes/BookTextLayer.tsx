@@ -1,17 +1,19 @@
-import { Layer, Text, Rect } from "react-konva";
+import { Layer, Rect, Text } from "react-konva";
 import Konva from "konva";
 import {
     HtmlElementObject,
     HtmlObject,
 } from "../../../../preprocess/epub/preprocessEpub";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 import { useAtom } from "jotai";
 import { activeToolAtom, offsetPositionAtom } from "../konvaAtoms";
+import { VisibleArea } from "../KonvaStage";
 
 type BookTextItemProps = {
     bookElements: (HtmlObject | null)[];
+    visibleArea: VisibleArea;
 };
 
 const fontSize = 24;
@@ -74,7 +76,7 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
     return processedLines;
 };
 
-const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
+const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     type Highlight = {
         id: string;
         startingX: number;
@@ -93,6 +95,7 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
         x: number;
         y: number;
         height: number;
+        width: number;
         text: string;
         fontSize: number;
         fill: string;
@@ -116,6 +119,54 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     const [renderedhighlightElements, setRenderedhighlightElements] = useState<
         RenderedHighlights[]
     >([]);
+    const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
+    const [virtualizedHighlights, setVirtualizedHighlights] = useState<JSX.Element[]>([]);
+    useEffect(() => {
+        setVirtualizedHighlights(
+            renderedhighlightElements
+                .filter(
+                    (element) =>
+                        element.x + element.width > visibleArea.x &&
+                        element.x < visibleArea.x + visibleArea.width &&
+                        element.y + element.height > visibleArea.y &&
+                        element.y < visibleArea.y + visibleArea.height
+                )
+                .map((element) => (
+                    <Rect
+                        x={element.x}
+                        y={element.y}
+                        width={element.width}
+                        height={element.height}
+                        fill={element.fill}
+                        opacity={element.opacity}
+                    />
+                ))
+        );
+    }, [visibleArea, renderedhighlightElements]);
+    useEffect(() => {
+        setVirtualizedText(
+            renderedTextElements
+                .filter(
+                    (element) =>
+                        element.x + element.width > visibleArea.x &&
+                        element.x < visibleArea.x + visibleArea.width &&
+                        element.y + element.height > visibleArea.y &&
+                        element.y < visibleArea.y + visibleArea.height
+                )
+                .map((element) => (
+                    <Text
+                        x={element.x}
+                        y={element.y}
+                        width={element.width}
+                        height={element.height}
+                        fill={element.fill}
+                        text={element.text}
+                        fontSize={element.fontSize}
+                        fontFamily={element.fontFamily}
+                    />
+                ))
+        );
+    }, [visibleArea, renderedTextElements]);
     useEffect(() => {
         setRenderedhighlightElements(renderHighlights());
         console.log("this done");
@@ -123,6 +174,9 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     const [currentHighlightId, setCurrentHighlightId] = useState<string | null>(
         null
     );
+    useEffect(() => {
+        console.log("virtualizedHighlights", virtualizedHighlights)
+    }, [virtualizedHighlights])
 
     type ProcessedElements = {
         text: string;
@@ -237,6 +291,7 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
             return {
                 x: textElement.lineX + 600,
                 y: textElement.lineY * fontSize + 200,
+                width: textElement.lineWidth,
                 height: fontSize,
                 text: textElement.text,
                 fontSize: fontSize,
@@ -307,8 +362,8 @@ const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
-            {renderedhighlightElements}
-            {renderedTextElements}
+            {virtualizedHighlights}
+            {virtualizedText}
         </Layer>
     );
 };

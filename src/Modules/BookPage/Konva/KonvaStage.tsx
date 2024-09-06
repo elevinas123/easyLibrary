@@ -100,6 +100,12 @@ const initialRectangles: Shape[] = [
 type KonvaStageProps = {
     bookElements: (HtmlObject | null)[];
 };
+export type VisibleArea = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
 export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [activeTool, setActiveTool] = useAtom(activeToolAtom);
     const [shapes, setShapes] = useState<Shape[]>(initialRectangles);
@@ -110,11 +116,16 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [scale, setScale] = useState(1); // State to handle scale
     const [isDragging, setIsDragging] = useState(false); // New state to track dragging
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
+    const viewportBuffer = 200
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
     } | null>(null); // Store the initial drag start position
-
+    const [visibleArea, setVisibleArea] =
+        useState < VisibleArea>({ x: 0, y: 0, width: 0, height: 0 });
+    useEffect(() => {
+        updateVisibleArea()
+    }, [offsetPosition])
     useEffect(() => {
         console.log("bookElements", bookElements);
     }, [bookElements]);
@@ -366,6 +377,19 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
 
+    const updateVisibleArea = () => {
+        if (!stageRef.current) return;
+
+        const stage = stageRef.current;
+        const visibleArea = {
+            x: -stage.x() - viewportBuffer,
+            y: -stage.y() - viewportBuffer,
+            width: window.innerWidth + viewportBuffer * 2,
+            height: window.innerHeight + viewportBuffer * 2,
+        };
+        setVisibleArea(visibleArea)
+    }
+
     useEffect(() => {
         const stage = stageRef.current;
         if (stage) {
@@ -404,7 +428,10 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
-                <BookTextLayer bookElements={bookElements} />
+                <BookTextLayer
+                    visibleArea={visibleArea}
+                    bookElements={bookElements}
+                />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
