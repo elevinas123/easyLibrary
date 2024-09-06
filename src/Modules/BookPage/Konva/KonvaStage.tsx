@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { useAtom } from "jotai";
-import { activeToolAtom } from "./konvaAtoms";
+import { activeToolAtom, offsetPositionAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
 import ToolBar from "./components/ToolBar";
 import Rectangle from "./shapes/Rectangle";
@@ -109,6 +109,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const shapeRefs = useRef<{ [key: string]: any }>({}); // Store references to all shapes
     const [scale, setScale] = useState(1); // State to handle scale
     const [isDragging, setIsDragging] = useState(false); // New state to track dragging
+    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
@@ -158,7 +159,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             setDragStartPos(pos); // Store the initial position
         }
     };
-
+    useEffect(() => {
+        console.log("offsetPosition", offsetPosition)
+    }, [offsetPosition])
     const handleMouseMoveForPan = (e: KonvaEventObject<MouseEvent>) => {
         const stage = stageRef.current;
         if (!isDragging || !dragStartPos) return;
@@ -173,6 +176,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             x: stage.x() + dx,
             y: stage.y() + dy,
         });
+        setOffsetPosition((offset) => ({x: offset.x + dx,y: offset.y + dy}))
 
         setDragStartPos(pointer); // Update the drag position to the current one
         stage.batchDraw(); // Update the canvas

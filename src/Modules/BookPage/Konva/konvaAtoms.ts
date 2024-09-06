@@ -6,3 +6,7 @@ export const stageStateAtom = atom({
     isDrawing: false,
     currentShape: null,
 });
+export const offsetPositionAtom = atom({
+    x: 0,
+    y: 0,
+});

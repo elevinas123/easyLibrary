@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 import { useAtom } from "jotai";
-import { activeToolAtom } from "../konvaAtoms";
+import { activeToolAtom, offsetPositionAtom } from "../konvaAtoms";
 
 type BookTextItemProps = {
     bookElements: (HtmlObject | null)[];
@@ -83,7 +83,9 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         endY: number;
     };
     const [highlights, setHighlights] = useState<Highlight[]>([]);
-    const [activeTool, _] = useAtom(activeToolAtom);
+    const [activeTool] = useAtom(activeToolAtom);
+    const [offsetPosition] = useAtom(offsetPositionAtom);
+
     const [processedElements, setProcessedElemets] = useState<
         ProcessedElements[]
     >([]);
@@ -125,7 +127,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         console.log("higlhihts", highlights);
     }, [highlights]);
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool === "Pan") return
+        if (activeTool === "Pan") return;
         const currentId = uuidv4();
         setCurrentHighlightId(currentId);
         setHighlights((oldHighlights) => [
@@ -134,13 +136,13 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                 id: currentId,
                 startingX: calculateXPositionInText(
                     e.target.attrs.text,
-                    e.target.attrs.x,
+                    e.target.attrs.x + offsetPosition.x,
                     e.evt.x
                 ),
                 startingY: Math.floor((e.target.attrs.y - 200) / fontSize),
                 endX: calculateXPositionInText(
                     e.target.attrs.text,
-                    e.target.attrs.x,
+                    e.target.attrs.x + offsetPosition.x,
                     e.evt.x
                 ),
                 endY: Math.floor((e.target.attrs.y - 200) / fontSize),
@@ -172,7 +174,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
 
             const xPos = calculateXPositionInText(
                 e.target.attrs.text,
-                e.target.attrs.x,
+                e.target.attrs.x + offsetPosition.x,
                 e.evt.x
             );
             const yPos = Math.floor((e.target.attrs.y - 200) / fontSize);
@@ -255,7 +257,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     lineWidth -= currentX;
                 }
                 if (i === range) {
-                    lineWidth = highlight.endX * letterWidth;
+                    lineWidth = highlight.endX * letterWidth + letterWidth;
                 }
 
                 rects.push(
