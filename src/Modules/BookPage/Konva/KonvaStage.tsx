@@ -9,7 +9,7 @@ import CustomTransformer from "./shapes/CustomTransformer";
 import CircleItem from "./Circle";
 import TextItem from "./shapes/TextShape";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
-import BookTextItems from "./shapes/BookTextItem";
+import BookTextLayer from "./shapes/BookTextLayer";
 import { KonvaEventObject } from "konva/lib/Node";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
@@ -160,8 +160,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
     useEffect(() => {
-        console.log("offsetPosition", offsetPosition)
-    }, [offsetPosition])
+        console.log("offsetPosition", offsetPosition);
+    }, [offsetPosition]);
     const handleMouseMoveForPan = (e: KonvaEventObject<MouseEvent>) => {
         const stage = stageRef.current;
         if (!isDragging || !dragStartPos) return;
@@ -176,7 +176,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             x: stage.x() + dx,
             y: stage.y() + dy,
         });
-        setOffsetPosition((offset) => ({x: offset.x + dx,y: offset.y + dy}))
+        setOffsetPosition((offset) => ({ x: offset.x + dx, y: offset.y + dy }));
 
         setDragStartPos(pointer); // Update the drag position to the current one
         stage.batchDraw(); // Update the canvas
@@ -207,7 +207,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Pan") {
-            handleMouseDownForPan(e)
+            handleMouseDownForPan(e);
         }
         const pos = e.target.getStage()?.getPointerPosition();
         if (!pos) return;
@@ -388,7 +388,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                 ref={stageRef}
                 scaleX={scale}
                 scaleY={scale}
-               
                 draggable={false} // Prevent Konva's built-in drag
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
@@ -405,7 +404,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
-                <BookTextItems bookElements={bookElements} />
+                <BookTextLayer bookElements={bookElements} />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar

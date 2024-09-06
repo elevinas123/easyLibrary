@@ -74,7 +74,7 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
     return processedLines;
 };
 
-const BookTextItems = ({ bookElements }: BookTextItemProps) => {
+const BookTextLayer = ({ bookElements }: BookTextItemProps) => {
     type Highlight = {
         id: string;
         startingX: number;
@@ -286,4 +286,4 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
     );
 };
 
-export default BookTextItems;
+export default BookTextLayer;
