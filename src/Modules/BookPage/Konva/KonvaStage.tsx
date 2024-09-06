@@ -9,8 +9,8 @@ import CustomTransformer from "./shapes/CustomTransformer";
 import CircleItem from "./Circle";
 import TextItem from "./shapes/TextShape";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
-import BookTextItem from "./shapes/BookTextItem";
 import BookTextItems from "./shapes/BookTextItem";
+import { KonvaEventObject } from "konva/lib/Node";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
 const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
@@ -111,7 +111,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     useEffect(() => {
         console.log("bookElements", bookElements);
     }, [bookElements]);
-    const handleWheel = (e: WheelEvent) => {
+    const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
 
@@ -158,9 +158,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             oldShapes.map((shape) => (shape.id === id ? newAttrs : shape))
         );
     };
-    const handleMouseDown = (e: any) => {
-        const pos = e.target.getStage().getPointerPosition();
-
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        const pos = e.target.getStage()?.getPointerPosition();
+        if (!pos) return
         if (drawingShapes.indexOf(activeTool) > -1) {
             // If no shape is clicked and we're drawing a new shape
             const id = Date.now().toString();
@@ -222,12 +222,13 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (!currentShape) return;
 
         const stage = e.target.getStage();
+        if (!stage) return
         const point = stage.getPointerPosition();
-
+        if (!point) return
         let updatedShape: Shape = { ...currentShape };
 
         switch (updatedShape.type) {
@@ -345,9 +346,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
-                <BookTextItems
-                    bookElements={bookElements}
-                />
+                <BookTextItems bookElements={bookElements} />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
