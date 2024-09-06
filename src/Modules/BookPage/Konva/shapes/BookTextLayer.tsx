@@ -75,7 +75,30 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
 
     return processedLines;
 };
-
+type ProcessedElements = {
+    text: string;
+    lineX: number;
+    lineWidth: number;
+    lineY: number;
+};
+type RenderedText = {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    text: string;
+    fontSize: number;
+    fill: string;
+    fontFamily: string;
+};
+type RenderedHighlights = {
+    y: number;
+    x: number;
+    width: number;
+    height: number;
+    fill: string;
+    opacity: number;
+};
 const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     type Highlight = {
         id: string;
@@ -87,40 +110,30 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     const [highlights, setHighlights] = useState<Highlight[]>([]);
     const [activeTool] = useAtom(activeToolAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-
     const [processedElements, setProcessedElemets] = useState<
         ProcessedElements[]
     >([]);
-    type RenderedText = {
-        x: number;
-        y: number;
-        height: number;
-        width: number;
-        text: string;
-        fontSize: number;
-        fill: string;
-        fontFamily: string;
-    };
+    const [currentHighlightId, setCurrentHighlightId] = useState<string | null>(
+        null
+    );
     const [renderedTextElements, setRenderedTextElements] = useState<
         RenderedText[]
     >([]);
-    useEffect(() => {
-        setRenderedTextElements(renderText());
-        console.log("rendering done");
-    }, [processedElements]);
-    type RenderedHighlights = {
-        y: number;
-        x: number;
-        width: number;
-        height: number;
-        fill: string;
-        opacity: number;
-    };
     const [renderedhighlightElements, setRenderedhighlightElements] = useState<
         RenderedHighlights[]
     >([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
-    const [virtualizedHighlights, setVirtualizedHighlights] = useState<JSX.Element[]>([]);
+    const [virtualizedHighlights, setVirtualizedHighlights] = useState<
+        JSX.Element[]
+    >([]);
+    useEffect(() => {
+        setRenderedTextElements(renderText());
+    }, [processedElements]);
+
+    useEffect(() => {
+        setRenderedhighlightElements(renderHighlights());
+    }, [processedElements, highlights]);
+
     useEffect(() => {
         setVirtualizedHighlights(
             renderedhighlightElements
@@ -167,23 +180,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                 ))
         );
     }, [visibleArea, renderedTextElements]);
-    useEffect(() => {
-        setRenderedhighlightElements(renderHighlights());
-        console.log("this done");
-    }, [processedElements, highlights]);
-    const [currentHighlightId, setCurrentHighlightId] = useState<string | null>(
-        null
-    );
-    useEffect(() => {
-        console.log("virtualizedHighlights", virtualizedHighlights)
-    }, [virtualizedHighlights])
 
-    type ProcessedElements = {
-        text: string;
-        lineX: number;
-        lineWidth: number;
-        lineY: number;
-    };
     useEffect(() => {
         let indexStart = 0;
 
@@ -208,11 +205,9 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
         );
         return posInText;
     };
-    useEffect(() => {
-        console.log("higlhihts", highlights);
-    }, [highlights]);
+
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool === "Pan") return;
+        if (activeTool !== "Select") return;
         const currentId = uuidv4();
         setCurrentHighlightId(currentId);
         setHighlights((oldHighlights) => [
@@ -233,16 +228,6 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                 endY: Math.floor((e.target.attrs.y - 200) / fontSize),
             },
         ]);
-        console.log("evt", e);
-        console.log(
-            "x",
-            calculateXPositionInText(
-                e.target.attrs.text,
-                e.target.attrs.x,
-                e.evt.x
-            )
-        );
-        console.log("y", (e.target.attrs.y - 296) / fontSize);
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (!currentHighlightId) {
