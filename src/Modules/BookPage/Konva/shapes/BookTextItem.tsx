@@ -1,4 +1,5 @@
 import { Layer, Text, Rect } from "react-konva";
+import Konva from "konva";
 import {
     HtmlElementObject,
     HtmlObject,
@@ -6,6 +7,8 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
+import { useAtom } from "jotai";
+import { activeToolAtom } from "../konvaAtoms";
 
 type BookTextItemProps = {
     bookElements: (HtmlObject | null)[];
@@ -19,7 +22,7 @@ const measureTextWidth = (
     fontFamily = "Courier New",
     fontSize = 24
 ) => {
-    const tempText = new window.Konva.Text({
+    const tempText = new Konva.Text({
         text: text,
         fontSize: fontSize,
         fontFamily: fontFamily,
@@ -72,12 +75,6 @@ const processElements = (elements: HtmlObject, indexStart: number) => {
 };
 
 const BookTextItems = ({ bookElements }: BookTextItemProps) => {
-    type MousePosition = {
-        baseX: number;
-        baseY: number;
-        textX: number;
-        textY: number;
-    };
     type Highlight = {
         id: string;
         startingX: number;
@@ -86,7 +83,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         endY: number;
     };
     const [highlights, setHighlights] = useState<Highlight[]>([]);
-
+    const [activeTool, _] = useAtom(activeToolAtom);
     const [processedElements, setProcessedElemets] = useState<
         ProcessedElements[]
     >([]);
@@ -128,6 +125,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         console.log("higlhihts", highlights);
     }, [highlights]);
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (activeTool === "Pan") return
         const currentId = uuidv4();
         setCurrentHighlightId(currentId);
         setHighlights((oldHighlights) => [
@@ -192,7 +190,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         });
     };
 
-    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseUp = () => {
         setCurrentHighlightId(null);
     };
     const renderText = useCallback(() => {
@@ -217,7 +215,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         });
     }, [processedElements]);
     const renderHighlights = useCallback(() => {
-        return highlights.flatMap((highlight, index) => {
+        return highlights.flatMap((highlight) => {
             const range = highlight.endY - highlight.startingY;
             if (range === 0) {
                 const letterWidth =

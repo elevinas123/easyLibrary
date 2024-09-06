@@ -108,9 +108,17 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const stageRef = useRef<any>(null);
     const shapeRefs = useRef<{ [key: string]: any }>({}); // Store references to all shapes
     const [scale, setScale] = useState(1); // State to handle scale
+    const [isDragging, setIsDragging] = useState(false); // New state to track dragging
+    const [dragStartPos, setDragStartPos] = useState<{
+        x: number;
+        y: number;
+    } | null>(null); // Store the initial drag start position
+
     useEffect(() => {
         console.log("bookElements", bookElements);
     }, [bookElements]);
+
+    // Zoom handler (existing)
     const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
@@ -141,6 +149,40 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         stage.batchDraw();
     };
 
+    // Pan Handlers
+    const handleMouseDownForPan = (e: KonvaEventObject<MouseEvent>) => {
+        const stage = stageRef.current;
+        setIsDragging(true);
+        const pos = stage.getPointerPosition();
+        if (pos) {
+            setDragStartPos(pos); // Store the initial position
+        }
+    };
+
+    const handleMouseMoveForPan = (e: KonvaEventObject<MouseEvent>) => {
+        const stage = stageRef.current;
+        if (!isDragging || !dragStartPos) return;
+
+        const pointer = stage.getPointerPosition();
+        if (!pointer) return;
+
+        const dx = pointer.x - dragStartPos.x;
+        const dy = pointer.y - dragStartPos.y;
+
+        stage.position({
+            x: stage.x() + dx,
+            y: stage.y() + dy,
+        });
+
+        setDragStartPos(pointer); // Update the drag position to the current one
+        stage.batchDraw(); // Update the canvas
+    };
+
+    const handleMouseUpForPan = () => {
+        setIsDragging(false);
+        setDragStartPos(null);
+    };
+
     const selectShape = (e: any, id: string) => {
         if (activeTool !== "Select") {
             return;
@@ -158,9 +200,13 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             oldShapes.map((shape) => (shape.id === id ? newAttrs : shape))
         );
     };
+
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (activeTool === "Pan") {
+            handleMouseDownForPan(e)
+        }
         const pos = e.target.getStage()?.getPointerPosition();
-        if (!pos) return
+        if (!pos) return;
         if (drawingShapes.indexOf(activeTool) > -1) {
             // If no shape is clicked and we're drawing a new shape
             const id = Date.now().toString();
@@ -223,12 +269,15 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (activeTool === "Pan") {
+            handleMouseMoveForPan(e);
+        }
         if (!currentShape) return;
 
         const stage = e.target.getStage();
-        if (!stage) return
+        if (!stage) return;
         const point = stage.getPointerPosition();
-        if (!point) return
+        if (!point) return;
         let updatedShape: Shape = { ...currentShape };
 
         switch (updatedShape.type) {
@@ -253,6 +302,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseUp = () => {
+        if (activeTool === "Pan") {
+            handleMouseUpForPan();
+        }
         if (currentShape) {
             setActiveTool("Select");
             setShapes([...shapes, currentShape]);
@@ -309,6 +361,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                 );
         }
     };
+
     useEffect(() => {
         const stage = stageRef.current;
         if (stage) {
@@ -331,6 +384,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                 ref={stageRef}
                 scaleX={scale}
                 scaleY={scale}
+               
+                draggable={false} // Prevent Konva's built-in drag
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
