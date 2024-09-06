@@ -134,11 +134,12 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         console.log("higlhihts", highlights);
     }, [highlights]);
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        setCurrentHighlightId(uuidv4());
+        const currentId = uuidv4();
+        setCurrentHighlightId(currentId);
         setHighlights((oldHighlights) => [
             ...oldHighlights,
             {
-                id: uuidv4(),
+                id: currentId,
                 startingX: calculateXPositionInText(
                     e.target.attrs.text,
                     e.target.attrs.x,
@@ -150,7 +151,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                         e.target.attrs.text,
                         e.target.attrs.x,
                         e.evt.x
-                    ) + 3,
+                    ),
                 endY: Math.floor((e.target.attrs.y - 200) / fontSize),
             },
         ]);
@@ -165,8 +166,34 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
         );
         console.log("y", (e.target.attrs.y - 296) / fontSize);
     };
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {};
-    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {};
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (!currentHighlightId) {
+            return
+        }
+        setHighlights((highlights) => {
+            console.log("e", e)
+            const newHighLights = [...highlights];
+            const highlight = newHighLights.filter(
+                (highlight) => currentHighlightId === highlight.id
+            )[0];
+            console.log("higlight", highlight)
+            const xPos = calculateXPositionInText(
+                e.target.attrs.text,
+                e.target.attrs.x,
+                e.evt.x
+            );
+            const yPos = Math.floor((e.target.attrs.y - 200) / fontSize)
+            highlight.endX = xPos
+            highlight.endY = yPos
+            console.log("higlight", highlight);
+
+            return newHighLights
+
+        });
+    };
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+        setCurrentHighlightId(null)
+    };
     const renderText = () => {
         console.log("newBoook", bookElements);
         console.log("highlights", highlights);
@@ -188,6 +215,7 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     fontSize={fontSize}
                     fill={"white"}
                     fontFamily="Courier New"
+                    
                 />
             );
         });
@@ -197,12 +225,12 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
             const range = highlight.startingY - highlight.endY;
             if (range === 0) {
                 const letterWidth =
-                measureTextWidth(
-                    processedElements[highlight.startingY].text
-                ) / processedElements[highlight.startingY].text.length;
+                    measureTextWidth(
+                        processedElements[highlight.startingY].text
+                    ) / processedElements[highlight.startingY].text.length;
                 let currentX = highlight.startingX * letterWidth;
                 let lineWidth =
-                    (highlight.endX - highlight.startingX) * letterWidth
+                    (highlight.endX - highlight.startingX) * letterWidth + letterWidth;
                 return (
                     <Rect
                         y={highlight.startingY * fontSize + 200}
@@ -269,8 +297,8 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
-            {renderedText}
             {renderHighlights()}
+            {renderedText}
         </Layer>
     );
 };
