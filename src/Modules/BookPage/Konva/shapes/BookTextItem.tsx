@@ -146,12 +146,11 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     e.evt.x
                 ),
                 startingY: Math.floor((e.target.attrs.y - 200) / fontSize),
-                endX:
-                    calculateXPositionInText(
-                        e.target.attrs.text,
-                        e.target.attrs.x,
-                        e.evt.x
-                    ),
+                endX: calculateXPositionInText(
+                    e.target.attrs.text,
+                    e.target.attrs.x,
+                    e.evt.x
+                ),
                 endY: Math.floor((e.target.attrs.y - 200) / fontSize),
             },
         ]);
@@ -168,31 +167,30 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (!currentHighlightId) {
-            return
+            return;
         }
         setHighlights((highlights) => {
-            console.log("e", e)
+            console.log("e", e);
             const newHighLights = [...highlights];
             const highlight = newHighLights.filter(
                 (highlight) => currentHighlightId === highlight.id
             )[0];
-            console.log("higlight", highlight)
+            console.log("higlight", highlight);
             const xPos = calculateXPositionInText(
                 e.target.attrs.text,
                 e.target.attrs.x,
                 e.evt.x
             );
-            const yPos = Math.floor((e.target.attrs.y - 200) / fontSize)
-            highlight.endX = xPos
-            highlight.endY = yPos
+            const yPos = Math.floor((e.target.attrs.y - 200) / fontSize);
+            highlight.endX = xPos;
+            highlight.endY = yPos;
             console.log("higlight", highlight);
 
-            return newHighLights
-
+            return newHighLights;
         });
     };
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-        setCurrentHighlightId(null)
+        setCurrentHighlightId(null);
     };
     const renderText = () => {
         console.log("newBoook", bookElements);
@@ -215,14 +213,14 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     fontSize={fontSize}
                     fill={"white"}
                     fontFamily="Courier New"
-                    
                 />
             );
         });
     };
     const renderHighlights = () => {
         return highlights.flatMap((highlight, index) => {
-            const range = highlight.startingY - highlight.endY;
+            const range = highlight.endY - highlight.startingY;
+            console.log("rects", range)
             if (range === 0) {
                 const letterWidth =
                     measureTextWidth(
@@ -230,7 +228,8 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
                     ) / processedElements[highlight.startingY].text.length;
                 let currentX = highlight.startingX * letterWidth;
                 let lineWidth =
-                    (highlight.endX - highlight.startingX) * letterWidth + letterWidth;
+                    (highlight.endX - highlight.startingX) * letterWidth +
+                    letterWidth;
                 return (
                     <Rect
                         y={highlight.startingY * fontSize + 200}
@@ -245,30 +244,26 @@ const BookTextItems = ({ bookElements }: BookTextItemProps) => {
             const rects = [];
 
             for (let i = 0; i <= range; i++) {
+                const letterWidth =
+                    measureTextWidth(
+                        processedElements[highlight.startingY].text
+                    ) / processedElements[highlight.startingY].text.length;
                 let currentX = 0;
                 if (i === 0) {
-                    currentX = highlight.startingX;
+                    currentX = highlight.startingX * letterWidth;
                 }
                 let lineWidth =
-                    (processedElements[highlight.startingY + i].text.length *
-                        measureTextWidth(
-                            processedElements[highlight.startingY + i].text
-                        )) /
-                    processedElements[highlight.startingY + i].text.length;
+                    processedElements[highlight.startingY + i].text.length *
+                    letterWidth;
                 if (i === 0) {
-                    lineWidth -= currentX * fontSize;
+                    lineWidth -= currentX;
                 }
                 if (i === range) {
-                    lineWidth =
-                        (highlight.endX *
-                            measureTextWidth(
-                                processedElements[highlight.startingY + i].text
-                            )) /
-                        processedElements[highlight.startingY + i].text.length;
+                    lineWidth = highlight.endX * letterWidth;
                 }
 
-                console.log("index", index);
-                console.log("width", lineWidth);
+                console.log("currentX", currentX);
+                console.log("currentXWidth", lineWidth);
                 console.log(
                     "processedElements",
                     processedElements[highlight.startingY + i]
