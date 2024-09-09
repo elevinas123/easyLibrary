@@ -40,10 +40,9 @@ const CircleItem = forwardRef<any, CircleProps>(
                     strokeWidth={shape.strokeWidth}
                     opacity={shape.opacity}
                     onClick={onSelect}
-                    onTransformEnd={(e) => {
+                    onTransformEnd={() => {
                         const node = shapeRef.current;
                         const scaleX = node.scaleX();
-                        const scaleY = node.scaleY();
 
                         node.scaleX(1);
                         node.scaleY(1);
@@ -59,7 +58,7 @@ const CircleItem = forwardRef<any, CircleProps>(
                             ),
                         });
                     }}
-                    onDragEnd={(e) => {
+                    onDragEnd={() => {
                         const node = shapeRef.current;
                         onChange({
                             ...shape,

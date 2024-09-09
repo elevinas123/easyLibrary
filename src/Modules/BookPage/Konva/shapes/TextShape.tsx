@@ -84,7 +84,7 @@ const TextItem = forwardRef<any, TextShapeProps>(
                     opacity={shape.opacity}
                     onClick={onSelect}
                     onTransformEnd={handleTransformEnd} // Call our new handler
-                    onDragEnd={(e) => {
+                    onDragEnd={() => {
                         const node = shapeRef.current;
                         onChange({
                             ...shape,

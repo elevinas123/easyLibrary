@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Layer, Text } from "react-konva";
-import {
-    HtmlElementObject,
-    HtmlObject,
-} from "../../../../../preprocess/epub/preprocessEpub";
+
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -121,7 +118,7 @@ export default function TextLayer({
     }, [processedElements]);
     useEffect(() => {
         console.log("currentHighlightId", currentHighlightId);
-    }, [currentHighlightId])
+    }, [currentHighlightId]);
     useEffect(() => {
         setVirtualizedText(
             textElements
@@ -166,7 +163,7 @@ export default function TextLayer({
         });
     };
     const handleMouseUp = () => {
-        console.log("triggered")
+        console.log("triggered");
         setCurrentHighlightId(null);
     };
     return (

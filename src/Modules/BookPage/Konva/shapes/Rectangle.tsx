@@ -41,7 +41,7 @@ const Rectangle = forwardRef<any, RectangleProps>(
                     strokeWidth={shape.strokeWidth}
                     opacity={shape.opacity}
                     onClick={onSelect}
-                    onTransformEnd={(e) => {
+                    onTransformEnd={() => {
                         const node = shapeRef.current;
                         const scaleX = node.scaleX();
                         const scaleY = node.scaleY();
@@ -57,7 +57,7 @@ const Rectangle = forwardRef<any, RectangleProps>(
                             height: Math.max(5, node.height() * scaleY),
                         });
                     }}
-                    onDragEnd={(e) => {
+                    onDragEnd={() => {
                         const node = shapeRef.current;
                         onChange({
                             ...shape,
