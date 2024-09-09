@@ -1,4 +1,4 @@
-import { Layer, Rect, Text } from "react-konva";
+import { Layer, Rect, Shape, Text } from "react-konva";
 import Konva from "konva";
 import {
     HtmlElementObject,
@@ -133,14 +133,31 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
-
+    const [hoveredHighlights, setHoveredHighlights] = useState<JSX.Element>();
+    const [hoveredHighlightId, setHoveredHighlightId] = useState<string | null>(
+        null
+    );
     useEffect(() => {
         setTextElements(createTextElements());
     }, [processedElements]);
-
     useEffect(() => {
+        if (!hoveredHighlightId) return;
+        createHighlightHover(hoveredHighlightId);
+    }, [hoveredHighlightId]);
+    useEffect(() => {
+        console.log(createHighlightElements());
         setHighlightElements(createHighlightElements());
     }, [processedElements, highlights]);
+
+    const handleHighlightHover = (id: string) => {
+        if (activeTool === "Arrow") {
+            setHoveredHighlightId(id);
+        }
+    };
+
+    const handleHighlightLeave = () => {
+        setHoveredHighlightId(null);
+    };
 
     useEffect(() => {
         setVirtualizedHighlights(
@@ -153,7 +170,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                             element.y + element.height > visibleArea.y &&
                             element.y < visibleArea.y + visibleArea.height
                     )
-                    .map((element) => (
+                    .flatMap((element) => (
                         <Rect
                             x={element.x}
                             y={element.y}
@@ -164,6 +181,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                             onMouseEnter={() =>
                                 handleHighlightHover(highlightElement.id)
                             }
+                            onMouseLeave={handleHighlightLeave}
                         />
                     ))
             )
@@ -189,6 +207,9 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                         text={element.text}
                         fontSize={element.fontSize}
                         fontFamily={element.fontFamily}
+                        onMouseEnter={(e) =>
+                            e.target.getStage()?.fire("mouseenter", e, true)
+                        }
                     />
                 ))
         );
@@ -278,7 +299,37 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     const handleMouseUp = () => {
         setCurrentHighlightId(null);
     };
-    const handleHighlightHover = (id: string) => {};
+
+    const createHighlightHover = (id: string) => {
+        console.log("id", id);
+        const hoveredHighlight = highlightElements.filter(
+            (element) => element.id === id
+        );
+        if (!hoveredHighlight || hoveredHighlight.length > 1) return;
+        const highlight = hoveredHighlight[0];
+        setHoveredHighlights(
+            <Shape
+                sceneFunc={(context, shape) => {
+                    context.beginPath();
+                    highlight.points.forEach((point, index) => {
+                        const scaledX = point.x;
+                        const scaledY = point.y;
+                        if (index === 0) {
+                            context.moveTo(scaledX, scaledY);
+                        } else {
+                            context.lineTo(scaledX, scaledY);
+                        }
+                    });
+                    context.closePath();
+                    context.fillStrokeShape(shape);
+                }}
+                fill="red"
+                stroke="black"
+                strokeWidth={2}
+            />
+        );
+    };
+    useEffect(() => {}, []);
 
     const createTextElements = () => {
         // Process the text elements from the book
@@ -300,7 +351,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
         });
     };
 
-    const createHighlightElements = () : FullHighlight[] => {
+    const createHighlightElements = (): FullHighlight[] => {
         return highlights.map((highlight) => {
             const points: HighlightPoints[] = [];
             const range = highlight.endY - highlight.startingY;
@@ -314,19 +365,19 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                     (highlight.endX - highlight.startingX) * letterWidth +
                     letterWidth;
                 points.push({
-                    x: currentX,
+                    x: currentX + 600,
                     y: highlight.startingY * fontSize + 200,
                 });
                 points.push({
-                    x: currentX + lineWidth,
+                    x: currentX + lineWidth + 600,
                     y: highlight.startingY * fontSize + 200,
                 });
                 points.push({
-                    x: currentX + lineWidth,
+                    x: currentX + lineWidth + 600,
                     y: highlight.startingY * fontSize + 200 + fontSize,
                 });
                 points.push({
-                    x: currentX,
+                    x: currentX + 600,
                     y: highlight.startingY * fontSize + 200 + fontSize,
                 });
                 const rects = [];
@@ -387,6 +438,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
+            {hoveredHighlights}
             {virtualizedHighlights}
             {virtualizedText}
         </Layer>
