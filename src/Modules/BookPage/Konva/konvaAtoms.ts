@@ -10,3 +10,13 @@ export const offsetPositionAtom = atom({
     x: 0,
     y: 0,
 });
+export type Highlight = {
+    id: string;
+    startingX: number;
+    startingY: number;
+    endX: number;
+    endY: number;
+};
+
+export const highlightsAtom = atom<Highlight[]>([])
+export const currentHighlightIdAtom = atom<string| null>(null);

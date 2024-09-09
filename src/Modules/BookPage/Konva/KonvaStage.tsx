@@ -9,8 +9,8 @@ import CustomTransformer from "./shapes/CustomTransformer";
 import CircleItem from "./Circle";
 import TextItem from "./shapes/TextShape";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
-import BookTextLayer from "./shapes/BookTextLayer";
 import { KonvaEventObject } from "konva/lib/Node";
+import MainLayer from "./modules/BookTextLayers.tsx/MainLayer";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
 const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
@@ -107,6 +107,8 @@ export type VisibleArea = {
     height: number;
 };
 export default function KonvaStage({ bookElements }: KonvaStageProps) {
+    const fontSize = 24;
+    const width = 1200;
     const [activeTool, setActiveTool] = useAtom(activeToolAtom);
     const [shapes, setShapes] = useState<Shape[]>(initialRectangles);
     const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
@@ -116,16 +118,20 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [scale, setScale] = useState(1); // State to handle scale
     const [isDragging, setIsDragging] = useState(false); // New state to track dragging
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
-    const viewportBuffer = 200
+    const viewportBuffer = 200;
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
     } | null>(null); // Store the initial drag start position
-    const [visibleArea, setVisibleArea] =
-        useState < VisibleArea>({ x: 0, y: 0, width: 0, height: 0 });
+    const [visibleArea, setVisibleArea] = useState<VisibleArea>({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+    });
     useEffect(() => {
-        updateVisibleArea()
-    }, [offsetPosition])
+        updateVisibleArea();
+    }, [offsetPosition]);
     useEffect(() => {
         console.log("bookElements", bookElements);
     }, [bookElements]);
@@ -162,7 +168,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     // Pan Handlers
-    const handleMouseDownForPan = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseDownForPan = () => {
         const stage = stageRef.current;
         setIsDragging(true);
         const pos = stage.getPointerPosition();
@@ -173,7 +179,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     useEffect(() => {
         console.log("offsetPosition", offsetPosition);
     }, [offsetPosition]);
-    const handleMouseMoveForPan = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseMoveForPan = () => {
         const stage = stageRef.current;
         if (!isDragging || !dragStartPos) return;
 
@@ -218,7 +224,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Pan") {
-            handleMouseDownForPan(e);
+            handleMouseDownForPan();
         }
         const pos = e.target.getStage()?.getPointerPosition();
         if (!pos) return;
@@ -285,7 +291,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Pan") {
-            handleMouseMoveForPan(e);
+            handleMouseMoveForPan();
         }
         if (!currentShape) return;
 
@@ -387,8 +393,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             width: window.innerWidth + viewportBuffer * 2,
             height: window.innerHeight + viewportBuffer * 2,
         };
-        setVisibleArea(visibleArea)
-    }
+        setVisibleArea(visibleArea);
+    };
 
     useEffect(() => {
         const stage = stageRef.current;
@@ -428,9 +434,11 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                         shapeRefs={shapeRefs.current}
                     />
                 </Layer>
-                <BookTextLayer
+                <MainLayer
                     visibleArea={visibleArea}
                     bookElements={bookElements}
+                    fontSize={fontSize}
+                    width={width}
                 />
             </Stage>
             {selectedShapeIds && (
