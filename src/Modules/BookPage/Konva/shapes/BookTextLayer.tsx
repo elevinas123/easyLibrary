@@ -91,7 +91,16 @@ type RenderedText = {
     fill: string;
     fontFamily: string;
 };
-type RenderedHighlights = {
+type HighlightPoints = {
+    x: number;
+    y: number;
+};
+type FullHighlight = {
+    rects: HighlightRect[];
+    points: HighlightPoints[];
+    id: string;
+};
+type HighlightRect = {
     y: number;
     x: number;
     width: number;
@@ -110,55 +119,59 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     const [highlights, setHighlights] = useState<Highlight[]>([]);
     const [activeTool] = useAtom(activeToolAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-    const [processedElements, setProcessedElemets] = useState<
+    const [processedElements, setProcessedElements] = useState<
         ProcessedElements[]
     >([]);
     const [currentHighlightId, setCurrentHighlightId] = useState<string | null>(
         null
     );
-    const [renderedTextElements, setRenderedTextElements] = useState<
-        RenderedText[]
-    >([]);
-    const [renderedhighlightElements, setRenderedhighlightElements] = useState<
-        RenderedHighlights[]
-    >([]);
+    const [textElements, setTextElements] = useState<RenderedText[]>([]);
+    const [highlightElements, setHighlightElements] = useState<FullHighlight[]>(
+        []
+    );
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
+
     useEffect(() => {
-        setRenderedTextElements(renderText());
+        setTextElements(createTextElements());
     }, [processedElements]);
 
     useEffect(() => {
-        setRenderedhighlightElements(renderHighlights());
+        setHighlightElements(createHighlightElements());
     }, [processedElements, highlights]);
 
     useEffect(() => {
         setVirtualizedHighlights(
-            renderedhighlightElements
-                .filter(
-                    (element) =>
-                        element.x + element.width > visibleArea.x &&
-                        element.x < visibleArea.x + visibleArea.width &&
-                        element.y + element.height > visibleArea.y &&
-                        element.y < visibleArea.y + visibleArea.height
-                )
-                .map((element) => (
-                    <Rect
-                        x={element.x}
-                        y={element.y}
-                        width={element.width}
-                        height={element.height}
-                        fill={element.fill}
-                        opacity={element.opacity}
-                    />
-                ))
+            highlightElements.flatMap((highlightElement) =>
+                highlightElement.rects
+                    .filter(
+                        (element) =>
+                            element.x + element.width > visibleArea.x &&
+                            element.x < visibleArea.x + visibleArea.width &&
+                            element.y + element.height > visibleArea.y &&
+                            element.y < visibleArea.y + visibleArea.height
+                    )
+                    .map((element) => (
+                        <Rect
+                            x={element.x}
+                            y={element.y}
+                            width={element.width}
+                            height={element.height}
+                            fill={element.fill}
+                            opacity={element.opacity}
+                            onMouseEnter={() =>
+                                handleHighlightHover(highlightElement.id)
+                            }
+                        />
+                    ))
+            )
         );
-    }, [visibleArea, renderedhighlightElements]);
+    }, [visibleArea, highlightElements]);
     useEffect(() => {
         setVirtualizedText(
-            renderedTextElements
+            textElements
                 .filter(
                     (element) =>
                         element.x + element.width > visibleArea.x &&
@@ -179,7 +192,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                     />
                 ))
         );
-    }, [visibleArea, renderedTextElements]);
+    }, [visibleArea, textElements]);
 
     useEffect(() => {
         let indexStart = 0;
@@ -192,7 +205,7 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                 return result;
             })
             .filter((_, index) => index < 1000);
-        setProcessedElemets(elements);
+        setProcessedElements(elements);
     }, [bookElements]);
     const calculateXPositionInText = (
         text: string,
@@ -265,8 +278,9 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
     const handleMouseUp = () => {
         setCurrentHighlightId(null);
     };
+    const handleHighlightHover = (id: string) => {};
 
-    const renderText = () => {
+    const createTextElements = () => {
         // Process the text elements from the book
 
         // Render the text elements with highlights
@@ -286,8 +300,9 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
         });
     };
 
-    const renderHighlights = () => {
-        return highlights.flatMap((highlight) => {
+    const createHighlightElements = () : FullHighlight[] => {
+        return highlights.map((highlight) => {
+            const points: HighlightPoints[] = [];
             const range = highlight.endY - highlight.startingY;
             if (range === 0) {
                 const letterWidth =
@@ -298,18 +313,42 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                 let lineWidth =
                     (highlight.endX - highlight.startingX) * letterWidth +
                     letterWidth;
-                return {
+                points.push({
+                    x: currentX,
+                    y: highlight.startingY * fontSize + 200,
+                });
+                points.push({
+                    x: currentX + lineWidth,
+                    y: highlight.startingY * fontSize + 200,
+                });
+                points.push({
+                    x: currentX + lineWidth,
+                    y: highlight.startingY * fontSize + 200 + fontSize,
+                });
+                points.push({
+                    x: currentX,
+                    y: highlight.startingY * fontSize + 200 + fontSize,
+                });
+                const rects = [];
+                rects.push({
                     y: highlight.startingY * fontSize + 200,
                     x: currentX + 600,
                     width: lineWidth,
                     height: fontSize,
                     fill: "yellow",
                     opacity: 0.5,
+                    points: points,
+                });
+                return {
+                    id: uuidv4(),
+                    points: points,
+                    rects: rects,
                 };
             }
-            const rects = [];
+            const rects: HighlightRect[] = [];
 
             for (let i = 0; i <= range; i++) {
+                points.push({ x: 0, y: 0 });
                 const letterWidth =
                     measureTextWidth(
                         processedElements[highlight.startingY].text
@@ -337,7 +376,8 @@ const BookTextLayer = ({ bookElements, visibleArea }: BookTextItemProps) => {
                     opacity: 0.5,
                 });
             }
-            return rects;
+
+            return { id: uuidv4(), points: points, rects: rects };
         });
     };
 
