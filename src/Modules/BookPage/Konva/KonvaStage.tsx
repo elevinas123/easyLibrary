@@ -11,6 +11,9 @@ import TextItem from "./shapes/TextShape";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
 import { KonvaEventObject } from "konva/lib/Node";
 import MainLayer from "./modules/BookTextLayers.tsx/MainLayer";
+import MainNotesLayer, {
+    MainNotesLayerRef,
+} from "./modules/NotesLayer/MainNotesLayer";
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
 const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
@@ -119,6 +122,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [isDragging, setIsDragging] = useState(false); // New state to track dragging
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const viewportBuffer = 200;
+    const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
@@ -223,6 +227,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (mainNotesLayerRef.current) {
+            mainNotesLayerRef.current.handleMouseDown(e);
+        }
         if (activeTool === "Pan") {
             handleMouseDownForPan();
         }
@@ -290,6 +297,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (mainNotesLayerRef.current) {
+            mainNotesLayerRef.current.handleMouseMove(e);
+        }
         if (activeTool === "Pan") {
             handleMouseMoveForPan();
         }
@@ -313,7 +323,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                 );
                 updatedShape.radius = radius;
                 break;
-            case "Arrow":
             case "Line":
                 break;
             default:
@@ -323,6 +332,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseUp = () => {
+        if (mainNotesLayerRef.current) {
+            mainNotesLayerRef.current.handleMouseUp();
+        }
         if (activeTool === "Pan") {
             handleMouseUpForPan();
         }
@@ -440,6 +452,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                     fontSize={fontSize}
                     width={width}
                 />
+                <MainNotesLayer ref={mainNotesLayerRef} />
             </Stage>
             {selectedShapeIds && (
                 <ToolBar
