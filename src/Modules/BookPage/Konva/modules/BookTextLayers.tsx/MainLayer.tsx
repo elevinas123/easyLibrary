@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     HtmlElementObject,
     HtmlObject,
 } from "../../../../../preprocess/epub/preprocessEpub";
 import { VisibleArea } from "../../KonvaStage";
-import HighlightLayer from "./HighlightLayer";
-import TextLayer from "./TextLayer";
+import HighlightLayer, { HighlightLayerRef } from "./HighlightLayer";
+import TextLayer, { TextLayerRef } from "./TextLayer";
+import { Layer } from "react-konva";
+import { KonvaEventObject } from "konva/lib/Node";
 
 type MainLayerProps = {
     bookElements: (HtmlObject | null)[];
@@ -28,6 +30,9 @@ export default function MainLayer({
     const [processedElements, setProcessedElements] = useState<
         ProcessedElement[]
     >([]);
+    const highlightComponentRef = useRef<HighlightLayerRef | null>(null);
+    const textComponentRef = useRef<TextLayerRef | null>(null);
+
     useEffect(() => {
         let indexStart = 0;
 
@@ -103,20 +108,45 @@ export default function MainLayer({
                 lineY: lineIndex + indexStart,
             }));
     };
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (textComponentRef.current) {
+            textComponentRef.current.handleMouseDown(e);
+        }
+    };
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (textComponentRef.current) {
+            textComponentRef.current.handleMouseMove(e);
+        }
+        if (highlightComponentRef.current) {
+            console.log("cia")
+            highlightComponentRef.current.handleMouseMove(e)
+        }
+    };
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+        if (textComponentRef.current) {
+            textComponentRef.current.handleMouseUp();
+        }
+    };
 
     return (
-        <>
+        <Layer
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+        >
             <HighlightLayer
+                ref={highlightComponentRef}
                 processedElements={processedElements}
                 visibleArea={visibleArea}
                 fontSize={fontSize}
             />
             <TextLayer
+                ref={textComponentRef}
                 processedElements={processedElements}
                 visibleArea={visibleArea}
                 fontSize={fontSize}
                 width={width}
             />
-        </>
+        </Layer>
     );
 }

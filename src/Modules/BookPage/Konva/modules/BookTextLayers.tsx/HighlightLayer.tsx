@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import {
+    ForwardedRef,
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useState,
+} from "react";
 import { Layer, Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
@@ -6,6 +12,7 @@ import { measureTextWidth } from "../functions/measureTextWidth";
 import { useAtom } from "jotai";
 import { highlightsAtom } from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
+import { KonvaEventObject } from "konva/lib/Node";
 
 type HighlightPoints = {
     x: number;
@@ -30,11 +37,14 @@ type HighlightLayerProps = {
     processedElements: ProcessedElement[];
 };
 
-export default function HighlightLayer({
-    visibleArea,
-    fontSize,
-    processedElements,
-}: HighlightLayerProps) {
+export type HighlightLayerRef = {
+    handleMouseMove(e: KonvaEventObject<MouseEvent>): void;
+};
+
+function HighlightLayer(
+    { visibleArea, fontSize, processedElements }: HighlightLayerProps,
+    ref: ForwardedRef<HighlightLayerRef>
+) {
     const [highlights] = useAtom(highlightsAtom);
 
     const [highlightElements, setHighlightElements] = useState<FullHighlight[]>(
@@ -43,6 +53,42 @@ export default function HighlightLayer({
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+                // Get mouse position
+                const mouseX = e.evt.x;
+                const mouseY = e.evt.y;
+
+                // Check which highlights the mouse is inside
+                const highlightsUnderMouse = highlightElements.filter(
+                    (highlight) =>
+                        highlight.rects.some((rect) => {
+                            return (
+                                mouseX >= rect.x &&
+                                mouseX <= rect.x + rect.width &&
+                                mouseY >= rect.y &&
+                                mouseY <= rect.y + rect.height
+                            );
+                        })
+                );
+
+                // Log or handle highlights that the mouse is inside
+                if (highlightsUnderMouse.length > 0) {
+                    console.log(
+                        "Mouse is inside the following highlights:",
+                        highlightsUnderMouse
+                    );
+                } else {
+                    console.log("Mouse is not inside any highlight");
+                }
+            },
+        }),
+        [highlightElements] // Ensure it re-renders when highlight elements change
+    );
+
     useEffect(() => {
         console.log(createHighlightElements());
         setHighlightElements(createHighlightElements());
@@ -153,5 +199,7 @@ export default function HighlightLayer({
         });
     };
 
-    return <Layer>{virtualizedHighlights}</Layer>;
+    return <>{virtualizedHighlights}</>;
 }
+
+export default forwardRef(HighlightLayer);

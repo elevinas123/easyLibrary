@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Layer, Text } from "react-konva";
 
 import { VisibleArea } from "../../KonvaStage";
@@ -30,12 +30,17 @@ type TextLayerProps = {
     width: number;
     processedElements: ProcessedElement[];
 };
-export default function TextLayer({
-    visibleArea,
-    fontSize,
-    width,
-    processedElements,
-}: TextLayerProps) {
+
+export type TextLayerRef = {
+    handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
+    handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
+    handleMouseUp: () => void;
+};
+
+function TextLayer(
+    { visibleArea, fontSize, width, processedElements }: TextLayerProps,
+    ref: ForwardedRef<TextLayerRef>
+) {
     const [textElements, setTextElements] = useState<RenderedText[]>([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
@@ -44,6 +49,76 @@ export default function TextLayer({
         currentHighlightIdAtom
     );
     const [activeTool] = useAtom(activeToolAtom);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+                if (activeTool !== "Select") return;
+                const currentId = uuidv4();
+                setCurrentHighlightId(currentId);
+                setHighlights((oldHighlights) => [
+                    ...oldHighlights,
+                    {
+                        id: currentId,
+                        startingX: calculateXPositionInText(
+                            e.target.attrs.text,
+                            e.target.attrs.x + offsetPosition.x,
+                            e.evt.x
+                        ),
+                        startingY: Math.floor(
+                            (e.target.attrs.y - 200) / fontSize
+                        ),
+                        endX: calculateXPositionInText(
+                            e.target.attrs.text,
+                            e.target.attrs.x + offsetPosition.x,
+                            e.evt.x
+                        ),
+                        endY: Math.floor((e.target.attrs.y - 200) / fontSize),
+                    },
+                ]);
+            },
+            handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+                if (!currentHighlightId) {
+                    return;
+                }
+
+                setHighlights((highlights) => {
+                    const newHighlights = [...highlights];
+                    const highlight = newHighlights.find(
+                        (highlight) => currentHighlightId === highlight.id
+                    );
+
+                    if (!highlight) return highlights;
+
+                    const xPos = calculateXPositionInText(
+                        e.target.attrs.text,
+                        e.target.attrs.x + offsetPosition.x,
+                        e.evt.x
+                    );
+                    const yPos = Math.floor(
+                        (e.target.attrs.y - 200) / fontSize
+                    );
+
+                    // Check if the position has actually changed
+                    if (highlight.endX === xPos && highlight.endY === yPos) {
+                        return highlights; // No change, return the current state
+                    }
+
+                    // Update only if the positions are different
+                    highlight.endX = xPos;
+                    highlight.endY = yPos;
+
+                    return newHighlights;
+                });
+            },
+            handleMouseUp() {
+                console.log("triggered");
+                setCurrentHighlightId(null);
+            },
+        }),
+        [setCurrentHighlightId, setHighlights, currentHighlightId, activeTool]
+    );
 
     const calculateXPositionInText = (
         text: string,
@@ -55,62 +130,6 @@ export default function TextLayer({
             (mouseStartingX - textStartingX) / textWidth
         );
         return posInText;
-    };
-
-    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool !== "Select") return;
-        const currentId = uuidv4();
-        setCurrentHighlightId(currentId);
-        setHighlights((oldHighlights) => [
-            ...oldHighlights,
-            {
-                id: currentId,
-                startingX: calculateXPositionInText(
-                    e.target.attrs.text,
-                    e.target.attrs.x + offsetPosition.x,
-                    e.evt.x
-                ),
-                startingY: Math.floor((e.target.attrs.y - 200) / fontSize),
-                endX: calculateXPositionInText(
-                    e.target.attrs.text,
-                    e.target.attrs.x + offsetPosition.x,
-                    e.evt.x
-                ),
-                endY: Math.floor((e.target.attrs.y - 200) / fontSize),
-            },
-        ]);
-    };
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (!currentHighlightId) {
-            return;
-        }
-
-        setHighlights((highlights) => {
-            const newHighlights = [...highlights];
-            const highlight = newHighlights.find(
-                (highlight) => currentHighlightId === highlight.id
-            );
-
-            if (!highlight) return highlights;
-
-            const xPos = calculateXPositionInText(
-                e.target.attrs.text,
-                e.target.attrs.x + offsetPosition.x,
-                e.evt.x
-            );
-            const yPos = Math.floor((e.target.attrs.y - 200) / fontSize);
-
-            // Check if the position has actually changed
-            if (highlight.endX === xPos && highlight.endY === yPos) {
-                return highlights; // No change, return the current state
-            }
-
-            // Update only if the positions are different
-            highlight.endX = xPos;
-            highlight.endY = yPos;
-
-            return newHighlights;
-        });
     };
 
     useEffect(() => {
@@ -162,17 +181,8 @@ export default function TextLayer({
             };
         });
     };
-    const handleMouseUp = () => {
-        console.log("triggered");
-        setCurrentHighlightId(null);
-    };
-    return (
-        <Layer
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-        >
-            {virtualizedText}
-        </Layer>
-    );
+
+    return <>{virtualizedText}</>;
 }
+
+export default forwardRef(TextLayer);
