@@ -34,8 +34,6 @@ export type ArrowItem = {
     endType: StartType;
 };
 
-
-
 export type MainNotesLayerRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
@@ -64,26 +62,24 @@ function MainNotesLayer(
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
             const id = uuidv4();
-            const mouseX = e.evt.x;
-            const mouseY = e.evt.y;
 
             const highlightsUnderMouse = hoveredHighlight.filter(
                 (highlight) => {
                     if (highlight.rects) {
                         return highlight.rects.some((rect) => {
                             return (
-                                mouseX >= rect.x - 10 &&
-                                mouseX <= rect.x + rect.width + 10 &&
-                                mouseY >= rect.y - 10 &&
-                                mouseY <= rect.y + rect.height + 10
+                                pos.x >= rect.x - 10 &&
+                                pos.x <= rect.x + rect.width + 10 &&
+                                pos.y >= rect.y - 10 &&
+                                pos.y <= rect.y + rect.height + 10
                             );
                         });
                     } else {
                         return (
-                            mouseX >= highlight.points[0].x - 10 &&
-                            mouseX <= highlight.points[1].x &&
-                            mouseY >= highlight.points[0].y - 10 &&
-                            mouseY <= highlight.points[2].y + 10
+                            pos.x >= highlight.points[0].x - 10 &&
+                            pos.x <= highlight.points[1].x &&
+                            pos.y >= highlight.points[0].y - 10 &&
+                            pos.y <= highlight.points[2].y + 10
                         );
                     }
                 }
@@ -197,16 +193,16 @@ function MainNotesLayer(
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool !== "Arrow") return;
         if (!newArrow) {
-            const mouseX = e.evt.x;
-            const mouseY = e.evt.y;
-
+            const pos = e.target?.getStage()?.getPointerPosition();
+            if (!pos) return;
             const highlightsUnderMouse = textItems.filter(
                 (textItem) =>
-                    mouseX >= textItem.x - 10 &&
-                    mouseX <= textItem.x + textItem.width + 10 &&
-                    mouseY >= textItem.y - 10 &&
-                    mouseY <= textItem.y + textItem.height + 10
+                    pos.x >= textItem.x - 10 &&
+                    pos.x <= textItem.x + textItem.width + 10 &&
+                    pos.y >= textItem.y - 10 &&
+                    pos.y <= textItem.y + textItem.height + 10
             );
+
             if (highlightsUnderMouse.length > 0) {
                 const firstHighlight = highlightsUnderMouse[0];
 
@@ -303,7 +299,7 @@ function MainNotesLayer(
         }
 
         setArrows((prevArrows) => [...prevArrows, newArrow]);
-        
+
         setNewArrow(null);
     };
     useEffect(() => {
