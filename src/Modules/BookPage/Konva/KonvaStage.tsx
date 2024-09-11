@@ -3,11 +3,6 @@ import { Stage, Layer } from "react-konva";
 import { useAtom } from "jotai";
 import { activeToolAtom, offsetPositionAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
-import ToolBar from "./components/ToolBar";
-import Rectangle from "./shapes/Rectangle";
-import CustomTransformer from "./shapes/CustomTransformer";
-import CircleItem from "./Circle";
-import TextItem from "./shapes/TextShape";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
 import { KonvaEventObject } from "konva/lib/Node";
 import MainLayer from "./modules/BookTextLayers.tsx/MainLayer";
@@ -61,8 +56,24 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             }
         };
     }, []);
+    useEffect(() => {
+        // Add event listener to the document to catch keydown events
+        document.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup event listener on component unmount
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     // Zoom handler (existing)
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (mainNotesLayerRef) {
+            mainNotesLayerRef.current?.handleKeyDown(e)
+        }
+    }
+
     const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
@@ -154,6 +165,11 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             handleMouseUpForPan();
         }
     };
+    const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
+        if (mainNotesLayerRef.current) {
+            mainNotesLayerRef.current.handleDoubleClick(e)
+        }
+    }
 
     const updateVisibleArea = () => {
         if (!stageRef.current) return;
@@ -181,6 +197,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
+                onDblClick={handleDoubleClick}
             >
                 <MainLayer
                     visibleArea={visibleArea}
