@@ -9,6 +9,7 @@ import MainLayer from "./modules/BookTextLayers.tsx/MainLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
+import HoverHighlightLayer from "./modules/HoverLayer.tsx/HoverHighlightLayer";
 
 type KonvaStageProps = {
     bookElements: (HtmlObject | null)[];
@@ -70,9 +71,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (mainNotesLayerRef) {
-            mainNotesLayerRef.current?.handleKeyDown(e)
+            mainNotesLayerRef.current?.handleKeyDown(e);
         }
-    }
+    };
 
     const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
@@ -167,9 +168,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
         if (mainNotesLayerRef.current) {
-            mainNotesLayerRef.current.handleDoubleClick(e)
+            mainNotesLayerRef.current.handleDoubleClick(e);
         }
-    }
+    };
 
     const updateVisibleArea = () => {
         if (!stageRef.current) return;
@@ -205,6 +206,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                     fontSize={fontSize}
                     width={width}
                 />
+                <HoverHighlightLayer />
+
                 <MainNotesLayer ref={mainNotesLayerRef} />
             </Stage>
         </div>

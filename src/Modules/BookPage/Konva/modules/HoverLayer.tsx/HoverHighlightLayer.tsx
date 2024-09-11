@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { activeToolAtom, hoveredHighlightAtom } from "../../konvaAtoms";
-import { Shape } from "react-konva";
+import { Layer, Shape } from "react-konva";
 
 type HoverHighlightLayerProps = {
     // Define your prop types here
@@ -75,5 +75,5 @@ export default function HoverHighlightLayer({}: HoverHighlightLayerProps) {
     useEffect(() => {
         createHighlightHover();
     }, [hoveredHighlight]);
-    return <>{renderedHover}</>;
+    return <Layer>{renderedHover}</Layer>;
 }

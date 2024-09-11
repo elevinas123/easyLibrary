@@ -19,6 +19,6 @@ export type Highlight = {
     endY: number;
 };
 
-export const highlightsAtom = atom<Highlight[]>([])
+export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);
-export const hoveredHighlightAtom = atom<FullHighlight | null>(null)
+export const hoveredHighlightAtom = atom<FullHighlight | null>(null);

@@ -54,7 +54,6 @@ function MainNotesLayer(
     const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
     const inputRef = useRef<HTMLInputElement>(null);
-    const [selectionRange, setSelectionRange] = useState({ start: 0, end: 0 });
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Text") {
@@ -68,7 +67,7 @@ function MainNotesLayer(
                 y: pos.y,
                 fontSize: 24,
                 isSelected: true,
-                width: 24 + 10,
+                width: 24*8 + 10,
                 height: 24 + 10,
             };
             setTextItems([...textItems, newItem]);
@@ -96,7 +95,9 @@ function MainNotesLayer(
                 input.style.display = "block";
                 input.value = textItem.text;
                 input.style.fontSize = `${textItem.fontSize}px`
+                input.style.width = `${textItem.width}px`
                 input.focus();
+                
                 return;
             }
         }
