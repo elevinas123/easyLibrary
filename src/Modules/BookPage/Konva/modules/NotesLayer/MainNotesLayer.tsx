@@ -9,7 +9,8 @@ import {
     useRef,
 } from "react";
 import {
-    activeToolAtom,,
+    activeToolAtom,
+    highlightsAtom,
     hoveredHighlightAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -22,12 +23,14 @@ type MainNotesLayerProps = {
 };
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
-
+type StartType = "bookText" | "userText" | null;
 export type ArrowItem = {
     points: number[];
     arrowId: string;
     startId: string | null;
     endId: string | null;
+    startType: StartType;
+    endType: StartType;
 };
 
 type TextItem = {
@@ -45,7 +48,7 @@ export type MainNotesLayerRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
-    handleMouseUp: () => void;
+    handleMouseUp: (e: KonvaEventObject<MouseEvent>) => void;
     handleKeyDown: (e: KeyboardEvent) => void;
 };
 
@@ -61,16 +64,58 @@ function MainNotesLayer(
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
     const [hoveredHighlight, setHoveredHighlight] =
         useAtom(hoveredHighlightAtom);
+    const [highlights] = useAtom(highlightsAtom);
 
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Arrow") {
             const pos = e.target?.getStage()?.getPointerPosition();
-            const id = uuidv4()
-            const arrow = {
-                id: id
+            if (!pos) return;
+            const id = uuidv4();
+            const mouseX = e.evt.x;
+            const mouseY = e.evt.y;
+
+            const highlightsUnderMouse = hoveredHighlight.filter(
+                (highlight) => {
+                    if (highlight.rects) {
+                        return highlight.rects.some((rect) => {
+                            return (
+                                mouseX >= rect.x - 10 &&
+                                mouseX <= rect.x + rect.width + 10 &&
+                                mouseY >= rect.y - 10 &&
+                                mouseY <= rect.y + rect.height + 10
+                            );
+                        });
+                    } else {
+                        return (
+                            mouseX >= highlight.points[0].x - 10 &&
+                            mouseX <= highlight.points[1].x &&
+                            mouseY >= highlight.points[0].y - 10 &&
+                            mouseY <= highlight.points[2].y + 10
+                        );
+                    }
+                }
+            );
+            let startId: null | string = null;
+            let type: StartType = null;
+            if (highlightsUnderMouse.length > 0) {
+                startId = highlightsUnderMouse[0].id;
+                if (highlightsUnderMouse[0].rects) {
+                    type = "bookText";
+                } else {
+                    type = "userText";
+                }
             }
+            const arrow = {
+                arrowId: id,
+                startId: startId,
+                endId: null,
+                points: [pos.x, pos.y],
+                startType: type,
+                endType: null,
+            };
+            setNewArrow(arrow);
         } else if (activeTool === "Text") {
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
@@ -229,11 +274,49 @@ function MainNotesLayer(
     };
 
     // Handle Mouse Up for Arrows (Existing)
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
         if (!newArrow) return;
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
+        let arrow = newArrow;
+        const highlightsUnderMouse = hoveredHighlight.filter((highlight) => {
+            if (highlight.rects) {
+                return highlight.rects.some((rect) => {
+                    return (
+                        pos.x >= rect.x - 10 &&
+                        pos.x <= rect.x + rect.width + 10 &&
+                        pos.y >= rect.y - 10 &&
+                        pos.y <= rect.y + rect.height + 10
+                    );
+                });
+            } else {
+                return (
+                    pos.x >= highlight.points[0].x - 10 &&
+                    pos.x <= highlight.points[1].x &&
+                    pos.y >= highlight.points[0].y - 10 &&
+                    pos.y <= highlight.points[2].y + 10
+                );
+            }
+        });
+        console.log("arrowHoveredOn", highlightsUnderMouse);
+        if (
+            highlightsUnderMouse.length > 0 &&
+            highlightsUnderMouse[0].id !== arrow.startId
+        ) {
+            arrow.endId = highlightsUnderMouse[0].id;
+            if (highlightsUnderMouse[0].rects) {
+                arrow.endType = "bookText";
+            } else {
+                arrow.endType = "userText";
+            }
+        }
+
         setArrows((prevArrows) => [...prevArrows, newArrow]);
         setNewArrow(null);
     };
+    useEffect(() => {
+        console.log("arrows", arrows);
+    }, [arrows]);
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
         textItems.forEach((textItem) => {
             const isInsideXBounds =

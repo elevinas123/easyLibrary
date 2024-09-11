@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Stage, Layer } from "react-konva";
+import { Stage } from "react-konva";
 import { useAtom } from "jotai";
 import { activeToolAtom, offsetPositionAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
@@ -158,9 +158,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
         if (mainNotesLayerRef.current) {
-            mainNotesLayerRef.current.handleMouseUp();
+            mainNotesLayerRef.current.handleMouseUp(e);
         }
         if (activeTool === "Pan") {
             handleMouseUpForPan();
