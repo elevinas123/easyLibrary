@@ -1,13 +1,10 @@
 import { useState } from "react";
 import Notes from "./Notes";
 import Settings from "./Settings";
-import { Note } from "./MainPage";
 
-type RightHandProps = {
-    notes: Note[];
-};
+type RightHandProps = {};
 
-export default function RightHand({ notes }: RightHandProps) {
+export default function RightHand({}: RightHandProps) {
     const [selected, setSelected] = useState<"notes" | "settings">("notes");
 
     const allItems = {
@@ -39,7 +36,7 @@ export default function RightHand({ notes }: RightHandProps) {
                 </button>
             </div>
             <div className="p-4">
-                <SelectedItem notes={notes} />
+                <SelectedItem  />
             </div>
         </div>
     );

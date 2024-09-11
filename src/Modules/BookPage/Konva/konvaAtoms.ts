@@ -1,6 +1,7 @@
 import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers.tsx/HighlightLayer";
+import { ArrowItem } from "./modules/NotesLayer/MainNotesLayer";
 
 export type ArrowHover = {
     points: HighlightPoints[];
@@ -29,7 +30,18 @@ export type Highlight = {
     endY: number;
 };
 
-
+export type TextItem = {
+    id: string;
+    text: string;
+    x: number;
+    y: number;
+    fontSize: number;
+    isSelected: boolean;
+    width: number;
+    height: number;
+};
 export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);
 export const hoveredHighlightAtom = atom<ArrowHover[]>([]);
+export const arrowsAtom = atom<ArrowItem[]>([]);
+export const textItemsAtom = atom<TextItem[]>([])

@@ -1,12 +1,9 @@
 import { HtmlObject } from "../../preprocess/epub/preprocessEpub";
-import { Note } from "./MainPage";
 import KonvaStage from "./Konva/KonvaStage";
 
 type TextProps = {
     bookElements: (HtmlObject | null)[];
     fontSize: number;
-
-    createNote: (note: Note) => void;
 };
 
 export default function Text({ bookElements }: TextProps) {

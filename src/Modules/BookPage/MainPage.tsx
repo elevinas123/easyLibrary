@@ -21,12 +21,7 @@ export type HighlightRange = {
     highlightId: string;
 };
 
-export type Note = {
-    noteText: string;
-    noteId: string;
-    noteReference: string;
-    noteReferenceIdRanges: HighlightRange;
-};
+
 
 export type Chapter = {
     id: string;
@@ -38,8 +33,7 @@ export type Chapter = {
 function MainPage() {
     const [bookElements, setBookElements] = useState<(HtmlObject | null)[]>([]);
     const [chapters, setChapters] = useState<Chapter[]>([]);
-    const [notes, setNotes] = useState<Note[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [_, setError] = useState<string | null>(null);
 
     const handleEpubChange = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -60,7 +54,7 @@ function MainPage() {
                 const toc = await extractToc(zip, opfFilePath);
 
                 // Convert ToC to chapters data
-                const chaptersData = toc.map((item, index) => ({
+                const chaptersData = toc.map((item) => ({
                     id: item.id, // This is now the correct ID of the element
                     title: item.title,
                     href: item.href,
@@ -79,9 +73,7 @@ function MainPage() {
         }
     };
 
-    const createNote = (note: Note) => {
-        setNotes((oldNotes) => [...oldNotes, note]);
-    };
+    
 
     return (
         <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
@@ -96,9 +88,8 @@ function MainPage() {
             <TextPage
                 bookElements={bookElements}
                 fontSize={24}
-                createNote={createNote}
             />
-            <RightHand notes={notes} />
+            <RightHand />
         </div>
     );
 }
