@@ -38,7 +38,7 @@ export type TextLayerRef = {
 };
 
 function TextLayer(
-    { visibleArea, fontSize, width, processedElements }: TextLayerProps,
+    { visibleArea, fontSize, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
     const [textElements, setTextElements] = useState<RenderedText[]>([]);

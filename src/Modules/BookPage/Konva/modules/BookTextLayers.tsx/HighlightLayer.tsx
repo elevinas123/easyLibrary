@@ -10,7 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
 import { useAtom } from "jotai";
-import { highlightsAtom, hoveredHighlightAtom } from "../../konvaAtoms";
+import {
+    activeToolAtom,
+    highlightsAtom,
+    hoveredHighlightAtom,
+} from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
 import { KonvaEventObject } from "konva/lib/Node";
 
@@ -55,11 +59,14 @@ function HighlightLayer(
     >([]);
     const [hoveredHighlight, setHoveredHighlight] =
         useAtom(hoveredHighlightAtom);
+    const [activeTool] = useAtom(activeToolAtom);
 
     useImperativeHandle(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+                console.log("activeTool", activeTool);
+                if (activeTool !== "Arrow") return;
                 const mouseX = e.evt.x;
                 const mouseY = e.evt.y;
 
@@ -67,14 +74,14 @@ function HighlightLayer(
                     (highlight) =>
                         highlight.rects.some((rect) => {
                             return (
-                                mouseX >= rect.x &&
-                                mouseX <= rect.x + rect.width &&
-                                mouseY >= rect.y &&
-                                mouseY <= rect.y + rect.height
+                                mouseX >= rect.x - 10 &&
+                                mouseX <= rect.x + rect.width + 10 &&
+                                mouseY >= rect.y - 10 &&
+                                mouseY <= rect.y + rect.height + 10
                             );
                         })
                 );
-
+                console.log("highlightsUnderMouse", highlightsUnderMouse);
                 if (highlightsUnderMouse.length > 0) {
                     if (!hoveredHighlight) {
                         setHoveredHighlight(highlightsUnderMouse[0]);
@@ -83,16 +90,16 @@ function HighlightLayer(
                     ) {
                         setHoveredHighlight(highlightsUnderMouse[0]);
                     }
-                    
                 } else {
+                    console.log("hovered");
                     if (!hoveredHighlight) {
-                        return
-                    } 
-                    setHoveredHighlight(null)
+                        return;
+                    }
+                    setHoveredHighlight(null);
                 }
             },
         }),
-        [highlightElements]
+        [highlightElements, hoveredHighlight, activeTool]
     );
 
     useEffect(() => {
