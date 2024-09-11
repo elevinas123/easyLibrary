@@ -12,22 +12,19 @@ import { measureTextWidth } from "../functions/measureTextWidth";
 import { useAtom } from "jotai";
 import {
     activeToolAtom,
+    HighlightPoints,
     highlightsAtom,
     hoveredHighlightAtom,
 } from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
 import { KonvaEventObject } from "konva/lib/Node";
 
-type HighlightPoints = {
-    x: number;
-    y: number;
-};
 export type FullHighlight = {
     rects: HighlightRect[];
     points: HighlightPoints[];
     id: string;
 };
-type HighlightRect = {
+export type HighlightRect = {
     y: number;
     x: number;
     width: number;
@@ -65,7 +62,6 @@ function HighlightLayer(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                console.log("activeTool", activeTool);
                 if (activeTool !== "Arrow") return;
                 const mouseX = e.evt.x;
                 const mouseY = e.evt.y;
@@ -81,21 +77,35 @@ function HighlightLayer(
                             );
                         })
                 );
-                console.log("highlightsUnderMouse", highlightsUnderMouse);
                 if (highlightsUnderMouse.length > 0) {
-                    if (!hoveredHighlight) {
-                        setHoveredHighlight(highlightsUnderMouse[0]);
-                    } else if (
-                        hoveredHighlight.id !== highlightsUnderMouse[0].id
-                    ) {
-                        setHoveredHighlight(highlightsUnderMouse[0]);
+                    const firstHighlight = highlightsUnderMouse[0];
+
+                    // Check if the first highlight under the mouse is already hovered
+                    const isAlreadyHovered = hoveredHighlight.some(
+                        (highlight) => highlight.id === firstHighlight.id
+                    );
+
+                    if (isAlreadyHovered) {
+                        // If it's already hovered, refresh its position in the hovered list
+                        setHoveredHighlight((prevHighlights) => [
+                            ...prevHighlights.filter(
+                                (highlight) =>
+                                    highlight.id !== firstHighlight.id
+                            ),
+                            firstHighlight,
+                        ]);
+                    } else {
+                        // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
+                        setHoveredHighlight((prevHighlights) => [
+                            ...prevHighlights,
+                            firstHighlight,
+                        ]);
                     }
                 } else {
-                    console.log("hovered");
+                    // If no highlights are under the mouse and hoveredHighlight exists, do nothing
                     if (!hoveredHighlight) {
                         return;
                     }
-                    setHoveredHighlight(null);
                 }
             },
         }),

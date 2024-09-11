@@ -8,7 +8,7 @@ import {
     useState,
     useRef,
 } from "react";
-import { activeToolAtom } from "../../konvaAtoms";
+import { activeToolAtom, hoveredHighlightAtom } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
 import Konva from "konva";
 import { Html } from "react-konva-utils";
@@ -53,6 +53,10 @@ function MainNotesLayer(
     const [textItems, setTextItems] = useState<TextItem[]>([]);
     const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
+
+    const [hoveredHighlight, setHoveredHighlight] =
+        useAtom(hoveredHighlightAtom);
+
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -67,7 +71,7 @@ function MainNotesLayer(
                 y: pos.y,
                 fontSize: 24,
                 isSelected: true,
-                width: 24*8 + 10,
+                width: 24 * 8 + 10,
                 height: 24 + 10,
             };
             setTextItems([...textItems, newItem]);
@@ -94,10 +98,10 @@ function MainNotesLayer(
                 input.style.fontSize = `${textItem.fontSize}px`;
                 input.style.display = "block";
                 input.value = textItem.text;
-                input.style.fontSize = `${textItem.fontSize}px`
-                input.style.width = `${textItem.width}px`
+                input.style.fontSize = `${textItem.fontSize}px`;
+                input.style.width = `${textItem.width}px`;
                 input.focus();
-                
+
                 return;
             }
         }
@@ -107,7 +111,6 @@ function MainNotesLayer(
         console.log("isEditing", isEditing);
     }, [isEditing]);
     // Handle Text Double Click for Editing
-   
 
     // Handle Input Change and Save Text
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +135,7 @@ function MainNotesLayer(
 
     // Handle Delete Key Press
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (isEditing) return
+        if (isEditing) return;
         if (e.key === "Delete" || e.key === "Backspace") {
             if (selectedTextId) {
                 setTextItems((prevItems) =>
@@ -145,14 +148,73 @@ function MainNotesLayer(
 
     // Handle Mouse Move for Arrows (Existing)
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (!newArrow || activeTool !== "Arrow") return;
-        const pos = e.target?.getStage()?.getPointerPosition();
-        if (!pos) return;
-        const updatedArrow = {
-            ...newArrow,
-            points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
-        };
-        setNewArrow(updatedArrow);
+        if (activeTool !== "Arrow") return;
+        if (!newArrow) {
+            const mouseX = e.evt.x;
+            const mouseY = e.evt.y;
+
+            const highlightsUnderMouse = textItems.filter(
+                (textItem) =>
+                    mouseX >= textItem.x - 10 &&
+                    mouseX <= textItem.x + textItem.width + 10 &&
+                    mouseY >= textItem.y - 10 &&
+                    mouseY <= textItem.y + textItem.height + 10
+            );
+            if (highlightsUnderMouse.length > 0) {
+                const firstHighlight = highlightsUnderMouse[0];
+
+                // Check if the first highlight under the mouse is already hovered
+                const isAlreadyHovered = hoveredHighlight.some(
+                    (highlight) => highlight.id === firstHighlight.id
+                );
+                const updatedHighlight = {
+                    points: [
+                        { x: firstHighlight.x, y: firstHighlight.y },
+                        {
+                            x: firstHighlight.x + firstHighlight.width,
+                            y: firstHighlight.y,
+                        },
+                        {
+                            x: firstHighlight.x + firstHighlight.width,
+                            y: firstHighlight.y + firstHighlight.height,
+                        },
+                        {
+                            x: firstHighlight.x,
+                            y: firstHighlight.y + firstHighlight.height,
+                        },
+                    ],
+                    id: firstHighlight.id,
+                };
+                if (isAlreadyHovered) {
+                    // If it's already hovered, refresh its position in the hovered list
+                    setHoveredHighlight((prevHighlights) => [
+                        ...prevHighlights.filter(
+                            (highlight) => highlight.id !== firstHighlight.id
+                        ),
+                        updatedHighlight,
+                    ]);
+                } else {
+                    // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
+                    setHoveredHighlight((prevHighlights) => [
+                        ...prevHighlights,
+                        updatedHighlight,
+                    ]);
+                }
+            } else {
+                // If no highlights are under the mouse and hoveredHighlight exists, do nothing
+                if (!hoveredHighlight) {
+                    return;
+                }
+            }
+        } else {
+            const pos = e.target?.getStage()?.getPointerPosition();
+            if (!pos) return;
+            const updatedArrow = {
+                ...newArrow,
+                points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
+            };
+            setNewArrow(updatedArrow);
+        }
     };
 
     // Handle Mouse Up for Arrows (Existing)
@@ -170,9 +232,9 @@ function MainNotesLayer(
                 e.evt.y <= textItem.y + textItem.height;
 
             if (isInsideXBounds && isInsideYBounds) {
-                setIsEditing(true)
-                setSelectedTextId(textItem.id)
-                return
+                setIsEditing(true);
+                setSelectedTextId(textItem.id);
+                return;
             }
         });
     };
