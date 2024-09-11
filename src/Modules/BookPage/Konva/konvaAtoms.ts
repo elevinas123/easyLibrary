@@ -2,8 +2,6 @@ import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers.tsx/HighlightLayer";
 
-
-
 export type ArrowHover = {
     points: HighlightPoints[];
     id: string;
@@ -30,6 +28,7 @@ export type Highlight = {
     endX: number;
     endY: number;
 };
+
 
 export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);

@@ -8,9 +8,13 @@ import {
     useState,
     useRef,
 } from "react";
-import { activeToolAtom, hoveredHighlightAtom } from "../../konvaAtoms";
+import {
+    activeToolAtom,,
+    hoveredHighlightAtom,
+} from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
-import Konva from "konva";
+import { v4 as uuidv4 } from "uuid";
+
 import { Html } from "react-konva-utils";
 
 type MainNotesLayerProps = {
@@ -18,10 +22,12 @@ type MainNotesLayerProps = {
 };
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
-const drawingShapes = ["Rectangle", "Circle", "Arrow", "Line", "Text"];
 
-type ArrowItem = {
+export type ArrowItem = {
     points: number[];
+    arrowId: string;
+    startId: string | null;
+    endId: string | null;
 };
 
 type TextItem = {
@@ -53,17 +59,22 @@ function MainNotesLayer(
     const [textItems, setTextItems] = useState<TextItem[]>([]);
     const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
-
     const [hoveredHighlight, setHoveredHighlight] =
         useAtom(hoveredHighlightAtom);
 
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool === "Text") {
+        if (activeTool === "Arrow") {
+            const pos = e.target?.getStage()?.getPointerPosition();
+            const id = uuidv4()
+            const arrow = {
+                id: id
+            }
+        } else if (activeTool === "Text") {
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
-            const id = `${Date.now()}`;
+            const id = uuidv4();
             const newItem = {
                 id,
                 text: "New Text",
