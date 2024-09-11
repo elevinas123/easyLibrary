@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
 import { useAtom } from "jotai";
-import { highlightsAtom } from "../../konvaAtoms";
+import { highlightsAtom, hoveredHighlightAtom } from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
 import { KonvaEventObject } from "konva/lib/Node";
 
@@ -18,7 +18,7 @@ type HighlightPoints = {
     x: number;
     y: number;
 };
-type FullHighlight = {
+export type FullHighlight = {
     rects: HighlightRect[];
     points: HighlightPoints[];
     id: string;
@@ -53,16 +53,16 @@ function HighlightLayer(
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
+    const [hoveredHighlight, setHoveredHighlight] =
+        useAtom(hoveredHighlightAtom);
 
     useImperativeHandle(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                // Get mouse position
                 const mouseX = e.evt.x;
                 const mouseY = e.evt.y;
 
-                // Check which highlights the mouse is inside
                 const highlightsUnderMouse = highlightElements.filter(
                     (highlight) =>
                         highlight.rects.some((rect) => {
@@ -75,18 +75,24 @@ function HighlightLayer(
                         })
                 );
 
-                // Log or handle highlights that the mouse is inside
                 if (highlightsUnderMouse.length > 0) {
-                    console.log(
-                        "Mouse is inside the following highlights:",
-                        highlightsUnderMouse
-                    );
+                    if (!hoveredHighlight) {
+                        setHoveredHighlight(highlightsUnderMouse[0]);
+                    } else if (
+                        hoveredHighlight.id !== highlightsUnderMouse[0].id
+                    ) {
+                        setHoveredHighlight(highlightsUnderMouse[0]);
+                    }
+                    
                 } else {
-                    console.log("Mouse is not inside any highlight");
+                    if (!hoveredHighlight) {
+                        return
+                    } 
+                    setHoveredHighlight(null)
                 }
             },
         }),
-        [highlightElements] // Ensure it re-renders when highlight elements change
+        [highlightElements]
     );
 
     useEffect(() => {

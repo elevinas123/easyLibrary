@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
+import { FullHighlight } from "./modules/BookTextLayers.tsx/HighlightLayer";
 
 export const activeToolAtom = atom<DrawingToolNames>("Select");
 export const stageStateAtom = atom({
@@ -19,4 +20,5 @@ export type Highlight = {
 };
 
 export const highlightsAtom = atom<Highlight[]>([])
-export const currentHighlightIdAtom = atom<string| null>(null);
+export const currentHighlightIdAtom = atom<string | null>(null);
+export const hoveredHighlightAtom = atom<FullHighlight | null>(null)

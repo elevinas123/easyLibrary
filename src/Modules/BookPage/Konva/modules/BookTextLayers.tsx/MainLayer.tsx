@@ -8,6 +8,7 @@ import HighlightLayer, { HighlightLayerRef } from "./HighlightLayer";
 import TextLayer, { TextLayerRef } from "./TextLayer";
 import { Layer } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
+import HoverHighlightLayer from "./HoverHighlightLayer";
 
 type MainLayerProps = {
     bookElements: (HtmlObject | null)[];
@@ -134,6 +135,7 @@ export default function MainLayer({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
         >
+            <HoverHighlightLayer />
             <HighlightLayer
                 ref={highlightComponentRef}
                 processedElements={processedElements}
