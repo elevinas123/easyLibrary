@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Html } from "react-konva-utils";
 import { ArrowElement, StartType, TextElement } from "../../KonvaStage";
+import CustomTransformer from "../../shapes/CustomTransformer";
 
 type MainNotesLayerProps = {
     // Define your prop types here
@@ -42,11 +43,10 @@ function MainNotesLayer(
     const [activeTool] = useAtom(activeToolAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [newArrow, setNewArrow] = useAtom(newArrowAtom);
-    const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
+    const [selectedTextId, setSelectedTextId] = useState<string[]>([]); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [canvasElements, setCanvaElements] = useAtom(canvaElementsAtom);
-
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -113,12 +113,45 @@ function MainNotesLayer(
                 fill: "black",
                 outgoingArrowIds: [],
                 incomingArrowIds: [],
+                points: [
+                    {
+                        x: pos.x,
+                        y: pos.y,
+                    },
+                    {
+                        x: pos.x + 24 * 8 + 10,
+                        y: pos.y,
+                    },
+                    {
+                        x: pos.x + 24 * 8 + 10,
+                        y: pos.y + 24 + 10,
+                    },
+                    {
+                        x: pos.x,
+                        y: pos.y + 24 + 10,
+                    },
+                ],
             };
             setCanvaElements((elements) => [...elements, newItem]);
-            setSelectedTextId(id);
+            setSelectedTextId([id]);
             setIsEditing(true);
+        } else if (activeTool === "Select") {
+            const pos = e.target?.getStage()?.getPointerPosition();
+            if (!pos) return;
+            const textItems = canvasElements.filter(
+                (item) => item.type === "text"
+            );
+            const selectedItem = textItems.filter(
+                (item) =>
+                    pos.x >= item.x &&
+                    pos.x <= item.x + item.width &&
+                    pos.y >= item.y &&
+                    pos.y <= item.y + item.height
+            );
+            setSelectedTextId(selectedItem.map((item) => item.id));
         } else {
-            setSelectedTextId(null); // Deselect text when clicking elsewhere
+            setIsEditing(false);
+            setSelectedTextId([]); // Deselect text when clicking elsewhere
         }
     };
     useEffect(() => {
@@ -128,8 +161,8 @@ function MainNotesLayer(
             const textItems = canvasElements.filter(
                 (item) => item.type === "text"
             );
-            const selectedItem = textItems.filter(
-                (item) => item.id === selectedTextId
+            const selectedItem = textItems.filter((item) =>
+                selectedTextId.some((id) => id === item.id)
             );
 
             if (selectedItem && selectedItem.length > 0) {
@@ -157,7 +190,7 @@ function MainNotesLayer(
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!selectedTextId) return;
         const updatedTextItems = canvasElements.map((item) =>
-            item.id === selectedTextId
+            selectedTextId.some((id) => id === item.id)
                 ? {
                       ...item,
                       text: e.target.value,
@@ -180,9 +213,11 @@ function MainNotesLayer(
         if (e.key === "Delete" || e.key === "Backspace") {
             if (selectedTextId) {
                 setCanvaElements((prevItems) =>
-                    prevItems.filter((item) => item.id !== selectedTextId)
+                    prevItems.filter(
+                        (item) => !selectedTextId.some((id) => id === item.id)
+                    )
                 );
-                setSelectedTextId(null);
+                setSelectedTextId([]);
             }
         }
     };
@@ -297,6 +332,7 @@ function MainNotesLayer(
         console.log("arrows", arrows);
     }, [arrows]);
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
+        console.log("double click");
         canvasElements.forEach((textItem) => {
             const isInsideXBounds =
                 e.evt.x >= textItem.x && e.evt.x <= textItem.x + textItem.width;
@@ -306,7 +342,7 @@ function MainNotesLayer(
 
             if (isInsideXBounds && isInsideYBounds) {
                 setIsEditing(true);
-                setSelectedTextId(textItem.id);
+                setSelectedTextId((ids) => [...ids, textItem.id]);
                 return;
             }
         });
@@ -319,6 +355,131 @@ function MainNotesLayer(
         handleKeyDown,
         handleDoubleClick,
     }));
+    // Calculate the closest point on the element for arrow connection
+    // Find the closest point in the element's points array to the given position
+    // Calculate the closest point for the arrow to connect to the shape's edges
+    const calculateArrowPoint = (
+        element: any,
+        pos: { x: number; y: number }
+    ) => {
+        const { x: elementX, y: elementY, width, height } = element;
+
+        // Define points on the shape: corners (top-left, top-right, bottom-left, bottom-right)
+        const points = [
+            { x: elementX, y: elementY }, // Top-left
+            { x: elementX + width, y: elementY }, // Top-right
+            { x: elementX + width, y: elementY + height }, // Bottom-right
+            { x: elementX, y: elementY + height }, // Bottom-left
+        ];
+
+        // Find the closest point to the current element's position
+        return findClosestPoint(points, pos);
+    };
+
+    // Utility function to find the closest point to a position
+    const findClosestPoint = (
+        pointsArray: { x: number; y: number }[],
+        pos: { x: number; y: number }
+    ) => {
+        let closestPoint = pointsArray[0];
+        let minDistance = distance(pos, pointsArray[0]);
+
+        pointsArray.forEach((point) => {
+            const dist = distance(pos, point);
+            if (dist < minDistance) {
+                closestPoint = point;
+                minDistance = dist;
+            }
+        });
+
+        return closestPoint;
+    };
+
+    // Utility function to calculate the distance between two points
+    const distance = (
+        point1: { x: number; y: number },
+        point2: { x: number; y: number }
+    ) => {
+        return Math.sqrt(
+            (point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2
+        );
+    };
+
+    // Handle drag move (updates the element's position during dragging)
+    const handleDragMove = (e: KonvaEventObject<MouseEvent>) => {
+        setArrows((arrows) => {
+            const pos = e.target.getPosition(); // The current position of the dragged element
+
+            const elementsSelected = canvasElements.filter((element) =>
+                selectedTextId.includes(element.id)
+            );
+
+            const updatingArrows = arrows.filter((arrow) =>
+                elementsSelected.some(
+                    (element) =>
+                        element.id === arrow.startId ||
+                        element.id === arrow.endId
+                )
+            );
+
+            const otherArrows = arrows.filter(
+                (arrow) => !updatingArrows.includes(arrow)
+            );
+
+            const updatedArrows = updatingArrows.map((arrow) => {
+                let updatedPoints = [...arrow.points]; // Clone the points array
+
+                // Find the position of the element for the startId and endId
+                const startElement = canvasElements.find(
+                    (el) => el.id === arrow.startId
+                );
+                const endElement = canvasElements.find(
+                    (el) => el.id === arrow.endId
+                );
+
+                // Update the start position if the arrow is connected to the start element
+                if (startElement && selectedTextId.includes(startElement.id)) {
+                    const startPoint = calculateArrowPoint(startElement, pos);
+                    updatedPoints[0] = startPoint.x;
+                    updatedPoints[1] = startPoint.y;
+                }
+
+                // Update the end position if the arrow is connected to the end element
+                if (endElement && selectedTextId.includes(endElement.id)) {
+                    const endPoint = calculateArrowPoint(endElement, pos);
+                    updatedPoints[2] = endPoint.x;
+                    updatedPoints[3] = endPoint.y;
+                }
+
+                return {
+                    ...arrow,
+                    points: updatedPoints,
+                };
+            });
+
+            return [...otherArrows, ...updatedArrows];
+        });
+
+        const pos = e.target.getPosition();
+        setCanvaElements((elements) => {
+            const updatingElements = elements.filter((element) =>
+                selectedTextId.includes(element.id)
+            );
+            const otherElements = elements.filter(
+                (element) => !selectedTextId.includes(element.id)
+            );
+            const updatedElements = updatingElements.map((el) => ({
+                ...el,
+                points: el.points.map((point) => ({
+                    x: point.x + pos.x,
+                    y: point.y + pos.y,
+                })),
+                x: pos.x,
+                y: pos.y,
+            }));
+            return [...otherElements, ...updatedElements];
+        });
+    };
 
     return (
         <>
@@ -372,13 +533,12 @@ function MainNotesLayer(
                             x={textItem.x}
                             y={textItem.y}
                             fontSize={textItem.fontSize}
-                            fill={
-                                selectedTextId === textItem.id
-                                    ? "blue"
-                                    : "black"
-                            }
+                            id={textItem.id}
+                            draggable
+                            onDragMove={handleDragMove}
                         />
                     ))}
+                <CustomTransformer selectedShapeIds={selectedTextId} />
             </Layer>
         </>
     );

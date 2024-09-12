@@ -180,6 +180,24 @@ function TextLayer(
                 fontFamily: "Courier New",
                 outgoingArrowIds: [],
                 incomingArrowIds: [],
+                points: [
+                    {
+                        x: textElement.lineX + 600,
+                        y: textElement.lineY * fontSize + 200,
+                    },
+                    {
+                        x: textElement.lineX + textElement.lineWidth + 600,
+                        y: textElement.lineY * fontSize + 200,
+                    },
+                    {
+                        x: textElement.lineX + textElement.lineWidth + 600,
+                        y: textElement.lineY * fontSize + 200 + fontSize,
+                    },
+                    {
+                        x: textElement.lineX + 600,
+                        y: textElement.lineY * fontSize + 200 + fontSize,
+                    }
+                ]
             };
         });
     };

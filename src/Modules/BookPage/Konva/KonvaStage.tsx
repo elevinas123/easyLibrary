@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 import {
     activeToolAtom,
     canvaElementsAtom,
+    HighlightPoints,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
@@ -37,6 +38,7 @@ export type CanvaElementSkeleton = {
     id: string;
     outgoingArrowIds: string[];
     incomingArrowIds: string[];
+    points: HighlightPoints[];
 };
 export type StartType = "bookText" | "text" | null;
 
