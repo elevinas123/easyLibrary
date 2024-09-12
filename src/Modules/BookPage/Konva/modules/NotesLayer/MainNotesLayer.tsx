@@ -192,64 +192,60 @@ function MainNotesLayer(
     // Handle Mouse Move for Arrows (Existing)
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool !== "Arrow") return;
-        if (!newArrow) {
-            const pos = e.target?.getStage()?.getPointerPosition();
-            if (!pos) return;
-            const highlightsUnderMouse = textItems.filter(
-                (textItem) =>
-                    pos.x >= textItem.x - 10 &&
-                    pos.x <= textItem.x + textItem.width + 10 &&
-                    pos.y >= textItem.y - 10 &&
-                    pos.y <= textItem.y + textItem.height + 10
+
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
+        const highlightsUnderMouse = textItems.filter(
+            (textItem) =>
+                pos.x >= textItem.x - 10 &&
+                pos.x <= textItem.x + textItem.width + 10 &&
+                pos.y >= textItem.y - 10 &&
+                pos.y <= textItem.y + textItem.height + 10
+        );
+
+        if (highlightsUnderMouse.length > 0) {
+            const firstHighlight = highlightsUnderMouse[0];
+
+            // Check if the first highlight under the mouse is already hovered
+            const isAlreadyHovered = hoveredHighlight.some(
+                (highlight) => highlight.id === firstHighlight.id
             );
-
-            if (highlightsUnderMouse.length > 0) {
-                const firstHighlight = highlightsUnderMouse[0];
-
-                // Check if the first highlight under the mouse is already hovered
-                const isAlreadyHovered = hoveredHighlight.some(
-                    (highlight) => highlight.id === firstHighlight.id
-                );
-                const updatedHighlight = {
-                    points: [
-                        { x: firstHighlight.x, y: firstHighlight.y },
-                        {
-                            x: firstHighlight.x + firstHighlight.width,
-                            y: firstHighlight.y,
-                        },
-                        {
-                            x: firstHighlight.x + firstHighlight.width,
-                            y: firstHighlight.y + firstHighlight.height,
-                        },
-                        {
-                            x: firstHighlight.x,
-                            y: firstHighlight.y + firstHighlight.height,
-                        },
-                    ],
-                    id: firstHighlight.id,
-                };
-                if (isAlreadyHovered) {
-                    // If it's already hovered, refresh its position in the hovered list
-                    setHoveredHighlight((prevHighlights) => [
-                        ...prevHighlights.filter(
-                            (highlight) => highlight.id !== firstHighlight.id
-                        ),
-                        updatedHighlight,
-                    ]);
-                } else {
-                    // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
-                    setHoveredHighlight((prevHighlights) => [
-                        ...prevHighlights,
-                        updatedHighlight,
-                    ]);
-                }
+            const updatedHighlight = {
+                points: [
+                    { x: firstHighlight.x, y: firstHighlight.y },
+                    {
+                        x: firstHighlight.x + firstHighlight.width,
+                        y: firstHighlight.y,
+                    },
+                    {
+                        x: firstHighlight.x + firstHighlight.width,
+                        y: firstHighlight.y + firstHighlight.height,
+                    },
+                    {
+                        x: firstHighlight.x,
+                        y: firstHighlight.y + firstHighlight.height,
+                    },
+                ],
+                id: firstHighlight.id,
+            };
+            if (isAlreadyHovered) {
+                // If it's already hovered, refresh its position in the hovered list
+                setHoveredHighlight((prevHighlights) => [
+                    ...prevHighlights.filter(
+                        (highlight) => highlight.id !== firstHighlight.id
+                    ),
+                    updatedHighlight,
+                ]);
             } else {
-                // If no highlights are under the mouse and hoveredHighlight exists, do nothing
-                if (!hoveredHighlight) {
-                    return;
-                }
+                // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
+                setHoveredHighlight((prevHighlights) => [
+                    ...prevHighlights,
+                    updatedHighlight,
+                ]);
             }
-        } else {
+            if (!newArrow) {
+                return;
+            }
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
             const updatedArrow = {
