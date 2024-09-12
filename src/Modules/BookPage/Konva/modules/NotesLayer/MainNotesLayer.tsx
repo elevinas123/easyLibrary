@@ -11,22 +11,21 @@ import {
 import {
     activeToolAtom,
     arrowsAtom,
+    canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
-    textItemsAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 
 import { Html } from "react-konva-utils";
-import { ArrowElement, StartType } from "../../KonvaStage";
+import { ArrowElement, StartType, TextElement } from "../../KonvaStage";
 
 type MainNotesLayerProps = {
     // Define your prop types here
 };
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
-
 
 export type MainNotesLayerRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
@@ -43,10 +42,10 @@ function MainNotesLayer(
     const [activeTool] = useAtom(activeToolAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [newArrow, setNewArrow] = useAtom(newArrowAtom);
-    const [textItems, setTextItems] = useAtom(textItemsAtom);
     const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const [canvasElements, setCanvaElements] = useAtom(canvaElementsAtom);
 
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
@@ -82,7 +81,7 @@ function MainNotesLayer(
                 if (highlightsUnderMouse[0].rects) {
                     type = "bookText";
                 } else {
-                    type = "userText";
+                    type = "text";
                 }
             }
             const arrow: ArrowElement = {
@@ -95,24 +94,27 @@ function MainNotesLayer(
                 type: "arrow",
                 text: null,
                 fill: "black",
-
             };
             setNewArrow(arrow);
         } else if (activeTool === "Text") {
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
             const id = uuidv4();
-            const newItem = {
+            const newItem: TextElement = {
                 id,
                 text: "New Text",
                 x: pos.x,
                 y: pos.y,
                 fontSize: 24,
-                isSelected: true,
                 width: 24 * 8 + 10,
                 height: 24 + 10,
+                type: "text",
+                fontFamily: "Arial",
+                fill: "black",
+                outgoingArrowIds: [],
+                incomingArrowIds: [],
             };
-            setTextItems([...textItems, newItem]);
+            setCanvaElements((elements) => [...elements, newItem]);
             setSelectedTextId(id);
             setIsEditing(true);
         } else {
@@ -123,9 +125,13 @@ function MainNotesLayer(
         console.log(inputRef.current, isEditing, selectedTextId);
         if (inputRef.current && isEditing && selectedTextId) {
             console.log("cia");
+            const textItems = canvasElements.filter(
+                (item) => item.type === "text"
+            );
             const selectedItem = textItems.filter(
                 (item) => item.id === selectedTextId
             );
+
             if (selectedItem && selectedItem.length > 0) {
                 const textItem = selectedItem[0];
                 const input = inputRef.current;
@@ -143,14 +149,14 @@ function MainNotesLayer(
             }
         }
         handleInputBlur();
-    }, [isEditing, selectedTextId, textItems]);
+    }, [isEditing, selectedTextId, canvasElements]);
 
     // Handle Text Double Click for Editing
 
     // Handle Input Change and Save Text
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!selectedTextId) return;
-        const updatedTextItems = textItems.map((item) =>
+        const updatedTextItems = canvasElements.map((item) =>
             item.id === selectedTextId
                 ? {
                       ...item,
@@ -159,7 +165,7 @@ function MainNotesLayer(
                   }
                 : item
         );
-        setTextItems(updatedTextItems);
+        setCanvaElements(updatedTextItems);
     };
 
     const handleInputBlur = () => {
@@ -173,7 +179,7 @@ function MainNotesLayer(
         if (isEditing) return;
         if (e.key === "Delete" || e.key === "Backspace") {
             if (selectedTextId) {
-                setTextItems((prevItems) =>
+                setCanvaElements((prevItems) =>
                     prevItems.filter((item) => item.id !== selectedTextId)
                 );
                 setSelectedTextId(null);
@@ -187,7 +193,7 @@ function MainNotesLayer(
 
         const pos = e.target?.getStage()?.getPointerPosition();
         if (!pos) return;
-        const highlightsUnderMouse = textItems.filter(
+        const highlightsUnderMouse = canvasElements.filter(
             (textItem) =>
                 pos.x >= textItem.x - 10 &&
                 pos.x <= textItem.x + textItem.width + 10 &&
@@ -271,7 +277,6 @@ function MainNotesLayer(
                 );
             }
         });
-        console.log("arrowHoveredOn", highlightsUnderMouse);
         if (
             highlightsUnderMouse.length > 0 &&
             highlightsUnderMouse[0].id !== arrow.startId
@@ -280,7 +285,7 @@ function MainNotesLayer(
             if (highlightsUnderMouse[0].rects) {
                 arrow.endType = "bookText";
             } else {
-                arrow.endType = "userText";
+                arrow.endType = "text";
             }
         }
 
@@ -292,7 +297,7 @@ function MainNotesLayer(
         console.log("arrows", arrows);
     }, [arrows]);
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
-        textItems.forEach((textItem) => {
+        canvasElements.forEach((textItem) => {
             const isInsideXBounds =
                 e.evt.x >= textItem.x && e.evt.x <= textItem.x + textItem.width;
             const isInsideYBounds =
@@ -358,16 +363,22 @@ function MainNotesLayer(
                     />
                 )}
                 {/* Render text items */}
-                {textItems.map((textItem) => (
-                    <Text
-                        key={textItem.id}
-                        text={textItem.text}
-                        x={textItem.x}
-                        y={textItem.y}
-                        fontSize={textItem.fontSize}
-                        fill={selectedTextId === textItem.id ? "blue" : "black"}
-                    />
-                ))}
+                {canvasElements
+                    .filter((element) => element.type === "text")
+                    .map((textItem) => (
+                        <Text
+                            key={textItem.id}
+                            text={textItem.text}
+                            x={textItem.x}
+                            y={textItem.y}
+                            fontSize={textItem.fontSize}
+                            fill={
+                                selectedTextId === textItem.id
+                                    ? "blue"
+                                    : "black"
+                            }
+                        />
+                    ))}
             </Layer>
         </>
     );

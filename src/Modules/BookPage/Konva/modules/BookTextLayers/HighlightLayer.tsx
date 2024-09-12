@@ -114,7 +114,6 @@ function HighlightLayer(
     );
 
     useEffect(() => {
-        console.log(createHighlightElements());
         setHighlightElements(createHighlightElements());
     }, [highlights]);
     useEffect(() => {

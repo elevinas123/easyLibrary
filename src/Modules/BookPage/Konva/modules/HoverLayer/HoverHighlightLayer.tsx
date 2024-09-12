@@ -12,7 +12,6 @@ export default function HoverHighlightLayer({}: HoverHighlightLayerProps) {
 
     const [renderedHover, setRenderedHover] = useState<JSX.Element[]>([]);
     const createHighlightHover = () => {
-        console.log("hoveredHighlight", hoveredItems);
 
         if (!hoveredItems) {
             setRenderedHover([]);

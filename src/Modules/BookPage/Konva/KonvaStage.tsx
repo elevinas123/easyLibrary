@@ -38,14 +38,14 @@ export type CanvaElementSkeleton = {
     outgoingArrowIds: string[];
     incomingArrowIds: string[];
 };
-export type StartType = "bookText" | "userText" | null;
+export type StartType = "bookText" | "text" | null;
 
 export type CurveSkeleton = {
-    points: number[]
+    points: number[];
     id: string;
-    fill: string
-    text: null | string
-}
+    fill: string;
+    text: null | string;
+};
 export interface ArrowElement extends CurveSkeleton {
     type: "arrow";
     points: number[];

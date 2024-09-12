@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
-import { arrowsAtom, textItemsAtom } from "./Konva/konvaAtoms";
+import { arrowsAtom, canvaElementsAtom, highlightsAtom } from "./Konva/konvaAtoms";
 import { useEffect, useState } from "react";
-import { StartType } from "./Konva/modules/NotesLayer/MainNotesLayer";
+import { StartType } from "./Konva/KonvaStage";
 
 
 type Note = {
@@ -16,27 +16,40 @@ type Note = {
 };
 export default function Notes() {
     const [arrows] = useAtom(arrowsAtom);
-    const [textItems] = useAtom(textItemsAtom);
+    const [highlights] = useAtom(highlightsAtom);
+    const [canvasElements] = useAtom(canvaElementsAtom);
     const [notes, setNotes] = useState<Note[]>([]);
     useEffect(() => {
-        const validArrows = arrows.filter(
-            (arrow) =>
-                arrow.startType === "userText" && arrow.endType === "userText"
-        );
-        const mappedArrows = validArrows.map((arrow) => {
-            const startText = textItems.filter(
-                (text) => text.id === arrow.startId
-            );
-            const endText = textItems.filter((text) => text.id === arrow.endId);
-            if (!startText || startText.length < 1) return false;
-            if (!endText || endText.length < 1) return false;
-            return {
-                ...arrow,
-                endText: endText[0].text,
-                startText: startText[0].text
+        console.log("arrows changed", arrows);
+        const validArrows = arrows.filter((arrow) =>  arrow.startId !== null && arrow.endId !== null );
+        console.log("valid arrows", validArrows);
+        const mappedNotes = validArrows.map((arrow) => {
+            let startText: undefined | string = ""
+            let endText: undefined | string = ""
+            if (arrow.startType === "text") {
+                startText = canvasElements.find(
+                    (element) => element.id === arrow.startId
+                )?.text;
             }
-        });
-        setNotes(mappedArrows.filter((arrow) => arrow !== false));
+            if (arrow.endType === "text") {
+                endText = canvasElements.find(
+                    (element) => element.id === arrow.endId
+                )?.text;
+            }
+            return {
+                endText: endText || "",
+                startText: startText || "",
+                points: arrow.points,
+                arrowId: arrow.id,
+                startId: arrow.startId,
+                endId: arrow.endId,
+                startType: arrow.startType,
+                endType: arrow.endType,
+            };
+        })
+        console.log(mappedNotes)
+        setNotes(mappedNotes)
+        
     }, [arrows]);
     return (
         <div className="w-full p-4 bg-zinc-900 rounded-lg text-gray-300">
