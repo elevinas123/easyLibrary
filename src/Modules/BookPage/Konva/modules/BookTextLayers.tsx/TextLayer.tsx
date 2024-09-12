@@ -55,6 +55,8 @@ function TextLayer(
         () => ({
             handleMouseDown(e: KonvaEventObject<MouseEvent>) {
                 if (activeTool !== "Select") return;
+                const pos = e.target?.getStage()?.getPointerPosition();
+                if (!pos) return;
                 const currentId = uuidv4();
                 setCurrentHighlightId(currentId);
                 setHighlights((oldHighlights) => [
@@ -64,7 +66,7 @@ function TextLayer(
                         startingX: calculateXPositionInText(
                             e.target.attrs.text,
                             e.target.attrs.x + offsetPosition.x,
-                            e.evt.x
+                            pos.x
                         ),
                         startingY: Math.floor(
                             (e.target.attrs.y - 200) / fontSize
@@ -72,7 +74,7 @@ function TextLayer(
                         endX: calculateXPositionInText(
                             e.target.attrs.text,
                             e.target.attrs.x + offsetPosition.x,
-                            e.evt.x
+                            pos.x
                         ),
                         endY: Math.floor((e.target.attrs.y - 200) / fontSize),
                     },
@@ -82,7 +84,8 @@ function TextLayer(
                 if (!currentHighlightId) {
                     return;
                 }
-
+                const pos = e.target?.getStage()?.getPointerPosition();
+                if (!pos) return;
                 setHighlights((highlights) => {
                     const newHighlights = [...highlights];
                     const highlight = newHighlights.find(
@@ -94,8 +97,12 @@ function TextLayer(
                     const xPos = calculateXPositionInText(
                         e.target.attrs.text,
                         e.target.attrs.x + offsetPosition.x,
-                        e.evt.x
+                        pos.x
                     );
+                    console.log("xPos", xPos);
+                    console.log("xPosE", e.target.attrs.x);
+                    console.log("xPosX", offsetPosition.x);
+                    console.log("xPosEVT", e.evt.x);
                     const yPos = Math.floor(
                         (e.target.attrs.y - 200) / fontSize
                     );

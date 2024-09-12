@@ -63,17 +63,16 @@ function HighlightLayer(
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
                 if (activeTool !== "Arrow") return;
-                const mouseX = e.evt.x;
-                const mouseY = e.evt.y;
-
+                const pos = e.target?.getStage()?.getPointerPosition();
+                if (!pos) return;
                 const highlightsUnderMouse = highlightElements.filter(
                     (highlight) =>
                         highlight.rects.some((rect) => {
                             return (
-                                mouseX >= rect.x - 10 &&
-                                mouseX <= rect.x + rect.width + 10 &&
-                                mouseY >= rect.y - 10 &&
-                                mouseY <= rect.y + rect.height + 10
+                                pos.x >= rect.x - 10 &&
+                                pos.x <= rect.x + rect.width + 10 &&
+                                pos.y >= rect.y - 10 &&
+                                pos.y <= rect.y + rect.height + 10
                             );
                         })
                 );
