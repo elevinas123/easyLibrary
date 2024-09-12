@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { arrowsAtom, TextItem, textItemsAtom } from "./Konva/konvaAtoms";
+import { arrowsAtom, textItemsAtom } from "./Konva/konvaAtoms";
 import { useEffect, useState } from "react";
 import { StartType } from "./Konva/modules/NotesLayer/MainNotesLayer";
 

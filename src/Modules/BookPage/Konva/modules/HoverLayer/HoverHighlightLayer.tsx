@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { activeToolAtom, hoveredHighlightAtom } from "../../konvaAtoms";
+import {  hoveredHighlightAtom } from "../../konvaAtoms";
 import { Layer, Shape } from "react-konva";
 
 type HoverHighlightLayerProps = {
@@ -10,7 +10,6 @@ type HoverHighlightLayerProps = {
 export default function HoverHighlightLayer({}: HoverHighlightLayerProps) {
     const [hoveredHighlight] = useAtom(hoveredHighlightAtom);
 
-    const [activeTool] = useAtom(activeToolAtom);
     const [renderedHover, setRenderedHover] = useState<JSX.Element[]>([]);
     const createHighlightHover = () => {
         console.log("hoveredHighlight", hoveredHighlight);

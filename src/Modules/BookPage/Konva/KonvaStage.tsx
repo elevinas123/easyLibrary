@@ -5,11 +5,11 @@ import { activeToolAtom, offsetPositionAtom } from "./konvaAtoms";
 import Tools from "./components/Tools";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
 import { KonvaEventObject } from "konva/lib/Node";
-import MainLayer from "./modules/BookTextLayers.tsx/MainLayer";
+import MainLayer from "./modules/BookTextLayers/MainLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
-import HoverHighlightLayer from "./modules/HoverLayer.tsx/HoverHighlightLayer";
+import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 
 type KonvaStageProps = {
     bookElements: (HtmlObject | null)[];

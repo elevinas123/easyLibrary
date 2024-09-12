@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { Layer, Text } from "react-konva";
+import { Text } from "react-konva";
 
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
@@ -99,10 +99,6 @@ function TextLayer(
                         e.target.attrs.x + offsetPosition.x,
                         pos.x
                     );
-                    console.log("xPos", xPos);
-                    console.log("xPosE", e.target.attrs.x);
-                    console.log("xPosX", offsetPosition.x);
-                    console.log("xPosEVT", e.evt.x);
                     const yPos = Math.floor(
                         (e.target.attrs.y - 200) / fontSize
                     );
@@ -120,7 +116,6 @@ function TextLayer(
                 });
             },
             handleMouseUp() {
-                console.log("triggered");
                 setCurrentHighlightId(null);
             },
         }),

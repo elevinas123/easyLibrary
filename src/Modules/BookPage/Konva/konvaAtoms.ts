@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
-import { HighlightRect } from "./modules/BookTextLayers.tsx/HighlightLayer";
+import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
 import { ArrowItem } from "./modules/NotesLayer/MainNotesLayer";
 
 export type ArrowHover = {
@@ -44,4 +44,4 @@ export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);
 export const hoveredHighlightAtom = atom<ArrowHover[]>([]);
 export const arrowsAtom = atom<ArrowItem[]>([]);
-export const textItemsAtom = atom<TextItem[]>([])
+export const textItemsAtom = atom<TextItem[]>([]);

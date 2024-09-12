@@ -5,7 +5,7 @@ import {
     useImperativeHandle,
     useState,
 } from "react";
-import { Layer, Rect } from "react-konva";
+import {  Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";

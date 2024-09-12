@@ -8,7 +8,6 @@ import HighlightLayer, { HighlightLayerRef } from "./HighlightLayer";
 import TextLayer, { TextLayerRef } from "./TextLayer";
 import { Layer } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import HoverHighlightLayer from "../HoverLayer.tsx/HoverHighlightLayer";
 
 type MainLayerProps = {
     bookElements: (HtmlObject | null)[];
@@ -119,11 +118,10 @@ export default function MainLayer({
             textComponentRef.current.handleMouseMove(e);
         }
         if (highlightComponentRef.current) {
-            console.log("cia");
             highlightComponentRef.current.handleMouseMove(e);
         }
     };
-    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseUp = () => {
         if (textComponentRef.current) {
             textComponentRef.current.handleMouseUp();
         }
