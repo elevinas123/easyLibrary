@@ -1,10 +1,16 @@
-import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+    ForwardedRef,
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useState,
+} from "react";
 import { Text } from "react-konva";
+import { v4 as uuidv4 } from "uuid";
 
-import { VisibleArea } from "../../KonvaStage";
+import { BookTextElement, VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
 import { KonvaEventObject } from "konva/lib/Node";
-import { v4 as uuidv4 } from "uuid";
 import { useAtom } from "jotai";
 import {
     activeToolAtom,
@@ -14,16 +20,6 @@ import {
 } from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
 
-type RenderedText = {
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-    text: string;
-    fontSize: number;
-    fill: string;
-    fontFamily: string;
-};
 type TextLayerProps = {
     visibleArea: VisibleArea;
     fontSize: number;
@@ -41,7 +37,7 @@ function TextLayer(
     { visibleArea, fontSize, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
-    const [textElements, setTextElements] = useState<RenderedText[]>([]);
+    const [textElements, setTextElements] = useState<BookTextElement[]>([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [_, setHighlights] = useAtom(highlightsAtom);
@@ -164,7 +160,7 @@ function TextLayer(
                 ))
         );
     }, [visibleArea, textElements]);
-    const createTextElements = () => {
+    const createTextElements = (): BookTextElement[] => {
         // Process the text elements from the book
 
         // Render the text elements with highlights
@@ -172,6 +168,8 @@ function TextLayer(
             // Check if this textElement falls within any highlight region
 
             return {
+                id: uuidv4(),
+                type: "bookText",
                 x: textElement.lineX + 600,
                 y: textElement.lineY * fontSize + 200,
                 width: textElement.lineWidth,
@@ -180,6 +178,8 @@ function TextLayer(
                 fontSize: fontSize,
                 fill: "white",
                 fontFamily: "Courier New",
+                outgoingArrowIds: [],
+                incomingArrowIds: [],
             };
         });
     };

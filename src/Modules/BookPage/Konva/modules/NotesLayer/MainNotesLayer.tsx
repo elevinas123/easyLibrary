@@ -11,28 +11,22 @@ import {
 import {
     activeToolAtom,
     arrowsAtom,
-    hoveredHighlightAtom,
+    hoveredItemsAtom,
+    newArrowAtom,
     textItemsAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 
 import { Html } from "react-konva-utils";
+import { ArrowElement, StartType } from "../../KonvaStage";
 
 type MainNotesLayerProps = {
     // Define your prop types here
 };
 
 export type ShapeType = "Rectangle" | "Circle" | "Arrow" | "Line" | "Text";
-export type StartType = "bookText" | "userText" | null;
-export type ArrowItem = {
-    points: number[];
-    arrowId: string;
-    startId: string | null;
-    endId: string | null;
-    startType: StartType;
-    endType: StartType;
-};
+
 
 export type MainNotesLayerRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
@@ -48,12 +42,11 @@ function MainNotesLayer(
 ) {
     const [activeTool] = useAtom(activeToolAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
-    const [newArrow, setNewArrow] = useState<ArrowItem | null>(null);
+    const [newArrow, setNewArrow] = useAtom(newArrowAtom);
     const [textItems, setTextItems] = useAtom(textItemsAtom);
     const [selectedTextId, setSelectedTextId] = useState<string | null>(null); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
-    const [hoveredHighlight, setHoveredHighlight] =
-        useAtom(hoveredHighlightAtom);
+    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
 
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
@@ -63,27 +56,25 @@ function MainNotesLayer(
             if (!pos) return;
             const id = uuidv4();
 
-            const highlightsUnderMouse = hoveredHighlight.filter(
-                (highlight) => {
-                    if (highlight.rects) {
-                        return highlight.rects.some((rect) => {
-                            return (
-                                pos.x >= rect.x - 10 &&
-                                pos.x <= rect.x + rect.width + 10 &&
-                                pos.y >= rect.y - 10 &&
-                                pos.y <= rect.y + rect.height + 10
-                            );
-                        });
-                    } else {
+            const highlightsUnderMouse = hoveredItems.filter((highlight) => {
+                if (highlight.rects) {
+                    return highlight.rects.some((rect) => {
                         return (
-                            pos.x >= highlight.points[0].x - 10 &&
-                            pos.x <= highlight.points[1].x &&
-                            pos.y >= highlight.points[0].y - 10 &&
-                            pos.y <= highlight.points[2].y + 10
+                            pos.x >= rect.x - 10 &&
+                            pos.x <= rect.x + rect.width + 10 &&
+                            pos.y >= rect.y - 10 &&
+                            pos.y <= rect.y + rect.height + 10
                         );
-                    }
+                    });
+                } else {
+                    return (
+                        pos.x >= highlight.points[0].x - 10 &&
+                        pos.x <= highlight.points[1].x &&
+                        pos.y >= highlight.points[0].y - 10 &&
+                        pos.y <= highlight.points[2].y + 10
+                    );
                 }
-            );
+            });
             let startId: null | string = null;
             let type: StartType = null;
             if (highlightsUnderMouse.length > 0) {
@@ -94,13 +85,17 @@ function MainNotesLayer(
                     type = "userText";
                 }
             }
-            const arrow = {
-                arrowId: id,
+            const arrow: ArrowElement = {
+                id: id,
                 startId: startId,
                 endId: null,
                 points: [pos.x, pos.y],
                 startType: type,
                 endType: null,
+                type: "arrow",
+                text: null,
+                fill: "black",
+
             };
             setNewArrow(arrow);
         } else if (activeTool === "Text") {
@@ -135,7 +130,6 @@ function MainNotesLayer(
                 const textItem = selectedItem[0];
                 const input = inputRef.current;
 
-                console.log("input", inputRef);
                 input.style.left = `${textItem.x}px`;
                 input.style.top = `${textItem.y}px`;
                 input.style.fontSize = `${textItem.fontSize}px`;
@@ -150,9 +144,7 @@ function MainNotesLayer(
         }
         handleInputBlur();
     }, [isEditing, selectedTextId, textItems]);
-    useEffect(() => {
-        console.log("isEditing", isEditing);
-    }, [isEditing]);
+
     // Handle Text Double Click for Editing
 
     // Handle Input Change and Save Text
@@ -207,7 +199,7 @@ function MainNotesLayer(
             const firstHighlight = highlightsUnderMouse[0];
 
             // Check if the first highlight under the mouse is already hovered
-            const isAlreadyHovered = hoveredHighlight.some(
+            const isAlreadyHovered = hoveredItems.some(
                 (highlight) => highlight.id === firstHighlight.id
             );
             const updatedHighlight = {
@@ -230,7 +222,7 @@ function MainNotesLayer(
             };
             if (isAlreadyHovered) {
                 // If it's already hovered, refresh its position in the hovered list
-                setHoveredHighlight((prevHighlights) => [
+                setHoveredItems((prevHighlights) => [
                     ...prevHighlights.filter(
                         (highlight) => highlight.id !== firstHighlight.id
                     ),
@@ -238,22 +230,20 @@ function MainNotesLayer(
                 ]);
             } else {
                 // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
-                setHoveredHighlight((prevHighlights) => [
+                setHoveredItems((prevHighlights) => [
                     ...prevHighlights,
                     updatedHighlight,
                 ]);
             }
-            if (!newArrow) {
-                return;
-            }
-            const pos = e.target?.getStage()?.getPointerPosition();
-            if (!pos) return;
-            const updatedArrow = {
-                ...newArrow,
-                points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
-            };
-            setNewArrow(updatedArrow);
         }
+        if (!newArrow) {
+            return;
+        }
+        const updatedArrow = {
+            ...newArrow,
+            points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
+        };
+        setNewArrow(updatedArrow);
     };
 
     // Handle Mouse Up for Arrows (Existing)
@@ -262,7 +252,7 @@ function MainNotesLayer(
         const pos = e.target?.getStage()?.getPointerPosition();
         if (!pos) return;
         let arrow = newArrow;
-        const highlightsUnderMouse = hoveredHighlight.filter((highlight) => {
+        const highlightsUnderMouse = hoveredItems.filter((highlight) => {
             if (highlight.rects) {
                 return highlight.rects.some((rect) => {
                     return (
@@ -356,7 +346,17 @@ function MainNotesLayer(
                         lineJoin="round"
                     />
                 ))}
-
+                {newArrow && newArrow.points && (
+                    <Arrow
+                        points={newArrow.points}
+                        stroke="black"
+                        fill="black"
+                        pointerLength={10}
+                        pointerWidth={10}
+                        lineCap="round"
+                        lineJoin="round"
+                    />
+                )}
                 {/* Render text items */}
                 {textItems.map((textItem) => (
                     <Text

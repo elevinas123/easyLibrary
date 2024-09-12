@@ -5,7 +5,7 @@ import {
     useImperativeHandle,
     useState,
 } from "react";
-import {  Rect } from "react-konva";
+import { Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
@@ -14,7 +14,7 @@ import {
     activeToolAtom,
     HighlightPoints,
     highlightsAtom,
-    hoveredHighlightAtom,
+    hoveredItemsAtom,
 } from "../../konvaAtoms";
 import { ProcessedElement } from "./MainLayer";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -23,7 +23,10 @@ export type FullHighlight = {
     rects: HighlightRect[];
     points: HighlightPoints[];
     id: string;
+    type: "bookText";
 };
+
+
 export type HighlightRect = {
     y: number;
     x: number;
@@ -54,8 +57,7 @@ function HighlightLayer(
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
-    const [hoveredHighlight, setHoveredHighlight] =
-        useAtom(hoveredHighlightAtom);
+    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [activeTool] = useAtom(activeToolAtom);
 
     useImperativeHandle(
@@ -80,13 +82,13 @@ function HighlightLayer(
                     const firstHighlight = highlightsUnderMouse[0];
 
                     // Check if the first highlight under the mouse is already hovered
-                    const isAlreadyHovered = hoveredHighlight.some(
+                    const isAlreadyHovered = hoveredItems.some(
                         (highlight) => highlight.id === firstHighlight.id
                     );
 
                     if (isAlreadyHovered) {
                         // If it's already hovered, refresh its position in the hovered list
-                        setHoveredHighlight((prevHighlights) => [
+                        setHoveredItems((prevHighlights) => [
                             ...prevHighlights.filter(
                                 (highlight) =>
                                     highlight.id !== firstHighlight.id
@@ -95,20 +97,20 @@ function HighlightLayer(
                         ]);
                     } else {
                         // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
-                        setHoveredHighlight((prevHighlights) => [
+                        setHoveredItems((prevHighlights) => [
                             ...prevHighlights,
                             firstHighlight,
                         ]);
                     }
                 } else {
                     // If no highlights are under the mouse and hoveredHighlight exists, do nothing
-                    if (!hoveredHighlight) {
+                    if (!hoveredItems) {
                         return;
                     }
                 }
             },
         }),
-        [highlightElements, hoveredHighlight, activeTool]
+        [highlightElements, hoveredItems, activeTool]
     );
 
     useEffect(() => {
@@ -183,6 +185,7 @@ function HighlightLayer(
                     id: uuidv4(),
                     points: points,
                     rects: rects,
+                    type: "bookText",
                 };
             }
             const rects: HighlightRect[] = [];
@@ -217,7 +220,12 @@ function HighlightLayer(
                 });
             }
 
-            return { id: uuidv4(), points: points, rects: rects };
+            return {
+                id: uuidv4(),
+                points: points,
+                rects: rects,
+                type: "bookText",
+            };
         });
     };
 

@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { useAtom } from "jotai";
-import { activeToolAtom, offsetPositionAtom } from "./konvaAtoms";
+import {
+    activeToolAtom,
+    canvaElementsAtom,
+    hoveredItemsAtom,
+    newArrowAtom,
+    offsetPositionAtom,
+} from "./konvaAtoms";
 import Tools from "./components/Tools";
 import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -20,6 +26,61 @@ export type VisibleArea = {
     width: number;
     height: number;
 };
+// Base skeleton for all elements
+export type CanvaElementSkeleton = {
+    text: string;
+    fill: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    id: string;
+    outgoingArrowIds: string[];
+    incomingArrowIds: string[];
+};
+export type StartType = "bookText" | "userText" | null;
+
+export type CurveSkeleton = {
+    points: number[]
+    id: string;
+    fill: string
+    text: null | string
+}
+export interface ArrowElement extends CurveSkeleton {
+    type: "arrow";
+    points: number[];
+    startId: string | null;
+    endId: string | null;
+    startType: StartType;
+    endType: StartType;
+}
+
+// Specific element types
+export interface BookTextElement extends CanvaElementSkeleton {
+    type: "bookText";
+    text: string;
+    fontSize: number;
+    fontFamily: string;
+}
+export interface TextElement extends CanvaElementSkeleton {
+    type: "text";
+    text: string;
+    fontFamily: string;
+    fontSize: number;
+}
+
+export interface RectElement extends CanvaElementSkeleton {
+    type: "rect";
+}
+
+export interface CircleElement extends CanvaElementSkeleton {
+    radius: number;
+    type: "circle";
+}
+
+// CanvaElement is now a union of all possible element types
+export type CanvaElement = TextElement | RectElement | CircleElement;
+
 export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const fontSize = 24;
     const width = 1200;
@@ -30,6 +91,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const viewportBuffer = 200;
     const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
+    const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const [newArrow] = useAtom(newArrowAtom);
+    const [canvaElemets, setCanvaElements] = useAtom(canvaElementsAtom);
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
@@ -148,8 +212,49 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             handleMouseDownForPan();
         }
     };
+    const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
+
+        const isPointInPolygon = (
+            point: { x: number; y: number },
+            polygon: { x: number; y: number }[]
+        ) => {
+            let isInside = false;
+            for (
+                let i = 0, j = polygon.length - 1;
+                i < polygon.length;
+                j = i++
+            ) {
+                const xi = polygon[i].x,
+                    yi = polygon[i].y;
+                const xj = polygon[j].x,
+                    yj = polygon[j].y;
+
+                const intersect =
+                    yi > point.y !== yj > point.y &&
+                    point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+                if (intersect) isInside = !isInside;
+            }
+            return isInside;
+        };
+
+        setHoveredItems((prevItems) => {
+            return prevItems.filter((item) => {
+                const isInPolygon = isPointInPolygon(pos, item.points);
+                const isArrowRelated =
+                    newArrow &&
+                    (item.id === newArrow.startId ||
+                        item.id === newArrow.endId);
+                return (
+                    activeTool === "Arrow" && (isInPolygon || isArrowRelated)
+                );
+            });
+        });
+    };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        removeHoversNotUnderMouse(e);
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleMouseMove(e);
         }

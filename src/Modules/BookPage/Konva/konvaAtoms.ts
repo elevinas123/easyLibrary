@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
-import { ArrowItem } from "./modules/NotesLayer/MainNotesLayer";
+import { ArrowElement, CanvaElement } from "./KonvaStage";
 
 export type ArrowHover = {
     points: HighlightPoints[];
@@ -42,6 +42,8 @@ export type TextItem = {
 };
 export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);
-export const hoveredHighlightAtom = atom<ArrowHover[]>([]);
-export const arrowsAtom = atom<ArrowItem[]>([]);
+export const arrowsAtom = atom<ArrowElement[]>([]);
 export const textItemsAtom = atom<TextItem[]>([]);
+export const hoveredItemsAtom = atom<ArrowHover[]>([]);
+export const newArrowAtom = atom<ArrowElement | null>(null);
+export const canvaElementsAtom = atom<CanvaElement[]>([]);
