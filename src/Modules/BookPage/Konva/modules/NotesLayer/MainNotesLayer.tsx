@@ -155,9 +155,7 @@ function MainNotesLayer(
         }
     };
     useEffect(() => {
-        console.log(inputRef.current, isEditing, selectedTextId);
         if (inputRef.current && isEditing && selectedTextId) {
-            console.log("cia");
             const textItems = canvasElements.filter(
                 (item) => item.type === "text"
             );
@@ -328,11 +326,8 @@ function MainNotesLayer(
 
         setNewArrow(null);
     };
-    useEffect(() => {
-        console.log("arrows", arrows);
-    }, [arrows]);
+
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("double click");
         canvasElements.forEach((textItem) => {
             const isInsideXBounds =
                 e.evt.x >= textItem.x && e.evt.x <= textItem.x + textItem.width;
@@ -355,42 +350,73 @@ function MainNotesLayer(
         handleKeyDown,
         handleDoubleClick,
     }));
-    // Calculate the closest point on the element for arrow connection
-    // Find the closest point in the element's points array to the given position
-    // Calculate the closest point for the arrow to connect to the shape's edges
-    const calculateArrowPoint = (
+
+    // Helper function to find the closest point on a line segment
+    // Helper function to find the closest point on a line segment
+    // Helper function to find the closest point on a line segment
+    const closestPointOnLineSegment = (
+        p1: { x: number; y: number },
+        p2: { x: number; y: number },
+        pos: { x: number; y: number }
+    ) => {
+        // Vector from p1 to p2 (the direction of the line segment)
+        const lineVec = { x: p2.x - p1.x, y: p2.y - p1.y };
+
+        // Vector from p1 to the current position
+        const pointVec = { x: pos.x - p1.x, y: pos.y - p1.y };
+
+        // Length of the line squared
+        const lineLenSq = lineVec.x ** 2 + lineVec.y ** 2;
+
+        // If the line length is 0, return p1 as the closest point
+        if (lineLenSq === 0) return p1;
+
+        // Calculate the projection factor 't'
+        const t = (pointVec.x * lineVec.x + pointVec.y * lineVec.y) / lineLenSq;
+
+        // Clamp 't' to be between 0 and 1 to ensure the point lies on the line segment
+        const clampedT = Math.max(0, Math.min(1, t));
+
+        // Calculate the closest point on the segment
+        return {
+            x: p1.x + clampedT * lineVec.x,
+            y: p1.y + clampedT * lineVec.y,
+        };
+    };
+
+    const calculateClosestPointOnShape = (
         element: any,
         pos: { x: number; y: number }
     ) => {
-        const { x: elementX, y: elementY, width, height } = element;
+        const points = element.points; // Array of points making up the shape's path
+        console.log("Element points:", points); // Log the shape's points for debugging
+        let closestPoint = points[0]; // Start with the first point
+        let minDistance = Infinity; // Track the minimum distance
 
-        // Define points on the shape: corners (top-left, top-right, bottom-left, bottom-right)
-        const points = [
-            { x: elementX, y: elementY }, // Top-left
-            { x: elementX + width, y: elementY }, // Top-right
-            { x: elementX + width, y: elementY + height }, // Bottom-right
-            { x: elementX, y: elementY + height }, // Bottom-left
-        ];
+        // Iterate over each line segment (from point[i] to point[i+1])
+        for (let i = 0; i < points.length - 1; i++) {
+            const p1 = points[i];
+            const p2 = points[i + 1];
 
-        // Find the closest point to the current element's position
-        return findClosestPoint(points, pos);
-    };
+            const closestPointOnSegment = closestPointOnLineSegment(
+                p1,
+                p2,
+                pos
+            ); // Get closest point on the segment
+            const dist = distance(closestPointOnSegment, pos); // Calculate the distance
 
-    // Utility function to find the closest point to a position
-    const findClosestPoint = (
-        pointsArray: { x: number; y: number }[],
-        pos: { x: number; y: number }
-    ) => {
-        let closestPoint = pointsArray[0];
-        let minDistance = distance(pos, pointsArray[0]);
+            console.log(`Segment ${i}: Point 1:`, p1, ` Point 2:`, p2); // Debug the segment points
+            console.log(
+                `Closest point on segment ${i}:`,
+                closestPointOnSegment
+            );
 
-        pointsArray.forEach((point) => {
-            const dist = distance(pos, point);
+            // Update the closest point if the distance is smaller
             if (dist < minDistance) {
-                closestPoint = point;
+                closestPoint = closestPointOnSegment;
                 minDistance = dist;
             }
-        });
+        }
 
         return closestPoint;
     };
@@ -404,12 +430,14 @@ function MainNotesLayer(
             (point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2
         );
     };
-
+    // Handle drag move (updates the element's position during dragging)
     // Handle drag move (updates the element's position during dragging)
     const handleDragMove = (e: KonvaEventObject<MouseEvent>) => {
-        setArrows((arrows) => {
-            const pos = e.target.getPosition(); // The current position of the dragged element
+        // The element being dragged
+        const draggedElement = e.target;
 
+        // Update arrows based on the shape's points, not the mouse position
+        setArrows((arrows) => {
             const elementsSelected = canvasElements.filter((element) =>
                 selectedTextId.includes(element.id)
             );
@@ -437,16 +465,24 @@ function MainNotesLayer(
                     (el) => el.id === arrow.endId
                 );
 
-                // Update the start position if the arrow is connected to the start element
+                // Update the start position based on the start element's points
                 if (startElement && selectedTextId.includes(startElement.id)) {
-                    const startPoint = calculateArrowPoint(startElement, pos);
+                    const startPoint = calculateClosestPointOnShape(
+                        startElement,
+                        draggedElement.getPosition() // Relative to the shape itself, not the mouse
+                    );
+                    console.log("Start Point:", startPoint); // Debugging start point
                     updatedPoints[0] = startPoint.x;
                     updatedPoints[1] = startPoint.y;
                 }
 
-                // Update the end position if the arrow is connected to the end element
+                // Update the end position based on the end element's points
                 if (endElement && selectedTextId.includes(endElement.id)) {
-                    const endPoint = calculateArrowPoint(endElement, pos);
+                    const endPoint = calculateClosestPointOnShape(
+                        endElement,
+                        draggedElement.getPosition() // Again, relative to the shape
+                    );
+                    console.log("End Point:", endPoint); // Debugging end point
                     updatedPoints[2] = endPoint.x;
                     updatedPoints[3] = endPoint.y;
                 }
@@ -460,7 +496,7 @@ function MainNotesLayer(
             return [...otherArrows, ...updatedArrows];
         });
 
-        const pos = e.target.getPosition();
+        // Update the canvas element's points based on movement
         setCanvaElements((elements) => {
             const updatingElements = elements.filter((element) =>
                 selectedTextId.includes(element.id)
@@ -468,18 +504,30 @@ function MainNotesLayer(
             const otherElements = elements.filter(
                 (element) => !selectedTextId.includes(element.id)
             );
-            const updatedElements = updatingElements.map((el) => ({
-                ...el,
-                points: el.points.map((point) => ({
-                    x: point.x + pos.x,
-                    y: point.y + pos.y,
-                })),
-                x: pos.x,
-                y: pos.y,
-            }));
+
+            const updatedElements = updatingElements.map((el) => {
+                // Calculate the delta (how much the element moved)
+                const dx = draggedElement.x() - el.x;
+                const dy = draggedElement.y() - el.y;
+
+                // Update the points by applying the delta to each point in the shape
+                const updatedPoints = el.points.map((point) => ({
+                    x: point.x + dx,
+                    y: point.y + dy,
+                }));
+
+                return {
+                    ...el,
+                    points: updatedPoints, // Set the new points based on the movement
+                    x: draggedElement.x(), // Update the element's position
+                    y: draggedElement.y(),
+                };
+            });
+
             return [...otherElements, ...updatedElements];
         });
     };
+
 
     return (
         <>

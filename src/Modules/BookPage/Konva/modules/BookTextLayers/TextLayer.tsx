@@ -133,9 +133,7 @@ function TextLayer(
     useEffect(() => {
         setTextElements(createTextElements());
     }, [processedElements]);
-    useEffect(() => {
-        console.log("currentHighlightId", currentHighlightId);
-    }, [currentHighlightId]);
+
     useEffect(() => {
         setVirtualizedText(
             textElements
