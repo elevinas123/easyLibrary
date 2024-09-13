@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ArrowElement, CanvaElement, StartType } from "../KonvaStage";
-import { Arrow } from "react-konva";
+import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
 
 type ArrowShapeProps = {
@@ -348,85 +348,73 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             pos.y,
         ]);
     };
-    const throttle = (func: Function, limit: number) => {
-        let inThrottle: boolean;
-        return function (this: any, ...args: any[]) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => (inThrottle = false), limit);
+
+    const handleDragEnd = (
+        arrowId: string,
+        e: KonvaEventObject<MouseEvent>,
+        which: "end" | "start"
+    ) => {
+        const arrow = arrows.find((arrow) => arrow.id === arrowId);
+        const pos = e.target.getStage()?.getPointerPosition();
+        if (!pos) return;
+        if (!arrow) return;
+        const highlightsUnderMouse = hoveredItems.filter((highlight) => {
+            if (highlight.rects) {
+                return highlight.rects.some((rect) => {
+                    return (
+                        pos.x >= rect.x - 10 &&
+                        pos.x <= rect.x + rect.width + 10 &&
+                        pos.y >= rect.y - 10 &&
+                        pos.y <= rect.y + rect.height + 10
+                    );
+                });
+            } else {
+                return (
+                    pos.x >= highlight.points[0].x - 10 &&
+                    pos.x <= highlight.points[1].x &&
+                    pos.y >= highlight.points[0].y - 10 &&
+                    pos.y <= highlight.points[2].y + 10
+                );
             }
-        };
+        });
+        console.log("highlightsUnderMouse", highlightsUnderMouse, which);
+        if (which === "start") {
+            if (highlightsUnderMouse.length > 0) {
+                arrow.startId = highlightsUnderMouse[0].id;
+                if (highlightsUnderMouse[0].rects) {
+                    arrow.startType = "bookText";
+                } else {
+                    arrow.startType = "text";
+                }
+            } else {
+                arrow.startId = null;
+                arrow.startType = null;
+            }
+        }
+        if (which === "end") {
+            if (highlightsUnderMouse.length > 0) {
+                arrow.endId = highlightsUnderMouse[0].id;
+                if (highlightsUnderMouse[0].rects) {
+                    arrow.endType = "bookText";
+                } else {
+                    arrow.endType = "text";
+                }
+            } else {
+                arrow.endId = null;
+                arrow.endType = null;
+            }
+        }
+        setArrows((prevArrows) => {
+            return prevArrows.map((prevArrow) => {
+                if (prevArrow.id === arrow.id) {
+                    return arrow;
+                } else {
+                    return prevArrow;
+                }
+            });
+        });
     };
 
-    const handleDragEnd = throttle(
-        (
-            arrowId: string,
-            e: KonvaEventObject<MouseEvent>,
-            which: "end" | "start"
-        ) => {
-            const arrow = arrows.find((arrow) => arrow.id === arrowId);
-            const pos = e.target.getStage()?.getPointerPosition();
-            if (!pos) return;
-            if (!arrow) return;
-            const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-                if (highlight.rects) {
-                    return highlight.rects.some((rect) => {
-                        return (
-                            pos.x >= rect.x - 10 &&
-                            pos.x <= rect.x + rect.width + 10 &&
-                            pos.y >= rect.y - 10 &&
-                            pos.y <= rect.y + rect.height + 10
-                        );
-                    });
-                } else {
-                    return (
-                        pos.x >= highlight.points[0].x - 10 &&
-                        pos.x <= highlight.points[1].x &&
-                        pos.y >= highlight.points[0].y - 10 &&
-                        pos.y <= highlight.points[2].y + 10
-                    );
-                }
-            });
-            console.log("highlightsUnderMouse", highlightsUnderMouse, which);
-            if (which === "start") {
-                if (highlightsUnderMouse.length > 0) {
-                    arrow.startId = highlightsUnderMouse[0].id;
-                    if (highlightsUnderMouse[0].rects) {
-                        arrow.startType = "bookText";
-                    } else {
-                        arrow.startType = "text";
-                    }
-                } else {
-                    arrow.startId = null;
-                    arrow.startType = null;
-                }
-            }
-            if (which === "end") {
-                if (highlightsUnderMouse.length > 0) {
-                    arrow.endId = highlightsUnderMouse[0].id;
-                    if (highlightsUnderMouse[0].rects) {
-                        arrow.endType = "bookText";
-                    } else {
-                        arrow.endType = "text";
-                    }
-                } else {
-                    arrow.endId = null;
-                    arrow.endType = null;
-                }
-            }
-            setArrows((prevArrows) => {
-                return prevArrows.map((prevArrow) => {
-                    if (prevArrow.id === arrow.id) {
-                        return arrow;
-                    } else {
-                        return prevArrow;
-                    }
-                });
-            });
-        },
-        100
-    );
     return (
         <>
             {arrows.map((arrow, i) => (
@@ -450,27 +438,29 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
                 return (
                     <>
-                        {/* Draggable Start Point */}
-                        <Arrow
+                        {/* Draggable Start Point - Circle */}
+                        <Circle
                             key={`start-${id}`}
                             x={selectedArrow.points[0]}
                             y={selectedArrow.points[1]}
-                            points={[0, 0, 10, 0]} // small line to visually represent the draggable point
-                            fill="blue"
-                            stroke="blue"
+                            radius={8} // Adjust size to make it look like Excalidraw
+                            fill="blue" // Color for the start point
+                            stroke="white" // White stroke around the circle for better visibility
+                            strokeWidth={2} // Thickness of the stroke
                             draggable
                             onDragEnd={(e) => handleDragEnd(id, e, "start")}
                             onDragMove={(e) => handleDragStartPoint(id, e)}
                         />
 
-                        {/* Draggable End Point */}
-                        <Arrow
+                        {/* Draggable End Point - Circle */}
+                        <Circle
                             key={`end-${id}`}
                             x={selectedArrow.points[2]}
                             y={selectedArrow.points[3]}
-                            points={[0, 0, 10, 0]} // small line to visually represent the draggable point
-                            fill="red"
-                            stroke="red"
+                            radius={8} // Adjust size to make it look like Excalidraw
+                            fill="red" // Color for the end point
+                            stroke="white" // White stroke around the circle for better visibility
+                            strokeWidth={2} // Thickness of the stroke
                             draggable
                             onDragEnd={(e) => handleDragEnd(id, e, "end")}
                             onDragMove={(e) => handleDragEndPoint(id, e)}
