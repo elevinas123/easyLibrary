@@ -19,7 +19,12 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 
 import { Html } from "react-konva-utils";
-import { ArrowElement, StartType, TextElement } from "../../KonvaStage";
+import {
+    ArrowElement,
+    CanvaElement,
+    StartType,
+    TextElement,
+} from "../../KonvaStage";
 import CustomTransformer from "../../shapes/CustomTransformer";
 
 type MainNotesLayerProps = {
@@ -351,76 +356,22 @@ function MainNotesLayer(
         handleDoubleClick,
     }));
 
-    // Helper function to find the closest point on a line segment
-    // Helper function to find the closest point on a line segment
-    // Helper function to find the closest point on a line segment
-    const closestPointOnLineSegment = (
-        p1: { x: number; y: number },
-        p2: { x: number; y: number },
-        pos: { x: number; y: number }
-    ) => {
-        // Vector from p1 to p2 (the direction of the line segment)
-        const lineVec = { x: p2.x - p1.x, y: p2.y - p1.y };
-
-        // Vector from p1 to the current position
-        const pointVec = { x: pos.x - p1.x, y: pos.y - p1.y };
-
-        // Length of the line squared
-        const lineLenSq = lineVec.x ** 2 + lineVec.y ** 2;
-
-        // If the line length is 0, return p1 as the closest point
-        if (lineLenSq === 0) return p1;
-
-        // Calculate the projection factor 't'
-        const t = (pointVec.x * lineVec.x + pointVec.y * lineVec.y) / lineLenSq;
-
-        // Clamp 't' to be between 0 and 1 to ensure the point lies on the line segment
-        const clampedT = Math.max(0, Math.min(1, t));
-
-        // Calculate the closest point on the segment
-        return {
-            x: p1.x + clampedT * lineVec.x,
-            y: p1.y + clampedT * lineVec.y,
-        };
-    };
-
     const calculateClosestPointOnShape = (
-        element: any,
-        pos: { x: number; y: number }
+        element: CanvaElement,
+        points: number[]
     ) => {
-        const points = element.points; // Array of points making up the shape's path
-        console.log("Element points:", points); // Log the shape's points for debugging
-        let closestPoint = points[0]; // Start with the first point
-        let minDistance = Infinity; // Track the minimum distance
-
-        // Iterate over each line segment (from point[i] to point[i+1])
-        for (let i = 0; i < points.length - 1; i++) {
-            const p1 = points[i];
-            const p2 = points[i + 1];
-
-            const closestPointOnSegment = closestPointOnLineSegment(
-                p1,
-                p2,
-                pos
-            ); // Get closest point on the segment
-            const dist = distance(closestPointOnSegment, pos); // Calculate the distance
-
-            console.log(`Segment ${i}: Point 1:`, p1, ` Point 2:`, p2); // Debug the segment points
-            console.log(
-                `Closest point on segment ${i}:`,
-                closestPointOnSegment
-            );
-
-            // Update the closest point if the distance is smaller
-            if (dist < minDistance) {
-                closestPoint = closestPointOnSegment;
-                minDistance = dist;
+        const referenceX = points[0];
+        const referenceY = points[1];
+        let minDistance = Infinity;
+        let minPoints = element.points[0];
+        element.points.forEach((point) => {
+            if (distance(point, { x: referenceX, y: referenceY }) < minDistance) {
+                minDistance = distance(point, { x: referenceX, y: referenceY });
+                minPoints = point;
             }
-        }
-
-        return closestPoint;
+        });
+        return minPoints;
     };
-
     // Utility function to calculate the distance between two points
     const distance = (
         point1: { x: number; y: number },
@@ -469,18 +420,16 @@ function MainNotesLayer(
                 if (startElement && selectedTextId.includes(startElement.id)) {
                     const startPoint = calculateClosestPointOnShape(
                         startElement,
-                        draggedElement.getPosition() // Relative to the shape itself, not the mouse
+                        arrow.points.slice(2, 4) // Relative to the shape
                     );
                     console.log("Start Point:", startPoint); // Debugging start point
                     updatedPoints[0] = startPoint.x;
                     updatedPoints[1] = startPoint.y;
                 }
-
-                // Update the end position based on the end element's points
                 if (endElement && selectedTextId.includes(endElement.id)) {
                     const endPoint = calculateClosestPointOnShape(
                         endElement,
-                        draggedElement.getPosition() // Again, relative to the shape
+                        arrow.points.slice(0, 2) // Relative to the shape
                     );
                     console.log("End Point:", endPoint); // Debugging end point
                     updatedPoints[2] = endPoint.x;
@@ -527,7 +476,6 @@ function MainNotesLayer(
             return [...otherElements, ...updatedElements];
         });
     };
-
 
     return (
         <>
@@ -580,6 +528,8 @@ function MainNotesLayer(
                             text={textItem.text}
                             x={textItem.x}
                             y={textItem.y}
+                            width={textItem.width}
+                            height={textItem.height}
                             fontSize={textItem.fontSize}
                             id={textItem.id}
                             draggable
