@@ -37,5 +37,5 @@ export default function CustomTransformer({
         }
     }, [selectedShapeIds]);
 
-    return <Transformer ref={transformerRef} />;
+    return <Transformer ref={transformerRef} handleS/>;
 }

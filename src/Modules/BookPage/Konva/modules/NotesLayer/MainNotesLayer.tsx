@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { Layer, Arrow, Text } from "react-konva";
+import { Layer, Text } from "react-konva";
 import {
     ForwardedRef,
     forwardRef,
@@ -10,22 +10,17 @@ import {
 } from "react";
 import {
     activeToolAtom,
-    arrowsAtom,
     canvaElementsAtom,
-    hoveredItemsAtom,
-    newArrowAtom,
+    selectedArrowIdsAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 
 import { Html } from "react-konva-utils";
-import {
-    ArrowElement,
-    CanvaElement,
-    StartType,
-    TextElement,
-} from "../../KonvaStage";
+import { TextElement } from "../../KonvaStage";
 import CustomTransformer from "../../shapes/CustomTransformer";
+import ArrowShape, { ArrowShapeRef } from "../../shapes/ArrowShape";
+import CustomArrowTransformer from "../../shapes/CustomArrowsTransformer";
 
 type MainNotesLayerProps = {
     // Define your prop types here
@@ -46,61 +41,18 @@ function MainNotesLayer(
     ref: ForwardedRef<MainNotesLayerRef>
 ) {
     const [activeTool] = useAtom(activeToolAtom);
-    const [arrows, setArrows] = useAtom(arrowsAtom);
-    const [newArrow, setNewArrow] = useAtom(newArrowAtom);
     const [selectedTextId, setSelectedTextId] = useState<string[]>([]); // Track selected text
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
-    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [canvasElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [selectedArrowIds, setSelectedArrowIds] =
+        useAtom(selectedArrowIdsAtom);
+    const arrowShapeRef = useRef<ArrowShapeRef | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool === "Arrow") {
-            const pos = e.target?.getStage()?.getPointerPosition();
-            if (!pos) return;
-            const id = uuidv4();
-
-            const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-                if (highlight.rects) {
-                    return highlight.rects.some((rect) => {
-                        return (
-                            pos.x >= rect.x - 10 &&
-                            pos.x <= rect.x + rect.width + 10 &&
-                            pos.y >= rect.y - 10 &&
-                            pos.y <= rect.y + rect.height + 10
-                        );
-                    });
-                } else {
-                    return (
-                        pos.x >= highlight.points[0].x - 10 &&
-                        pos.x <= highlight.points[1].x &&
-                        pos.y >= highlight.points[0].y - 10 &&
-                        pos.y <= highlight.points[2].y + 10
-                    );
-                }
-            });
-            let startId: null | string = null;
-            let type: StartType = null;
-            if (highlightsUnderMouse.length > 0) {
-                startId = highlightsUnderMouse[0].id;
-                if (highlightsUnderMouse[0].rects) {
-                    type = "bookText";
-                } else {
-                    type = "text";
-                }
-            }
-            const arrow: ArrowElement = {
-                id: id,
-                startId: startId,
-                endId: null,
-                points: [pos.x, pos.y],
-                startType: type,
-                endType: null,
-                type: "arrow",
-                text: null,
-                fill: "black",
-            };
-            setNewArrow(arrow);
+        if (activeTool === "Arrow" && arrowShapeRef.current) {
+            arrowShapeRef.current.handleMouseDown(e);
+            return;
         } else if (activeTool === "Text") {
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
@@ -139,8 +91,10 @@ function MainNotesLayer(
             };
             setCanvaElements((elements) => [...elements, newItem]);
             setSelectedTextId([id]);
-            setIsEditing(true);
         } else if (activeTool === "Select") {
+            if (arrowShapeRef.current) {
+                arrowShapeRef.current.handleArrowSelect(e);
+            }
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
             const textItems = canvasElements.filter(
@@ -154,6 +108,7 @@ function MainNotesLayer(
                     pos.y <= item.y + item.height
             );
             setSelectedTextId(selectedItem.map((item) => item.id));
+            handleInputBlur();
         } else {
             setIsEditing(false);
             setSelectedTextId([]); // Deselect text when clicking elsewhere
@@ -227,109 +182,16 @@ function MainNotesLayer(
 
     // Handle Mouse Move for Arrows (Existing)
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool !== "Arrow") return;
-
-        const pos = e.target?.getStage()?.getPointerPosition();
-        if (!pos) return;
-        const highlightsUnderMouse = canvasElements.filter(
-            (textItem) =>
-                pos.x >= textItem.x - 10 &&
-                pos.x <= textItem.x + textItem.width + 10 &&
-                pos.y >= textItem.y - 10 &&
-                pos.y <= textItem.y + textItem.height + 10
-        );
-
-        if (highlightsUnderMouse.length > 0) {
-            const firstHighlight = highlightsUnderMouse[0];
-
-            // Check if the first highlight under the mouse is already hovered
-            const isAlreadyHovered = hoveredItems.some(
-                (highlight) => highlight.id === firstHighlight.id
-            );
-            const updatedHighlight = {
-                points: [
-                    { x: firstHighlight.x, y: firstHighlight.y },
-                    {
-                        x: firstHighlight.x + firstHighlight.width,
-                        y: firstHighlight.y,
-                    },
-                    {
-                        x: firstHighlight.x + firstHighlight.width,
-                        y: firstHighlight.y + firstHighlight.height,
-                    },
-                    {
-                        x: firstHighlight.x,
-                        y: firstHighlight.y + firstHighlight.height,
-                    },
-                ],
-                id: firstHighlight.id,
-            };
-            if (isAlreadyHovered) {
-                // If it's already hovered, refresh its position in the hovered list
-                setHoveredItems((prevHighlights) => [
-                    ...prevHighlights.filter(
-                        (highlight) => highlight.id !== firstHighlight.id
-                    ),
-                    updatedHighlight,
-                ]);
-            } else {
-                // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
-                setHoveredItems((prevHighlights) => [
-                    ...prevHighlights,
-                    updatedHighlight,
-                ]);
-            }
+        if (activeTool === "Arrow" && arrowShapeRef.current) {
+            arrowShapeRef.current.handleMouseMove(e);
         }
-        if (!newArrow) {
-            return;
-        }
-        const updatedArrow = {
-            ...newArrow,
-            points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
-        };
-        setNewArrow(updatedArrow);
     };
 
     // Handle Mouse Up for Arrows (Existing)
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-        if (!newArrow) return;
-        const pos = e.target?.getStage()?.getPointerPosition();
-        if (!pos) return;
-        let arrow = newArrow;
-        const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            if (highlight.rects) {
-                return highlight.rects.some((rect) => {
-                    return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
-                    );
-                });
-            } else {
-                return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
-                );
-            }
-        });
-        if (
-            highlightsUnderMouse.length > 0 &&
-            highlightsUnderMouse[0].id !== arrow.startId
-        ) {
-            arrow.endId = highlightsUnderMouse[0].id;
-            if (highlightsUnderMouse[0].rects) {
-                arrow.endType = "bookText";
-            } else {
-                arrow.endType = "text";
-            }
+        if (activeTool === "Arrow" && arrowShapeRef.current) {
+            arrowShapeRef.current.handleMouseUp(e);
         }
-
-        setArrows((prevArrows) => [...prevArrows, newArrow]);
-
-        setNewArrow(null);
     };
 
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
@@ -356,94 +218,16 @@ function MainNotesLayer(
         handleDoubleClick,
     }));
 
-    const calculateClosestPointOnShape = (
-        element: CanvaElement,
-        points: number[]
-    ) => {
-        const referenceX = points[0];
-        const referenceY = points[1];
-        let minDistance = Infinity;
-        let minPoints = element.points[0];
-        element.points.forEach((point) => {
-            if (distance(point, { x: referenceX, y: referenceY }) < minDistance) {
-                minDistance = distance(point, { x: referenceX, y: referenceY });
-                minPoints = point;
-            }
-        });
-        return minPoints;
-    };
-    // Utility function to calculate the distance between two points
-    const distance = (
-        point1: { x: number; y: number },
-        point2: { x: number; y: number }
-    ) => {
-        return Math.sqrt(
-            (point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2
-        );
-    };
-    // Handle drag move (updates the element's position during dragging)
     // Handle drag move (updates the element's position during dragging)
     const handleDragMove = (e: KonvaEventObject<MouseEvent>) => {
         // The element being dragged
         const draggedElement = e.target;
-
+        if (arrowShapeRef.current) {
+            arrowShapeRef.current.handleElementAttachedToArrowMove(
+                selectedTextId
+            );
+        }
         // Update arrows based on the shape's points, not the mouse position
-        setArrows((arrows) => {
-            const elementsSelected = canvasElements.filter((element) =>
-                selectedTextId.includes(element.id)
-            );
-
-            const updatingArrows = arrows.filter((arrow) =>
-                elementsSelected.some(
-                    (element) =>
-                        element.id === arrow.startId ||
-                        element.id === arrow.endId
-                )
-            );
-
-            const otherArrows = arrows.filter(
-                (arrow) => !updatingArrows.includes(arrow)
-            );
-
-            const updatedArrows = updatingArrows.map((arrow) => {
-                let updatedPoints = [...arrow.points]; // Clone the points array
-
-                // Find the position of the element for the startId and endId
-                const startElement = canvasElements.find(
-                    (el) => el.id === arrow.startId
-                );
-                const endElement = canvasElements.find(
-                    (el) => el.id === arrow.endId
-                );
-
-                // Update the start position based on the start element's points
-                if (startElement && selectedTextId.includes(startElement.id)) {
-                    const startPoint = calculateClosestPointOnShape(
-                        startElement,
-                        arrow.points.slice(2, 4) // Relative to the shape
-                    );
-                    console.log("Start Point:", startPoint); // Debugging start point
-                    updatedPoints[0] = startPoint.x;
-                    updatedPoints[1] = startPoint.y;
-                }
-                if (endElement && selectedTextId.includes(endElement.id)) {
-                    const endPoint = calculateClosestPointOnShape(
-                        endElement,
-                        arrow.points.slice(0, 2) // Relative to the shape
-                    );
-                    console.log("End Point:", endPoint); // Debugging end point
-                    updatedPoints[2] = endPoint.x;
-                    updatedPoints[3] = endPoint.y;
-                }
-
-                return {
-                    ...arrow,
-                    points: updatedPoints,
-                };
-            });
-
-            return [...otherArrows, ...updatedArrows];
-        });
 
         // Update the canvas element's points based on movement
         setCanvaElements((elements) => {
@@ -496,29 +280,7 @@ function MainNotesLayer(
                     />
                 </Html>
                 {/* Render arrows */}
-                {arrows.map((arrow, i) => (
-                    <Arrow
-                        key={i}
-                        points={arrow.points}
-                        stroke="black"
-                        fill="black"
-                        pointerLength={10}
-                        pointerWidth={10}
-                        lineCap="round"
-                        lineJoin="round"
-                    />
-                ))}
-                {newArrow && newArrow.points && (
-                    <Arrow
-                        points={newArrow.points}
-                        stroke="black"
-                        fill="black"
-                        pointerLength={10}
-                        pointerWidth={10}
-                        lineCap="round"
-                        lineJoin="round"
-                    />
-                )}
+                <ArrowShape ref={arrowShapeRef} />
                 {/* Render text items */}
                 {canvasElements
                     .filter((element) => element.type === "text")
@@ -532,7 +294,7 @@ function MainNotesLayer(
                             height={textItem.height}
                             fontSize={textItem.fontSize}
                             id={textItem.id}
-                            draggable
+                            draggable={activeTool === "Select"}
                             onDragMove={handleDragMove}
                         />
                     ))}
