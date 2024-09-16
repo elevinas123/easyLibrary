@@ -7,14 +7,7 @@ type ChaptersProps = {
 
 export default function Chapters({ chapters }: ChaptersProps) {
     const handleChapterClick = (chapterId: string) => {
-        const targetElement = document.querySelector(`[toc-id='${chapterId}']`);
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-            targetElement.focus({ preventScroll: true }); // Ensure it is focused after scroll
-        }
+        console.log("chapterId  ", chapterId);
     };
 
     return (

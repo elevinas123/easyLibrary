@@ -176,6 +176,9 @@ function TextLayer(
                 fontSize: fontSize,
                 fill: "white",
                 fontFamily: "Courier New",
+                strokeColor: "black",
+                strokeWidth: 1,
+                opacity: 1,
                 outgoingArrowIds: [],
                 incomingArrowIds: [],
                 points: [

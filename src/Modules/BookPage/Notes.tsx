@@ -1,8 +1,11 @@
 import { useAtom } from "jotai";
-import { arrowsAtom, canvaElementsAtom, highlightsAtom } from "./Konva/konvaAtoms";
+import {
+    arrowsAtom,
+    canvaElementsAtom,
+    highlightsAtom,
+} from "./Konva/konvaAtoms";
 import { useEffect, useState } from "react";
 import { StartType } from "./Konva/KonvaStage";
-
 
 type Note = {
     endText: string;
@@ -21,18 +24,23 @@ export default function Notes() {
     const [notes, setNotes] = useState<Note[]>([]);
     useEffect(() => {
         console.log("arrows changed", arrows);
-        const validArrows = arrows.filter((arrow) =>  arrow.startId !== null && arrow.endId !== null );
+        const validArrows = arrows.filter(
+            (arrow) => arrow.startId !== null && arrow.endId !== null
+        );
         console.log("valid arrows", validArrows);
         const mappedNotes = validArrows.map((arrow) => {
-            let startText: undefined | string = ""
-            let endText: undefined | string = ""
+            let startText: undefined | string = "";
+            let endText: undefined | string = "";
+            let elements = canvasElements.filter(
+                (element) => element.type === "text"
+            );
             if (arrow.startType === "text") {
-                startText = canvasElements.find(
+                startText = elements.find(
                     (element) => element.id === arrow.startId
                 )?.text;
             }
             if (arrow.endType === "text") {
-                endText = canvasElements.find(
+                endText = elements.find(
                     (element) => element.id === arrow.endId
                 )?.text;
             }
@@ -46,10 +54,9 @@ export default function Notes() {
                 startType: arrow.startType,
                 endType: arrow.endType,
             };
-        })
-        console.log(mappedNotes)
-        setNotes(mappedNotes)
-        
+        });
+        console.log(mappedNotes);
+        setNotes(mappedNotes);
     }, [arrows]);
     return (
         <div className="w-full p-4 bg-zinc-900 rounded-lg text-gray-300">
@@ -63,9 +70,7 @@ export default function Notes() {
                         >
                             <div className="text-gray-400 text-sm">
                                 <span className="font-bold">Reference:</span>{" "}
-                                <span className="italic">
-                                    {note.startText}
-                                </span>
+                                <span className="italic">{note.startText}</span>
                             </div>
                             <div className="mt-2 text-gray-300">
                                 {note.endText}
