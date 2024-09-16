@@ -9,14 +9,14 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { CircleElement } from "../KonvaStage";
 import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
 import { ArrowShapeRef } from "./ArrowShape";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderShape";
 import CreateText, { TextElement } from "./Text/CreateText";
+import CustomTransformer from "./CustomTransformer";
 // CanvaElement is now a union of all possible element types
-export type CanvaElement = TextElement | RectElement | CircleElement;
+export type CanvaElement = TextElement | RectElement;
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -39,9 +39,10 @@ function CanvasElement(
     const [selectedItemsIds, setSelectedItemsIds] = useState<string[]>([]); // Track selected text
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
-    const [currentElement, setCurrentElement] = useState<CanvaElement | null>(
-        null
-    );
+    const [currentElements, setCurrentElements] = useState<
+        CanvaElement[] | null
+    >(null);
+    const [isCreating, setIsCreating] = useState<boolean>(false);
     useEffect(() => {
         if (inputRef.current && isEditing && selectedItemsIds) {
             const textItems = canvaElements.filter(
@@ -90,7 +91,15 @@ function CanvasElement(
                 width: 24 * 8 + 10,
                 height: 24 + 10,
             });
-            setCurrentElement(newText);
+            setCanvaElements((prevItems) => {
+                if (!currentElements) return prevItems
+                const oldItems = prevItems.filter((item) =>
+                    currentElements?.some((el) => el.id === item.id)
+                );
+                return [...oldItems, ...currentElements];
+            });
+            setCurrentElements([newText]);
+            setIsCreating(true);
             setSelectedItemsIds([id]);
         } else if (activeTool === "Arrow" && arrowShapeRef.current) {
             arrowShapeRef.current.handleMouseDown(e);
@@ -104,7 +113,16 @@ function CanvasElement(
                 width: 0,
                 height: 0,
             });
-            setCurrentElement(newText);
+            console.log("cia va", currentElements)
+            setCanvaElements((prevItems) => {
+                if (!currentElements) return prevItems
+                const oldItems = prevItems.filter((item) =>
+                    currentElements.some((el) => el.id !== item.id)
+                );
+                return [...oldItems, ...currentElements];
+            });
+            setCurrentElements([newText]);
+            setIsCreating(true);
             setSelectedItemsIds([id]);
         } else if (activeTool === "Select") {
             if (arrowShapeRef.current) {
@@ -120,54 +138,72 @@ function CanvasElement(
                     pos.y >= item.y &&
                     pos.y <= item.y + item.height
             );
+            setCanvaElements((prevItems) => {
+                if (!currentElements) return prevItems
+                const oldItems = prevItems.filter((item) =>
+                    currentElements.some((el) => el.id !== item.id)
+                );
+                return [...oldItems, ...currentElements];
+            });
             setSelectedItemsIds(selectedItem.map((item) => item.id));
+            setCurrentElements(selectedItem);
             handleInputBlur();
         } else {
+
             setIsEditing(false);
             setSelectedItemsIds([]); // Deselect text when clicking elsewhere
         }
     };
-    useEffect(() => {
-        console.log("currentElement", currentElement);
-    }, [currentElement]);
+    
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (!currentElement) return;
+        if (!currentElements || !isCreating) return;
         const pos = e.target?.getStage()?.getPointerPosition();
         if (!pos) return;
 
-        const { x: startX, y: startY } = currentElement;
-
-        // Calculate the new width and height based on the mouse position
-        let newWidth = Math.abs(pos.x - startX);
-        let newHeight = Math.abs(pos.y - startY);
-        if (pos.x <= startX) newWidth += currentElement.width;
-        if (pos.x <= startX) newHeight += currentElement.height;
-        // If the mouse moves left, adjust the x position
-        const newX = pos.x < startX ? pos.x : startX;
-
-        // If the mouse moves up, adjust the y position
-        const newY = pos.y < startY ? pos.y : startY;
-
         // Update the rectangle properties
-        setCurrentElement({
-            ...currentElement,
-            x: newX, // Update x position (if moving left)
-            y: newY, // Update y position (if moving up)
-            width: newWidth,
-            height: newHeight,
-            points: [
-                { x: newX, y: newY }, // Top-left
-                { x: newX + newWidth, y: newY }, // Top-right
-                { x: newX + newWidth, y: newY + newHeight }, // Bottom-right
-                { x: newX, y: newY + newHeight }, // Bottom-left
-            ],
+        setCurrentElements((prevElements) => {
+            if (!prevElements) return null;
+            return prevElements.map((element) => {
+                const { x: startX, y: startY } = element;
+
+                // Calculate the new width and height based on the mouse position
+                let newWidth = Math.abs(pos.x - startX);
+                let newHeight = Math.abs(pos.y - startY);
+                if (pos.x <= startX) newWidth += element.width;
+                if (pos.x <= startX) newHeight += element.height;
+                // If the mouse moves left, adjust the x position
+                const newX = pos.x < startX ? pos.x : startX;
+
+                // If the mouse moves up, adjust the y position
+                const newY = pos.y < startY ? pos.y : startY;
+
+                return {
+                    ...element,
+                    x: newX, // Update x position (if moving left)
+                    y: newY, // Update y position (if moving up)
+                    width: newWidth,
+                    height: newHeight,
+                    points: [
+                        { x: newX, y: newY }, // Top-left
+                        { x: newX + newWidth, y: newY }, // Top-right
+                        { x: newX + newWidth, y: newY + newHeight }, // Bottom-right
+                        { x: newX, y: newY + newHeight }, // Bottom-left
+                    ],
+                };
+            });
         });
     };
 
     const handleMouseUp = () => {
-        if (!currentElement) return;
-        setCanvaElements((prevItems) => [...prevItems, currentElement]);
-        setCurrentElement(null);
+        if (!currentElements || !isCreating) return;
+        setIsCreating(false);
+        setCanvaElements((prevItems) => {
+            const oldItems = prevItems.filter((item) =>
+                currentElements.some((el) => el.id !== item.id)
+            );
+            return [...oldItems, ...currentElements];
+        });
+        setCurrentElements(null);
     };
 
     // Handle drag move (updates the element's position during dragging)
@@ -269,12 +305,14 @@ function CanvasElement(
 
     return (
         <>
-            {currentElement &&
-                renderCanvaElement(currentElement, activeTool, handleDragMove)}
+            {currentElements &&
+                currentElements.map((element) =>
+                    renderCanvaElement(element, activeTool, handleDragMove)
+                )}
             {canvaElements.map((element) =>
                 renderCanvaElement(element, activeTool, handleDragMove)
             )}
-            
+            <CustomTransformer currentElements={currentElements} />
         </>
     );
 }

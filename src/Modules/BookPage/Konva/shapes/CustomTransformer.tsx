@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
+import { CanvaElement } from "./CanvasElement";
 
 type CustomTransformerProps = {
-    selectedShapeIds: string[];
+    currentElements: CanvaElement[] | null
 };
 
 export default function CustomTransformer({
-    selectedShapeIds,
+    currentElements,
 }: CustomTransformerProps) {
     const transformerRef = useRef<any>(null);
 
@@ -16,13 +17,11 @@ export default function CustomTransformer({
         if (transformer) {
             const stage = transformer.getStage();
 
-            if (stage) {
+            if (stage && currentElements) {
                 // Find nodes for selected shape IDs
-                const selectedNodes = selectedShapeIds
-                    .map((id) => stage.findOne(`#${id}`)) // Find the node by its ID
-                    .filter(
-                        (node) => node !== null && stage.isAncestorOf(node)
-                    ); // Ensure the node exists and is part of the stage
+                const selectedNodes = currentElements
+                .map((element) => stage.findOne(`#${element.id}`)) // Find by node's ID
+                .filter((node) => node !== null); // Filter out null nodes
 
                 // Only update the transformer if valid nodes were found
                 if (selectedNodes.length > 0) {
@@ -35,7 +34,7 @@ export default function CustomTransformer({
                 }
             }
         }
-    }, [selectedShapeIds]);
+    }, [currentElements]);
 
     return <Transformer ref={transformerRef} handleS/>;
 }

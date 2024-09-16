@@ -9,7 +9,6 @@ export const renderCanvaElement = (
     activeTool: DrawingToolNames,
     handleDragMove: (e: KonvaEventObject<MouseEvent>) => void
 ) => {
-    console.log("renderCanvaElement", element);
     if (element.type === "text") {
         return (
             <RenderText

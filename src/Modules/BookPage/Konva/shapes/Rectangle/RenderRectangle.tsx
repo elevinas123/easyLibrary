@@ -15,6 +15,7 @@ export default function RenderRectangle({
 }: RenderRectangleProps) {
     return (
         <Rect
+            id={element.id}
             x={element.x}
             y={element.y}
             width={element.width}
