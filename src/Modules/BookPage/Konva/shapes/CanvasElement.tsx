@@ -92,7 +92,7 @@ function CanvasElement(
                 height: 24 + 10,
             });
             setCanvaElements((prevItems) => {
-                if (!currentElements) return prevItems
+                if (!currentElements) return prevItems;
                 const oldItems = prevItems.filter((item) =>
                     currentElements?.some((el) => el.id === item.id)
                 );
@@ -113,9 +113,9 @@ function CanvasElement(
                 width: 0,
                 height: 0,
             });
-            console.log("cia va", currentElements)
+            console.log("cia va", currentElements);
             setCanvaElements((prevItems) => {
-                if (!currentElements) return prevItems
+                if (!currentElements) return prevItems;
                 const oldItems = prevItems.filter((item) =>
                     currentElements.some((el) => el.id !== item.id)
                 );
@@ -139,7 +139,7 @@ function CanvasElement(
                     pos.y <= item.y + item.height
             );
             setCanvaElements((prevItems) => {
-                if (!currentElements) return prevItems
+                if (!currentElements) return prevItems;
                 const oldItems = prevItems.filter((item) =>
                     currentElements.some((el) => el.id !== item.id)
                 );
@@ -149,12 +149,11 @@ function CanvasElement(
             setCurrentElements(selectedItem);
             handleInputBlur();
         } else {
-
             setIsEditing(false);
             setSelectedItemsIds([]); // Deselect text when clicking elsewhere
         }
     };
-    
+
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (!currentElements || !isCreating) return;
         const pos = e.target?.getStage()?.getPointerPosition();
@@ -306,11 +305,18 @@ function CanvasElement(
     return (
         <>
             {currentElements &&
-                currentElements.map((element) =>
-                    renderCanvaElement(element, activeTool, handleDragMove)
-                )}
+                currentElements.map((element) => {
+                    let id = element.id;
+                    id = `placeholder:${id}`;
+                    return renderCanvaElement(
+                        { ...element, id },
+                        activeTool === "Select",
+                        handleDragMove
+                    );
+                }
+            )}
             {canvaElements.map((element) =>
-                renderCanvaElement(element, activeTool, handleDragMove)
+                renderCanvaElement(element,  activeTool==="Select", handleDragMove)
             )}
             <CustomTransformer currentElements={currentElements} />
         </>

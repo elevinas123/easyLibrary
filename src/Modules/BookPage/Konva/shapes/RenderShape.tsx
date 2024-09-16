@@ -1,19 +1,18 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { DrawingToolNames } from "../components/Tools";
 import { CanvaElement } from "./CanvasElement";
 import RenderRectangle from "./Rectangle/RenderRectangle";
 import RenderText from "./Text/RenderText";
 
 export const renderCanvaElement = (
     element: CanvaElement,
-    activeTool: DrawingToolNames,
-    handleDragMove: (e: KonvaEventObject<MouseEvent>) => void
+    draggable: boolean,
+    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined
 ) => {
     if (element.type === "text") {
         return (
             <RenderText
                 element={element}
-                draggable={activeTool === "Select"}
+                draggable={draggable}
                 handleDragMove={handleDragMove}
                 key={element.id}
             />
@@ -21,9 +20,9 @@ export const renderCanvaElement = (
     } else if (element.type === "rect") {
         return (
             <RenderRectangle
-                draggable={activeTool === "Select"}
+                draggable={draggable}
                 element={element}
-                handleDragMove={handleDragMove}
+                handleDragMove={handleDragMove }
                 key={element.id}
             />
         );

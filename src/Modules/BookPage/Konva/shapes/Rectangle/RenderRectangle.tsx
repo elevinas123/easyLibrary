@@ -5,7 +5,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 type RenderRectangleProps = {
     draggable: boolean;
     element: RectElement;
-    handleDragMove: (e: KonvaEventObject<MouseEvent>) => void
+    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void)|undefined;
 };
 
 export default function RenderRectangle({

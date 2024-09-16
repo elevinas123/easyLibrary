@@ -19,10 +19,11 @@ export default function CustomTransformer({
 
             if (stage && currentElements) {
                 // Find nodes for selected shape IDs
+                console.log(currentElements);
                 const selectedNodes = currentElements
                 .map((element) => stage.findOne(`#${element.id}`)) // Find by node's ID
-                .filter((node) => node !== null); // Filter out null nodes
-
+                .filter((node) => node !== null && node !==undefined); // Filter out null nodes
+                console.log(selectedNodes);
                 // Only update the transformer if valid nodes were found
                 if (selectedNodes.length > 0) {
                     transformer.nodes(selectedNodes);

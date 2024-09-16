@@ -5,7 +5,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 export type RenderTextProps = {
     draggable: boolean;
     element: TextElement;
-    handleDragMove: (e: KonvaEventObject<MouseEvent>) => void;
+    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void)|undefined;
 };
 export default function RenderText({
     element,
