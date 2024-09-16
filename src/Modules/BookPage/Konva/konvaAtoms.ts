@@ -1,7 +1,8 @@
 import { atom } from "jotai";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
-import { ArrowElement, CanvaElement } from "./KonvaStage";
+import { ArrowElement } from "./KonvaStage";
+import { CanvaElement } from "./shapes/CanvasElement";
 
 export type ArrowHover = {
     points: HighlightPoints[];

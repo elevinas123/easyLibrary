@@ -1,6 +1,9 @@
+import { useAtom } from "jotai";
+import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useAtom } from "jotai";
+import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
+import Tools from "./components/Tools";
 import {
     activeToolAtom,
     canvaElementsAtom,
@@ -9,16 +12,11 @@ import {
     newArrowAtom,
     offsetPositionAtom,
 } from "./konvaAtoms";
-import Tools from "./components/Tools";
-import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
-import { KonvaEventObject } from "konva/lib/Node";
 import MainLayer from "./modules/BookTextLayers/MainLayer";
+import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
-import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
-import { TextElement } from "./shapes/Rectangle/Text/CreateText";
-import { RectElement } from "./shapes/Rectangle/createRectangle";
 
 type KonvaStageProps = {
     bookElements: (HtmlObject | null)[];
@@ -43,8 +41,6 @@ export type CanvaElementSkeleton = {
     strokeColor: string;
     strokeWidth: number;
     opacity: number;
-
-
 };
 export type StartType = "bookText" | "text" | null;
 
@@ -75,9 +71,6 @@ export interface CircleElement extends CanvaElementSkeleton {
     radius: number;
     type: "circle";
 }
-
-// CanvaElement is now a union of all possible element types
-export type CanvaElement = TextElement | RectElement | CircleElement;
 
 export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const fontSize = 24;

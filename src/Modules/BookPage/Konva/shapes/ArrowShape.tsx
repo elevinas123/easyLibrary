@@ -15,9 +15,10 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ArrowElement, CanvaElement, StartType } from "../KonvaStage";
+import { ArrowElement, StartType } from "../KonvaStage";
 import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
+import { CanvaElement } from "./CanvasElement";
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -35,12 +36,12 @@ export type ArrowShapeRef = {
 function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [activeTool] = useAtom(activeToolAtom);
     const [newArrow, setNewArrow] = useAtom(newArrowAtom);
-
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
-    const [canvasElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [canvasElements] = useAtom(canvaElementsAtom);
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
+
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,

@@ -9,40 +9,47 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { CircleElement } from "../KonvaStage";
 import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
 import { ArrowShapeRef } from "./ArrowShape";
-import CustomTransformer from "./CustomTransformer";
-import RenderText from "./Rectangle/Text/RenderText";
 import RenderRectangle from "./Rectangle/RenderRectangle";
-import CreateText from "./Rectangle/Text/CreateText";
+import CreateText, { TextElement } from "./Rectangle/Text/CreateText";
+import RenderText from "./Rectangle/Text/RenderText";
+import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
+// CanvaElement is now a union of all possible element types
+export type CanvaElement = TextElement | RectElement | CircleElement;
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
     inputRef: MutableRefObject<HTMLInputElement | null>;
 };
-export type CanvasElementRef = {
+export type CanvaElementRef = {
     handleMouseDown(e: KonvaEventObject<MouseEvent>): void;
     handleDoubleClick(e: KonvaEventObject<MouseEvent>): void;
     handleKeyDown(e: KeyboardEvent): void;
     handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+    handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
+    handleMouseUp: () => void;
 };
 
 function CanvasElement(
     { arrowShapeRef, inputRef }: CanvasElementProps,
-    ref: ForwardedRef<CanvasElementRef>
+    ref: ForwardedRef<CanvaElementRef>
 ) {
-    const [canvasElements, setCanvaElements] = useAtom(canvaElementsAtom);
-    const [selectedTextId, setSelectedTextId] = useState<string[]>([]); // Track selected text
+    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [selectedItemsIds, setSelectedItemsIds] = useState<string[]>([]); // Track selected text
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false); // Track if text is being edited
-
+    const [currentElement, setCurrentElement] = useState<CanvaElement | null>(
+        null
+    );
     useEffect(() => {
-        if (inputRef.current && isEditing && selectedTextId) {
-            const textItems = canvasElements.filter(
+        if (inputRef.current && isEditing && selectedItemsIds) {
+            const textItems = canvaElements.filter(
                 (item) => item.type === "text"
             );
             const selectedItem = textItems.filter((item) =>
-                selectedTextId.some((id) => id === item.id)
+                selectedItemsIds.some((id) => id === item.id)
             );
 
             if (selectedItem && selectedItem.length > 0) {
@@ -62,17 +69,19 @@ function CanvasElement(
             }
         }
         handleInputBlur();
-    }, [isEditing, selectedTextId, canvasElements]);
+    }, [isEditing, selectedItemsIds, canvaElements]);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleDoubleClick,
         handleKeyDown,
         handleInputChange,
+        handleMouseMove,
+        handleMouseUp,
     }));
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
         if (activeTool === "Text") {
-            const pos = e.target?.getStage()?.getPointerPosition();
-            if (!pos) return;
             const id = uuidv4();
             const newText = CreateText({
                 x: pos.x,
@@ -82,19 +91,29 @@ function CanvasElement(
                 width: 24 * 8 + 10,
                 height: 24 + 10,
             });
-            setCanvaElements((elements) => [...elements, newText]);
-            setSelectedTextId([id]);
+            setCurrentElement(newText);
+            setSelectedItemsIds([id]);
         } else if (activeTool === "Arrow" && arrowShapeRef.current) {
             arrowShapeRef.current.handleMouseDown(e);
             return;
         } else if (activeTool === "Rectangle") {
+            const id = uuidv4();
+            const newText = CreateRectangle({
+                x: pos.x,
+                y: pos.y,
+                id,
+                width: 0,
+                height: 0,
+            });
+            setCurrentElement(newText);
+            setSelectedItemsIds([id]);
         } else if (activeTool === "Select") {
             if (arrowShapeRef.current) {
                 arrowShapeRef.current.handleArrowSelect(e);
             }
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
-            const textItems = canvasElements.filter(
+            const textItems = canvaElements.filter(
                 (item) => item.type === "text"
             );
             const selectedItem = textItems.filter(
@@ -104,20 +123,66 @@ function CanvasElement(
                     pos.y >= item.y &&
                     pos.y <= item.y + item.height
             );
-            setSelectedTextId(selectedItem.map((item) => item.id));
+            setSelectedItemsIds(selectedItem.map((item) => item.id));
             handleInputBlur();
         } else {
             setIsEditing(false);
-            setSelectedTextId([]); // Deselect text when clicking elsewhere
+            setSelectedItemsIds([]); // Deselect text when clicking elsewhere
         }
     };
+    useEffect(() => {
+        console.log("currentElement", currentElement);
+    }, [currentElement]);
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (!currentElement) return;
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
+
+        const { x: startX, y: startY } = currentElement;
+
+        // Calculate the new width and height based on the mouse position
+        let newWidth = Math.abs(pos.x - startX);
+        let newHeight = Math.abs(pos.y - startY);
+        if (pos.x <= startX) newWidth += currentElement.width;
+        if (pos.x <= startX) newHeight += currentElement.height;
+        // If the mouse moves left, adjust the x position
+        const newX = pos.x < startX ? pos.x : startX;
+
+        // If the mouse moves up, adjust the y position
+        const newY = pos.y < startY ? pos.y : startY;
+
+        // Update the rectangle properties
+        setCurrentElement({
+            ...currentElement,
+            x: newX, // Update x position (if moving left)
+            y: newY, // Update y position (if moving up)
+            width: newWidth,
+            height: newHeight,
+            points: [
+                { x: newX, y: newY }, // Top-left
+                { x: newX + newWidth, y: newY }, // Top-right
+                { x: newX + newWidth, y: newY + newHeight }, // Bottom-right
+                { x: newX, y: newY + newHeight }, // Bottom-left
+            ],
+        });
+    };
+
+    const handleMouseUp = () => {
+        if (!currentElement) return;
+        setCanvaElements((prevItems) => [...prevItems, currentElement]);
+        setCurrentElement(null);
+    };
+
     // Handle drag move (updates the element's position during dragging)
     const handleDragMove = (e: KonvaEventObject<MouseEvent>) => {
+        const pos = e.target?.getStage()?.getPointerPosition();
+        if (!pos) return;
+
         // The element being dragged
         const draggedElement = e.target;
         if (arrowShapeRef.current) {
             arrowShapeRef.current.handleElementAttachedToArrowMove(
-                selectedTextId
+                selectedItemsIds
             );
         }
         // Update arrows based on the shape's points, not the mouse position
@@ -125,14 +190,15 @@ function CanvasElement(
         // Update the canvas element's points based on movement
         setCanvaElements((elements) => {
             const updatingElements = elements.filter((element) =>
-                selectedTextId.includes(element.id)
+                selectedItemsIds.includes(element.id)
             );
             const otherElements = elements.filter(
-                (element) => !selectedTextId.includes(element.id)
+                (element) => !selectedItemsIds.includes(element.id)
             );
 
             const updatedElements = updatingElements.map((el) => {
                 // Calculate the delta (how much the element moved)
+
                 const dx = draggedElement.x() - el.x;
                 const dy = draggedElement.y() - el.y;
 
@@ -154,7 +220,7 @@ function CanvasElement(
         });
     };
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
-        canvasElements.forEach((textItem) => {
+        canvaElements.forEach((textItem) => {
             const isInsideXBounds =
                 e.evt.x >= textItem.x && e.evt.x <= textItem.x + textItem.width;
             const isInsideYBounds =
@@ -163,7 +229,7 @@ function CanvasElement(
 
             if (isInsideXBounds && isInsideYBounds) {
                 setIsEditing(true);
-                setSelectedTextId((ids) => [...ids, textItem.id]);
+                setSelectedItemsIds((ids) => [...ids, textItem.id]);
                 return;
             }
         });
@@ -171,13 +237,13 @@ function CanvasElement(
     const handleKeyDown = (e: KeyboardEvent) => {
         if (isEditing) return;
         if (e.key === "Delete" || e.key === "Backspace") {
-            if (selectedTextId) {
+            if (selectedItemsIds) {
                 setCanvaElements((prevItems) =>
                     prevItems.filter(
-                        (item) => !selectedTextId.some((id) => id === item.id)
+                        (item) => !selectedItemsIds.some((id) => id === item.id)
                     )
                 );
-                setSelectedTextId([]);
+                setSelectedItemsIds([]);
             }
         }
     };
@@ -187,9 +253,9 @@ function CanvasElement(
         }
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!selectedTextId) return;
-        const updatedTextItems = canvasElements.map((item) =>
-            selectedTextId.some((id) => id === item.id)
+        if (!selectedItemsIds) return;
+        const updatedTextItems = canvaElements.map((item) =>
+            selectedItemsIds.some((id) => id === item.id)
                 ? {
                       ...item,
                       text: e.target.value,
@@ -202,7 +268,7 @@ function CanvasElement(
 
     return (
         <>
-            {canvasElements.map((textItem) => {
+            {canvaElements.map((textItem) => {
                 if (textItem.type === "text") {
                     return (
                         <RenderText
@@ -222,7 +288,6 @@ function CanvasElement(
                     );
                 }
             })}
-            <CustomTransformer selectedShapeIds={selectedTextId} />
         </>
     );
 }

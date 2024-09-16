@@ -6,7 +6,7 @@ import { activeToolAtom } from "../../konvaAtoms";
 
 import { Html } from "react-konva-utils";
 import ArrowShape, { ArrowShapeRef } from "../../shapes/ArrowShape";
-import CanvasElement, { CanvasElementRef } from "../../shapes/CanvasElement";
+import CanvasElement, { CanvaElementRef } from "../../shapes/CanvasElement";
 
 type MainNotesLayerProps = {
     // Define your prop types here
@@ -29,7 +29,7 @@ function MainNotesLayer(
     const [activeTool] = useAtom(activeToolAtom);
 
     const arrowShapeRef = useRef<ArrowShapeRef | null>(null);
-    const canvasElementRef = useRef<CanvasElementRef | null>(null);
+    const canvasElementRef = useRef<CanvaElementRef | null>(null);
     // Handle Mouse Down
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         canvasElementRef.current?.handleMouseDown(e);
@@ -49,12 +49,15 @@ function MainNotesLayer(
         if (activeTool === "Arrow" && arrowShapeRef.current) {
             arrowShapeRef.current.handleMouseMove(e);
         }
+        canvasElementRef.current?.handleMouseMove(e);
+
     };
 
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool === "Arrow" && arrowShapeRef.current) {
             arrowShapeRef.current.handleMouseUp(e);
         }
+        canvasElementRef.current?.handleMouseUp();
     };
 
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
