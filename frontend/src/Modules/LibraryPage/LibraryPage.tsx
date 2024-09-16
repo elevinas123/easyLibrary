@@ -1,3 +1,5 @@
+import BookCards from "./BookCards";
+import Sidebar from "./Sidebar";
 
 
 type LibraryPageProps = {
@@ -6,8 +8,9 @@ type LibraryPageProps = {
 
 export default function LibraryPage({  }: LibraryPageProps) {
     return (
-        <div>
-            {/* Your component JSX here */}
+        <div className="bg-zinc-800 flex flex-row">
+            <Sidebar />
+            <BookCards />
         </div>
     );
 }
