@@ -12,10 +12,9 @@ import { v4 as uuidv4 } from "uuid";
 import { CircleElement } from "../KonvaStage";
 import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
 import { ArrowShapeRef } from "./ArrowShape";
-import RenderRectangle from "./Rectangle/RenderRectangle";
-import CreateText, { TextElement } from "./Rectangle/Text/CreateText";
-import RenderText from "./Rectangle/Text/RenderText";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
+import { renderCanvaElement } from "./RenderShape";
+import CreateText, { TextElement } from "./Text/CreateText";
 // CanvaElement is now a union of all possible element types
 export type CanvaElement = TextElement | RectElement | CircleElement;
 
@@ -113,10 +112,8 @@ function CanvasElement(
             }
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
-            const textItems = canvaElements.filter(
-                (item) => item.type === "text"
-            );
-            const selectedItem = textItems.filter(
+
+            const selectedItem = canvaElements.filter(
                 (item) =>
                     pos.x >= item.x &&
                     pos.x <= item.x + item.width &&
@@ -265,28 +262,15 @@ function CanvasElement(
         );
         setCanvaElements(updatedTextItems);
     };
+    useEffect(() => {
+        console.log("selectedItemsIds", selectedItemsIds);
+        console.log("canvaElements", canvaElements);
+    }, [selectedItemsIds, canvaElements]);
 
     return (
         <>
-            {canvaElements.map((textItem) => {
-                if (textItem.type === "text") {
-                    return (
-                        <RenderText
-                            element={textItem}
-                            draggable={activeTool === "Select"}
-                            handleDragMove={handleDragMove}
-                            key={textItem.id}
-                        />
-                    );
-                } else if (textItem.type === "rect") {
-                    return (
-                        <RenderRectangle
-                            draggable={activeTool === "Select"}
-                            element={textItem}
-                            key={textItem.id}
-                        />
-                    );
-                }
+            {canvaElements.map((element) => {
+                renderCanvaElement(element, activeTool, handleDragMove);
             })}
         </>
     );

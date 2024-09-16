@@ -1,7 +1,7 @@
 // CreateText.ts
 import { v4 as uuidv4 } from "uuid";
 
-import { CanvaElementSkeleton } from "../../../KonvaStage";
+import { CanvaElementSkeleton } from "../../KonvaStage";
 
 export interface TextElement extends CanvaElementSkeleton {
     type: "text";
