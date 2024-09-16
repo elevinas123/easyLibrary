@@ -9,6 +9,7 @@ export const renderCanvaElement = (
     activeTool: DrawingToolNames,
     handleDragMove: (e: KonvaEventObject<MouseEvent>) => void
 ) => {
+    console.log("renderCanvaElement", element);
     if (element.type === "text") {
         return (
             <RenderText
@@ -27,5 +28,7 @@ export const renderCanvaElement = (
                 key={element.id}
             />
         );
+    } else {
+        return null;
     }
 };

@@ -269,9 +269,12 @@ function CanvasElement(
 
     return (
         <>
-            {canvaElements.map((element) => {
-                renderCanvaElement(element, activeTool, handleDragMove);
-            })}
+            {currentElement &&
+                renderCanvaElement(currentElement, activeTool, handleDragMove)}
+            {canvaElements.map((element) =>
+                renderCanvaElement(element, activeTool, handleDragMove)
+            )}
+            
         </>
     );
 }
