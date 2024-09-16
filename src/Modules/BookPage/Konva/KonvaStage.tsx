@@ -17,6 +17,8 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
+import { TextElement } from "./shapes/Rectangle/Text/CreateText";
+import { RectElement } from "./shapes/Rectangle/createRectangle";
 
 type KonvaStageProps = {
     bookElements: (HtmlObject | null)[];
@@ -29,7 +31,6 @@ export type VisibleArea = {
 };
 // Base skeleton for all elements
 export type CanvaElementSkeleton = {
-    text: string;
     fill: string;
     x: number;
     y: number;
@@ -39,6 +40,11 @@ export type CanvaElementSkeleton = {
     outgoingArrowIds: string[];
     incomingArrowIds: string[];
     points: HighlightPoints[];
+    strokeColor: string;
+    strokeWidth: number;
+    opacity: number;
+
+
 };
 export type StartType = "bookText" | "text" | null;
 
@@ -63,16 +69,6 @@ export interface BookTextElement extends CanvaElementSkeleton {
     text: string;
     fontSize: number;
     fontFamily: string;
-}
-export interface TextElement extends CanvaElementSkeleton {
-    type: "text";
-    text: string;
-    fontFamily: string;
-    fontSize: number;
-}
-
-export interface RectElement extends CanvaElementSkeleton {
-    type: "rect";
 }
 
 export interface CircleElement extends CanvaElementSkeleton {

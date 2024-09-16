@@ -8,12 +8,13 @@ import {
     useImperativeHandle,
     useState,
 } from "react";
-import { Text } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
-import { TextElement } from "../KonvaStage";
 import { ArrowShapeRef } from "./ArrowShape";
 import CustomTransformer from "./CustomTransformer";
+import RenderText from "./Rectangle/Text/RenderText";
+import RenderRectangle from "./Rectangle/RenderRectangle";
+import CreateText from "./Rectangle/Text/CreateText";
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -73,43 +74,20 @@ function CanvasElement(
             const pos = e.target?.getStage()?.getPointerPosition();
             if (!pos) return;
             const id = uuidv4();
-            const newItem: TextElement = {
-                id,
-                text: "New Text",
+            const newText = CreateText({
                 x: pos.x,
                 y: pos.y,
-                fontSize: 24,
+                id,
+                text: "Sample Text",
                 width: 24 * 8 + 10,
                 height: 24 + 10,
-                type: "text",
-                fontFamily: "Arial",
-                fill: "black",
-                outgoingArrowIds: [],
-                incomingArrowIds: [],
-                points: [
-                    {
-                        x: pos.x,
-                        y: pos.y,
-                    },
-                    {
-                        x: pos.x + 24 * 8 + 10,
-                        y: pos.y,
-                    },
-                    {
-                        x: pos.x + 24 * 8 + 10,
-                        y: pos.y + 24 + 10,
-                    },
-                    {
-                        x: pos.x,
-                        y: pos.y + 24 + 10,
-                    },
-                ],
-            };
-            setCanvaElements((elements) => [...elements, newItem]);
+            });
+            setCanvaElements((elements) => [...elements, newText]);
             setSelectedTextId([id]);
         } else if (activeTool === "Arrow" && arrowShapeRef.current) {
             arrowShapeRef.current.handleMouseDown(e);
             return;
+        } else if (activeTool === "Rectangle") {
         } else if (activeTool === "Select") {
             if (arrowShapeRef.current) {
                 arrowShapeRef.current.handleArrowSelect(e);
@@ -224,22 +202,26 @@ function CanvasElement(
 
     return (
         <>
-            {canvasElements
-                .filter((element) => element.type === "text")
-                .map((textItem) => (
-                    <Text
-                        key={textItem.id}
-                        text={textItem.text}
-                        x={textItem.x}
-                        y={textItem.y}
-                        width={textItem.width}
-                        height={textItem.height}
-                        fontSize={textItem.fontSize}
-                        id={textItem.id}
-                        draggable={activeTool === "Select"}
-                        onDragMove={handleDragMove}
-                    />
-                ))}
+            {canvasElements.map((textItem) => {
+                if (textItem.type === "text") {
+                    return (
+                        <RenderText
+                            element={textItem}
+                            draggable={activeTool === "Select"}
+                            handleDragMove={handleDragMove}
+                            key={textItem.id}
+                        />
+                    );
+                } else if (textItem.type === "rect") {
+                    return (
+                        <RenderRectangle
+                            draggable={activeTool === "Select"}
+                            element={textItem}
+                            key={textItem.id}
+                        />
+                    );
+                }
+            })}
             <CustomTransformer selectedShapeIds={selectedTextId} />
         </>
     );
