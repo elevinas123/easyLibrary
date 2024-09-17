@@ -9,7 +9,7 @@ export type BookDocument = Book & Document;
 export class Book {
     @Prop({ required: true }) userId: string;
 
-    @Prop({ require: true }) title: number;
+    @Prop({ require: true }) title: string;
 
     @Prop({ required: true }) description: string;
 

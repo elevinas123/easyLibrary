@@ -1,19 +1,20 @@
-import { IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsBoolean, IsDate, IsString } from "class-validator";
 
 export class CreateBookDto {
+    @IsString() userId: string;
 
-    @IsString()
-    private readonly title: string;
-    
-    @IsString()
-    private readonly description: string;
+    @IsString() title: string;
 
-    @IsString()
-    @IsOptional()
-    private readonly author: string;
+    @IsString() description: string;
 
-    @IsString()
-    @IsOptional()
-    private readonly genre: string[];
+    @IsString() author: string;
 
+    @IsArray() @IsString({ each: true }) genre: string[];
+
+    @IsString() imageUrl: string;
+
+    @IsBoolean() liked: boolean;
+
+    @IsDate() @Type(() => Date) dateAdded: Date;
 }
