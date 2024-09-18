@@ -1,15 +1,11 @@
-import {  useState } from "react";
-import {
-    readEpub,
-    preprocessEpub,
-    HtmlObject,
-} from "../../preprocess/epub/preprocessEpub.ts";
-import JSZip from "jszip";
+import { useEffect, useState } from "react";
+import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements.ts";
 import Chapters from "./Chapters.tsx";
+import KonvaStage from "./Konva/KonvaStage.tsx";
 import RightHand from "./RightHand.tsx";
-import { load } from "cheerio";
-import { extractToc } from "../../preprocess/epub/extractToc.ts";
-import TextPage from "./Text.tsx";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
 export type HighlightRange = {
     startElementId: string;
@@ -21,8 +17,6 @@ export type HighlightRange = {
     highlightId: string;
 };
 
-
-
 export type Chapter = {
     id: string;
     title: string;
@@ -30,88 +24,54 @@ export type Chapter = {
     indentLevel: number | null;
 };
 
+// Fetch book function
+const fetchBook = async (id: string | null) => {
+    if (id === null) {
+        throw new Error("Book ID is null");
+    }
+    const { data } = await axios.get(`/api/book/${id}`);
+    return data;
+};
+
 function MainPage() {
-    const [bookElements, setBookElements] = useState<(HtmlObject | null)[]>([]);
+    // Use useQuery to fetch the book by ID
+    const [searchParams] = useSearchParams();
+    const bookId = searchParams.get("id");
+    const {
+        data: book,
+        error,
+        isLoading,
+    } = useQuery({
+        queryKey: ["book", "bookId"], // you can pass the book id dynamically
+        queryFn: () => fetchBook(bookId), // replace "bookId" with the actual book ID if dynamic
+    });
     const [chapters, setChapters] = useState<Chapter[]>([]);
     const [_, setError] = useState<string | null>(null);
+    useEffect(() => {
+        console.log("book", book);
+    }, [book]);
+    // Handle loading and error states
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
-    const handleEpubChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            try {
-                const epub = await readEpub(file);
-                const preprocessedEpub = preprocessEpub(epub);
+    if (error) {
+        return <div>Error loading book: {(error as Error).message}</div>;
+    }
 
-                // Extract ToC using preprocessed content
-                const zip = await JSZip.loadAsync(file);
-                const opfFilePath = await findOpfFilePath(zip);
-                if (!opfFilePath) {
-                    setError("Failed to load opfFilePath.");
-                    return;
-                }
-                const toc = await extractToc(zip, opfFilePath);
-
-                // Convert ToC to chapters data
-                const chaptersData = toc.map((item) => ({
-                    id: item.id, // This is now the correct ID of the element
-                    title: item.title,
-                    href: item.href,
-                    indentLevel: calculateIndentLevel(item.href),
-                }));
-
-                setBookElements(preprocessedEpub);
-                setChapters(chaptersData);
-
-                console.log("preprocessedEpub", preprocessedEpub);
-                console.log("chaptersData", chaptersData);
-            } catch (error) {
-                console.error("Failed to load EPUB", error);
-                setError("Failed to load EPUB. Please try another file.");
-            }
-        }
-    };
-
-    
+    // Extract book elements from the fetched book data
+    const bookElements = book?.bookElements ?? [];
 
     return (
         <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
             <Chapters chapters={chapters} />
-            <input
-                className="absolute left-1/2 z-10 bg-gray-500"
-                type="file"
-                placeholder="Select EPUB"
-                accept=".epub"
-                onChange={handleEpubChange}
-            />
-            <TextPage
-                bookElements={bookElements}
-                fontSize={24}
-            />
+
+            <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
+                <KonvaStage bookElements={bookElements} />
+            </div>
             <RightHand />
         </div>
     );
 }
 
 export default MainPage;
-
-function calculateIndentLevel(href: string | undefined) {
-    if (!href) return null;
-    // Simple example: increase indent level based on depth of href structure
-    return (href.match(/\//g) || []).length;
-}
-
-async function findOpfFilePath(zip: JSZip) {
-    const containerXml = await zip
-        .file("META-INF/container.xml")
-        ?.async("string");
-    if (containerXml) {
-        const $ = load(containerXml, { xmlMode: true });
-        const rootfileElement = $("rootfile");
-        if (rootfileElement.length > 0) {
-            return rootfileElement.attr("full-path") || null;
-        }
-    }
-    return null;
-}

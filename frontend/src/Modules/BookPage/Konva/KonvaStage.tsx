@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { HtmlObject } from "../../../preprocess/epub/preprocessEpub";
+import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
 import Tools from "./components/Tools";
 import {
     activeToolAtom,
@@ -19,7 +19,7 @@ import MainNotesLayer, {
 } from "./modules/NotesLayer/MainNotesLayer";
 
 type KonvaStageProps = {
-    bookElements: (HtmlObject | null)[];
+    bookElements: ProcessedElement[];
 };
 export type VisibleArea = {
     x: number;

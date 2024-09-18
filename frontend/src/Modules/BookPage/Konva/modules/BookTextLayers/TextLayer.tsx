@@ -18,7 +18,7 @@ import {
     highlightsAtom,
     offsetPositionAtom,
 } from "../../konvaAtoms";
-import { ProcessedElement } from "./MainLayer";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;

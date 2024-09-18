@@ -16,8 +16,8 @@ import {
     highlightsAtom,
     hoveredItemsAtom,
 } from "../../konvaAtoms";
-import { ProcessedElement } from "./MainLayer";
 import { KonvaEventObject } from "konva/lib/Node";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 
 export type FullHighlight = {
     rects: HighlightRect[];

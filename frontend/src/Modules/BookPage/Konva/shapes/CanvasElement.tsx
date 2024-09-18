@@ -313,10 +313,13 @@ function CanvasElement(
                         activeTool === "Select",
                         handleDragMove
                     );
-                }
-            )}
+                })}
             {canvaElements.map((element) =>
-                renderCanvaElement(element,  activeTool==="Select", handleDragMove)
+                renderCanvaElement(
+                    element,
+                    activeTool === "Select",
+                    handleDragMove
+                )
             )}
             <CustomTransformer currentElements={currentElements} />
         </>

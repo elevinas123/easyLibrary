@@ -1,5 +1,15 @@
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDate, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsString, ValidateNested } from "class-validator";
+
+class ProcessedElementDto {
+    @IsString() text: string;
+
+    @IsString() lineX: number;
+
+    @IsString() lineWidth: number;
+
+    @IsString() lineY: number;
+}
 
 export class CreateBookDto {
     @IsString() title: string;
@@ -15,4 +25,6 @@ export class CreateBookDto {
     @IsBoolean() liked: boolean;
 
     @IsDate() @Type(() => Date) dateAdded: Date;
+
+    @IsArray() @ValidateNested({ each: true }) @Type(() => ProcessedElementDto) bookElements: ProcessedElementDto[];
 }
