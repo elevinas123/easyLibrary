@@ -1,14 +1,14 @@
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDate, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
 
 class ProcessedElementDto {
     @IsString() text: string;
 
-    @IsString() lineX: number;
+    @IsNumber() lineX: number;
 
-    @IsString() lineWidth: number;
+    @IsNumber() lineWidth: number;
 
-    @IsString() lineY: number;
+    @IsNumber() lineY: number;
 }
 
 export class CreateBookDto {

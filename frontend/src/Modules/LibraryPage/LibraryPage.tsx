@@ -3,6 +3,7 @@ import BookCards from "./BookCards";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { useEffect } from "react";
+import ImportBook from "./importBook";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -26,6 +27,7 @@ export default function LibraryPage({}: LibraryPageProps) {
     return (
         <div className="bg-zinc-800 flex flex-row">
             <Sidebar />
+            <ImportBook />
             <BookCards />
         </div>
     );

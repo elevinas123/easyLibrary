@@ -1,14 +1,61 @@
+import {
+    useMutation
+} from "@tanstack/react-query";
+import axios from "axios";
 import { load } from "cheerio";
-import { readEpub } from "../../preprocess/epub/preprocessEpub";
 import JSZip from "jszip";
 import { useState } from "react";
+import { extractToc } from "../../preprocess/epub/extractToc";
+import {
+    ProcessedElement,
+    processElements,
+} from "../../preprocess/epub/htmlToBookElements";
+import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 
 type ImportBookProps = {
     // Define your prop types here
 };
 
-export default function ImportBook({ props }: ImportBookProps) {
+const importBook = async (bookElements: ProcessedElement[]): Promise<any> => {
+    console.log(bookElements)
+    const { data } = await axios.post("/api/book", {
+        userId: "12345",
+        title: "The Great Gatsby",
+        description: "A novel written by American author F. Scott Fitzgerald.",
+        author: "F. Scott Fitzgerald",
+        genre: ["Classic", "Fiction"],
+        imageUrl: "https://example.com/image.jpg",
+        liked: true,
+        bookElements: bookElements,
+        dateAdded: "2023-10-01T00:00:00.000Z",
+        __v: 0,
+    });
+    return data;
+};
+
+export default function ImportBook({ }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
+    // Use the mutation with the correct types
+    const mutation = useMutation({
+        mutationFn: importBook, // Pass the function directly
+        onSuccess: (data) => {
+            console.log("Book imported successfully:", data);
+        },
+        onError: (err) => {
+            console.error("Failed to import book:", err);
+        },
+    });
+
+    const processBookElements = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const epubElements = await handleEpubChange(event);
+        if (!epubElements) {
+            return;
+        }
+        const processedElements = processElements(epubElements, 24, 800);
+        mutation.mutate(processedElements);
+    };
 
     const handleEpubChange = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -35,12 +82,7 @@ export default function ImportBook({ props }: ImportBookProps) {
                     href: item.href,
                     indentLevel: calculateIndentLevel(item.href),
                 }));
-
-                setBookElements(preprocessedEpub);
-                setChapters(chaptersData);
-
-                console.log("preprocessedEpub", preprocessedEpub);
-                console.log("chaptersData", chaptersData);
+                return preprocessedEpub;
             } catch (error) {
                 console.error("Failed to load EPUB", error);
                 setError("Failed to load EPUB. Please try another file.");
@@ -66,7 +108,6 @@ export default function ImportBook({ props }: ImportBookProps) {
         }
         return null;
     }
-
     return (
         <div>
             <input
@@ -74,7 +115,7 @@ export default function ImportBook({ props }: ImportBookProps) {
                 type="file"
                 placeholder="Select EPUB"
                 accept=".epub"
-                onChange={handleEpubChange}
+                onChange={processBookElements}
             />
         </div>
     );

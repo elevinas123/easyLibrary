@@ -10,12 +10,14 @@ export class BookService {
         @InjectModel(Book.name) private bookModel: Model<BookDocument>
     ) {}
 
-    async addBook(createBookDto: CreateBookDto){
+    async addBook(createBookDto: CreateBookDto) {
+        console.log("adding book");
         const newBook = new this.bookModel(createBookDto);
         return newBook.save();
     }
 
     async getAllBooks(): Promise<Book[]> {
+        console.log("getting all books");
         return this.bookModel.find().exec();
     }
 
