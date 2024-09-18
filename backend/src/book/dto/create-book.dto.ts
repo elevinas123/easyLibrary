@@ -2,8 +2,6 @@ import { Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDate, IsString } from "class-validator";
 
 export class CreateBookDto {
-    @IsString() userId: string;
-
     @IsString() title: string;
 
     @IsString() description: string;

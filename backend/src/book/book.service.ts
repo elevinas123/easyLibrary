@@ -10,7 +10,7 @@ export class BookService {
         @InjectModel(Book.name) private bookModel: Model<BookDocument>
     ) {}
 
-    async addBook(createBookDto: CreateBookDto): Promise<Book> {
+    async addBook(createBookDto: CreateBookDto){
         const newBook = new this.bookModel(createBookDto);
         return newBook.save();
     }
