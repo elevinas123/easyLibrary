@@ -11,6 +11,7 @@ import {
     FiMenu,
 } from "react-icons/fi";
 import { twMerge } from "tailwind-merge"; // Optional: for conditional classNames
+import ImportBook from "./importBook";
 
 export default function Sidebar() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -22,7 +23,8 @@ export default function Sidebar() {
     return (
         <div
             className={twMerge(
-                "h-screen bg-zinc-700 text-gray-200 flex flex-col justify-between transition-width duration-300 ",
+
+                "sticky top-0 h-screen bg-zinc-700 text-gray-200 flex flex-col justify-between transition-width duration-300 ",
                 isCollapsed ? "w-20" : "w-64"
             )}
         >
@@ -35,10 +37,7 @@ export default function Sidebar() {
                     <FiMenu size={24} />
                     {!isCollapsed && <span className="ml-2">Collapse</span>}
                 </button>
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors ">
-                    <FiPlus size={24} />
-                    {!isCollapsed && <span className="ml-2">Add Document</span>}
-                </button>
+               <ImportBook isCollapsed={isCollapsed} />
             </div>
 
             {/* Middle Section */}

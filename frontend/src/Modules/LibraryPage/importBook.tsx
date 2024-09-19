@@ -1,6 +1,4 @@
-import {
-    useMutation
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { load } from "cheerio";
 import JSZip from "jszip";
@@ -11,13 +9,15 @@ import {
     processElements,
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
+import { FiPlus } from "react-icons/fi";
+    import { useRef } from "react";
 
 type ImportBookProps = {
-    // Define your prop types here
+    isCollapsed: boolean;
 };
 
 const importBook = async (bookElements: ProcessedElement[]): Promise<any> => {
-    console.log(bookElements)
+    console.log(bookElements);
     const { data } = await axios.post("/api/book", {
         userId: "12345",
         title: "The Great Gatsby",
@@ -33,7 +33,7 @@ const importBook = async (bookElements: ProcessedElement[]): Promise<any> => {
     return data;
 };
 
-export default function ImportBook({ }: ImportBookProps) {
+export default function ImportBook({ isCollapsed }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
     // Use the mutation with the correct types
     const mutation = useMutation({
@@ -45,6 +45,13 @@ export default function ImportBook({ }: ImportBookProps) {
             console.error("Failed to import book:", err);
         },
     });
+    const fileInputRef = useRef(null);
+
+    const handleButtonClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
 
     const processBookElements = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -109,14 +116,19 @@ export default function ImportBook({ }: ImportBookProps) {
         return null;
     }
     return (
-        <div>
+        <button
+            className="flex items-center p-4 hover:bg-gray-700 transition-colors"
+            onClick={handleButtonClick}
+        >
+            <FiPlus size={24} />
+            {!isCollapsed && <span className="ml-2">Add Document</span>}
             <input
-                className="absolute left-1/2 z-10 bg-gray-500"
+                ref={fileInputRef}
+                className="hidden"
                 type="file"
-                placeholder="Select EPUB"
                 accept=".epub"
                 onChange={processBookElements}
             />
-        </div>
+        </button>
     );
 }
