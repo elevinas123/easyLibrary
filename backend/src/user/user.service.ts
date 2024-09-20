@@ -18,6 +18,15 @@ export class UserService {
     async findAll(): Promise<User[]> {
         return this.userModel.find().exec();
     }
+    async findOneByUsername(username: string): Promise<User> {
+        const userFound = await this.userModel.findOne({
+            username: username,
+        });
+        if (!userFound) {
+            throw new NotFoundException(`User with username ${username} not found`);
+        }
+        return userFound;
+    }
 
     async findOne(id: string): Promise<User> {
         const userFound = await this.userModel.findById(id).exec();
