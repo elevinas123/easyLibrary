@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserModule } from "./user/user.module";
 import { BookModule } from './book/book.module';
 import { BookshelveModule } from './bookshelve/bookshelve.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { BookshelveModule } from './bookshelve/bookshelve.module';
         UserModule,
         BookModule,
         BookshelveModule,
+        AuthModule,
     ],
 
     controllers: [AppController],
