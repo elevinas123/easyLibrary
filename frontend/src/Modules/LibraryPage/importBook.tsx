@@ -26,8 +26,11 @@ const importBook = async ({
     bookElements: ProcessedElement[];
     metaData: Partial<Record<string, string>>;
     userId: string;
-    accessToken: string;
-}): Promise<any> => {
+    accessToken: string | null;
+    }): Promise<any> => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
     console.log(bookElements);
     console.log("metaHere", metaData);
     console.log("access_token", accessToken);

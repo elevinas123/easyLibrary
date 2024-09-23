@@ -3,11 +3,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./schemas/user.schema";
 import { Model } from "mongoose";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        private jwtService: JwtService
     ) {}
 
     async create(createUserDto: CreateUserDto): Promise<User> {
@@ -23,9 +25,22 @@ export class UserService {
             username: username,
         });
         if (!userFound) {
-            throw new NotFoundException(`User with username ${username} not found`);
+            throw new NotFoundException(
+                `User with username ${username} not found`
+            );
         }
         return userFound;
+    }
+    async findOneByJwtPayload(jwt: string): Promise<User> {
+        console.log("jwt", jwt);
+        const decodedToken = this.jwtService.decode(jwt) as any; // Decode JWT payload
+        const username = decodedToken?.username; // Extract data from JWT payload
+        if (!username) {
+            throw new Error("Invalid JWT");
+        }
+
+        // Fetch the user based on the username or other payload data
+        return this.findOneByUsername(username);
     }
 
     async findOne(id: string): Promise<User> {

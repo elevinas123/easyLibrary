@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
+import { useAuth } from "../../hooks/userAuth";
+import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements";
 import BookCards from "./BookCards";
 import Sidebar from "./Sidebar";
-import axios, { AxiosError } from "axios";
 import { useEffect } from "react";
-import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements";
-import { useAtom } from "jotai";
-import { useNavigate } from "react-router-dom";
-import { accessTokenAtom, userAtom } from "../../atoms";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -38,18 +36,12 @@ const fetchBooks = async (): Promise<Book[]> => {
 };
 
 export default function LibraryPage({}: LibraryPageProps) {
-    const [user] = useAtom(userAtom);
-    const [accessToken] = useAtom(accessTokenAtom);
-    const navigate = useNavigate();
-
-    // Redirect to login if the user is not logged in
-    useEffect(() => {
-        if (!accessToken || !user) {
-            navigate("/login");
-        }
-    }, [user, accessToken, navigate]);
-
+    const { accessToken, user } = useAuth();
     // Fetch books only if the user is logged in
+    useEffect(() => {
+        console.log("accessToken", accessToken);
+        console.log("user", user);
+    }, [accessToken, user])
     const {
         data: bookData,
         isLoading,

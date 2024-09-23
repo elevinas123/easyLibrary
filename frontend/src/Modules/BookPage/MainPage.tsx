@@ -1,11 +1,12 @@
+// src/pages/MainPage.tsx
 import { useEffect, useState } from "react";
-import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements.ts";
-import Chapters from "./Chapters.tsx";
-import KonvaStage from "./Konva/KonvaStage.tsx";
-import RightHand from "./RightHand.tsx";
+import Chapters from "./Chapters";
+import KonvaStage from "./Konva/KonvaStage";
+import RightHand from "./RightHand";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "../../hooks/userAuth";
 
 export type HighlightRange = {
     startElementId: string;
@@ -25,31 +26,47 @@ export type Chapter = {
 };
 
 // Fetch book function
-const fetchBook = async (id: string | null) => {
+const fetchBook = async (id: string | null, accessToken: string | null) => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
     if (id === null) {
         throw new Error("Book ID is null");
     }
-    const { data } = await axios.get(`/api/book/${id}`);
+    const { data } = await axios.get(`/api/book/${id}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
     return data;
 };
 
 function MainPage() {
+    // Use custom hook to handle authentication
+    const { accessToken, user } = useAuth();
+
     // Use useQuery to fetch the book by ID
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
+
     const {
         data: book,
         error,
         isLoading,
     } = useQuery({
-        queryKey: ["book", "bookId"], // you can pass the book id dynamically
-        queryFn: () => fetchBook(bookId), // replace "bookId" with the actual book ID if dynamic
+        queryKey: ["book", bookId], // Use dynamic bookId in the queryKey
+        enabled: !!accessToken && !!user,
+        queryFn: () => fetchBook(bookId, accessToken), // Fetch book data
     });
+
     const [chapters, setChapters] = useState<Chapter[]>([]);
-    const [_, setError] = useState<string | null>(null);
+
     useEffect(() => {
-        console.log("book", book);
+        if (book) {
+            console.log("book", book);
+        }
     }, [book]);
+
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;

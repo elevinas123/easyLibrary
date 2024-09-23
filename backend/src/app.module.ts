@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtModule, JwtService } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { MongooseModule } from "@nestjs/mongoose";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { AuthModule } from "./auth/auth.module";
+import { BookModule } from "./book/book.module";
+import { BookshelveModule } from "./bookshelve/bookshelve.module";
 import { UserModule } from "./user/user.module";
-import { BookModule } from './book/book.module';
-import { BookshelveModule } from './bookshelve/bookshelve.module';
-import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
             }),
             inject: [ConfigService],
         }),
+        JwtModule,
         UserModule,
         BookModule,
         BookshelveModule,
