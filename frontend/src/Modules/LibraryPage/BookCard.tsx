@@ -49,15 +49,13 @@ export default function BookCard({ book }: BookCardProps) {
                 <p className="text-sm text-gray-400 mt-1">
                     Added on: {new Date(book.dateAdded).toLocaleDateString()}
                 </p>
-                <p className="text-sm text-gray-300 mt-4 line-clamp-3">
-                    {book.description}
-                </p>
+               
                 {/* Go to Book Button */}
                 <button
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                     onClick={handleGoToBook}
                 >
-                    Go to Book
+                    Read Book
                 </button>
             </div>
         </div>

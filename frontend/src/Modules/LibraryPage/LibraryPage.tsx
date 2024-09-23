@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/userAuth";
 import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements";
 import BookCards from "./BookCards";
 import Sidebar from "./Sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -37,11 +37,15 @@ const fetchBooks = async (): Promise<Book[]> => {
 
 export default function LibraryPage({}: LibraryPageProps) {
     const { accessToken, user } = useAuth();
+    const [booksLoading, setBooksLoading] = useState<string[]>([]);
     // Fetch books only if the user is logged in
     useEffect(() => {
         console.log("accessToken", accessToken);
         console.log("user", user);
-    }, [accessToken, user])
+    }, [accessToken, user]);
+    useEffect(() => {
+        console.log("booksLoading", booksLoading);
+    }, [booksLoading]);
     const {
         data: bookData,
         isLoading,
@@ -49,9 +53,12 @@ export default function LibraryPage({}: LibraryPageProps) {
     } = useQuery<Book[], AxiosError>({
         queryKey: ["book"],
         queryFn: fetchBooks,
+
         enabled: !!accessToken && !!user,
     });
-
+    useEffect(() => {
+        setBooksLoading((prev) => prev.slice(0, prev.length - 1));
+    }, [bookData]);
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -66,8 +73,8 @@ export default function LibraryPage({}: LibraryPageProps) {
 
     return (
         <div className="bg-zinc-800 flex flex-row">
-            <Sidebar />
-            <BookCards bookData={bookData} />
+            <Sidebar setBooksLoading={setBooksLoading} />
+            <BookCards bookData={bookData} booksLoading={booksLoading} />
         </div>
     );
 }

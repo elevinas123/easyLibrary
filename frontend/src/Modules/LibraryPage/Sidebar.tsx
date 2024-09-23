@@ -1,29 +1,31 @@
 // src/components/Sidebar.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    FiHome,
     FiBook,
-    FiStar,
-    FiSettings,
-    FiUser,
-    FiSliders,
-    FiPlus,
+    FiHome,
     FiMenu,
+    FiSettings,
+    FiSliders,
+    FiStar,
+    FiUser,
 } from "react-icons/fi";
 import { twMerge } from "tailwind-merge"; // Optional: for conditional classNames
 import ImportBook from "./importBook";
 
-export default function Sidebar() {
+type SidebarProps = {
+    setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
+};
+export default function Sidebar({setBooksLoading}: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const toggleCollapse = () => {
         setIsCollapsed(!isCollapsed);
     };
+    
 
     return (
         <div
             className={twMerge(
-
                 "sticky top-0 h-screen bg-zinc-700 text-gray-200 flex flex-col justify-between transition-width duration-300 ",
                 isCollapsed ? "w-20" : "w-64"
             )}
@@ -37,7 +39,7 @@ export default function Sidebar() {
                     <FiMenu size={24} />
                     {!isCollapsed && <span className="ml-2">Collapse</span>}
                 </button>
-               <ImportBook isCollapsed={isCollapsed} />
+                <ImportBook isCollapsed={isCollapsed} setBooksLoading={setBooksLoading} />
             </div>
 
             {/* Middle Section */}

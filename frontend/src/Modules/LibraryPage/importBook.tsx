@@ -16,6 +16,7 @@ import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 
 type ImportBookProps = {
     isCollapsed: boolean;
+    setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 };
 const importBook = async ({
     bookElements,
@@ -24,6 +25,7 @@ const importBook = async ({
     accessToken,
     coverImage,
     chaptersData,
+    setBooksLoading,
 }: {
     bookElements: ProcessedElement[];
     metaData: Partial<Record<string, string>>;
@@ -36,14 +38,17 @@ const importBook = async ({
         href: string | undefined;
         indentLevel: number | null;
     }[];
+    setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 }): Promise<any> => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
+    setBooksLoading((prev) => [...prev, "hi"]);
+
     console.log(bookElements);
     console.log("metaHere", metaData);
     console.log("access_token", accessToken);
-    let url: string  = "https://example.com/image.jpg";
+    let url: string = "https://example.com/image.jpg";
     if (coverImage) {
         const formData = new FormData();
         formData.append("file", coverImage);
@@ -62,7 +67,7 @@ const importBook = async ({
             userId: userId,
             title: metaData["dc:title"] || "No Title",
             description: metaData.description || "No Description",
-            author: metaData.author || metaData["dc:creator"]|| "No Author",
+            author: metaData.author || metaData["dc:creator"] || "No Author",
             genre: ["Classic", "Fiction"],
             imageUrl: url,
             liked: true,
@@ -79,7 +84,10 @@ const importBook = async ({
     return data;
 };
 
-export default function ImportBook({ isCollapsed }: ImportBookProps) {
+export default function ImportBook({
+    isCollapsed,
+    setBooksLoading,
+}: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
     const [user] = useAtom(userAtom);
     const [accessToken] = useAtom(accessTokenAtom);
@@ -144,6 +152,7 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
             accessToken: accessToken,
             chaptersData: elements.chaptersData,
             coverImage: elements.coverImage,
+            setBooksLoading,
         });
     };
 
