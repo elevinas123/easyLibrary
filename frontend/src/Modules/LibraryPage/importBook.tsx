@@ -10,7 +10,7 @@ import {
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { FiPlus } from "react-icons/fi";
-    import { useRef } from "react";
+import { useRef } from "react";
 import { useAtom } from "jotai";
 import { accessTokenAtom, userAtom } from "../../atoms";
 
@@ -21,31 +21,36 @@ const importBook = async ({
     bookElements,
     metaData,
     userId,
-    accessToken
+    accessToken,
 }: {
     bookElements: ProcessedElement[];
     metaData: Partial<Record<string, string>>;
-        userId: string;
+    userId: string;
     accessToken: string;
 }): Promise<any> => {
     console.log(bookElements);
     console.log("metaHere", metaData);
     console.log("access_token", accessToken);
-    const { data } = await axios.post("/api/book", {
-        userId: userId,
-        title: metaData.title || "No Title",
-        description: metaData.description || "No Description",
-        author: metaData.author || metaData.creator || "No Author",
-        genre: ["Classic", "Fiction"],
-        imageUrl: "https://example.com/image.jpg",
-        liked: true,
-        bookElements: bookElements,
-        dateAdded: new Date().toISOString(),
-        __v: 0,
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
+    const { data } = await axios.post(
+        "/api/book",
+        {
+            userId: userId,
+            title: metaData.title || "No Title",
+            description: metaData.description || "No Description",
+            author: metaData.author || metaData.creator || "No Author",
+            genre: ["Classic", "Fiction"],
+            imageUrl: "https://example.com/image.jpg",
+            liked: true,
+            bookElements: bookElements,
+            dateAdded: new Date().toISOString(),
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
         }
-    });
+    );
+
     return data;
 };
 
@@ -76,8 +81,7 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
     ) => {
         const file = event.target.files?.[0];
         if (!file) {
-            return null
-            
+            return null;
         }
         const elements = await handleEpubChange(file);
         if (!elements) {
@@ -88,38 +92,44 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
             console.error("User not found");
             return;
         }
-        const processedElements = processElements(elements.epubElements, 24, 800);
-        mutation.mutate({bookElements: processedElements, metaData: elements.metaData, userId: user._id, accessToken: accessToken});
+        const processedElements = processElements(
+            elements.epubElements,
+            24,
+            800
+        );
+        mutation.mutate({
+            bookElements: processedElements,
+            metaData: elements.metaData,
+            userId: user._id,
+            accessToken: accessToken,
+        });
     };
 
-    const handleEpubChange = async (
-        file: File
-    ) => {
-        
-            try {
-                const {paragraphs, metaData} = await readEpub(file);
-                const epubElements = preprocessEpub(paragraphs);
-                // Extract ToC using preprocessed content
-                const zip = await JSZip.loadAsync(file);
-                const opfFilePath = await findOpfFilePath(zip);
-                if (!opfFilePath) {
-                    setError("Failed to load opfFilePath.");
-                    return;
-                }
-                const toc = await extractToc(zip, opfFilePath);
-
-                // Convert ToC to chapters data
-                const chaptersData = toc.map((item) => ({
-                    id: item.id, // This is now the correct ID of the element
-                    title: item.title,
-                    href: item.href,
-                    indentLevel: calculateIndentLevel(item.href),
-                }));
-                return {epubElements, metaData};
-            } catch (error) {
-                console.error("Failed to load EPUB", error);
-                setError("Failed to load EPUB. Please try another file.");
+    const handleEpubChange = async (file: File) => {
+        try {
+            const { paragraphs, metaData } = await readEpub(file);
+            const epubElements = preprocessEpub(paragraphs);
+            // Extract ToC using preprocessed content
+            const zip = await JSZip.loadAsync(file);
+            const opfFilePath = await findOpfFilePath(zip);
+            if (!opfFilePath) {
+                setError("Failed to load opfFilePath.");
+                return;
             }
+            const toc = await extractToc(zip, opfFilePath);
+
+            // Convert ToC to chapters data
+            const chaptersData = toc.map((item) => ({
+                id: item.id, // This is now the correct ID of the element
+                title: item.title,
+                href: item.href,
+                indentLevel: calculateIndentLevel(item.href),
+            }));
+            return { epubElements, metaData };
+        } catch (error) {
+            console.error("Failed to load EPUB", error);
+            setError("Failed to load EPUB. Please try another file.");
+        }
     };
     function calculateIndentLevel(href: string | undefined) {
         if (!href) return null;

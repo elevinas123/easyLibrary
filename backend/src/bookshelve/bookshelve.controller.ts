@@ -6,11 +6,14 @@ import {
     Param,
     Post,
     Put,
+    UseGuards,
 } from "@nestjs/common";
 import { BookshelveService } from "./bookshelve.service";
 import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";
 import { CreateBookDto } from "src/book/dto/create-book.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
+@UseGuards(JwtAuthGuard)
 @Controller("bookshelve")
 export class BookshelveController {
     constructor(private readonly bookshelveService: BookshelveService) {}
