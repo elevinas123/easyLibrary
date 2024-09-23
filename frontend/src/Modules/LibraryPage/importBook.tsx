@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { load } from "cheerio";
 import JSZip from "jszip";
@@ -27,7 +27,7 @@ const importBook = async ({
     metaData: Partial<Record<string, string>>;
     userId: string;
     accessToken: string | null;
-    }): Promise<any> => {
+}): Promise<any> => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
@@ -62,10 +62,12 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
     const [user] = useAtom(userAtom);
     const [accessToken] = useAtom(accessTokenAtom);
     // Use the mutation with the correct types
+    const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationFn: importBook, // Pass the function directly
         onSuccess: (data) => {
             console.log("Book imported successfully:", data);
+            queryClient.invalidateQueries({ queryKey: ["book"] });
         },
         onError: (err) => {
             console.error("Failed to import book:", err);
