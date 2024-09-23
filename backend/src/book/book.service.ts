@@ -16,6 +16,14 @@ export class BookService {
         return newBook.save();
     }
 
+    async getUserBooks(userId: string): Promise<Book[]> {
+        console.log("getting user books", userId);
+        return this.bookModel
+            .find({ userId: userId })
+            .select("-bookElements")
+            .exec();
+    }
+
     async getAllBooks(): Promise<Book[]> {
         console.log("getting all books");
         return this.bookModel.find().exec();

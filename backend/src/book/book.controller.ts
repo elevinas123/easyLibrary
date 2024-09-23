@@ -6,6 +6,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
     UseGuards,
 } from "@nestjs/common";
 import { BookService } from "./book.service";
@@ -18,6 +19,10 @@ export class BookController {
     @Get()
     async getAllBooks() {
         return this.bookService.getAllBooks();
+    }
+    @Get("/getUserBooks")
+    async getUserBooks(@Query("userId") userId: string) {
+      return this.bookService.getUserBooks(userId);
     }
     @Get(":id")
     async getBookById(@Param("id") id: string) {

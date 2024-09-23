@@ -14,6 +14,8 @@ export type ProcessedElement = {
 export class Book {
     @Prop({ required: true }) title: string;
 
+    @Prop({ required: true }) userId: Types.ObjectId;
+
     @Prop({ required: true }) description: string;
 
     @Prop({ required: true }) author: string;
