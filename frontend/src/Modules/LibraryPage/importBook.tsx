@@ -60,9 +60,9 @@ const importBook = async ({
         "/api/book",
         {
             userId: userId,
-            title: metaData.title || "No Title",
+            title: metaData["dc:title"] || "No Title",
             description: metaData.description || "No Description",
-            author: metaData.author || metaData.creator || "No Author",
+            author: metaData.author || metaData["dc:creator"]|| "No Author",
             genre: ["Classic", "Fiction"],
             imageUrl: url,
             liked: true,
