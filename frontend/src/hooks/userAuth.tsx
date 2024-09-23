@@ -9,7 +9,6 @@ const fetchUser = async (accessToken: string | null) => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
-    console.log("accessToken", accessToken);
     const { data } = await axios.get("/api/user/findOneByJwtPayload", {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -23,7 +22,6 @@ const loginUser = async (username: string, password: string) => {
         username,
         password,
     });
-    console.log("response", response);
     return response.data;
 };
 export const useAuth = () => {
@@ -34,16 +32,10 @@ export const useAuth = () => {
     useEffect(() => {
         const authenticate = async () => {
             let token = accessToken;
-            console.log("token", token);
-            console.log("user", user);
             if (!token && user) {
-                const data = await loginUser(
-                    user.username,
-                    user.password
-                );
+                const data = await loginUser(user.username, user.password);
                 const accessToken = data.access_token;
-                
-                console.log("accessTokenGotten", data);
+
                 if (!accessToken) {
                     navigate("/login");
                     return;
@@ -65,7 +57,6 @@ export const useAuth = () => {
             if (!user && token) {
                 try {
                     const userData = await fetchUser(token);
-                    console.log("userData", userData);
                     setUser(userData);
                 } catch (error) {
                     console.error("Error fetching user", error);

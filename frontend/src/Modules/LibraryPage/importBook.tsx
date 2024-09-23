@@ -24,7 +24,6 @@ const importBook = async ({
     userId,
     accessToken,
     coverImage,
-    chaptersData,
     setBooksLoading,
 }: {
     bookElements: ProcessedElement[];
@@ -101,17 +100,13 @@ export default function ImportBook({
             queryClient.invalidateQueries({ queryKey: ["book"] });
             toast({
                 title: "Book imported successfully",
-                status: "success",
                 duration: 5000,
-                isClosable: true,
             });
         },
         onError: (err) => {
             toast({
                 title: "Failed to import book",
-                status: "error",
                 duration: 5000,
-                isClosable: true,
             });
             console.error("Failed to import book:", err);
         },

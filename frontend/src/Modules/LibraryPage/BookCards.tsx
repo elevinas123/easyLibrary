@@ -5,12 +5,24 @@ import BookCardSkeleton from "./BookCardSkeleton";
 type BookCardsProps = {
     bookData: Book[] | undefined;
     booksLoading: string[];
+    deleteBook: (bookId: string) => Promise<void>;
+    selectBook: (bookId: string) => void;
 };
 
-export default function BookCards({ bookData, booksLoading }: BookCardsProps) {
+export default function BookCards({
+    bookData,
+    booksLoading,
+    deleteBook,
+    selectBook,
+}: BookCardsProps) {
     // Generate actual book cards if bookData is available
     const bookCards = bookData?.map((book, index) => (
-        <BookCard book={book} key={index} />
+        <BookCard
+            book={book}
+            key={index}
+            deleteBook={deleteBook}
+            selectBook={selectBook}
+        />
     ));
 
     // Generate skeletons for loading state

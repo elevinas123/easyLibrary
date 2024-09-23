@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useAuth } from "../../hooks/userAuth";
 import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements";
 import BookCards from "./BookCards";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
+import { useToast } from "../../hooks/use-toast";
+import BookInfoPage from "./BookInfoPage";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -30,7 +32,6 @@ const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {
     if (!token) {
         throw new Error("No token found");
     }
-    console.log("userId", userId);
     const response = await axios.get(
         `/api/book/getUserBooks?userId=${userId}`,
         {
@@ -46,7 +47,9 @@ export default function LibraryPage({}: LibraryPageProps) {
     const { accessToken, user } = useAuth();
     const [booksLoading, setBooksLoading] = useState<string[]>([]);
     // Fetch books only if the user is logged in
-
+    const queryClient = useQueryClient();
+    const [bookSelected, setBookSelected] = useState<string | null>(null);
+    const { toast } = useToast();
     const {
         data: bookData,
         isLoading,
@@ -63,7 +66,36 @@ export default function LibraryPage({}: LibraryPageProps) {
     if (isLoading) {
         return <div>Loading...</div>;
     }
-
+    const deleteBook = async (bookId: string) => {
+        try {
+            const bookDeleted = await axios.delete(`/api/book/${bookId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            if (bookDeleted.status === 200) {
+                queryClient.invalidateQueries({ queryKey: ["book"] });
+                toast({
+                    title: "Book Deleted successfully",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } else {
+                toast({
+                    title: "Failed to delete book",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const selectBook = (bookId: string) => {
+        setBookSelected(bookId);
+    };
     if (error) {
         if (error.response?.status === 401) {
             return <div>Unauthorized</div>;
@@ -71,11 +103,54 @@ export default function LibraryPage({}: LibraryPageProps) {
             return <div>An error occurred: {error.message}</div>;
         }
     }
-
+    const updateBook = async (updatedBook: Book) => {
+        try {
+            const bookUpdated = await axios.put(
+                `/api/book/${updatedBook._id}`,
+                updatedBook,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            if (bookUpdated.status === 200) {
+                queryClient.invalidateQueries({ queryKey: ["book"] });
+                toast({
+                    title: "Book Updated successfully",
+                    duration: 5000,
+                });
+            } else {
+                toast({
+                    title: "Failed to update book",
+                    duration: 5000,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const book = bookData?.filter((book) => book._id === bookSelected);
     return (
-        <div className="bg-zinc-800 flex flex-row">
+        <div className="bg-zinc-800 flex flex-row h-screen">
             <Sidebar setBooksLoading={setBooksLoading} />
-            <BookCards bookData={bookData} booksLoading={booksLoading} />
+            <div className="flex flex-row flex-1">
+                <div className="flex-1 overflow-y-auto">
+                    <BookCards
+                        bookData={bookData}
+                        booksLoading={booksLoading}
+                        deleteBook={deleteBook}
+                        selectBook={selectBook}
+                    />
+                </div>
+                {book && book.length > 0 && (
+                    <BookInfoPage
+                        book={book[0]}
+                        deleteBook={deleteBook}
+                        updateBook={updateBook}
+                    />
+                )}
+            </div>
         </div>
     );
 }
