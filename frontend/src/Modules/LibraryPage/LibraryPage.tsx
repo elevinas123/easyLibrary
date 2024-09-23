@@ -22,16 +22,23 @@ export type Book = {
     bookElements: ProcessedElement[];
 };
 
-const fetchBooks = async (): Promise<Book[]> => {
+const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {
+    if (!userId) {
+        throw new Error("No user ID found");
+    }
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("No token found");
     }
-    const response = await axios.get("/api/book", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    console.log("userId", userId);
+    const response = await axios.get(
+        `/api/book/getUserBooks?userId=${userId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
     return response.data;
 };
 
@@ -39,20 +46,14 @@ export default function LibraryPage({}: LibraryPageProps) {
     const { accessToken, user } = useAuth();
     const [booksLoading, setBooksLoading] = useState<string[]>([]);
     // Fetch books only if the user is logged in
-    useEffect(() => {
-        console.log("accessToken", accessToken);
-        console.log("user", user);
-    }, [accessToken, user]);
-    useEffect(() => {
-        console.log("booksLoading", booksLoading);
-    }, [booksLoading]);
+
     const {
         data: bookData,
         isLoading,
         error,
     } = useQuery<Book[], AxiosError>({
         queryKey: ["book"],
-        queryFn: fetchBooks,
+        queryFn: () => fetchBooks(user?._id),
 
         enabled: !!accessToken && !!user,
     });
