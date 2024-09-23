@@ -1,20 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { load } from "cheerio";
+import { useAtom } from "jotai";
 import JSZip from "jszip";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { FiPlus } from "react-icons/fi";
+import { accessTokenAtom, userAtom } from "../../atoms";
+import { useToast } from "../../hooks/use-toast";
 import { extractToc } from "../../preprocess/epub/extractToc";
 import {
     ProcessedElement,
     processElements,
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
-import { FiPlus } from "react-icons/fi";
-import { useRef } from "react";
-import { useAtom } from "jotai";
-import { accessTokenAtom, userAtom } from "../../atoms";
-import { useToast } from "../../hooks/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -24,11 +22,20 @@ const importBook = async ({
     metaData,
     userId,
     accessToken,
+    coverImage,
+    chaptersData,
 }: {
     bookElements: ProcessedElement[];
     metaData: Partial<Record<string, string>>;
     userId: string;
     accessToken: string | null;
+    coverImage: Blob | null;
+    chaptersData: {
+        id: string;
+        title: string;
+        href: string | undefined;
+        indentLevel: number | null;
+    }[];
 }): Promise<any> => {
     if (!accessToken) {
         throw new Error("Access token is null");
@@ -36,6 +43,19 @@ const importBook = async ({
     console.log(bookElements);
     console.log("metaHere", metaData);
     console.log("access_token", accessToken);
+    let url: string  = "https://example.com/image.jpg";
+    if (coverImage) {
+        const formData = new FormData();
+        formData.append("file", coverImage);
+        formData.append("upload_preset", "rkarvkvu"); // Correct field for the unsigned preset
+
+        const { data } = await axios.post(
+            "https://api.cloudinary.com/v1_1/dxgc5hsrr/image/upload",
+            formData
+        );
+        url = data.secure_url;
+        console.log("data", data);
+    }
     const { data } = await axios.post(
         "/api/book",
         {
@@ -44,7 +64,7 @@ const importBook = async ({
             description: metaData.description || "No Description",
             author: metaData.author || metaData.creator || "No Author",
             genre: ["Classic", "Fiction"],
-            imageUrl: "https://example.com/image.jpg",
+            imageUrl: url,
             liked: true,
             bookElements: bookElements,
             dateAdded: new Date().toISOString(),
@@ -122,12 +142,14 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
             metaData: elements.metaData,
             userId: user._id,
             accessToken: accessToken,
+            chaptersData: elements.chaptersData,
+            coverImage: elements.coverImage,
         });
     };
 
     const handleEpubChange = async (file: File) => {
         try {
-            const { paragraphs, metaData } = await readEpub(file);
+            const { paragraphs, metaData, coverImage } = await readEpub(file);
             const epubElements = preprocessEpub(paragraphs);
             // Extract ToC using preprocessed content
             const zip = await JSZip.loadAsync(file);
@@ -145,7 +167,7 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
                 href: item.href,
                 indentLevel: calculateIndentLevel(item.href),
             }));
-            return { epubElements, metaData };
+            return { epubElements, metaData, coverImage, chaptersData };
         } catch (error) {
             console.error("Failed to load EPUB", error);
             setError("Failed to load EPUB. Please try another file.");

@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="eng">
+  <head>
+    <meta content="3db1baa8-b9e1-44c1-9e62-8e0e0c8f9066" name="dtb:uid"/>
+    <meta content="2" name="dtb:depth"/>
+    <meta content="calibre (3.21.0)" name="dtb:generator"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>Start Where You Are: A Guide to Compassionate Living.epub</text>
+  </docTitle>
+  <navMap>
+    <navPoint class="chapter" id="num_1" playOrder="1">
+      <navLabel>
+        <text>Front Cover</text>
+      </navLabel>
+      <content src="index_split_000.html"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_2" playOrder="2">
+      <navLabel>
+        <text>Start Where You Are</text>
+      </navLabel>
+      <content src="index_split_000.html#p5"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_3" playOrder="3">
+      <navLabel>
+        <text>Contents</text>
+      </navLabel>
+      <content src="index_split_000.html#p9"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_4" playOrder="4">
+      <navLabel>
+        <text>Preface</text>
+      </navLabel>
+      <content src="index_split_022.html#p11"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_5" playOrder="5">
+      <navLabel>
+        <text>Acknowledgments</text>
+      </navLabel>
+      <content src="index_split_024.html#p15"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_6" playOrder="6">
+      <navLabel>
+        <text>1. No Escape, No Problem</text>
+      </navLabel>
+      <content src="index_split_024.html#p19"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_7" playOrder="7">
+      <navLabel>
+        <text>2. No Big Deal</text>
+      </navLabel>
+      <content src="index_split_024.html#p30"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_8" playOrder="8">
+      <navLabel>
+        <text>3. Pulling Out the Rug</text>
+      </navLabel>
+      <content src="index_split_024.html#p38"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_9" playOrder="9">
+      <navLabel>
+        <text>4. Let the World Speak for Itself</text>
+      </navLabel>
+      <content src="index_split_024.html#p45"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_10" playOrder="10">
+      <navLabel>
+        <text>5. Poison as Medicine</text>
+      </navLabel>
+      <content src="index_split_024.html#p54"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_11" playOrder="11">
+      <navLabel>
+        <text>6. Start Where You Are</text>
+      </navLabel>
+      <content src="index_split_024.html#p62"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_12" playOrder="12">
+      <navLabel>
+        <text>7. Bringing All That We Meet to the Path</text>
+      </navLabel>
+      <content src="index_split_024.html#p78"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_13" playOrder="13">
+      <navLabel>
+        <text>8. Drive All Blames into One</text>
+      </navLabel>
+      <content src="index_split_024.html#p87"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_14" playOrder="14">
+      <navLabel>
+        <text>9. Be Grateful to Everyone</text>
+      </navLabel>
+      <content src="index_split_024.html#p95"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_15" playOrder="15">
+      <navLabel>
+        <text>10. Cutting the Solidity of Thoughts</text>
+      </navLabel>
+      <content src="index_split_024.html#p105"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_16" playOrder="16">
+      <navLabel>
+        <text>11. Overcoming Resistance</text>
+      </navLabel>
+      <content src="index_split_024.html#p115"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_17" playOrder="17">
+      <navLabel>
+        <text>12. Empty Boat</text>
+      </navLabel>
+      <content src="index_split_024.html#p127"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_18" playOrder="18">
+      <navLabel>
+        <text>13. Teachings for Life and Death</text>
+      </navLabel>
+      <content src="index_split_024.html#p133"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_19" playOrder="19">
+      <navLabel>
+        <text>14. Loving-Kindness and Compassion</text>
+      </navLabel>
+      <content src="index_split_025.html#p142"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_20" playOrder="20">
+      <navLabel>
+        <text>15. Lighten Up</text>
+      </navLabel>
+      <content src="index_split_025.html#p148"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_21" playOrder="21">
+      <navLabel>
+        <text>16. Abandon Any Hope of Fruition</text>
+      </navLabel>
+      <content src="index_split_025.html#p154"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_22" playOrder="22">
+      <navLabel>
+        <text>17. Compassionate Action</text>
+      </navLabel>
+      <content src="index_split_025.html#p162"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_23" playOrder="23">
+      <navLabel>
+        <text>18. Taking Responsibility for Your Own Actions</text>
+      </navLabel>
+      <content src="index_split_025.html#p174"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_24" playOrder="24">
+      <navLabel>
+        <text>19. Communication from the Heart</text>
+      </navLabel>
+      <content src="index_split_025.html#p183"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_25" playOrder="25">
+      <navLabel>
+        <text>20. The Big Squeeze</text>
+      </navLabel>
+      <content src="index_split_025.html#p193"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_26" playOrder="26">
+      <navLabel>
+        <text>21. High-Stakes Practice</text>
+      </navLabel>
+      <content src="index_split_025.html#p208"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_27" playOrder="27">
+      <navLabel>
+        <text>22. Train Wholeheartedly</text>
+      </navLabel>
+      <content src="index_split_025.html#p219"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_28" playOrder="28">
+      <navLabel>
+        <text>Appendix: The Root Text of the Seven Points of Training the Mind</text>
+      </navLabel>
+      <content src="index_split_025.html#p225"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_29" playOrder="29">
+      <navLabel>
+        <text>Bibliography</text>
+      </navLabel>
+      <content src="index_split_025.html#p231"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_30" playOrder="30">
+      <navLabel>
+        <text>Resources</text>
+      </navLabel>
+      <content src="index_split_025.html#p233"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_31" playOrder="31">
+      <navLabel>
+        <text>Index of Slogans</text>
+      </navLabel>
+      <content src="index_split_025.html#p237"/>
+    </navPoint>
+  </navMap>
+</ncx>

@@ -47,7 +47,10 @@ export async function readEpub(file: File) {
         throw new Error("Unable to find content.opf file.");
     }
 
-    const { content, metaData } = await parseOpfFile(zip, opfFilePath);
+    const { content, metaData, coverImage } = await parseOpfFile(
+        zip,
+        opfFilePath
+    );
     console.log("metaData", metaData);
     const paragraphs: string[] = [];
     for (const file of content) {
@@ -57,7 +60,7 @@ export async function readEpub(file: File) {
         }
     }
 
-    return { paragraphs, metaData };
+    return { paragraphs, metaData, coverImage };
 }
 
 async function findOpfFilePath(zip: JSZip): Promise<string | null> {
@@ -102,7 +105,6 @@ async function parseOpfFile(zip: JSZip, opfFilePath: string) {
                 metaData[tagName] = textContent;
             }
         });
-
     // Get the spine items in the correct order
     const spineItems = $("spine itemref")
         .map((_, itemref) => {
@@ -113,8 +115,29 @@ async function parseOpfFile(zip: JSZip, opfFilePath: string) {
             throw new Error(`Spine references non-existent item: ${idref}`);
         })
         .get();
-
-    return { content: spineItems, metaData: metaData };
+    // Find the cover image id
+    let coverImageId = "";
+    $("meta").each((_, meta) => {
+        if ($(meta).attr("name") === "cover") {
+            coverImageId = $(meta).attr("content") || "";
+        }
+    });
+    let coverImage: Blob | null = null;
+    if (coverImageId) {
+        const coverImageHref = manifestItems[coverImageId];
+        console.log("Cover image found:", coverImageHref);
+        if (!coverImageHref) {
+            throw new Error("Cover image reference not found in manifest.");
+        }
+        const newImage = await zip.file(coverImageHref)?.async("blob");
+        if (!newImage) {
+            coverImage = null;
+            throw new Error("Unable to extract cover image from the EPUB.");
+        }
+        coverImage = newImage;
+        console.log("Cover image extracted:", coverImageHref);
+    }
+    return { content: spineItems, metaData: metaData, coverImage };
 }
 
 export function preprocessEpub(epub: string[]): HtmlObject[] {
