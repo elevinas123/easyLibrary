@@ -4,10 +4,11 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { userNameAtom } from "../../atoms";
+import { accessTokenAtom, userAtom } from "../../atoms";
 
 const Login: React.FC = () => {
-    const [user, setUser] = useAtom(userNameAtom);
+    const [user, setUser] = useAtom(userAtom);
+    const [_, setAccessToken] = useAtom(accessTokenAtom);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -19,16 +20,19 @@ const Login: React.FC = () => {
             username,
             password,
         });
+        console.log("response", response);
         return response.data;
     };
+
 
     // Use the useMutation hook with the mutation function
     const mutation = useMutation({
         mutationFn: loginUser,
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
             console.log("Logged in successfully:", data);
             localStorage.setItem("token", data.access_token);
-            setUser(username);
+            setUser(data.user);
+            setAccessToken(data.access_token);
             navigate("/");
         },
         onError: (error: any) => {
@@ -86,7 +90,9 @@ const Login: React.FC = () => {
                     <button
                         type="submit"
                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 font-medium"
-                    >Logging in</button>
+                    >
+                        Logging in
+                    </button>
                 </form>
                 <p className="mt-6 text-center text-sm text-gray-600">
                     Don't have an account?{" "}

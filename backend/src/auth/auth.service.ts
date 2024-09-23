@@ -23,10 +23,11 @@ export class AuthService {
     }
 
     // Login generates the JWT token for a validated user
-    async login(user: any): Promise<LoginResponseDto> {
+    async login(user: any){
         const payload = { username: user.username, sub: user.userId };
         return {
             access_token: this.jwtService.sign(payload),
+            user: user
         };
     }
 

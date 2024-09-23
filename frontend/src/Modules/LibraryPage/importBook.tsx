@@ -11,30 +11,48 @@ import {
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { FiPlus } from "react-icons/fi";
     import { useRef } from "react";
+import { useAtom } from "jotai";
+import { accessTokenAtom, userAtom } from "../../atoms";
 
 type ImportBookProps = {
     isCollapsed: boolean;
 };
-
-const importBook = async (bookElements: ProcessedElement[]): Promise<any> => {
+const importBook = async ({
+    bookElements,
+    metaData,
+    userId,
+    accessToken
+}: {
+    bookElements: ProcessedElement[];
+    metaData: Partial<Record<string, string>>;
+        userId: string;
+    accessToken: string;
+}): Promise<any> => {
     console.log(bookElements);
+    console.log("metaHere", metaData);
+    console.log("access_token", accessToken);
     const { data } = await axios.post("/api/book", {
-        userId: "12345",
-        title: "The Great Gatsby",
-        description: "A novel written by American author F. Scott Fitzgerald.",
-        author: "F. Scott Fitzgerald",
+        userId: userId,
+        title: metaData.title || "No Title",
+        description: metaData.description || "No Description",
+        author: metaData.author || metaData.creator || "No Author",
         genre: ["Classic", "Fiction"],
         imageUrl: "https://example.com/image.jpg",
         liked: true,
         bookElements: bookElements,
-        dateAdded: "2023-10-01T00:00:00.000Z",
+        dateAdded: new Date().toISOString(),
         __v: 0,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
     });
     return data;
 };
 
 export default function ImportBook({ isCollapsed }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
+    const [user] = useAtom(userAtom);
+    const [accessToken] = useAtom(accessTokenAtom);
     // Use the mutation with the correct types
     const mutation = useMutation({
         mutationFn: importBook, // Pass the function directly
@@ -56,23 +74,31 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
     const processBookElements = async (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
-        const epubElements = await handleEpubChange(event);
-        if (!epubElements) {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return null
+            
+        }
+        const elements = await handleEpubChange(file);
+        if (!elements) {
+            console.error("Failed to load EPUB");
             return;
         }
-        const processedElements = processElements(epubElements, 24, 800);
-        mutation.mutate(processedElements);
+        if (!user) {
+            console.error("User not found");
+            return;
+        }
+        const processedElements = processElements(elements.epubElements, 24, 800);
+        mutation.mutate({bookElements: processedElements, metaData: elements.metaData, userId: user._id, accessToken: accessToken});
     };
 
     const handleEpubChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        file: File
     ) => {
-        const file = event.target.files?.[0];
-        if (file) {
+        
             try {
-                const epub = await readEpub(file);
-                const preprocessedEpub = preprocessEpub(epub);
-
+                const {paragraphs, metaData} = await readEpub(file);
+                const epubElements = preprocessEpub(paragraphs);
                 // Extract ToC using preprocessed content
                 const zip = await JSZip.loadAsync(file);
                 const opfFilePath = await findOpfFilePath(zip);
@@ -89,12 +115,11 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
                     href: item.href,
                     indentLevel: calculateIndentLevel(item.href),
                 }));
-                return preprocessedEpub;
+                return {epubElements, metaData};
             } catch (error) {
                 console.error("Failed to load EPUB", error);
                 setError("Failed to load EPUB. Please try another file.");
             }
-        }
     };
     function calculateIndentLevel(href: string | undefined) {
         if (!href) return null;

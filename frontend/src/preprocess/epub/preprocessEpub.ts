@@ -38,7 +38,7 @@ export type HtmlObject = {
     type: "html";
     elements: HtmlElementObject[]; // Use the new generic HtmlElementObject type
 };
-export async function readEpub(file: File): Promise<string[]> {
+export async function readEpub(file: File) {
     const arrayBuffer = await file.arrayBuffer();
     const zip = await JSZip.loadAsync(arrayBuffer);
 
@@ -47,17 +47,17 @@ export async function readEpub(file: File): Promise<string[]> {
         throw new Error("Unable to find content.opf file.");
     }
 
-    const contentFiles = await parseOpfFile(zip, opfFilePath);
-
+    const { content, metaData } = await parseOpfFile(zip, opfFilePath);
+    console.log("metaData", metaData);
     const paragraphs: string[] = [];
-    for (const file of contentFiles) {
+    for (const file of content) {
         const fileData = await zip.file(file.href)?.async("string");
         if (fileData) {
             paragraphs.push(fileData);
         }
     }
 
-    return paragraphs;
+    return { paragraphs, metaData };
 }
 
 async function findOpfFilePath(zip: JSZip): Promise<string | null> {
@@ -74,10 +74,7 @@ async function findOpfFilePath(zip: JSZip): Promise<string | null> {
     return null;
 }
 
-async function parseOpfFile(
-    zip: JSZip,
-    opfFilePath: string
-): Promise<{ id: string; href: string }[]> {
+async function parseOpfFile(zip: JSZip, opfFilePath: string) {
     const opfContent = await zip.file(opfFilePath)?.async("string");
     if (!opfContent) {
         throw new Error("Unable to read content.opf file.");
@@ -95,6 +92,17 @@ async function parseOpfFile(
         }
     });
 
+    const metaData: Record<string, string> = {};
+    $("metadata")
+        .children()
+        .each((_, element) => {
+            const tagName = element.tagName;
+            const textContent = $(element).text();
+            if (tagName && textContent) {
+                metaData[tagName] = textContent;
+            }
+        });
+
     // Get the spine items in the correct order
     const spineItems = $("spine itemref")
         .map((_, itemref) => {
@@ -106,7 +114,7 @@ async function parseOpfFile(
         })
         .get();
 
-    return spineItems;
+    return { content: spineItems, metaData: metaData };
 }
 
 export function preprocessEpub(epub: string[]): HtmlObject[] {
