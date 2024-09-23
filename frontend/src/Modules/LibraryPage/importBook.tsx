@@ -13,6 +13,8 @@ import { FiPlus } from "react-icons/fi";
 import { useRef } from "react";
 import { useAtom } from "jotai";
 import { accessTokenAtom, userAtom } from "../../atoms";
+import { useToast } from "../../hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -61,6 +63,7 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
     const [user] = useAtom(userAtom);
     const [accessToken] = useAtom(accessTokenAtom);
+    const { toast } = useToast();
     // Use the mutation with the correct types
     const queryClient = useQueryClient();
     const mutation = useMutation({
@@ -68,8 +71,20 @@ export default function ImportBook({ isCollapsed }: ImportBookProps) {
         onSuccess: (data) => {
             console.log("Book imported successfully:", data);
             queryClient.invalidateQueries({ queryKey: ["book"] });
+            toast({
+                title: "Book imported successfully",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
         },
         onError: (err) => {
+            toast({
+                title: "Failed to import book",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Failed to import book:", err);
         },
     });
