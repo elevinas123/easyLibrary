@@ -48,7 +48,7 @@ export type CanvaElementSkeleton = {
 };
 export type StartType = "bookText" | "text" | null;
 
-export type CurveElements = ArrowElement
+export type CurveElement = ArrowElement
 
 export type CurveSkeleton = {
     points: number[];
