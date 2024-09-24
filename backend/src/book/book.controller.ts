@@ -10,9 +10,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { BookService } from "./book.service";
-import { BookElementsDto, CreateBookDto } from "./dto/create-book.dto";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { CanvaElementDto, CanvaElementsDto } from "./dto/elements.dto";
 @UseGuards(JwtAuthGuard)
 @Controller("book")
 export class BookController {
