@@ -7,6 +7,8 @@ import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import { useToast } from "../../hooks/use-toast";
 import BookInfoPage from "./BookInfoPage";
+import { CurveElement } from "../BookPage/Konva/KonvaStage";
+import { CanvaElement } from "../BookPage/Konva/shapes/CanvasElement";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -22,6 +24,8 @@ export type Book = {
     liked: boolean;
     dateAdded: Date;
     bookElements: ProcessedElement[];
+    curveElements: CurveElement[];
+    canvaElements: CanvaElement[]
 };
 
 const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {

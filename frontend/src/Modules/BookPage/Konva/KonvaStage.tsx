@@ -3,6 +3,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
+import { Book } from "../../LibraryPage/LibraryPage";
 import Tools from "./components/Tools";
 import {
     activeToolAtom,
@@ -17,19 +18,18 @@ import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
-import axios from "axios";
-import { useAuth } from "../../../hooks/userAuth";
-import { Book } from "../../LibraryPage/LibraryPage";
 
-type KonvaStageProps = {
-    bookElements: ProcessedElement[];
-    book: Book;
-};
 export type VisibleArea = {
     x: number;
     y: number;
     width: number;
     height: number;
+};
+export type CurveSkeleton = {
+    points: number[];
+    id: string;
+    fill: string;
+    text: null | string;
 };
 // Base skeleton for all elements
 export type CanvaElementSkeleton = {
@@ -48,37 +48,10 @@ export type CanvaElementSkeleton = {
 };
 export type StartType = "bookText" | "text" | null;
 
-export type CurveElement = ArrowElement
-
-export type CurveSkeleton = {
-    points: number[];
-    id: string;
-    fill: string;
-    text: null | string;
+type KonvaStageProps = {
+    bookElements: ProcessedElement[];
 };
-export interface ArrowElement extends CurveSkeleton {
-    type: "arrow";
-    points: number[];
-    startId: string | null;
-    endId: string | null;
-    startType: StartType;
-    endType: StartType;
-}
-
-// Specific element types
-export interface BookTextElement extends CanvaElementSkeleton {
-    type: "bookText";
-    text: string;
-    fontSize: number;
-    fontFamily: string;
-}
-
-export interface CircleElement extends CanvaElementSkeleton {
-    radius: number;
-    type: "circle";
-}
-
-export default function KonvaStage({ bookElements, book }: KonvaStageProps) {
+export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const fontSize = 24;
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
@@ -90,7 +63,7 @@ export default function KonvaStage({ bookElements, book }: KonvaStageProps) {
     const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
     const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
-    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [canvaElements] = useAtom(canvaElementsAtom);
 
     useEffect(() => {}, [canvaElements]);
 

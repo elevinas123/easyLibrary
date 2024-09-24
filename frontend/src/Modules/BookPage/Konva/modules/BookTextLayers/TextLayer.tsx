@@ -8,7 +8,7 @@ import {
 import { Text } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 
-import { BookTextElement, VisibleArea } from "../../KonvaStage";
+import { CanvaElementSkeleton, VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../functions/measureTextWidth";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useAtom } from "jotai";
@@ -20,12 +20,19 @@ import {
 } from "../../konvaAtoms";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 
+export interface BookTextElement extends CanvaElementSkeleton {
+    type: "bookText";
+    text: string;
+    fontSize: number;
+    fontFamily: string;
+}
 type TextLayerProps = {
     visibleArea: VisibleArea;
     fontSize: number;
     width: number;
     processedElements: ProcessedElement[];
 };
+// Specific element types
 
 export type TextLayerRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
@@ -197,8 +204,8 @@ function TextLayer(
                     {
                         x: textElement.lineX + 600,
                         y: textElement.lineY * fontSize + 200 + fontSize,
-                    }
-                ]
+                    },
+                ],
             };
         });
     };

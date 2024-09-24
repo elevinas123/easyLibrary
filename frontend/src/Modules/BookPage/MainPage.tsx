@@ -1,9 +1,7 @@
 // src/pages/MainPage.tsx
 import { useEffect, useState } from "react";
 import Chapters from "./Chapters";
-import KonvaStage, {
-    CurveElement,
-} from "./Konva/KonvaStage";
+import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +10,8 @@ import { useAuth } from "../../hooks/userAuth";
 import { useAtom } from "jotai";
 import { arrowsAtom, canvaElementsAtom } from "./Konva/konvaAtoms";
 import { CanvaElement } from "./Konva/shapes/CanvasElement";
+import { Book } from "../LibraryPage/LibraryPage";
+import { CurveElement } from "./Konva/shapes/ArrowShape";
 
 export type HighlightRange = {
     startElementId: string;
@@ -45,24 +45,6 @@ const fetchBook = async (id: string | null, accessToken: string | null) => {
     });
     return data;
 };
-const fetchCanvaElements = async (
-    id: string | null,
-    accessToken: string | null
-) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
-    const { data } = await axios.get(`/api/book/${id}/canvaElements`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    console.log("canvaData", data);
-    return data;
-};
 
 const updateCanvaElements = async (
     canvaElements: CanvaElement[],
@@ -88,25 +70,6 @@ const updateCanvaElements = async (
     console.log("canvaElements", canvaElements);
     return data;
 };
-
-const fetchCurveElements = async (
-    id: string | null,
-    accessToken: string | null
-) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
-    const { data } = await axios.get(`/api/book/${id}/curveElements`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    console.log("curveData", data);
-    return data;
-}
 
 const updateCurveElements = async (
     curveElements: CurveElement[],
@@ -134,54 +97,42 @@ const updateCurveElements = async (
     return data;
 };
 function MainPage() {
-    // Use custom hook to handle authentication
     const { accessToken, user } = useAuth();
 
-    // Use useQuery to fetch the book by ID
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
+    const [chapters] = useState<Chapter[]>([]);
 
     const {
         data: book,
         error,
         isLoading,
-    } = useQuery({
-        queryKey: ["book", bookId], // Use dynamic bookId in the queryKey
+    } = useQuery<Book>({
+        queryKey: ["book", bookId],
         enabled: !!accessToken && !!user,
-        queryFn: () => fetchBook(bookId, accessToken), // Fetch book data
+        queryFn: () => fetchBook(bookId, accessToken),
     });
 
-    const { data: canvaElementsData } = useQuery({
-        queryKey: ["canvaElements", bookId],
-        enabled: !!accessToken && !!user,
-        queryFn: () => fetchCanvaElements(bookId, accessToken),
-    });
-    const { data: curveElementsData } = useQuery({
-        queryKey: ["curveElements", bookId],
-        enabled: !!accessToken && !!user,
-        queryFn: () => fetchCurveElements(bookId, accessToken),
-    });
     useEffect(() => {
-        if (curveElementsData) {
-            console.log("curveElementsData", curveElementsData);
-            setArrows(curveElementsData);
+        if (book) {
+            console.log("curveElementsData", book.curveElements);
+            setArrows(book.curveElements);
         }
-    }, [curveElementsData])
+    }, [book]);
     useEffect(() => {
-        if (canvaElementsData) {
-            console.log("canvaElementsData", canvaElementsData);
-            setCanvaElements(canvaElementsData);
+        if (book) {
+            console.log("canvaElementsData", book.canvaElements);
+            setCanvaElements(book.canvaElements);
         }
-    }, [canvaElementsData]);
+    }, [book]);
     useEffect(() => {
         updateCurveElements(arrows, bookId, accessToken);
     }, [arrows]);
     useEffect(() => {
         updateCanvaElements(canvaElements, bookId, accessToken);
     }, [canvaElements]);
-    const [chapters, setChapters] = useState<Chapter[]>([]);
 
     // Handle loading and error states
     if (isLoading) {
@@ -200,7 +151,7 @@ function MainPage() {
             <Chapters chapters={chapters} />
 
             <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
-                <KonvaStage bookElements={bookElements} book={book} />
+                <KonvaStage bookElements={bookElements} />
             </div>
             <RightHand />
         </div>

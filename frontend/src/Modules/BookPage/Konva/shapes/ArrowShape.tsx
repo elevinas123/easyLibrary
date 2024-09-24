@@ -15,10 +15,22 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ArrowElement, StartType } from "../KonvaStage";
+import { CurveSkeleton, StartType } from "../KonvaStage";
 import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
 import { CanvaElement } from "./CanvasElement";
+
+export type CurveElement = ArrowElement;
+
+
+export interface ArrowElement extends CurveSkeleton {
+    type: "arrow";
+    points: number[];
+    startId: string | null;
+    endId: string | null;
+    startType: StartType;
+    endType: StartType;
+}
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -42,10 +54,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
 
-    
     useEffect(() => {
         console.log("arrowsUpdated", arrows);
-    }, [arrows])
+    }, [arrows]);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,
