@@ -2,6 +2,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema, Types } from "mongoose";
 
+import { ProcessedElementSchema } from "./bookElements/processedElement.schema";
+import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
 import {
     RectElement,
     RectElementSchema,
@@ -10,13 +12,11 @@ import {
     TextElement,
     TextElementSchema,
 } from "./canvaElements/elements/textElement.schema";
+import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
 import {
     ArrowElement,
     ArrowElementSchema,
 } from "./curveElements/elements/arrowElement.schema";
-import { ProcessedElementSchema } from "./bookElements/processedElement.schema";
-import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
-import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
 
 export type BookDocument = Book & Document;
 
@@ -45,14 +45,11 @@ export class Book {
     })
     bookElements: any[]; // Replace 'any' with your specific type if needed
 
-    @Prop({
-        type: [CanvaElementSkeletonSchema],
-        required: true,
-    })
-    canvaElements: (RectElement | TextElement)[]; // Discriminated union handled via discriminators
+    @Prop({ type: [CanvaElementSkeletonSchema], required: true })
+    canvaElements: (RectElement | TextElement)[];
 
     @Prop({
-        type: [CurveElementSkeletonSchema],
+        type: [CurveElementSkeletonSchema], // Use the base schema
         required: true,
     })
     curveElements: ArrowElement[]; // Initially only ArrowElement; extend when
@@ -60,16 +57,3 @@ export class Book {
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);
-
-// Apply discriminators for canvaElements
-BookSchema.path<MongooseSchema.Types.Subdocument>(
-    "canvaElements"
-).discriminator("text", TextElementSchema);
-BookSchema.path<MongooseSchema.Types.Subdocument>(
-    "canvaElements"
-).discriminator("rect", RectElementSchema);
-
-// Apply discriminators for curveElements
-BookSchema.path<MongooseSchema.Types.Subdocument>(
-    "curveElements"
-).discriminator("arrow", ArrowElementSchema);

@@ -7,16 +7,12 @@ import {
 } from "../canvaElementSkeleton";
 
 export interface TextElementType extends CanvaElementSkeletonType {
-    type: "text";
     text: string;
     fontFamily: string;
     fontSize: number;
 }
-
-@Schema({ discriminatorKey: "type", _id: false })
-export class TextElement extends CanvaElementSkeleton {
-    @Prop({ required: true, enum: ["text"] }) type: "text";
-
+@Schema({ _id: false })
+export class TextElement {
     @Prop({ required: true }) text: string;
 
     @Prop({ required: true }) fontFamily: string;

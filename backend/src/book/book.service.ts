@@ -6,6 +6,7 @@ import { Book, BookDocument } from "./schema/book.schema";
 import { CreateBookDto } from "./dto/createBookDto";
 import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
 import { BookElementsDto } from "./dto/bookElementsDto/bookElements.dto";
+import { CurveElementsDto } from "./dto/curveElementsDto/curveElements.dto";
 
 @Injectable()
 export class BookService {
@@ -31,7 +32,18 @@ export class BookService {
 
         return book.canvaElements; // Return only the canvaElements field
     }
+    async getCurveElements(id: string) {
+        const book = await this.bookModel
+            .findById(id)
+            .select("curveElements")
+            .exec();
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+        return book.curveElements;
+    }
     async updatedCanvaElements(canvaElementsDto: CanvaElementsDto, id: string) {
+        console.log("updating canva elements", canvaElementsDto);
         return await this.bookModel
             .findByIdAndUpdate(
                 id,
@@ -41,6 +53,16 @@ export class BookService {
                 { new: true }
             )
             .exec();
+    }
+
+    async updateCurveElements(curveElementsDto: CurveElementsDto, id: string) {
+        return await this.bookModel.findByIdAndUpdate(
+            id,
+            {
+                $set: { curveElements: curveElementsDto.curveElements },
+            },
+            { new: true }
+        );
     }
 
     async updateBookElements(bookElementsDto: BookElementsDto, id: string) {

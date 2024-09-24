@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 import Chapters from "./Chapters";
 import KonvaStage, {
-    ArrowElement,
     CurveElement,
-    CurveElements,
 } from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import axios from "axios";
@@ -62,6 +60,7 @@ const fetchCanvaElements = async (
             Authorization: `Bearer ${accessToken}`,
         },
     });
+    console.log("canvaData", data);
     return data;
 };
 
@@ -90,6 +89,25 @@ const updateCanvaElements = async (
     return data;
 };
 
+const fetchCurveElements = async (
+    id: string | null,
+    accessToken: string | null
+) => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
+    if (id === null) {
+        throw new Error("Book ID is null");
+    }
+    const { data } = await axios.get(`/api/book/${id}/curveElements`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log("curveData", data);
+    return data;
+}
+
 const updateCurveElements = async (
     curveElements: CurveElement[],
     id: string | null,
@@ -101,8 +119,9 @@ const updateCurveElements = async (
     if (id === null) {
         throw new Error("Book ID is null");
     }
+    console.log("updatingCurveElements", curveElements);
     const { data } = await axios.put(
-        `/api/book/${id}/canvaElements`,
+        `/api/book/${id}/curveElements`,
         { curveElements: curveElements },
         {
             headers: {
@@ -139,6 +158,17 @@ function MainPage() {
         enabled: !!accessToken && !!user,
         queryFn: () => fetchCanvaElements(bookId, accessToken),
     });
+    const { data: curveElementsData } = useQuery({
+        queryKey: ["curveElements", bookId],
+        enabled: !!accessToken && !!user,
+        queryFn: () => fetchCurveElements(bookId, accessToken),
+    });
+    useEffect(() => {
+        if (curveElementsData) {
+            console.log("curveElementsData", curveElementsData);
+            setArrows(curveElementsData);
+        }
+    }, [curveElementsData])
     useEffect(() => {
         if (canvaElementsData) {
             console.log("canvaElementsData", canvaElementsData);

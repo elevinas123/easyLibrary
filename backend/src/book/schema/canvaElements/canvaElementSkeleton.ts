@@ -1,21 +1,29 @@
 // canva-element-skeleton.schema.ts
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { HighlightPointsSchema, HighlightPointsType } from "./highlightPoints.schema";
-
-
+import {
+    HighlightPointsSchema,
+    HighlightPointsType,
+} from "./highlightPoints.schema";
+import { RectElementSchema } from "./elements/rectElement.schema";
+import { TextElementSchema } from "./elements/textElement.schema";
 
 export type CanvaElementSkeletonType = {
-  fill: string; x: number; y: number; width: number; height: number; id: string;
-  outgoingArrowIds: string[];
-  incomingArrowIds: string[];
-  points: HighlightPointsType[];
-  strokeColor: string;
-  strokeWidth: number;
-  opacity: number;
+    fill: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    id: string;
+    outgoingArrowIds: string[];
+    incomingArrowIds: string[];
+    points: HighlightPointsType[];
+    strokeColor: string;
+    strokeWidth: number;
+    opacity: number;
 };
 
-@Schema({ _id: false }) // Prevents creation of a separate _id for subDocuments
+@Schema({ discriminatorKey: "type", _id: false })
 export class CanvaElementSkeleton {
     @Prop({ required: true }) fill: string;
 
@@ -46,3 +54,6 @@ export class CanvaElementSkeleton {
 export type CanvaElementSkeletonDocument = CanvaElementSkeleton & Document;
 export const CanvaElementSkeletonSchema =
     SchemaFactory.createForClass(CanvaElementSkeleton);
+// Access the schema of the array items
+CanvaElementSkeletonSchema.discriminator("rect", RectElementSchema);
+CanvaElementSkeletonSchema.discriminator("text", TextElementSchema);

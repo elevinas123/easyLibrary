@@ -14,6 +14,7 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { BookElementsDto } from "./dto/bookElementsDto/bookElements.dto";
 import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
 import { CreateBookDto } from "./dto/createBookDto";
+import { CurveElementsDto } from "./dto/curveElementsDto/curveElements.dto";
 @UseGuards(JwtAuthGuard)
 @Controller("book")
 export class BookController {
@@ -44,6 +45,17 @@ export class BookController {
         @Param("id") id: string
     ) {
         return this.bookService.updatedCanvaElements(canvaElementsDto, id);
+    }
+    @Get(":id/curveElements")
+    async getCurveElements(@Param("id") id: string) {
+        return this.bookService.getCurveElements(id);
+    }
+    @Put(":id/curveElements")
+    async updateCurveElements(
+        @Body() curveElementsDto: CurveElementsDto,
+        @Param("id") id: string
+    ) {
+        return this.bookService.updateCurveElements(curveElementsDto, id);
     }
 
     @Get(":id")

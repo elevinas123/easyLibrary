@@ -42,6 +42,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
 
+    
+    useEffect(() => {
+        console.log("arrowsUpdated", arrows);
+    }, [arrows])
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,
