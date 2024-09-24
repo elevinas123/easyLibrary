@@ -72,6 +72,7 @@ const importBook = async ({
             liked: true,
             bookElements: bookElements,
             dateAdded: new Date().toISOString(),
+            canvaElements: [],
         },
         {
             headers: {

@@ -7,6 +7,9 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
+import { useAtom } from "jotai";
+import { canvaElementsAtom } from "./Konva/konvaAtoms";
+import { CanvaElement } from "./Konva/shapes/CanvasElement";
 
 export type HighlightRange = {
     startElementId: string;
@@ -40,7 +43,48 @@ const fetchBook = async (id: string | null, accessToken: string | null) => {
     });
     return data;
 };
+const fetchCanvaElements = async (
+    id: string | null,
+    accessToken: string | null
+) => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
+    if (id === null) {
+        throw new Error("Book ID is null");
+    }
+    const { data } = await axios.get(`/api/book/${id}/canvaElements`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    return data;
+};
 
+const updateCanvaElements = async (
+    canvaElements: CanvaElement[],
+    id: string | null,
+    accessToken: string | null
+) => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
+    if (id === null) {
+        throw new Error("Book ID is null");
+    }
+    const { data } = await axios.put(
+        `/api/book/${id}/canvaElements`,
+        { canvaElements },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+    console.log("data", data);
+    console.log("canvaElements", canvaElements);
+    return data;
+};
 function MainPage() {
     // Use custom hook to handle authentication
     const { accessToken, user } = useAuth();
@@ -48,6 +92,7 @@ function MainPage() {
     // Use useQuery to fetch the book by ID
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
+    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
 
     const {
         data: book,
@@ -59,13 +104,22 @@ function MainPage() {
         queryFn: () => fetchBook(bookId, accessToken), // Fetch book data
     });
 
-    const [chapters, setChapters] = useState<Chapter[]>([]);
-
+    const { data: canvaElementsData } = useQuery({
+        queryKey: ["canvaElements", bookId],
+        enabled: !!accessToken && !!user,
+        queryFn: () => fetchCanvaElements(bookId, accessToken),
+    });
     useEffect(() => {
-        if (book) {
-            console.log("book", book);
+        if (canvaElementsData) {
+            console.log("canvaElementsData", canvaElementsData);
+            setCanvaElements(canvaElementsData);
         }
-    }, [book]);
+    }, [canvaElementsData]);
+    useEffect(() => {
+        updateCanvaElements(canvaElements, bookId, accessToken);
+    }, [canvaElements]);
+
+    const [chapters, setChapters] = useState<Chapter[]>([]);
 
     // Handle loading and error states
     if (isLoading) {
@@ -84,7 +138,7 @@ function MainPage() {
             <Chapters chapters={chapters} />
 
             <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
-                <KonvaStage bookElements={bookElements} />
+                <KonvaStage bookElements={bookElements} book={book} />
             </div>
             <RightHand />
         </div>

@@ -17,9 +17,13 @@ import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
+import axios from "axios";
+import { useAuth } from "../../../hooks/userAuth";
+import { Book } from "../../LibraryPage/LibraryPage";
 
 type KonvaStageProps = {
     bookElements: ProcessedElement[];
+    book: Book;
 };
 export type VisibleArea = {
     x: number;
@@ -43,6 +47,8 @@ export type CanvaElementSkeleton = {
     opacity: number;
 };
 export type StartType = "bookText" | "text" | null;
+
+export type CurveElements = ArrowElement
 
 export type CurveSkeleton = {
     points: number[];
@@ -72,7 +78,7 @@ export interface CircleElement extends CanvaElementSkeleton {
     type: "circle";
 }
 
-export default function KonvaStage({ bookElements }: KonvaStageProps) {
+export default function KonvaStage({ bookElements, book }: KonvaStageProps) {
     const fontSize = 24;
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
@@ -84,7 +90,10 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
     const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
-    const [canvaElemets, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+
+    useEffect(() => {}, [canvaElements]);
+
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;

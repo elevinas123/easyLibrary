@@ -20,6 +20,13 @@ class ProcessedElementDto {
     @IsNumber() lineY: number;
 }
 
+export class BookElementsDto {
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ProcessedElementDto)
+    bookElements: ProcessedElementDto[];
+}
+
 export class CreateBookDto {
     @IsString() title: string;
 
@@ -41,4 +48,6 @@ export class CreateBookDto {
     @ValidateNested({ each: true })
     @Type(() => ProcessedElementDto)
     bookElements: ProcessedElementDto[];
+
+    
 }

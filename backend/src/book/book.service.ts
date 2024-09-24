@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Book, BookDocument } from "./schema/book.schema";
 import { Model } from "mongoose";
-import { CreateBookDto } from "./dto/create-book.dto";
+import { BookElementsDto, CreateBookDto } from "./dto/create-book.dto";
+import { CanvaElementsDto } from "./dto/elements.dto";
 
 @Injectable()
 export class BookService {
@@ -14,6 +15,40 @@ export class BookService {
         console.log("adding book");
         const newBook = new this.bookModel(createBookDto);
         return newBook.save();
+    }
+    async getCanvaElements(id: string) {
+        const book = await this.bookModel
+            .findById(id)
+            .select("canvaElements") // Use projection to fetch only
+            // the canvaElements field
+            .exec();
+
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+
+        return book.canvaElements; // Return only the canvaElements field
+    }
+    async updatedCanvaElements(canvaElementsDto: CanvaElementsDto, id: string) {
+      return await this.bookModel
+          .findByIdAndUpdate(
+              id, {
+                $set: {canvaElements: canvaElementsDto.canvaElements},
+              },  
+              {new: true})
+          .exec();
+    }
+
+    async updateBookElements(bookElementsDto: BookElementsDto, id: string) {
+        return await this.bookModel
+            .findByIdAndUpdate(
+                id,
+                {
+                    $set: { bookElements: bookElementsDto.bookElements },
+                }, 
+                { new: true }
+            )
+            .exec();
     }
 
     async getUserBooks(userId: string): Promise<Book[]> {
