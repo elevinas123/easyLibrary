@@ -8,7 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
 import { useAtom } from "jotai";
-import { arrowsAtom, canvaElementsAtom } from "./Konva/konvaAtoms";
+import {
+    arrowsAtom,
+    canvaElementsAtom,
+    Highlight,
+    highlightsAtom,
+} from "./Konva/konvaAtoms";
 import { CanvaElement } from "./Konva/shapes/CanvaElement";
 import { Book } from "../LibraryPage/LibraryPage";
 import { CurveElement } from "./Konva/shapes/Arrow/ArrowShape";
@@ -96,6 +101,33 @@ const updateCurveElements = async (
     console.log("canvaElements", curveElements);
     return data;
 };
+const updateHighlights = async (
+    highlights: Highlight[],
+    id: string | null,
+    accessToken: string | null
+) => {
+    if (!accessToken) {
+        throw new Error("Access token is null");
+    }
+    if (id === null) {
+        throw new Error("Book ID is null");
+    }
+    
+    console.log("updatingHighlights", highlights);
+    const { data } = await axios.put(
+        `/api/book/${id}/highlights`,
+        { highlights: highlights },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+    console.log("data", data);
+    console.log("highlights", highlights);
+    return data;
+};
+
 function MainPage() {
     const { accessToken, user } = useAuth();
 
@@ -104,6 +136,7 @@ function MainPage() {
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [chapters] = useState<Chapter[]>([]);
+    const [highlights, setHighlights] = useAtom(highlightsAtom);
 
     const {
         data: book,
@@ -128,12 +161,20 @@ function MainPage() {
         }
     }, [book]);
     useEffect(() => {
+        if (book) {
+            console.log("highlightsData", book.highlights);
+            setHighlights(book.highlights);
+        }
+    }, [book]); //
+    useEffect(() => {
         updateCurveElements(arrows, bookId, accessToken);
     }, [arrows]);
     useEffect(() => {
         updateCanvaElements(canvaElements, bookId, accessToken);
     }, [canvaElements]);
-
+    useEffect(() => {
+        updateHighlights(highlights, bookId, accessToken);
+    }, [highlights]);
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;

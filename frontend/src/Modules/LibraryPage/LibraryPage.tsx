@@ -9,6 +9,7 @@ import { useToast } from "../../hooks/use-toast";
 import BookInfoPage from "./BookInfoPage";
 import { CanvaElement } from "../BookPage/Konva/shapes/CanvaElement";
 import { CurveElement } from "../BookPage/Konva/shapes/Arrow/ArrowShape";
+import { Highlight } from "../BookPage/Konva/konvaAtoms";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -26,6 +27,7 @@ export type Book = {
     bookElements: ProcessedElement[];
     curveElements: CurveElement[];
     canvaElements: CanvaElement[];
+    highlights: Highlight[];
 };
 
 const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {

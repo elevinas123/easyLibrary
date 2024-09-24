@@ -15,6 +15,7 @@ import { BookElementsDto } from "./dto/bookElementsDto/bookElements.dto";
 import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
 import { CreateBookDto } from "./dto/createBookDto";
 import { CurveElementsDto } from "./dto/curveElementsDto/curveElements.dto";
+import { HighlightsDto } from "./dto/highlightsDto/highlights.dto";
 @UseGuards(JwtAuthGuard)
 @Controller("book")
 export class BookController {
@@ -26,6 +27,17 @@ export class BookController {
     @Get("/getUserBooks")
     async getUserBooks(@Query("userId") userId: string) {
         return this.bookService.getUserBooks(userId);
+    }
+    @Get(":id/highlights")
+    async getHighlights(@Param("id") id: string) {
+        return this.bookService.getHighlights(id);
+    }
+    @Put(":id/highlights")
+    async updateHighlights(
+        @Body() highlightsDto: HighlightsDto,
+        @Param("id") id: string
+    ) {
+        return this.bookService.updateHighlights(highlightsDto, id);
     }
 
     @Put(":id/bookElements")

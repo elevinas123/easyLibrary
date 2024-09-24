@@ -17,6 +17,7 @@ import {
     ArrowElement,
     ArrowElementSchema,
 } from "./curveElements/elements/arrowElement.schema";
+import { HighlightSchema } from "./highlights/highlights.schema";
 
 export type BookDocument = Book & Document;
 
@@ -43,17 +44,19 @@ export class Book {
         type: [ProcessedElementSchema],
         required: true,
     })
-    bookElements: any[]; // Replace 'any' with your specific type if needed
+    bookElements: any[];
+
+    @Prop({ type: [HighlightSchema], required: true })
+    highlights: Highlight[];
 
     @Prop({ type: [CanvaElementSkeletonSchema], required: true })
     canvaElements: (RectElement | TextElement)[];
 
     @Prop({
-        type: [CurveElementSkeletonSchema], // Use the base schema
+        type: [CurveElementSkeletonSchema],
         required: true,
     })
-    curveElements: ArrowElement[]; // Initially only ArrowElement; extend when
-    // adding LineElement
+    curveElements: ArrowElement[];
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

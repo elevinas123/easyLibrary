@@ -2,11 +2,12 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
-import { Book, BookDocument } from "./schema/book.schema";
-import { CreateBookDto } from "./dto/createBookDto";
-import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
 import { BookElementsDto } from "./dto/bookElementsDto/bookElements.dto";
+import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
+import { CreateBookDto } from "./dto/createBookDto";
 import { CurveElementsDto } from "./dto/curveElementsDto/curveElements.dto";
+import { HighlightsDto } from "./dto/highlightsDto/highlights.dto";
+import { Book, BookDocument } from "./schema/book.schema";
 
 @Injectable()
 export class BookService {
@@ -42,6 +43,17 @@ export class BookService {
         }
         return book.curveElements;
     }
+    async getHighlights(id: string) {
+        const book = await this.bookModel
+            .findById(id)
+            .select("highlights")
+            .exec();
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+        return book.highlights;
+    }
+
     async updatedCanvaElements(canvaElementsDto: CanvaElementsDto, id: string) {
         console.log("updating canva elements", canvaElementsDto);
         return await this.bookModel
@@ -54,7 +66,16 @@ export class BookService {
             )
             .exec();
     }
-
+    async updateHighlights(highlightsDto: HighlightsDto, id: string) {
+      console.log('updating highlights', highlightsDto.highlights);
+      return await this.bookModel
+          .findByIdAndUpdate(
+              id, {
+                $set: {highlights: highlightsDto.highlights},
+              },
+              {new: true})
+          .exec();
+    }
     async updateCurveElements(curveElementsDto: CurveElementsDto, id: string) {
         return await this.bookModel.findByIdAndUpdate(
             id,
