@@ -10,9 +10,9 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
-import { ArrowShapeRef } from "./ArrowShape";
+import { ArrowShapeRef } from "./Arrow/ArrowShape";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
-import { renderCanvaElement } from "./RenderShape";
+import { renderCanvaElement } from "./RenderCanvaElement";
 import CreateText, { TextElement } from "./Text/CreateText";
 import CustomTransformer from "./CustomTransformer";
 // CanvaElement is now a union of all possible element types

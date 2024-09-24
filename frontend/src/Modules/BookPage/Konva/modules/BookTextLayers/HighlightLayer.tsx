@@ -8,7 +8,7 @@ import {
 import { Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { VisibleArea } from "../../KonvaStage";
-import { measureTextWidth } from "../functions/measureTextWidth";
+import { measureTextWidth } from "../../functions/measureTextWidth";
 import { useAtom } from "jotai";
 import {
     activeToolAtom,

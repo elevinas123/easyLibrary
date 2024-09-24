@@ -9,9 +9,9 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
 import { useAtom } from "jotai";
 import { arrowsAtom, canvaElementsAtom } from "./Konva/konvaAtoms";
-import { CanvaElement } from "./Konva/shapes/CanvasElement";
+import { CanvaElement } from "./Konva/shapes/CanvaElement";
 import { Book } from "../LibraryPage/LibraryPage";
-import { CurveElement } from "./Konva/shapes/ArrowShape";
+import { CurveElement } from "./Konva/shapes/Arrow/ArrowShape";
 
 export type HighlightRange = {
     startElementId: string;

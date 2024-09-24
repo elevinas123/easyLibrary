@@ -6,7 +6,7 @@ import {
     hoveredItemsAtom,
     newArrowAtom,
     selectedArrowIdsAtom,
-} from "../konvaAtoms";
+} from "../../konvaAtoms";
 import {
     ForwardedRef,
     forwardRef,
@@ -15,10 +15,10 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { CurveSkeleton, StartType } from "../KonvaStage";
+import { CurveSkeleton, StartType } from "../../KonvaStage";
 import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
-import { CanvaElement } from "./CanvasElement";
+import { CanvaElement } from "../CanvaElement";
 
 export type CurveElement = ArrowElement;
 

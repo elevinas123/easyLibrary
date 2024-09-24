@@ -5,8 +5,8 @@ import { Layer } from "react-konva";
 import { activeToolAtom } from "../../konvaAtoms";
 
 import { Html } from "react-konva-utils";
-import ArrowShape, { ArrowShapeRef } from "../../shapes/ArrowShape";
-import CanvasElement, { CanvaElementRef } from "../../shapes/CanvasElement";
+import ArrowShape, { ArrowShapeRef } from "../../shapes/Arrow/ArrowShape";
+import CanvasElement, { CanvaElementRef } from "../../shapes/CanvaElement";
 
 type MainNotesLayerProps = {
     // Define your prop types here

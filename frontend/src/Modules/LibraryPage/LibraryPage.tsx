@@ -7,8 +7,8 @@ import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import { useToast } from "../../hooks/use-toast";
 import BookInfoPage from "./BookInfoPage";
-import { CurveElement } from "../BookPage/Konva/KonvaStage";
-import { CanvaElement } from "../BookPage/Konva/shapes/CanvasElement";
+import { CanvaElement } from "../BookPage/Konva/shapes/CanvaElement";
+import { CurveElement } from "../BookPage/Konva/shapes/Arrow/ArrowShape";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -25,7 +25,7 @@ export type Book = {
     dateAdded: Date;
     bookElements: ProcessedElement[];
     curveElements: CurveElement[];
-    canvaElements: CanvaElement[]
+    canvaElements: CanvaElement[];
 };
 
 const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {
@@ -81,16 +81,12 @@ export default function LibraryPage({}: LibraryPageProps) {
                 queryClient.invalidateQueries({ queryKey: ["book"] });
                 toast({
                     title: "Book Deleted successfully",
-                    status: "success",
                     duration: 5000,
-                    isClosable: true,
                 });
             } else {
                 toast({
                     title: "Failed to delete book",
-                    status: "error",
                     duration: 5000,
-                    isClosable: true,
                 });
             }
         } catch (error) {

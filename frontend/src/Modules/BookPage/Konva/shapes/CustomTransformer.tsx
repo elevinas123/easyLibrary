@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
-import { CanvaElement } from "./CanvasElement";
+import { CanvaElement } from "./CanvaElement";
 
 type CustomTransformerProps = {
     currentElements: CanvaElement[] | null

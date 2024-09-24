@@ -1,5 +1,5 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { CanvaElement } from "./CanvasElement";
+import { CanvaElement } from "./CanvaElement";
 import RenderRectangle from "./Rectangle/RenderRectangle";
 import RenderText from "./Text/RenderText";
 
