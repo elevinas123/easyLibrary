@@ -151,8 +151,9 @@ function TextLayer(
                         element.y + element.height > visibleArea.y &&
                         element.y < visibleArea.y + visibleArea.height
                 )
-                .map((element) => (
+                .map((element, index) => (
                     <Text
+                        key={index}
                         x={element.x}
                         y={element.y}
                         width={element.width}
