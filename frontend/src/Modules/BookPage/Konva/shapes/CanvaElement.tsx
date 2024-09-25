@@ -9,13 +9,20 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { activeToolAtom, canvaElementsAtom, offsetPositionAtom, selectedItemsIdsAtom } from "../konvaAtoms";
+import {
+    activeToolAtom,
+    canvaElementsAtom,
+    offsetPositionAtom,
+    selectedItemsIdsAtom,
+} from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderCanvaElement";
 import CreateText, { TextElement } from "./Text/CreateText";
 import CustomTransformer from "./CustomTransformer";
 import Konva from "konva";
+import { off } from "process";
+import { Vector2d } from "konva/lib/types";
 
 export type CanvaElement = TextElement | RectElement;
 
@@ -33,12 +40,22 @@ export type CanvaElementRef = {
     handleMouseUp: () => void;
 };
 
+const getPos = (offsetPosition: { x: number; y: number }, e: any) => {
+    let pos = e.target?.getStage()?.getPointerPosition();
+    console.log("pos", pos);
+    if (!pos) return null;
+    return {
+        x: pos.x - offsetPosition.x,
+        y: pos.y - offsetPosition.y,
+    };
+};
 function CanvasElement(
     { arrowShapeRef, inputRef }: CanvasElementProps,
     ref: ForwardedRef<CanvaElementRef>
 ) {
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
-    const [selectedItemsIds, setSelectedItemsIds] = useAtom(selectedItemsIdsAtom);
+    const [selectedItemsIds, setSelectedItemsIds] =
+        useAtom(selectedItemsIdsAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -88,12 +105,8 @@ function CanvasElement(
             }
         }
         // Check if the click is on the transformer or its children
-
-        const pos = e.target?.getStage()?.getPointerPosition();
-        console.log("pos", pos);
+        const pos = getPos(offsetPosition, e);
         if (!pos) return;
-        pos.x -= offsetPosition.x;
-        pos.y -= offsetPosition.y;
         switch (activeTool) {
             case "Text":
                 handleTextToolMouseDown(pos);
@@ -149,7 +162,7 @@ function CanvasElement(
         if (arrowShapeRef.current) {
             arrowShapeRef.current.handleArrowSelect(e);
         }
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, e);
         if (!pos) return;
 
         const selectedItems = getItemsAtPosition(pos);
@@ -174,10 +187,8 @@ function CanvasElement(
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (!isCreating) return;
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, e);
         if (!pos) return;
-        pos.x -= offsetPosition.x;
-        pos.y -= offsetPosition.y;
 
         setCanvaElements((prevElements) => {
             if (prevElements.length === 0) return prevElements;
@@ -261,7 +272,7 @@ function CanvasElement(
     };
 
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, e);
         if (!pos) return;
 
         const clickedItem = getItemsAtPosition(pos).find(
