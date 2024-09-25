@@ -39,6 +39,7 @@
         "react-konva-utils": "^1.0.6",
         "react-router-dom": "^6.26.2",
         "react-use-image": "^0.2.3",
+        "roughjs": "^4.6.6",
         "tailwind-merge": "^2.5.2",
         "tailwindcss-animate": "^1.0.7",
         "tesseract.js": "^5.1.1",

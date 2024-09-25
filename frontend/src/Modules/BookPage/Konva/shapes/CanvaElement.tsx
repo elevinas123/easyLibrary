@@ -9,7 +9,7 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { activeToolAtom, canvaElementsAtom } from "../konvaAtoms";
+import { activeToolAtom, canvaElementsAtom, offsetPositionAtom } from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderCanvaElement";
@@ -42,6 +42,7 @@ function CanvasElement(
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);
+    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
 
     useImperativeHandle(ref, () => ({
         handleMouseDown,
@@ -89,8 +90,10 @@ function CanvasElement(
         // Check if the click is on the transformer or its children
 
         const pos = e.target?.getStage()?.getPointerPosition();
+        console.log("pos", pos);
         if (!pos) return;
-
+        pos.x -= offsetPosition.x;
+        pos.y -= offsetPosition.y;
         switch (activeTool) {
             case "Text":
                 handleTextToolMouseDown(pos);
@@ -173,6 +176,8 @@ function CanvasElement(
         if (!isCreating) return;
         const pos = e.target?.getStage()?.getPointerPosition();
         if (!pos) return;
+        pos.x -= offsetPosition.x;
+        pos.y -= offsetPosition.y;
 
         setCanvaElements((prevElements) => {
             if (prevElements.length === 0) return prevElements;
@@ -202,13 +207,25 @@ function CanvasElement(
         const newHeight = Math.abs(pos.y - startY);
         const newX = pos.x < startX ? pos.x : startX;
         const newY = pos.y < startY ? pos.y : startY;
-
+        console.log(
+            "newX, newY, newWidth, newHeight",
+            newX,
+            newY,
+            newWidth,
+            newHeight
+        );
         return {
             ...element,
             x: newX,
             y: newY,
             width: newWidth,
             height: newHeight,
+            points: [
+                { x: newX, y: newY },
+                { x: newX + newWidth, y: newY },
+                { x: newX + newWidth, y: newY + newHeight },
+                { x: newX, y: newY + newHeight },
+            ],
         };
     };
 
@@ -238,6 +255,7 @@ function CanvasElement(
                 { x: node.x(), y: node.y() + node.height() },
             ],
         };
+        console.log("id, newAttrs", id, newAttrs);
 
         updateElementInState(id, newAttrs);
     };
