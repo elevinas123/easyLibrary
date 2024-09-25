@@ -15,7 +15,7 @@ import {
     scaleAtom,
     selectedItemsIdsAtom,
 } from "./konvaAtoms";
-import MainLayer from "./modules/BookTextLayers/MainLayer";
+import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
@@ -71,7 +71,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
-
+    const mainLayerRef = useRef<MainLayerRef | null>(null);
     useEffect(() => {}, [canvaElements]);
 
     const [dragStartPos, setDragStartPos] = useState<{
@@ -114,8 +114,29 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             mainNotesLayerRef.current?.handleKeyDown(e);
         }
     };
+    const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        console.log("handlePanWheel");
+        e.evt.preventDefault();
+        const stage = stageRef.current;
 
-    const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        if (!stage) return;
+
+        const scale = stage.scaleX(); // Assuming uniform scaling on both axes
+        const { deltaX, deltaY } = e.evt;
+
+        // Define panning speed. Adjust the multiplier as needed for desired sensitivity.
+        const panSpeed = 1 / scale;
+
+        // Update state
+        setOffsetPosition((offset) => {
+            // Calculate new offset positions
+            return {
+                x: offset.x - deltaX * panSpeed,
+                y: offset.y - deltaY * panSpeed,
+            };
+        });
+    };
+    const handleControlWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
 
@@ -150,6 +171,14 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         // Update state
         setScale(clampedScale);
         setOffsetPosition(newPos);
+    };
+
+    const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        if (e.evt.ctrlKey) {
+            handleControlWheel(e);
+        } else {
+            handlePanWheel(e);
+        }
     };
 
     // Pan Handlers
@@ -207,11 +236,17 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (activeTool === "Pan" || e.evt.buttons === 4) {
+            handleMouseDownForPan();
+            e.evt.preventDefault();
+            return;
+        }
+
+        if (mainLayerRef.current) {
+            mainLayerRef.current.handleMouseDown(e);
+        }
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleMouseDown(e);
-        }
-        if (activeTool === "Pan") {
-            handleMouseDownForPan();
         }
     };
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
@@ -257,20 +292,31 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         removeHoversNotUnderMouse(e);
+        if (activeTool === "Pan" || e.evt.buttons === 4) {
+            handleMouseMoveForPan();
+            e.evt.preventDefault();
+            return;
+        }
+        if (mainLayerRef.current) {
+            mainLayerRef.current.handleMouseMove(e);
+        }
+        console.log("handleMouseMove");
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleMouseMove(e);
-        }
-        if (activeTool === "Pan") {
-            handleMouseMoveForPan();
         }
     };
 
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+        if (activeTool === "Pan" || e.evt.buttons === 4) {
+            handleMouseUpForPan();
+            e.evt.preventDefault();
+            return;
+        }
+        if (mainLayerRef.current) {
+            mainLayerRef.current.handleMouseUp();
+        }
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleMouseUp(e);
-        }
-        if (activeTool === "Pan") {
-            handleMouseUpForPan();
         }
     };
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
@@ -315,6 +361,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
                     bookElements={bookElements}
                     fontSize={fontSize}
                     width={width}
+                    ref={mainLayerRef}
                 />
                 <HoverHighlightLayer />
 

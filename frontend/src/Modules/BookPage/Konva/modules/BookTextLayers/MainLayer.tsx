@@ -1,5 +1,5 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { useRef } from "react";
+import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from "react";
 import { Layer } from "react-konva";
 import { VisibleArea } from "../../KonvaStage";
 
@@ -14,15 +14,23 @@ type MainLayerProps = {
     width: number;
 };
 
-export default function MainLayer({
-    bookElements,
-    visibleArea,
-    fontSize,
-    width,
-}: MainLayerProps) {
+export type MainLayerRef = {
+    handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
+    handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
+    handleMouseUp: () => void;
+};
+
+function MainLayer(
+    { bookElements, visibleArea, fontSize, width }: MainLayerProps,
+    ref: ForwardedRef<MainLayerRef>
+) {
     const highlightComponentRef = useRef<HighlightLayerRef | null>(null);
     const textComponentRef = useRef<TextLayerRef | null>(null);
-
+    useImperativeHandle(ref, () => ({
+        handleMouseDown,
+        handleMouseMove,
+        handleMouseUp,
+    }));
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (textComponentRef.current) {
             textComponentRef.current.handleMouseDown(e);
@@ -43,11 +51,7 @@ export default function MainLayer({
     };
 
     return (
-        <Layer
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-        >
+        <Layer>
             <HighlightLayer
                 ref={highlightComponentRef}
                 processedElements={bookElements}
@@ -64,3 +68,4 @@ export default function MainLayer({
         </Layer>
     );
 }
+export default forwardRef(MainLayer);

@@ -131,8 +131,9 @@ function HighlightLayer(
                             element.y + element.height > visibleArea.y &&
                             element.y < visibleArea.y + visibleArea.height
                     )
-                    .flatMap((element) => (
+                    .flatMap((element, index) => (
                         <Rect
+                            key={highlightElement.id + index}
                             x={element.x}
                             y={element.y}
                             width={element.width}

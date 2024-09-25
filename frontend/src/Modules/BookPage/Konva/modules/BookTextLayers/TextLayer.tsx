@@ -63,8 +63,11 @@ function TextLayer(
                 if (activeTool !== "Select") return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
+                if (!e.target.attrs.text) return;
                 const currentId = uuidv4();
-                setCurrentHighlightId(currentId);
+                console.log("e.target.attrs.text", e.target),
+                    console.log("e.target.attrs.y", e.target.attrs.y),
+                    setCurrentHighlightId(currentId);
                 setHighlights((oldHighlights) => [
                     ...oldHighlights,
                     {
@@ -92,6 +95,8 @@ function TextLayer(
                 }
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
+                if (!e.target.attrs.text) return;
+
                 setHighlights((highlights) => {
                     const newHighlights = [...highlights];
                     const highlight = newHighlights.find(
@@ -141,6 +146,7 @@ function TextLayer(
         textStartingX: number,
         mouseStartingX: number
     ) => {
+        console.log("text", text);
         const textWidth = measureTextWidth(text) / text.length;
 
         const posInText = Math.floor(
