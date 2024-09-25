@@ -277,17 +277,19 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const updateVisibleArea = () => {
-        if (!stageRef.current) return;
+    if (!stageRef.current) return;
 
-        const stage = stageRef.current;
-        const visibleArea = {
-            x: -stage.x() - viewportBuffer,
-            y: -stage.y() - viewportBuffer,
-            width: window.innerWidth + viewportBuffer * 2,
-            height: window.innerHeight + viewportBuffer * 2,
-        };
-        setVisibleArea(visibleArea);
+    const stage = stageRef.current;
+
+    const visibleArea = {
+        x: (-stage.x() - viewportBuffer) / scale,
+        y: (-stage.y() - viewportBuffer) / scale,
+        width: (window.innerWidth + viewportBuffer * 2) / scale,
+        height: (window.innerHeight + viewportBuffer * 2) / scale,
     };
+    setVisibleArea(visibleArea);
+};
+
 
     return (
         <div className="h-screen w-full relative">

@@ -71,7 +71,7 @@ function TextLayer(
                         id: currentId,
                         startingX: calculateXPositionInText(
                             e.target.attrs.text,
-                            e.target.attrs.x + offsetPosition.x,
+                            e.target.attrs.x,
                             pos.x
                         ),
                         startingY: Math.floor(
@@ -79,7 +79,7 @@ function TextLayer(
                         ),
                         endX: calculateXPositionInText(
                             e.target.attrs.text,
-                            e.target.attrs.x + offsetPosition.x,
+                            e.target.attrs.x,
                             pos.x
                         ),
                         endY: Math.floor((e.target.attrs.y - 200) / fontSize),
@@ -102,9 +102,10 @@ function TextLayer(
 
                     const xPos = calculateXPositionInText(
                         e.target.attrs.text,
-                        e.target.attrs.x + offsetPosition.x,
+                        e.target.attrs.x,
                         pos.x
                     );
+
                     const yPos = Math.floor(
                         (e.target.attrs.y - 200) / fontSize
                     );
@@ -125,7 +126,14 @@ function TextLayer(
                 setCurrentHighlightId(null);
             },
         }),
-        [setCurrentHighlightId, setHighlights, currentHighlightId, activeTool, scale, offsetPosition]
+        [
+            setCurrentHighlightId,
+            setHighlights,
+            currentHighlightId,
+            activeTool,
+            scale,
+            offsetPosition,
+        ]
     );
 
     const calculateXPositionInText = (
@@ -134,6 +142,7 @@ function TextLayer(
         mouseStartingX: number
     ) => {
         const textWidth = measureTextWidth(text) / text.length;
+
         const posInText = Math.floor(
             (mouseStartingX - textStartingX) / textWidth
         );

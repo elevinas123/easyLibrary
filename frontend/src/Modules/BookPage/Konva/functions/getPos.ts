@@ -7,7 +7,6 @@ export const getPos = (
 ) => {
     const stage = e.target?.getStage();
     const pointer = stage?.getPointerPosition();
-    console.log("pointer position", pointer);
 
     if (!pointer) return null;
 
