@@ -1,22 +1,23 @@
 // src/pages/MainPage.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Chapters from "./Chapters";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
 import { useAtom } from "jotai";
 import {
     arrowsAtom,
     canvaElementsAtom,
-    Highlight,
     highlightsAtom,
+    offsetPositionAtom,
+    scaleAtom,
 } from "./Konva/konvaAtoms";
-import { CanvaElement } from "./Konva/shapes/CanvaElement";
 import { Book } from "../LibraryPage/LibraryPage";
-import { CurveElement } from "./Konva/shapes/Arrow/ArrowShape";
+import debounce from "lodash/debounce";
+import { set } from "lodash";
 
 export type HighlightRange = {
     startElementId: string;
@@ -36,13 +37,7 @@ export type Chapter = {
 };
 
 // Fetch book function
-const fetchBook = async (id: string | null, accessToken: string | null) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
+const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
     const { data } = await axios.get(`/api/book/${id}`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -51,141 +46,131 @@ const fetchBook = async (id: string | null, accessToken: string | null) => {
     return data;
 };
 
-const updateCanvaElements = async (
-    canvaElements: CanvaElement[],
-    id: string | null,
-    accessToken: string | null
-) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
-    const { data } = await axios.put(
-        `/api/book/${id}/canvaElements`,
-        { canvaElements },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }
-    );
-    console.log("data", data);
-    console.log("canvaElements", canvaElements);
-    return data;
-};
-
-const updateCurveElements = async (
-    curveElements: CurveElement[],
-    id: string | null,
-    accessToken: string | null
-) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
-    console.log("updatingCurveElements", curveElements);
-    const { data } = await axios.put(
-        `/api/book/${id}/curveElements`,
-        { curveElements: curveElements },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }
-    );
-    console.log("data", data);
-    console.log("canvaElements", curveElements);
-    return data;
-};
-const updateHighlights = async (
-    highlights: Highlight[],
-    id: string | null,
-    accessToken: string | null
-) => {
-    if (!accessToken) {
-        throw new Error("Access token is null");
-    }
-    if (id === null) {
-        throw new Error("Book ID is null");
-    }
-
-    console.log("updatingHighlights", highlights);
-    const { data } = await axios.put(
-        `/api/book/${id}/highlights`,
-        { highlights: highlights },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }
-    );
-    console.log("data", data);
-    console.log("highlights", highlights);
+// Unified update function using PATCH
+const patchBook = async (
+    updateData: Partial<Book>,
+    id: string,
+    accessToken: string
+): Promise<Book> => {
+    const { data } = await axios.patch(`/api/book/${id}`, updateData, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log("Updated Book Data:", data);
     return data;
 };
 
 function MainPage() {
     const { accessToken, user } = useAuth();
-
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
+
+    // Initialize atoms
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
-    const [chapters] = useState<Chapter[]>([]);
     const [highlights, setHighlights] = useAtom(highlightsAtom);
+    const [scale, setScale] = useAtom(scaleAtom);
+    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
 
+    // Initialize chapters (assuming this will be populated elsewhere)
+    const [chapters] = useState<Chapter[]>([]);
+
+    // React Query: Fetch book data
     const {
         data: book,
         error,
         isLoading,
-    } = useQuery<Book>({
+    } = useQuery<Book, Error>({
+        queryFn: () => fetchBook(bookId!, accessToken!),
         queryKey: ["book", bookId],
-        enabled: !!accessToken && !!user,
-        queryFn: () => fetchBook(bookId, accessToken),
+        enabled: !!accessToken && !!user && !!bookId,
     });
 
-    /*
-    useEffect(() => {
-        if (book) {
-            console.log("curveElementsData", book.curveElements);
-            setArrows(book.curveElements);
-        }
-    }, [book]);
-    useEffect(() => {
-        if (book) {
-            console.log("canvaElementsData", book.canvaElements);
-            setCanvaElements(book.canvaElements);
-        }
-    }, [book]);
-    useEffect(() => {
-        if (book) {
-            console.log("highlightsData", book.highlights);
-            setHighlights(book.highlights);
-        }
-    }, [book]); //
-    useEffect(() => {
-        updateCurveElements(arrows, bookId, accessToken);
-    }, [arrows]);
-    useEffect(() => {
-        updateCanvaElements(canvaElements, bookId, accessToken);
-    }, [canvaElements]);
-    useEffect(() => {
-        updateHighlights(highlights, bookId, accessToken);
-    }, [highlights]);
+    // React Query: Mutation for updating the book
+    const mutation = useMutation<Book, Error, Partial<Book>, unknown>({
+        mutationFn: (updateData) =>
+            patchBook(updateData, bookId!, accessToken!),
+        onError: (error) => {
+            console.error("Error updating book:", error.message);
+            // Optionally, display an error message to the user
+        },
+        onSuccess: (data) => {
+            console.log("Book updated successfully:", data);
+            // Optionally, refetch or update the cache
+        },
+    });
 
+    // Debounced update function
+    const debouncedUpdate = useCallback(
+        debounce((updatedFields: Partial<Book>) => {
+            mutation.mutate(updatedFields);
+        }, 1000), // Adjust the delay as needed (e.g., 1000ms)
+        [mutation]
+    );
+    useEffect(() => {
+        setArrows(book?.curveElements ?? []);
+        setCanvaElements(book?.canvaElements ?? []);
+        setHighlights(book?.highlights ?? []);
+        setScale(book?.scale ?? 1);
+        setOffsetPosition(
+            book?.offsetPosition ?? {
+                x: 0,
+                y: 0,
+            }
+        );
+    }, [book]);
 
-    */
+    // Consolidated useEffect for updating the book
+    useEffect(() => {
+        if (!bookId || !accessToken || !book) return;
+
+        const updateData: Partial<Book> = {};
+
+        if (arrows !== book.curveElements) {
+            updateData.curveElements = arrows;
+        }
+        if (canvaElements !== book.canvaElements) {
+            updateData.canvaElements = canvaElements;
+        }
+        if (highlights !== book.highlights) {
+            updateData.highlights = highlights;
+        }
+        if (scale !== book.scale) {
+            updateData.scale = scale;
+        }
+        if (offsetPosition !== book.offsetPosition) {
+            updateData.offsetPosition = offsetPosition;
+        }
+
+        // If there are changes, debounce the update
+        if (Object.keys(updateData).length > 0) {
+            debouncedUpdate(updateData);
+        }
+
+        // Cleanup on unmount
+        return () => {
+            debouncedUpdate.cancel();
+        };
+    }, [
+        arrows,
+        canvaElements,
+        highlights,
+        scale,
+        offsetPosition,
+        book,
+        bookId,
+        accessToken,
+        debouncedUpdate,
+    ]);
+
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
     if (error) {
-        return <div>Error loading book: {(error as Error).message}</div>;
+        return <div>Error loading book: {error.message}</div>;
     }
 
     // Extract book elements from the fetched book data

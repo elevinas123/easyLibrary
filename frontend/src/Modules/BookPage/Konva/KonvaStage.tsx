@@ -22,6 +22,7 @@ import MainNotesLayer, {
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
 import { getPos } from "./functions/getPos";
+import Konva from "konva";
 
 export type VisibleArea = {
     x: number;
@@ -69,8 +70,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
-    const [selectedItemsIds, setSelectedItemsIds] =
-        useAtom(selectedItemsIdsAtom);
+    const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
 
     useEffect(() => {}, [canvaElements]);
 
@@ -180,11 +180,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         const dx = (pointer.x - dragStartPos.x) / scale;
         const dy = (pointer.y - dragStartPos.y) / scale;
 
-        // Update stage position
-        stage.position({
-            x: stage.x() + dx * scale,
-            y: stage.y() + dy * scale,
-        });
+        
 
         // Update offset position
         setOffsetPosition((prev) => ({
@@ -197,6 +193,14 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
         stage.batchDraw();
     };
+    useEffect(() => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        stage.position({
+            x: offsetPosition.x,
+            y: offsetPosition.y,
+        });
+    }, [offsetPosition])
 
     const handleMouseUpForPan = () => {
         setIsDragging(false);
@@ -277,19 +281,18 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     };
 
     const updateVisibleArea = () => {
-    if (!stageRef.current) return;
+        if (!stageRef.current) return;
 
-    const stage = stageRef.current;
+        const stage = stageRef.current;
 
-    const visibleArea = {
-        x: (-stage.x() - viewportBuffer) / scale,
-        y: (-stage.y() - viewportBuffer) / scale,
-        width: (window.innerWidth + viewportBuffer * 2) / scale,
-        height: (window.innerHeight + viewportBuffer * 2) / scale,
+        const visibleArea = {
+            x: (-stage.x() - viewportBuffer) / scale,
+            y: (-stage.y() - viewportBuffer) / scale,
+            width: (window.innerWidth + viewportBuffer * 2) / scale,
+            height: (window.innerHeight + viewportBuffer * 2) / scale,
+        };
+        setVisibleArea(visibleArea);
     };
-    setVisibleArea(visibleArea);
-};
-
 
     return (
         <div className="h-screen w-full relative">

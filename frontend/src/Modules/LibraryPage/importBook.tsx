@@ -13,6 +13,7 @@ import {
     processElements,
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
+import { off } from "process";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -75,6 +76,8 @@ const importBook = async ({
             canvaElements: [],
             curveElements: [],
             highlights: [],
+            offsetPosition: { x: 0, y: 0 },
+            scale: 1,
         },
         {
             headers: {

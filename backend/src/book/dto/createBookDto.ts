@@ -6,12 +6,14 @@ import {
     IsBoolean,
     IsDateString,
     IsNotEmpty,
+    IsNumber,
     IsString,
     ValidateNested,
 } from "class-validator";
 import { CurveElementsDto } from "./curveElementsDto/curveElements.dto";
 import { CanvaElementsDto } from "./canvaElementsDto/canvaElements.dto";
 import { BookElementsDto } from "./bookElementsDto/bookElements.dto";
+import { OffsetPositionDto } from "../schema/offsetPosition/offsetPosition.dto";
 
 export class CreateBookDto {
     @IsString() @IsNotEmpty() title: string;
@@ -43,4 +45,10 @@ export class CreateBookDto {
     @ValidateNested()
     @Type(() => CurveElementsDto)
     curveElements: CurveElementsDto;
+
+    @IsNumber() scale: number;
+
+    @ValidateNested()
+    @Type(() => OffsetPositionDto)
+    offsetPosition: OffsetPositionDto;
 }

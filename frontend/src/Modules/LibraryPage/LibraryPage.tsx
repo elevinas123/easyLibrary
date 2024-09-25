@@ -28,6 +28,8 @@ export type Book = {
     curveElements: CurveElement[];
     canvaElements: CanvaElement[];
     highlights: Highlight[];
+    scale: number;
+    offsetPosition: { x: number; y: number };
 };
 
 const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {

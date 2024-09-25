@@ -67,15 +67,5 @@ export class BookshelveService {
     return deletedBook;
   }
 
-  async createBookInsideBookshelve(
-      bookshelveId: string, bookData: CreateBookDto): Promise<Bookshelve> {
-    const book = await this.bookModel.addBook(bookData);
-    const bookId = book._id.toString();
-    // 2. Add the book's ID to the bookshelf's books array
-    return this.addBookToBookshelve(bookshelveId, bookId);
-  }
-  async getBookshelveWithPopulatedBooks(bookshelveId: string):
-      Promise<Bookshelve> {
-    return this.bookshelveModel.findById(bookshelveId).populate('books').exec();
-  }
+  
 }

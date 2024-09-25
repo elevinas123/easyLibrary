@@ -57,6 +57,14 @@ export class Book {
         required: true,
     })
     curveElements: ArrowElement[];
+
+    @Prop({ type: Number, required: true }) scale: number;
+
+    @Prop({
+        type: { x: Number, y: Number },
+        required: true,
+    })
+    offsetPosition: { x: number; y: number };
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

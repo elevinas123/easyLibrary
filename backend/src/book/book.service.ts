@@ -1,138 +1,54 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
 
-import { BookElementsDto } from "./dto/bookElementsDto/bookElements.dto";
-import { CanvaElementsDto } from "./dto/canvaElementsDto/canvaElements.dto";
-import { CreateBookDto } from "./dto/createBookDto";
-import { CurveElementsDto } from "./dto/curveElementsDto/curveElements.dto";
-import { HighlightsDto } from "./dto/highlightsDto/highlights.dto";
-import { Book, BookDocument } from "./schema/book.schema";
+import {CreateBookDto} from './dto/createBookDto';
+import {UpdateBookDto} from './dto/updateBook.dto';  // Import the new DTO
+import {Book, BookDocument} from './schema/book.schema';
 
 @Injectable()
 export class BookService {
-    constructor(
-        @InjectModel(Book.name) private bookModel: Model<BookDocument>
-    ) {}
+  constructor(@InjectModel(Book.name) private bookModel: Model<BookDocument>) {}
 
-    async addBook(createBookDto: CreateBookDto) {
-        console.log("adding book");
-        const newBook = new this.bookModel(createBookDto);
-        return newBook.save();
+  async addBook(createBookDto: CreateBookDto): Promise<Book> {
+    const newBook = new this.bookModel(createBookDto);
+    return newBook.save();
+  }
+
+  async getAllBooks(): Promise<Book[]> {
+    return this.bookModel.find().exec();
+  }
+
+  async getUserBooks(userId: string): Promise<Book[]> {
+    return this.bookModel.find({userId})
+        .select('-bookElements')  // Exclude bookElements if not needed
+        .exec();
+  }
+
+  async getBookById(id: string): Promise<Book> {
+    const book = await this.bookModel.findById(id).exec();
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
     }
-    async getCanvaElements(id: string) {
-        const book = await this.bookModel
-            .findById(id)
-            .select("canvaElements") // Use projection to fetch only
-            // the canvaElements field
+    return book;
+  }
+
+  async updateBook(id: string, updateBookDto: UpdateBookDto): Promise<Book> {
+    const updatedBook =
+        await this.bookModel
+            .findByIdAndUpdate(id, {$set: updateBookDto}, {new: true})
             .exec();
+    if (!updatedBook) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+    return updatedBook;
+  }
 
-        if (!book) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-
-        return book.canvaElements; // Return only the canvaElements field
+  async deleteBook(id: string): Promise<Book> {
+    const deletedBook = await this.bookModel.findByIdAndDelete(id).exec();
+    if (!deletedBook) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
     }
-    async getCurveElements(id: string) {
-        const book = await this.bookModel
-            .findById(id)
-            .select("curveElements")
-            .exec();
-        if (!book) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-        return book.curveElements;
-    }
-    async getHighlights(id: string) {
-        const book = await this.bookModel
-            .findById(id)
-            .select("highlights")
-            .exec();
-        if (!book) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-        return book.highlights;
-    }
-
-    async updatedCanvaElements(canvaElementsDto: CanvaElementsDto, id: string) {
-        console.log("updating canva elements", canvaElementsDto);
-        return await this.bookModel
-            .findByIdAndUpdate(
-                id,
-                {
-                    $set: { canvaElements: canvaElementsDto.canvaElements },
-                },
-                { new: true }
-            )
-            .exec();
-    }
-    async updateHighlights(highlightsDto: HighlightsDto, id: string) {
-      console.log('updating highlights', highlightsDto.highlights);
-      return await this.bookModel
-          .findByIdAndUpdate(
-              id, {
-                $set: {highlights: highlightsDto.highlights},
-              },
-              {new: true})
-          .exec();
-    }
-    async updateCurveElements(curveElementsDto: CurveElementsDto, id: string) {
-        return await this.bookModel.findByIdAndUpdate(
-            id,
-            {
-                $set: { curveElements: curveElementsDto.curveElements },
-            },
-            { new: true }
-        );
-    }
-
-    async updateBookElements(bookElementsDto: BookElementsDto, id: string) {
-        return await this.bookModel
-            .findByIdAndUpdate(
-                id,
-                {
-                    $set: { bookElements: bookElementsDto.bookElements },
-                },
-                { new: true }
-            )
-            .exec();
-    }
-
-    async getUserBooks(userId: string): Promise<Book[]> {
-        console.log("getting user books", userId);
-        return this.bookModel
-            .find({ userId: userId })
-            .select("-bookElements")
-            .exec();
-    }
-
-    async getAllBooks(): Promise<Book[]> {
-        console.log("getting all books");
-        return this.bookModel.find().exec();
-    }
-
-    async getBookById(id: string): Promise<Book> {
-        const bookFound = this.bookModel.findById(id).exec();
-        if (!bookFound) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-        return bookFound;
-    }
-    async updateBook(id: string, updatedBookDto: CreateBookDto): Promise<Book> {
-        const updatedBook = await this.bookModel
-            .findByIdAndUpdate(id, updatedBookDto, { new: true })
-            .exec();
-        if (!updatedBook) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-        return updatedBook;
-    }
-
-    async deleteBook(id: string): Promise<Book> {
-        const deletedBook = this.bookModel.findByIdAndDelete(id).exec();
-        if (!deletedBook) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
-        }
-        return deletedBook;
-    }
+    return deletedBook;
+  }
 }
