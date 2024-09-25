@@ -23,11 +23,9 @@ export default function Notes() {
     const [canvasElements] = useAtom(canvaElementsAtom);
     const [notes, setNotes] = useState<Note[]>([]);
     useEffect(() => {
-        console.log("arrows changed", arrows);
         const validArrows = arrows.filter(
             (arrow) => arrow.startId !== null && arrow.endId !== null
         );
-        console.log("valid arrows", validArrows);
         const mappedNotes = validArrows.map((arrow) => {
             let startText: undefined | string = "";
             let endText: undefined | string = "";
@@ -55,7 +53,6 @@ export default function Notes() {
                 endType: arrow.endType,
             };
         });
-        console.log(mappedNotes);
         setNotes(mappedNotes);
     }, [arrows]);
     return (

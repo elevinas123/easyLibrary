@@ -18,7 +18,6 @@ export const renderCanvaElement = (
             />
         );
     } else if (element.type === "rect") {
-        console.log("rendering rect");
         return (
             <RenderRectangle
                 draggable={draggable}

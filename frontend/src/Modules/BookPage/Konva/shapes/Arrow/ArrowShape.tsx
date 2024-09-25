@@ -53,9 +53,6 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
 
-    useEffect(() => {
-        console.log("arrowsUpdated", arrows);
-    }, [arrows]);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,
@@ -304,11 +301,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         };
         setNewArrow(updatedArrow);
     };
-    useEffect(() => {
-        console.log("Selected Arrow Ids:", selectedArrowIds);
-    }, [selectedArrowIds]);
+
     const handleArrowSelect = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("selecteing");
         const pos = e.target?.getStage()?.getPointerPosition();
         if (!pos) return;
         const arrowUnderMouse = arrows.filter(

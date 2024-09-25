@@ -8,7 +8,7 @@ export interface RectElement extends CanvaElementSkeleton {
 type CreateRectangleProps = {
     x: number;
     y: number;
-} & Partial<Omit<RectElement, 'type' | 'x' | 'y'>>;
+} & Partial<Omit<RectElement, "type" | "x" | "y">>;
 
 export default function CreateRectangle({
     x,
@@ -22,7 +22,7 @@ export default function CreateRectangle({
     strokeColor = "black",
     strokeWidth = 1,
     opacity = 1,
-
+    rotation = 0,
     points,
     ...overrides
 }: CreateRectangleProps): RectElement {
@@ -45,6 +45,7 @@ export default function CreateRectangle({
         strokeColor,
         strokeWidth,
         opacity,
+        rotation,
         ...overrides, // This allows any additional properties to override the defaults
     };
 }

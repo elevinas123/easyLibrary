@@ -29,6 +29,7 @@ export default function CreateText({
     width = 24 * 8 + 10,
     height = 24 + 10,
     opacity = 1,
+    rotation = 0,
     points,
     ...overrides
 }: CreateTextProps): TextElement {
@@ -52,6 +53,7 @@ export default function CreateText({
             { x, y },
             { x, y: y + fontSize },
         ],
+        rotation,
         ...overrides,
     };
 }
