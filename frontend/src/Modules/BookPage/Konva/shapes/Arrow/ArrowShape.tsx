@@ -22,7 +22,6 @@ import { CanvaElement } from "../CanvaElement";
 
 export type CurveElement = ArrowElement;
 
-
 export interface ArrowElement extends CurveSkeleton {
     type: "arrow";
     points: number[];
@@ -335,6 +334,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         arrowId: string,
         e: KonvaEventObject<MouseEvent>
     ) => {
+        e.cancelBubble = true;
         const pos = e.target.getStage()?.getPointerPosition();
         if (!pos) return;
         const foundArrow = arrows.find((arrow) => arrow.id === arrowId);
@@ -352,6 +352,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         arrowId: string,
         e: KonvaEventObject<MouseEvent>
     ) => {
+        e.cancelBubble = true;
         const pos = e.target.getStage()?.getPointerPosition();
         if (!pos) return;
         const foundArrow = arrows.find((arrow) => arrow.id === arrowId);
@@ -370,6 +371,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         e: KonvaEventObject<MouseEvent>,
         which: "end" | "start"
     ) => {
+        e.cancelBubble = true;
         const arrow = arrows.find((arrow) => arrow.id === arrowId);
         const pos = e.target.getStage()?.getPointerPosition();
         if (!pos) return;

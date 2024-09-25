@@ -112,7 +112,7 @@ const updateHighlights = async (
     if (id === null) {
         throw new Error("Book ID is null");
     }
-    
+
     console.log("updatingHighlights", highlights);
     const { data } = await axios.put(
         `/api/book/${id}/highlights`,
@@ -148,6 +148,7 @@ function MainPage() {
         queryFn: () => fetchBook(bookId, accessToken),
     });
 
+    /*
     useEffect(() => {
         if (book) {
             console.log("curveElementsData", book.curveElements);
@@ -175,6 +176,9 @@ function MainPage() {
     useEffect(() => {
         updateHighlights(highlights, bookId, accessToken);
     }, [highlights]);
+
+
+    */
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;

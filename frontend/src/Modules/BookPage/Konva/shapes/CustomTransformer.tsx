@@ -1,41 +1,85 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
-import { CanvaElement } from "./CanvaElement";
+import { CanvaElement } from "./CanvasElement";
+import Konva from "konva";
 
 type CustomTransformerProps = {
-    currentElements: CanvaElement[] | null
+  selectedIds: string[];
+  updateElementInState: (id: string, newAttrs: Partial<CanvaElement>) => void;
 };
 
 export default function CustomTransformer({
-    currentElements,
+  selectedIds,
+  updateElementInState,
 }: CustomTransformerProps) {
-    const transformerRef = useRef<any>(null);
+  const transformerRef = useRef<Konva.Transformer>(null);
 
-    useEffect(() => {
-        const transformer = transformerRef.current;
+  useEffect(() => {
+    const transformer = transformerRef.current;
+    if (!transformer) return;
 
-        if (transformer) {
-            const stage = transformer.getStage();
+    const stage = transformer.getStage();
+    if (!stage) return;
 
-            if (stage && currentElements) {
-                // Find nodes for selected shape IDs
-                console.log(currentElements);
-                const selectedNodes = currentElements
-                .map((element) => stage.findOne(`#${element.id}`)) // Find by node's ID
-                .filter((node) => node !== null && node !==undefined); // Filter out null nodes
-                console.log(selectedNodes);
-                // Only update the transformer if valid nodes were found
-                if (selectedNodes.length > 0) {
-                    transformer.nodes(selectedNodes);
-                    transformer.getLayer().batchDraw(); // Re-draw layer to reflect changes
-                } else {
-                    // If no valid nodes are found, clear the transformer
-                    transformer.nodes([]);
-                    transformer.getLayer().batchDraw();
-                }
-            }
+    // Find the nodes corresponding to the selected IDs
+    const selectedNodes = selectedIds
+      .map((id) => stage.findOne<Konva.Node>(`#${id}`))
+      .filter((node) => node !== null);
+
+    // Attach the transformer to the selected nodes
+    transformer.nodes(selectedNodes);
+    transformer.getLayer()?.batchDraw();
+  }, [selectedIds]);
+
+  // Handle transformations
+  useEffect(() => {
+    const transformer = transformerRef.current;
+    if (!transformer) return;
+
+    const handleTransformEnd = () => {
+      const nodes = transformer.nodes();
+      nodes.forEach((node) => {
+        const id = node.id();
+        const type = node.getClassName();
+
+        let newAttrs: Partial<CanvaElement> = {};
+
+        if (type === "Rect") {
+          newAttrs = {
+            x: node.x(),
+            y: node.y(),
+            width: node.width() * node.scaleX(),
+            height: node.height() * node.scaleY(),
+            rotation: node.rotation(),
+          };
+        } else if (type === "Text") {
+          newAttrs = {
+            x: node.x(),
+            y: node.y(),
+            width: node.width() * node.scaleX(),
+            height: node.height() * node.scaleY(),
+            text: (node as Konva.Text).text(),
+            fontSize: (node as Konva.Text).fontSize() * node.scaleY(),
+            rotation: node.rotation(),
+          };
         }
-    }, [currentElements]);
+        // Reset scale to avoid double-scaling
+        node.scaleX(1);
+        node.scaleY(1);
 
-    return <Transformer ref={transformerRef} handleS/>;
+        // Update the element in the application state
+        updateElementInState(id, newAttrs);
+      });
+    };
+
+    // Attach the event handler
+    transformer.on("transformend", handleTransformEnd);
+
+    // Cleanup the event handler on unmount or when dependencies change
+    return () => {
+      transformer.off("transformend", handleTransformEnd);
+    };
+  }, [updateElementInState]);
+
+  return <Transformer ref={transformerRef} />;
 }
