@@ -49,3 +49,4 @@ export const hoveredItemsAtom = atom<ArrowHover[]>([]);
 export const newArrowAtom = atom<ArrowElement | null>(null);
 export const canvaElementsAtom = atom<CanvaElement[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);
+export const selectedItemsIdsAtom = atom<string[]>([]);

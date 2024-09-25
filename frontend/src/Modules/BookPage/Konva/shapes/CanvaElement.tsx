@@ -9,7 +9,7 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { activeToolAtom, canvaElementsAtom, offsetPositionAtom } from "../konvaAtoms";
+import { activeToolAtom, canvaElementsAtom, offsetPositionAtom, selectedItemsIdsAtom } from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
 import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderCanvaElement";
@@ -38,7 +38,7 @@ function CanvasElement(
     ref: ForwardedRef<CanvaElementRef>
 ) {
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
-    const [selectedItemsIds, setSelectedItemsIds] = useState<string[]>([]);
+    const [selectedItemsIds, setSelectedItemsIds] = useAtom(selectedItemsIdsAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);

@@ -12,12 +12,14 @@ import {
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
+    selectedItemsIdsAtom,
 } from "./konvaAtoms";
 import MainLayer from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
+import ToolBar from "./modules/ToolBar/ToolBar";
 
 export type VisibleArea = {
     x: number;
@@ -45,7 +47,7 @@ export type CanvaElementSkeleton = {
     strokeColor: string;
     strokeWidth: number;
     opacity: number;
-    rotation: number
+    rotation: number;
 };
 export type StartType = "bookText" | "text" | null;
 
@@ -65,7 +67,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
-
+    const [selectedItemsIds, setSelectedItemsIds] = useAtom(selectedItemsIdsAtom);
+    
     useEffect(() => {}, [canvaElements]);
 
     const [dragStartPos, setDragStartPos] = useState<{
@@ -267,6 +270,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     return (
         <div className="h-screen w-full relative">
             <Tools />
+            <ToolBar selectedItemsIds={selectedItemsIds} />
+
             <Stage
                 width={window.innerWidth}
                 height={window.innerHeight}
