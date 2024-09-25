@@ -45,6 +45,7 @@ export type CanvaElementSkeleton = {
     strokeColor: string;
     strokeWidth: number;
     opacity: number;
+    rotation: number
 };
 export type StartType = "bookText" | "text" | null;
 

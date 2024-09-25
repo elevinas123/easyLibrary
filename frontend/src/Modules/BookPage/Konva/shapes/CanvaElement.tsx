@@ -285,7 +285,16 @@ function CanvasElement(
         newAttrs: Partial<CanvaElement>
     ) => {
         setCanvaElements((elements) =>
-            elements.map((el) => (el.id === id ? { ...el, ...newAttrs } : el))
+            elements.map((el) => {
+                if (el.id === id) {
+                    return {
+                        ...el,
+                        ...newAttrs,
+                        type: el.type, // Ensure the type remains the same
+                    } as CanvaElement;
+                }
+                return el;
+            })
         );
     };
 

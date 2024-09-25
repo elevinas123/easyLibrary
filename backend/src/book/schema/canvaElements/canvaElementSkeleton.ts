@@ -49,6 +49,8 @@ export class CanvaElementSkeleton {
     @Prop({ required: true }) strokeWidth: number;
 
     @Prop({ required: true }) opacity: number;
+
+    @Prop({ required: true }) rotation: number;
 }
 
 export type CanvaElementSkeletonDocument = CanvaElementSkeleton & Document;

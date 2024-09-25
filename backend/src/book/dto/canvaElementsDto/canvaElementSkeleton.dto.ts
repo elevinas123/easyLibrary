@@ -31,4 +31,6 @@ export class CanvaElementSkeletonDto {
     @IsNumber() strokeWidth: number;
 
     @IsNumber() opacity: number;
+
+    @IsNumber() rotation: number;
 }
