@@ -7,12 +7,7 @@ import {
     newArrowAtom,
     selectedArrowIdsAtom,
 } from "../../konvaAtoms";
-import {
-    ForwardedRef,
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-} from "react";
+import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
 import { CurveSkeleton, StartType } from "../../KonvaStage";
@@ -78,6 +73,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                     y: referenceY,
                 });
                 minPoints = point;
+                console.log("minPoints", minPoints);
             }
         });
         return minPoints;
@@ -92,6 +88,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         );
     };
     const handleElementAttachedToArrowMove = (selectedTextId: string[]) => {
+        console.log("canvasElements", canvasElements);
         setArrows((arrows) => {
             const elementsSelected = canvasElements.filter((element) =>
                 selectedTextId.includes(element.id)
@@ -135,6 +132,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                         endElement,
                         arrow.points.slice(0, 2) // Relative to the shape
                     );
+                    console.log("endElement:", endElement); // Debugging end point
                     console.log("End Point:", endPoint); // Debugging end point
                     updatedPoints[2] = endPoint.x;
                     updatedPoints[3] = endPoint.y;

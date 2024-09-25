@@ -231,6 +231,12 @@ function CanvasElement(
         const newAttrs = {
             x: node.x(),
             y: node.y(),
+            points: [
+                { x: node.x(), y: node.y() },
+                { x: node.x() + node.width(), y: node.y() },
+                { x: node.x() + node.width(), y: node.y() + node.height() },
+                { x: node.x(), y: node.y() + node.height() },
+            ],
         };
 
         updateElementInState(id, newAttrs);
