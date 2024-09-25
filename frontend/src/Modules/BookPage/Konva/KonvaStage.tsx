@@ -86,10 +86,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     });
 
     useEffect(() => {
-        updateVisibleArea();
-    }, [offsetPosition]);
-
-    useEffect(() => {
         const stage = stageRef.current;
         if (stage) {
             stage.on("wheel", handleWheel); // Attach zoom on mouse wheel
@@ -150,9 +146,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         };
 
         // Apply new scale and position
-        stage.scale({ x: clampedScale, y: clampedScale });
-        stage.position(newPos);
-        stage.batchDraw();
 
         // Update state
         setScale(clampedScale);
@@ -180,8 +173,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         const dx = (pointer.x - dragStartPos.x) / scale;
         const dy = (pointer.y - dragStartPos.y) / scale;
 
-        
-
         // Update offset position
         setOffsetPosition((prev) => ({
             x: prev.x + dx * scale,
@@ -200,7 +191,15 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             x: offsetPosition.x,
             y: offsetPosition.y,
         });
-    }, [offsetPosition])
+        updateVisibleArea();
+    }, [offsetPosition]);
+    useEffect(() => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        stage.scale({ x: scale, y: scale });
+        stage.position(offsetPosition);
+        stage.batchDraw();
+    }, [scale, offsetPosition]);
 
     const handleMouseUpForPan = () => {
         setIsDragging(false);

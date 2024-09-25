@@ -154,6 +154,7 @@ function TextLayer(
     }, [processedElements]);
 
     useEffect(() => {
+        console.log("virtualizing", visibleArea);
         setVirtualizedText(
             textElements
                 .filter(
@@ -177,7 +178,7 @@ function TextLayer(
                     />
                 ))
         );
-    }, [visibleArea, textElements]);
+    }, [visibleArea, textElements, offsetPosition, scale]);
     const createTextElements = (): BookTextElement[] => {
         // Process the text elements from the book
 
