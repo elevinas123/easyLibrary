@@ -12,6 +12,7 @@ import {
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
+    scaleAtom,
     selectedItemsIdsAtom,
 } from "./konvaAtoms";
 import MainLayer from "./modules/BookTextLayers/MainLayer";
@@ -20,6 +21,7 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
+import { getPos } from "./functions/getPos";
 
 export type VisibleArea = {
     x: number;
@@ -59,7 +61,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
     const stageRef = useRef<any>(null);
-    const [scale, setScale] = useState(1); // State to handle scale
+    const [scale, setScale] = useAtom(scaleAtom); // State to handle scale
     const [isDragging, setIsDragging] = useState(false); // New state to track dragging
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const viewportBuffer = 200;
@@ -67,8 +69,9 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
-    const [selectedItemsIds, setSelectedItemsIds] = useAtom(selectedItemsIdsAtom);
-    
+    const [selectedItemsIds, setSelectedItemsIds] =
+        useAtom(selectedItemsIdsAtom);
+
     useEffect(() => {}, [canvaElements]);
 
     const [dragStartPos, setDragStartPos] = useState<{
@@ -116,34 +119,44 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
 
-    const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
+    const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
 
-        // Get the current scale and adjust it based on scroll direction
+        if (!stage) return;
+
         const oldScale = stage.scaleX();
         const pointer = stage.getPointerPosition();
 
-        const scaleBy = 1.1; // Scale factor
+        if (!pointer) return;
+
+        const scaleBy = 1.1;
+        const direction = e.evt.deltaY > 0 ? -1 : 1;
         const newScale =
-            e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+            direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-        setScale(newScale);
+        // Limit the scale range
+        const minScale = 0.5;
+        const maxScale = 3;
+        const clampedScale = Math.max(minScale, Math.min(maxScale, newScale));
 
-        // Calculate new position to keep zoom centered on the pointer
-        const mousePointTo = {
-            x: (pointer.x - stage.x()) / oldScale,
-            y: (pointer.y - stage.y()) / oldScale,
-        };
+        // Calculate the scaling factor
+        const scaleFactor = clampedScale / oldScale;
 
+        // Adjust the offset position to keep the zoom centered on the pointer
         const newPos = {
-            x: pointer.x - mousePointTo.x * newScale,
-            y: pointer.y - mousePointTo.y * newScale,
+            x: pointer.x - (pointer.x - stage.x()) * scaleFactor,
+            y: pointer.y - (pointer.y - stage.y()) * scaleFactor,
         };
 
-        stage.scale({ x: newScale, y: newScale });
+        // Apply new scale and position
+        stage.scale({ x: clampedScale, y: clampedScale });
         stage.position(newPos);
         stage.batchDraw();
+
+        // Update state
+        setScale(clampedScale);
+        setOffsetPosition(newPos);
     };
 
     // Pan Handlers
@@ -163,17 +176,26 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         const pointer = stage.getPointerPosition();
         if (!pointer) return;
 
-        const dx = pointer.x - dragStartPos.x;
-        const dy = pointer.y - dragStartPos.y;
+        // Calculate delta movement adjusted by scale
+        const dx = (pointer.x - dragStartPos.x) / scale;
+        const dy = (pointer.y - dragStartPos.y) / scale;
 
+        // Update stage position
         stage.position({
-            x: stage.x() + dx,
-            y: stage.y() + dy,
+            x: stage.x() + dx * scale,
+            y: stage.y() + dy * scale,
         });
-        setOffsetPosition((offset) => ({ x: offset.x + dx, y: offset.y + dy }));
 
-        setDragStartPos(pointer); // Update the drag position to the current one
-        stage.batchDraw(); // Update the canvas
+        // Update offset position
+        setOffsetPosition((prev) => ({
+            x: prev.x + dx * scale,
+            y: prev.y + dy * scale,
+        }));
+
+        // Update drag start position
+        setDragStartPos(pointer);
+
+        stage.batchDraw();
     };
 
     const handleMouseUpForPan = () => {
@@ -190,7 +212,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
 
         const isPointInPolygon = (

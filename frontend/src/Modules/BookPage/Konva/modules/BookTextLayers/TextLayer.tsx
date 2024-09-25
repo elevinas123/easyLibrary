@@ -17,8 +17,10 @@ import {
     currentHighlightIdAtom,
     highlightsAtom,
     offsetPositionAtom,
+    scaleAtom,
 } from "../../konvaAtoms";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
+import { getPos } from "../../functions/getPos";
 
 export interface BookTextElement extends CanvaElementSkeleton {
     type: "bookText";
@@ -52,13 +54,14 @@ function TextLayer(
         currentHighlightIdAtom
     );
     const [activeTool] = useAtom(activeToolAtom);
+    const [scale] = useAtom(scaleAtom);
 
     useImperativeHandle(
         ref,
         () => ({
             handleMouseDown(e: KonvaEventObject<MouseEvent>) {
                 if (activeTool !== "Select") return;
-                const pos = e.target?.getStage()?.getPointerPosition();
+                const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 const currentId = uuidv4();
                 setCurrentHighlightId(currentId);
@@ -87,7 +90,7 @@ function TextLayer(
                 if (!currentHighlightId) {
                     return;
                 }
-                const pos = e.target?.getStage()?.getPointerPosition();
+                const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 setHighlights((highlights) => {
                     const newHighlights = [...highlights];
@@ -122,7 +125,7 @@ function TextLayer(
                 setCurrentHighlightId(null);
             },
         }),
-        [setCurrentHighlightId, setHighlights, currentHighlightId, activeTool]
+        [setCurrentHighlightId, setHighlights, currentHighlightId, activeTool, scale, offsetPosition]
     );
 
     const calculateXPositionInText = (

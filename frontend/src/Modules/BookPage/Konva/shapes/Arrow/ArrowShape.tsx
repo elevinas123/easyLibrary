@@ -5,6 +5,8 @@ import {
     canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
+    offsetPositionAtom,
+    scaleAtom,
     selectedArrowIdsAtom,
 } from "../../konvaAtoms";
 import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
@@ -14,6 +16,7 @@ import { CurveSkeleton, StartType } from "../../KonvaStage";
 import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
 import { CanvaElement } from "../CanvaElement";
+import { getPos } from "../../functions/getPos";
 
 export type CurveElement = ArrowElement;
 
@@ -45,6 +48,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
+    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
+    const [scale, setScale] = useAtom(scaleAtom); // State to handle scale
+
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
 
@@ -148,7 +154,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         });
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
         const id = uuidv4();
 
@@ -196,7 +202,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     };
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
         if (!newArrow) return;
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         let arrow = newArrow;
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {
@@ -287,7 +294,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool !== "Arrow") return;
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         hoverItems(pos);
         if (!newArrow) {
@@ -301,7 +309,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     };
 
     const handleArrowSelect = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = e.target?.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         const arrowUnderMouse = arrows.filter(
             (arrow) =>
@@ -327,7 +336,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         e: KonvaEventObject<MouseEvent>
     ) => {
         e.cancelBubble = true;
-        const pos = e.target.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         const foundArrow = arrows.find((arrow) => arrow.id === arrowId);
         if (!foundArrow) return;
@@ -345,7 +355,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         e: KonvaEventObject<MouseEvent>
     ) => {
         e.cancelBubble = true;
-        const pos = e.target.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         const foundArrow = arrows.find((arrow) => arrow.id === arrowId);
         if (!foundArrow) return;
@@ -365,7 +376,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     ) => {
         e.cancelBubble = true;
         const arrow = arrows.find((arrow) => arrow.id === arrowId);
-        const pos = e.target.getStage()?.getPointerPosition();
+        const pos = getPos(offsetPosition, scale, e);
+
         if (!pos) return;
         if (!arrow) return;
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {

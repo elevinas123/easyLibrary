@@ -15,9 +15,12 @@ import {
     HighlightPoints,
     highlightsAtom,
     hoveredItemsAtom,
+    offsetPositionAtom,
+    scaleAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
+import { getPos } from "../../functions/getPos";
 
 export type FullHighlight = {
     rects: HighlightRect[];
@@ -25,7 +28,6 @@ export type FullHighlight = {
     id: string;
     type: "bookText";
 };
-
 
 export type HighlightRect = {
     y: number;
@@ -59,13 +61,15 @@ function HighlightLayer(
     >([]);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [activeTool] = useAtom(activeToolAtom);
+    const [scale] = useAtom(scaleAtom);
+    const [offsetPosition] = useAtom(offsetPositionAtom);
 
     useImperativeHandle(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
                 if (activeTool !== "Arrow") return;
-                const pos = e.target?.getStage()?.getPointerPosition();
+                const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 const highlightsUnderMouse = highlightElements.filter(
                     (highlight) =>
@@ -110,7 +114,7 @@ function HighlightLayer(
                 }
             },
         }),
-        [highlightElements, hoveredItems, activeTool]
+        [highlightElements, hoveredItems, activeTool, scale, offsetPosition]
     );
 
     useEffect(() => {
