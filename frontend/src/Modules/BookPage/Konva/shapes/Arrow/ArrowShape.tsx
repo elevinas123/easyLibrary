@@ -17,6 +17,7 @@ import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
 import { CanvaElement } from "../CanvaElement";
 import { getPos } from "../../functions/getPos";
+import RenderArrow from "./RenderArrow";
 
 export type CurveElement = ArrowElement;
 
@@ -197,6 +198,16 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             type: "arrow",
             text: null,
             fill: "black",
+            seed: Math.floor(Math.random() * 100000),
+            roughness: 1,
+            strokeWidth: 2,
+            bowing: 0,
+            fillStyle: "hachure",
+            strokeStyle: "solid",
+            stroke: "black",
+            hachureAngle: -41,
+            hachureGap: 8,
+            fillWeight: 1,
         };
         setNewArrow(arrow);
     };
@@ -440,17 +451,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     return (
         <>
             {arrows.map((arrow, i) => (
-                <Arrow
-                    key={i}
-                    points={arrow.points}
-                    stroke="black"
-                    fill="black"
-                    pointerLength={10}
-                    pointerWidth={10}
-                    lineCap="round"
-                    lineJoin="round"
-                    id={arrow.id}
-                    onClick={handleArrowSelect}
+                <RenderArrow
+                    element={arrow}
+                    draggable={false}
+                    handleDragMove={undefined}
                 />
             ))}
 
@@ -492,14 +496,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             })}
 
             {newArrow && newArrow.points && (
-                <Arrow
-                    points={newArrow.points}
-                    stroke="black"
-                    fill="black"
-                    pointerLength={10}
-                    pointerWidth={10}
-                    lineCap="round"
-                    lineJoin="round"
+                <RenderArrow
+                    element={newArrow}
+                    draggable={false}
+                    handleDragMove={undefined}
                 />
             )}
         </>

@@ -4,7 +4,7 @@ import Chapters from "./Chapters";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import axios from "axios";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
 import { useAtom } from "jotai";
@@ -75,6 +75,7 @@ function MainPage() {
 
     // Initialize chapters (assuming this will be populated elsewhere)
     const [chapters] = useState<Chapter[]>([]);
+    const queryClient = useQueryClient();
 
     // React Query: Fetch book data
     const {
@@ -97,7 +98,7 @@ function MainPage() {
         },
         onSuccess: (data) => {
             console.log("Book updated successfully:", data);
-            // Optionally, refetch or update the cache
+            queryClient.setQueryData<Book>(["book", bookId], data);
         },
     });
 
@@ -105,7 +106,7 @@ function MainPage() {
     const debouncedUpdate = useCallback(
         debounce((updatedFields: Partial<Book>) => {
             mutation.mutate(updatedFields);
-        }, 1000), // Adjust the delay as needed (e.g., 1000ms)
+        }, 500), // Adjust the delay as needed (e.g., 1000ms)
         [mutation]
     );
     useEffect(() => {
@@ -119,6 +120,7 @@ function MainPage() {
                 y: 0,
             }
         );
+        console.log("Book data updated:", book);
     }, [book]);
 
     // Consolidated useEffect for updating the book

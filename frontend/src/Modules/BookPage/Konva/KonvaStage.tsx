@@ -35,6 +35,23 @@ export type CurveSkeleton = {
     id: string;
     fill: string;
     text: null | string;
+    roughness: number;
+    bowing: number;
+    seed: number;
+    strokeWidth: number;
+    strokeStyle: "solid" | "dashed" | "dotted";
+    stroke: string;
+    fillStyle:
+        | "solid"
+        | "hachure"
+        | "cross-hatch"
+        | "zigzag"
+        | "dots"
+        | "dashed"
+    | "zigzag-line";
+    fillWeight: number;
+    hachureAngle: number;
+    hachureGap: number;
 };
 // Base skeleton for all elements
 export type CanvaElementSkeleton = {
