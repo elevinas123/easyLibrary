@@ -1,11 +1,12 @@
 // ToolBar.tsx
 
-import React from "react";
 import { FaTrash } from "react-icons/fa";
 import ToolBarItem from "./ToolBarItem";
 import { useAtom } from "jotai";
-import { canvaElementsAtom } from "../../konvaAtoms";
+import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
 import { toolbarConfig } from "./ToolBar.config";
+import { CanvaElement } from "../../shapes/CanvaElement";
+import { ArrowElement } from "../../shapes/Arrow/ArrowShape";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -13,7 +14,7 @@ type ToolBarProps = {
 
 export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
-
+    const [arrows, setArrows] = useAtom(arrowsAtom);
     const updateItems = (property: { [key: string]: any }) => {
         setCanvaElements((elements) =>
             elements.map((element) =>
@@ -22,11 +23,22 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                     : element
             )
         );
+        setArrows((elements) =>
+            elements.map((element) =>
+                selectedItemsIds.includes(element.id)
+                    ? { ...element, ...property }
+                    : element
+            )
+        );
     };
 
-    const controlShape = canvaElements.find(
+    let controlShape: CanvaElement | ArrowElement | undefined = canvaElements.find(
         (element) => element.id === selectedItemsIds[0]
     );
+    if (!controlShape)
+        controlShape = arrows.find(
+            (element) => element.id === selectedItemsIds[0]
+        );
 
     if (!selectedItemsIds.length || !controlShape) {
         return null;

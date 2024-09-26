@@ -11,6 +11,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import {
     activeToolAtom,
+    arrowsAtom,
     canvaElementsAtom,
     offsetPositionAtom,
     scaleAtom,
@@ -42,8 +43,6 @@ export type CanvaElementRef = {
     handleMouseUp: () => void;
 };
 
-
-
 function CanvasElement(
     { arrowShapeRef, inputRef }: CanvasElementProps,
     ref: ForwardedRef<CanvaElementRef>
@@ -51,6 +50,8 @@ function CanvasElement(
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds, setSelectedItemsIds] =
         useAtom(selectedItemsIdsAtom);
+    const [arrows, setArrows] = useAtom(arrowsAtom);
+
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -169,17 +170,35 @@ function CanvasElement(
         handleInputBlur();
     };
 
-    const getItemsAtPosition = (pos: {
-        x: number;
-        y: number;
-    }): CanvaElement[] => {
-        return canvaElements.filter(
-            (item) =>
-                pos.x >= item.x &&
-                pos.x <= item.x + item.width &&
-                pos.y >= item.y &&
-                pos.y <= item.y + item.height
-        );
+    const getItemsAtPosition = (pos: { x: number; y: number }) => {
+        const items =  [
+            ...canvaElements.filter(
+                (item) =>
+                    pos.x >= item.x &&
+                    pos.x <= item.x + item.width &&
+                    pos.y >= item.y &&
+                    pos.y <= item.y + item.height
+            ),
+            ...arrows.filter((item) => {
+                const [x1, y1, x2, y2] = item.points;
+
+                // Calculate the minimum and maximum x and y values
+                const minX = Math.min(x1, x2);
+                const maxX = Math.max(x1, x2);
+                const minY = Math.min(y1, y2);
+                const maxY = Math.max(y1, y2);
+
+                // Check if the position falls within the bounding box
+                return (
+                    pos.x >= minX &&
+                    pos.x <= maxX &&
+                    pos.y >= minY &&
+                    pos.y <= maxY
+                );
+            }),
+        ];
+        console.log("getting items", items);
+        return items
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
