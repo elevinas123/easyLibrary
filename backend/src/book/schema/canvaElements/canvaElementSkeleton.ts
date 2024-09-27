@@ -24,7 +24,7 @@ export type CanvaElementSkeletonType = {
 };
 
 @Schema({ discriminatorKey: "type", _id: false })
-export class CanvaElementSkeleton {
+export class CanvaElementSkeleton implements CanvaElementSkeletonType {
     @Prop({ required: true }) fill: string;
 
     @Prop({ required: true }) x: number;

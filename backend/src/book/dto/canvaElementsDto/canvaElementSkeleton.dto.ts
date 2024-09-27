@@ -1,36 +1,46 @@
-// src/books/dto/canva-element-skeleton.dto.ts
+import {getModelForClass, prop} from '@typegoose/typegoose';
+import {Type} from 'class-transformer';
+import {IsArray, IsNumber, IsString, ValidateNested} from 'class-validator';
 
-import { Type } from "class-transformer";
-import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
-import { HighlightPointsDto } from "./highlightPoints.dto";
+import {HighlightPointsDto} from './highlightPoints.dto';
+import { CanvaElementSkeleton } from 'src/book/schema/canvaElements/canvaElementSkeleton';
 
-export class CanvaElementSkeletonDto {
-    @IsString() fill: string;
+// DTO Class with Typegoose for MongoDB schema
+export class CanvaElementSkeletonDto implements CanvaElementSkeleton {
+  @IsString() @prop({type: String, required: true}) public fill!: string;
 
-    @IsNumber() x: number;
+  @IsNumber() @prop({type: Number, required: true}) public x!: number;
 
-    @IsNumber() y: number;
+  @IsNumber() @prop({type: Number, required: true}) public y!: number;
 
-    @IsNumber() width: number;
+  @IsNumber() @prop({type: Number, required: true}) public width!: number;
 
-    @IsNumber() height: number;
+  @IsNumber() @prop({type: Number, required: true}) public height!: number;
 
-    @IsString() id: string;
+  @IsString() @prop({type: String, required: true}) public id!: string;
 
-    @IsArray() @IsString({ each: true }) outgoingArrowIds: string[];
+  @IsArray()
+  @IsString({each: true})
+  @prop({type: [String], required: true})
+  public outgoingArrowIds!: string[];
 
-    @IsArray() @IsString({ each: true }) incomingArrowIds: string[];
+  @IsArray()
+  @IsString({each: true})
+  @prop({type: [String], required: true})
+  public incomingArrowIds!: string[];
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => HighlightPointsDto)
-    points: HighlightPointsDto[];
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => HighlightPointsDto)
+  @prop({type: () => [HighlightPointsDto], required: true})
+  public points!: HighlightPointsDto[];
 
-    @IsString() strokeColor: string;
+  @IsString() @prop({type: String, required: true}) public strokeColor!: string;
 
-    @IsNumber() strokeWidth: number;
+  @IsNumber() @prop({type: Number, required: true}) public strokeWidth!: number;
 
-    @IsNumber() opacity: number;
+    @IsNumber() @prop({ type: Number, required: true }) public opacity!: number;
+    
+    @IsNumber() @prop({ type: Number, required: true }) public rotation!: number;
 
-    @IsNumber() rotation: number;
 }

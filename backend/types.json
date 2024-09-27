@@ -1,0 +1,167 @@
+{
+    "Highlight": [
+        {
+            "name": "id",
+            "type": "string",
+            "fullType": "id: string"
+        },
+        {
+            "name": "startingX",
+            "type": "number",
+            "fullType": "startingX: number"
+        },
+        {
+            "name": "startingY",
+            "type": "number",
+            "fullType": "startingY: number"
+        },
+        {
+            "name": "endX",
+            "type": "number",
+            "fullType": "endX: number"
+        },
+        {
+            "name": "endY",
+            "type": "number",
+            "fullType": "endY: number"
+        }
+    ],
+    "RectElement": [
+        {
+            "name": "fillStyle",
+            "type": "string",
+            "fullType": "fillStyle: string"
+        },
+        {
+            "name": "roughness",
+            "type": "number",
+            "fullType": "roughness: number"
+        },
+        {
+            "name": "seed",
+            "type": "number",
+            "fullType": "seed: number"
+        },
+        {
+            "name": "hachureGap",
+            "type": "number",
+            "fullType": "hachureGap: number"
+        },
+        {
+            "name": "hachureAngle",
+            "type": "number",
+            "fullType": "hachureAngle: number"
+        }
+    ],
+    "TextElement": [
+        {
+            "name": "text",
+            "type": "string",
+            "fullType": "text: string"
+        },
+        {
+            "name": "fontFamily",
+            "type": "string",
+            "fullType": "fontFamily: string"
+        },
+        {
+            "name": "fontSize",
+            "type": "number",
+            "fullType": "fontSize: number"
+        }
+    ],
+    "ArrowElement": [
+        {
+            "name": "startId",
+            "type": "string",
+            "fullType": "startId: string"
+        },
+        {
+            "name": "endId",
+            "type": "string",
+            "fullType": "endId: string"
+        },
+        {
+            "name": "startType",
+            "type": "StartType",
+            "fullType": "startType: StartType"
+        },
+        {
+            "name": "endType",
+            "type": "StartType",
+            "fullType": "endType: StartType"
+        }
+    ],
+    "Book": [
+        {
+            "name": "title",
+            "type": "string",
+            "fullType": "title: string"
+        },
+        {
+            "name": "userId",
+            "type": "ObjectId",
+            "fullType": "userId: ObjectId"
+        },
+        {
+            "name": "description",
+            "type": "string",
+            "fullType": "description: string"
+        },
+        {
+            "name": "author",
+            "type": "string",
+            "fullType": "author: string"
+        },
+        {
+            "name": "genre",
+            "type": "string[]",
+            "fullType": "genre: string[]"
+        },
+        {
+            "name": "imageUrl",
+            "type": "string",
+            "fullType": "imageUrl: string"
+        },
+        {
+            "name": "liked",
+            "type": "boolean",
+            "fullType": "liked: boolean"
+        },
+        {
+            "name": "dateAdded",
+            "type": "Date",
+            "fullType": "dateAdded: Date"
+        },
+        {
+            "name": "bookElements",
+            "type": "any[]",
+            "fullType": "bookElements: any[]"
+        },
+        {
+            "name": "highlights",
+            "type": "Highlight[]",
+            "fullType": "highlights: Highlight[]"
+        },
+        {
+            "name": "canvaElements",
+            "type": "(RectElement | TextElement)[]",
+            "fullType": "canvaElements: RectElement | TextElement[]"
+        },
+        {
+            "name": "curveElements",
+            "type": "ArrowElement[]",
+            "fullType": "curveElements: ArrowElement[]"
+        },
+        {
+            "name": "scale",
+            "type": "number",
+            "fullType": "scale: number"
+        },
+        {
+            "name": "offsetPosition",
+            "type": "{ x: number; y: number; }",
+            "fullType": "offsetPosition: { x: number; y: number; }"
+        }
+    ]
+}

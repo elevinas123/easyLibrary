@@ -1,0 +1,8 @@
+{
+    "GET book": "Promise<Book[]>",
+    "GET book/getUserBooks": "Promise<Book[]>",
+    "PATCH book:id": "Promise<Book>",
+    "GET book:id": "Promise<Book>",
+    "POST book": "Promise<Book>",
+    "DELETE book:id": "Promise<Book>"
+}

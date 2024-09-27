@@ -48,7 +48,7 @@ export type CurveSkeleton = {
         | "zigzag"
         | "dots"
         | "dashed"
-    | "zigzag-line";
+        | "zigzag-line";
     fillWeight: number;
     hachureAngle: number;
     hachureGap: number;
@@ -131,6 +131,8 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             mainNotesLayerRef.current?.handleKeyDown(e);
         }
     };
+    const easeOut = (t: number) => t * (2 - t); // Simple easing function
+
     const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         console.log("handlePanWheel");
         e.evt.preventDefault();
@@ -144,14 +146,25 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         // Define panning speed. Adjust the multiplier as needed for desired sensitivity.
         const panSpeed = 1 / scale;
 
-        // Update state
-        setOffsetPosition((offset) => {
-            // Calculate new offset positions
-            return {
-                x: offset.x - deltaX * panSpeed,
-                y: offset.y - deltaY * panSpeed,
-            };
-        });
+        const targetOffsetX = deltaX * panSpeed;
+        const targetOffsetY = deltaY * panSpeed;
+
+        let startTime: number | null = null;
+
+        const animatePan = (time: number) => {
+            console.log("animating pan", time);
+            if (startTime === null) startTime = time;
+            const elapsed = (time - startTime) / 10; // Adjust the duration (300ms) for a smoother/slower transition
+            const progress = Math.min(easeOut(elapsed), 1);
+            console.log("animatePanProgress", progress);
+            console.log("animateStartTime", startTime);
+
+            if (progress < 1) {
+                requestAnimationFrame(animatePan);
+            }
+        };
+
+        requestAnimationFrame(animatePan);
     };
     const handleControlWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
@@ -194,6 +207,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         if (e.evt.ctrlKey) {
             handleControlWheel(e);
         } else {
+            console.log("handlePanWheel");
             handlePanWheel(e);
         }
     };

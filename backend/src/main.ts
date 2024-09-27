@@ -1,8 +1,8 @@
-import { ValidationPipe } from "@nestjs/common";
+import "reflect-metadata";
+
 import { NestFactory } from "@nestjs/core";
 import * as bodyParser from "body-parser";
 import { AppModule } from "./app.module";
-import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
