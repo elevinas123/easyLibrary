@@ -1,0 +1,18 @@
+{
+    "GET /book/getUserBooks": {
+        "query": "{ userId: string }"
+    },
+    "PATCH /book/:id": {
+        "params": "{ id: string }",
+        "body": "UpdateBookDto"
+    },
+    "GET /book/:id": {
+        "params": "{ id: string }"
+    },
+    "POST /book": {
+        "body": "CreateBookDto"
+    },
+    "DELETE /book/:id": {
+        "params": "{ id: string }"
+    }
+}

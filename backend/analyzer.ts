@@ -1,10 +1,12 @@
 // type-generator.ts
 
 import * as fs from "fs";
+import glob from "glob";
 import * as path from "path";
 import * as ts from "typescript";
 
 // Define the structure for documentation entries
+
 interface DocEntry {
     name?: string;
     fileName?: string;
@@ -26,7 +28,9 @@ interface ParamEntry {
     type: string;
     decorator: string;
 }
-
+type InputMapping = {
+    [key: string]: { query?: string; params?: string; body?: string };
+};
 interface PropertyEntry {
     name: string;
     type: string;
@@ -353,63 +357,167 @@ const fillDoc = (
     return typeDict;
 };
 
-// Create TypeScript types based on DocEntry
+// Updated helper to map ObjectId to string
+const mapType = (type: string): string => {
+    if (type === "Types.ObjectId" || type === "ObjectId") {
+        return "string";
+    }
+    // Add more mappings if needed
+    return type;
+};
+
 const createTsType = (
     doc: DocEntry[]
-): { typeDict: TypeDict; endpointMap: EndpointMapping } => {
+): {
+    typeDict: TypeDict;
+    endpointMap: EndpointMapping;
+    inputMap: InputMapping;
+} => {
     const controllers = doc.filter(
         (entry) => entry.path && entry.path.length > 0
     );
     if (controllers.length === 0) {
         console.warn("No controllers found with paths.");
-        return { typeDict: {}, endpointMap: {} };
+        return { typeDict: {}, endpointMap: {}, inputMap: {} };
     }
 
     let typeDict: TypeDict = {};
     let endpointMap: EndpointMapping = {};
+    let inputMap: InputMapping = {};
 
     controllers.forEach((controller) => {
         controller.methods?.forEach((method) => {
             if (!method.name || !method.returnType) return;
 
-            // Extract the inner type if it's a generic type like Promise<>
-            let innerType = extractInnerType(method.returnType);
-            // Handle arrays
-            let isArray = false;
-            if (innerType.endsWith("[]")) {
-                isArray = true;
-                innerType = extractArrayType(innerType);
+            // Extract the inner return type if it's a generic type like Promise<>
+            let returnInnerType = extractInnerType(method.returnType);
+            let isReturnArray = false;
+            if (returnInnerType.endsWith("[]")) {
+                isReturnArray = true;
+                returnInnerType = extractArrayType(returnInnerType);
             }
 
-            // Handle union types
-            const unionTypes = extractUnionTypes(innerType);
-
-            unionTypes.forEach((ut) => {
+            // Handle union types for return type
+            const returnUnionTypes = extractUnionTypes(returnInnerType);
+            returnUnionTypes.forEach((ut) => {
                 const typeEntry = doc.find((entry) => entry.name === ut);
                 if (typeEntry) {
                     typeDict = fillDoc(doc, typeEntry, typeDict);
                 } else {
-                    console.warn(`Type "${ut}" not found in documentation.`);
+                    console.warn(
+                        `Return type "${ut}" not found in documentation.`
+                    );
                 }
             });
 
-            // Generate endpoint key
-            const endpointKey = `${method.httpMethod} ${controller.path}${method.methodPath}`;
-            endpointMap[endpointKey] = method.returnType;
+            // **Process Input Parameters**
+            const inputTypes: {
+                query?: string;
+                params?: string;
+                body?: string;
+            } = {};
+
+            method.parameters?.forEach((param: any) => {
+                const decorator = param.decorator;
+                const paramTypeOriginal = param.type;
+                const paramType = mapType(paramTypeOriginal); // Apply type mapping
+
+                // Handle union types for parameter types
+                const paramUnionTypes = extractUnionTypes(paramTypeOriginal);
+                paramUnionTypes.forEach((put) => {
+                    if (!simpleTypes.includes(put)) {
+                        // Only add complex types
+                        const mappedType = mapType(put);
+                        const typeEntry = doc.find(
+                            (entry) => entry.name === put
+                        );
+                        if (typeEntry) {
+                            typeDict = fillDoc(doc, typeEntry, typeDict);
+                        } else {
+                            console.warn(
+                                `Parameter type "${put}" not found in documentation.`
+                            );
+                        }
+                    }
+                });
+
+                if (decorator === "Query") {
+                    // Handle multiple query parameters by merging into one object
+                    inputTypes.query = inputTypes.query
+                        ? `${inputTypes.query} & { ${param.name}: ${paramType} }`
+                        : `{ ${param.name}: ${paramType} }`;
+                } else if (decorator === "Param") {
+                    // Handle multiple path parameters by merging into one object
+                    inputTypes.params = inputTypes.params
+                        ? `${inputTypes.params} & { ${param.name}: ${paramType} }`
+                        : `{ ${param.name}: ${paramType} }`;
+                } else if (decorator === "Body") {
+                    // Assuming only one body parameter per endpoint
+                    inputTypes.body = inputTypes.body
+                        ? `${inputTypes.body} & ${paramType}`
+                        : paramType;
+                }
+            });
+
+            // **Formatted Endpoint Key Generation**
+            const formattedControllerPath = controller.path.startsWith("/")
+                ? controller.path
+                : `/${controller.path}`;
+
+            const formattedMethodPath = method.methodPath
+                ? method.methodPath.startsWith("/")
+                    ? method.methodPath
+                    : `/${method.methodPath}`
+                : "";
+
+            const endpointKey = `${method.httpMethod.toUpperCase()} ${
+                formattedControllerPath
+            }${formattedMethodPath}`;
+
+            // Assign the inner return type without Promise<>
+            const responseType = isReturnArray
+                ? `${returnInnerType}[]`
+                : returnInnerType;
+
+            // Assign to endpointMap
+            endpointMap[endpointKey] = responseType;
+
+            // Assign to inputMap if there are input types
+            if (inputTypes.query || inputTypes.params || inputTypes.body) {
+                inputMap[endpointKey] = {
+                    ...(inputTypes.query && { query: inputTypes.query }),
+                    ...(inputTypes.params && { params: inputTypes.params }),
+                    ...(inputTypes.body && { body: inputTypes.body }),
+                };
+            }
         });
     });
 
+    // Replace ObjectId types in typeDict with string
+    for (const key in typeDict) {
+        typeDict[key] = typeDict[key].map((typeDef) => ({
+            ...typeDef,
+            type: mapType(typeDef.type),
+        }));
+    }
+
     console.log("Generated Type Dictionary:", typeDict);
     console.log("Generated Endpoint Mapping:", endpointMap);
+    console.log("Generated Input Mapping:", inputMap);
     fs.writeFileSync(
-        'types.json',
-        JSON.stringify(typeDict, undefined, 4));
+        path.join(__dirname, "../backend/types.json"),
+        JSON.stringify(typeDict, undefined, 4)
+    );
     fs.writeFileSync(
-        'endpointMap.json',
-        JSON.stringify(endpointMap, undefined, 4));
-    return { typeDict, endpointMap };
+        path.join(__dirname, "../backend/endpointMap.json"),
+        JSON.stringify(endpointMap, undefined, 4)
+    );
+    fs.writeFileSync(
+        path.join(__dirname, "../backend/inputMap.json"),
+        JSON.stringify(inputMap, undefined, 4)
+    );
+    return { typeDict, endpointMap, inputMap };
 };
-
 // Create TypeScript types and endpoint mappings
 const generateDocumentation = (
     fileNames: string[],
@@ -455,9 +563,23 @@ const generateDocumentation = (
 };
 
 // Example usage with your controller file
-const fileNames = [path.resolve(__dirname, "./src/book/book.controller.ts")];
-console.log("Processing files:", fileNames);
-generateDocumentation(fileNames, {
-    target: ts.ScriptTarget.ES5,
-    module: ts.ModuleKind.CommonJS,
-});
+const generateAllDocumentation = () => {
+    const pattern = path.resolve(__dirname, "./src/**/*.controller.ts"); // Adjust the path as needed
+
+    // Use glob to find all controller files
+    glob(pattern, (err, files) => {
+        if (err) {
+            console.error("Error finding controller files:", err);
+            return;
+        }
+
+        console.log("Processing files:", files);
+        generateDocumentation(files, {
+            target: ts.ScriptTarget.ES5,
+            module: ts.ModuleKind.CommonJS,
+        });
+    });
+};
+
+// Execute the function to generate documentation for all controllers
+generateAllDocumentation();

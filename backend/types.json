@@ -1,4 +1,26 @@
 {
+    "ProcessedElement": [
+        {
+            "name": "text",
+            "type": "string",
+            "fullType": "text: string"
+        },
+        {
+            "name": "lineX",
+            "type": "number",
+            "fullType": "lineX: number"
+        },
+        {
+            "name": "lineWidth",
+            "type": "number",
+            "fullType": "lineWidth: number"
+        },
+        {
+            "name": "lineY",
+            "type": "number",
+            "fullType": "lineY: number"
+        }
+    ],
     "Highlight": [
         {
             "name": "id",
@@ -100,7 +122,7 @@
         },
         {
             "name": "userId",
-            "type": "ObjectId",
+            "type": "string",
             "fullType": "userId: ObjectId"
         },
         {
@@ -130,13 +152,13 @@
         },
         {
             "name": "dateAdded",
-            "type": "Date",
-            "fullType": "dateAdded: Date"
+            "type": "string",
+            "fullType": "dateAdded: string"
         },
         {
             "name": "bookElements",
-            "type": "any[]",
-            "fullType": "bookElements: any[]"
+            "type": "ProcessedElement[]",
+            "fullType": "bookElements: ProcessedElement[]"
         },
         {
             "name": "highlights",
@@ -162,6 +184,520 @@
             "name": "offsetPosition",
             "type": "{ x: number; y: number; }",
             "fullType": "offsetPosition: { x: number; y: number; }"
+        }
+    ],
+    "ProcessedElementDto": [
+        {
+            "name": "text",
+            "type": "string",
+            "fullType": "text: string"
+        },
+        {
+            "name": "lineX",
+            "type": "number",
+            "fullType": "lineX: number"
+        },
+        {
+            "name": "lineWidth",
+            "type": "number",
+            "fullType": "lineWidth: number"
+        },
+        {
+            "name": "lineY",
+            "type": "number",
+            "fullType": "lineY: number"
+        }
+    ],
+    "BookElementsDto": [
+        {
+            "name": "bookElements",
+            "type": "ProcessedElementDto[]",
+            "fullType": "bookElements: ProcessedElementDto[]"
+        }
+    ],
+    "HighlightPointsDto": [
+        {
+            "name": "x",
+            "type": "number",
+            "fullType": "x: number"
+        },
+        {
+            "name": "y",
+            "type": "number",
+            "fullType": "y: number"
+        }
+    ],
+    "TextElementDto": [
+        {
+            "name": "type",
+            "type": "\"text\"",
+            "fullType": "type: \"text\""
+        },
+        {
+            "name": "text",
+            "type": "string",
+            "fullType": "text: string"
+        },
+        {
+            "name": "fontFamily",
+            "type": "string",
+            "fullType": "fontFamily: string"
+        },
+        {
+            "name": "fontSize",
+            "type": "number",
+            "fullType": "fontSize: number"
+        },
+        {
+            "name": "fill",
+            "type": "string",
+            "fullType": "fill: string"
+        },
+        {
+            "name": "x",
+            "type": "number",
+            "fullType": "x: number"
+        },
+        {
+            "name": "y",
+            "type": "number",
+            "fullType": "y: number"
+        },
+        {
+            "name": "width",
+            "type": "number",
+            "fullType": "width: number"
+        },
+        {
+            "name": "height",
+            "type": "number",
+            "fullType": "height: number"
+        },
+        {
+            "name": "id",
+            "type": "string",
+            "fullType": "id: string"
+        },
+        {
+            "name": "outgoingArrowIds",
+            "type": "string[]",
+            "fullType": "outgoingArrowIds: string[]"
+        },
+        {
+            "name": "incomingArrowIds",
+            "type": "string[]",
+            "fullType": "incomingArrowIds: string[]"
+        },
+        {
+            "name": "points",
+            "type": "HighlightPointsDto[]",
+            "fullType": "points: HighlightPointsDto[]"
+        },
+        {
+            "name": "strokeColor",
+            "type": "string",
+            "fullType": "strokeColor: string"
+        },
+        {
+            "name": "strokeWidth",
+            "type": "number",
+            "fullType": "strokeWidth: number"
+        },
+        {
+            "name": "opacity",
+            "type": "number",
+            "fullType": "opacity: number"
+        },
+        {
+            "name": "rotation",
+            "type": "number",
+            "fullType": "rotation: number"
+        }
+    ],
+    "RectElementDto": [
+        {
+            "name": "type",
+            "type": "\"rect\"",
+            "fullType": "type: \"rect\""
+        },
+        {
+            "name": "roughness",
+            "type": "number",
+            "fullType": "roughness: number"
+        },
+        {
+            "name": "seed",
+            "type": "number",
+            "fullType": "seed: number"
+        },
+        {
+            "name": "fillStyle",
+            "type": "string",
+            "fullType": "fillStyle: string"
+        },
+        {
+            "name": "hachureGap",
+            "type": "number",
+            "fullType": "hachureGap: number"
+        },
+        {
+            "name": "hachureAngle",
+            "type": "number",
+            "fullType": "hachureAngle: number"
+        },
+        {
+            "name": "fill",
+            "type": "string",
+            "fullType": "fill: string"
+        },
+        {
+            "name": "x",
+            "type": "number",
+            "fullType": "x: number"
+        },
+        {
+            "name": "y",
+            "type": "number",
+            "fullType": "y: number"
+        },
+        {
+            "name": "width",
+            "type": "number",
+            "fullType": "width: number"
+        },
+        {
+            "name": "height",
+            "type": "number",
+            "fullType": "height: number"
+        },
+        {
+            "name": "id",
+            "type": "string",
+            "fullType": "id: string"
+        },
+        {
+            "name": "outgoingArrowIds",
+            "type": "string[]",
+            "fullType": "outgoingArrowIds: string[]"
+        },
+        {
+            "name": "incomingArrowIds",
+            "type": "string[]",
+            "fullType": "incomingArrowIds: string[]"
+        },
+        {
+            "name": "points",
+            "type": "HighlightPointsDto[]",
+            "fullType": "points: HighlightPointsDto[]"
+        },
+        {
+            "name": "strokeColor",
+            "type": "string",
+            "fullType": "strokeColor: string"
+        },
+        {
+            "name": "strokeWidth",
+            "type": "number",
+            "fullType": "strokeWidth: number"
+        },
+        {
+            "name": "opacity",
+            "type": "number",
+            "fullType": "opacity: number"
+        },
+        {
+            "name": "rotation",
+            "type": "number",
+            "fullType": "rotation: number"
+        }
+    ],
+    "CanvaElementsDto": [
+        {
+            "name": "canvaElements",
+            "type": "(TextElementDto | RectElementDto)[]",
+            "fullType": "canvaElements: TextElementDto | RectElementDto[]"
+        }
+    ],
+    "ArrowElementDto": [
+        {
+            "name": "type",
+            "type": "\"arrow\"",
+            "fullType": "type: \"arrow\""
+        },
+        {
+            "name": "startId",
+            "type": "string",
+            "fullType": "startId: string"
+        },
+        {
+            "name": "endId",
+            "type": "string",
+            "fullType": "endId: string"
+        },
+        {
+            "name": "startType",
+            "type": "StartType",
+            "fullType": "startType: StartType"
+        },
+        {
+            "name": "endType",
+            "type": "StartType",
+            "fullType": "endType: StartType"
+        },
+        {
+            "name": "points",
+            "type": "number[]",
+            "fullType": "points: number[]"
+        },
+        {
+            "name": "id",
+            "type": "string",
+            "fullType": "id: string"
+        },
+        {
+            "name": "fill",
+            "type": "string",
+            "fullType": "fill: string"
+        },
+        {
+            "name": "text",
+            "type": "string",
+            "fullType": "text: string"
+        },
+        {
+            "name": "roughness",
+            "type": "number",
+            "fullType": "roughness: number"
+        },
+        {
+            "name": "bowing",
+            "type": "number",
+            "fullType": "bowing: number"
+        },
+        {
+            "name": "seed",
+            "type": "number",
+            "fullType": "seed: number"
+        },
+        {
+            "name": "strokeWidth",
+            "type": "number",
+            "fullType": "strokeWidth: number"
+        },
+        {
+            "name": "strokeStyle",
+            "type": "\"solid\" | \"dashed\" | \"dotted\"",
+            "fullType": "strokeStyle: \"solid\" | \"dashed\" | \"dotted\""
+        },
+        {
+            "name": "stroke",
+            "type": "string",
+            "fullType": "stroke: string"
+        },
+        {
+            "name": "fillStyle",
+            "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+            "fullType": "fillStyle: \"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        },
+        {
+            "name": "fillWeight",
+            "type": "number",
+            "fullType": "fillWeight: number"
+        },
+        {
+            "name": "hachureAngle",
+            "type": "number",
+            "fullType": "hachureAngle: number"
+        },
+        {
+            "name": "hachureGap",
+            "type": "number",
+            "fullType": "hachureGap: number"
+        }
+    ],
+    "CurveElementsDto": [
+        {
+            "name": "curveElements",
+            "type": "ArrowElementDto[]",
+            "fullType": "curveElements: ArrowElementDto[]"
+        }
+    ],
+    "HighlightDto": [
+        {
+            "name": "id",
+            "type": "string",
+            "fullType": "id: string"
+        },
+        {
+            "name": "startingX",
+            "type": "number",
+            "fullType": "startingX: number"
+        },
+        {
+            "name": "startingY",
+            "type": "number",
+            "fullType": "startingY: number"
+        },
+        {
+            "name": "endX",
+            "type": "number",
+            "fullType": "endX: number"
+        },
+        {
+            "name": "endY",
+            "type": "number",
+            "fullType": "endY: number"
+        }
+    ],
+    "UpdateBookDto": [
+        {
+            "name": "bookElements",
+            "type": "BookElementsDto",
+            "fullType": "bookElements: BookElementsDto"
+        },
+        {
+            "name": "canvaElements",
+            "type": "CanvaElementsDto",
+            "fullType": "canvaElements: CanvaElementsDto"
+        },
+        {
+            "name": "curveElements",
+            "type": "CurveElementsDto",
+            "fullType": "curveElements: CurveElementsDto"
+        },
+        {
+            "name": "highlights",
+            "type": "HighlightDto[]",
+            "fullType": "highlights: HighlightDto[]"
+        },
+        {
+            "name": "liked",
+            "type": "boolean",
+            "fullType": "liked: boolean"
+        },
+        {
+            "name": "scale",
+            "type": "number",
+            "fullType": "scale: number"
+        },
+        {
+            "name": "offsetPosition",
+            "type": "{ x: number; y: number; }",
+            "fullType": "offsetPosition: { x: number; y: number; }"
+        },
+        {
+            "name": "title",
+            "type": "any",
+            "fullType": "title: any"
+        },
+        {
+            "name": "userId",
+            "type": "any",
+            "fullType": "userId: any"
+        },
+        {
+            "name": "description",
+            "type": "any",
+            "fullType": "description: any"
+        },
+        {
+            "name": "author",
+            "type": "any",
+            "fullType": "author: any"
+        },
+        {
+            "name": "genre",
+            "type": "any",
+            "fullType": "genre: any"
+        },
+        {
+            "name": "imageUrl",
+            "type": "any",
+            "fullType": "imageUrl: any"
+        },
+        {
+            "name": "dateAdded",
+            "type": "any",
+            "fullType": "dateAdded: any"
+        }
+    ],
+    "OffsetPositionDto": [
+        {
+            "name": "x",
+            "type": "number",
+            "fullType": "x: number"
+        },
+        {
+            "name": "y",
+            "type": "number",
+            "fullType": "y: number"
+        }
+    ],
+    "CreateBookDto": [
+        {
+            "name": "title",
+            "type": "string",
+            "fullType": "title: string"
+        },
+        {
+            "name": "userId",
+            "type": "string",
+            "fullType": "userId: string"
+        },
+        {
+            "name": "description",
+            "type": "string",
+            "fullType": "description: string"
+        },
+        {
+            "name": "author",
+            "type": "string",
+            "fullType": "author: string"
+        },
+        {
+            "name": "genre",
+            "type": "string[]",
+            "fullType": "genre: string[]"
+        },
+        {
+            "name": "imageUrl",
+            "type": "string",
+            "fullType": "imageUrl: string"
+        },
+        {
+            "name": "liked",
+            "type": "boolean",
+            "fullType": "liked: boolean"
+        },
+        {
+            "name": "dateAdded",
+            "type": "string",
+            "fullType": "dateAdded: string"
+        },
+        {
+            "name": "bookElements",
+            "type": "BookElementsDto",
+            "fullType": "bookElements: BookElementsDto"
+        },
+        {
+            "name": "canvaElements",
+            "type": "CanvaElementsDto",
+            "fullType": "canvaElements: CanvaElementsDto"
+        },
+        {
+            "name": "curveElements",
+            "type": "CurveElementsDto",
+            "fullType": "curveElements: CurveElementsDto"
+        },
+        {
+            "name": "scale",
+            "type": "number",
+            "fullType": "scale: number"
+        },
+        {
+            "name": "offsetPosition",
+            "type": "OffsetPositionDto",
+            "fullType": "offsetPosition: OffsetPositionDto"
         }
     ]
 }

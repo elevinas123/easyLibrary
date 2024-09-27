@@ -24,8 +24,7 @@ export class BookController {
     constructor(private readonly bookService: BookService) {}
 
     @Get()
-    @ReturnType(Promise<Book[]>)
-    async getAllBooks(): Promise<Book[]> {
+    async getAllBooks(){
       return this.bookService.getAllBooks();
     }
 

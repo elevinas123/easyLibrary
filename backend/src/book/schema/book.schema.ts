@@ -2,7 +2,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema, Types } from "mongoose";
 
-import { ProcessedElementSchema } from "./bookElements/processedElement.schema";
+import { ProcessedElement, ProcessedElementSchema } from "./bookElements/processedElement.schema";
 import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
 import {
     RectElement,
@@ -38,13 +38,13 @@ export class Book {
 
     @Prop({ type: Boolean, required: true }) liked: boolean;
 
-    @Prop({ type: Date, required: true }) dateAdded: Date;
+    @Prop({ type: String, required: true }) dateAdded: string;
 
     @Prop({
         type: [ProcessedElementSchema],
         required: true,
     })
-    bookElements: any[];
+    bookElements: ProcessedElement[];
 
     @Prop({ type: [HighlightSchema], required: true })
     highlights: Highlight[];

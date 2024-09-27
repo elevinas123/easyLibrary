@@ -1,70 +1,69 @@
-// frontend/src/endPointTypes/apiClient.ts
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-
-import {ApiResponseTypes, Endpoint, endpointMap} from './endpointMap';
-import {ArrowElement, Book, Highlight, ObjectId, RectElement, StartType, TextElement} from './types';
+import { ApiResponseTypes, Endpoint } from "./endpointMap";
+import InputMap from "./inputMap"; // Import the generated InputMap
 
 // Axios instance
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: '/api',  // Adjust base URL as needed
+    baseURL: "/api", // Adjust base URL as needed
 });
 
-// Generic fetch function accepting the endpoint key directly
+// Generic fetch function accepting the endpoint key and inputs
 export async function apiFetch<K extends Endpoint>(
     key: K,
-    config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponseTypes[K]>> {
-  const [method, ...pathParts] = key.split(' ');
-  const path = pathParts.join(' ');  // Join in case path contains spaces
+    inputs: InputMap[K],
+    config?: AxiosRequestConfig
+): Promise<AxiosResponse<ApiResponseTypes[K]>> {
+    try {
+        const [method, ...pathParts] = key.split(" ");
+        let path = pathParts.join(" "); // Join in case path contains spaces
 
-  // Perform the Axios request with the inferred type
-  const response = await axiosInstance.request<ApiResponseTypes[K]>({
-    method,
-    url: path,
-    ...config,
-  });
+        // Replace path parameters if any
+        if ("params" in inputs && inputs.params) {
+            for (const [paramKey, paramValue] of Object.entries(
+                inputs.params
+            )) {
+                path = path.replace(
+                    `:${paramKey}`,
+                    encodeURIComponent(String(paramValue))
+                );
+            }
+        }
 
-  return response;
+        // Prepare Axios request config
+        const axiosConfig: AxiosRequestConfig = {
+            method: method.toLowerCase() as AxiosRequestConfig["method"],
+            url: path,
+            ...config,
+        };
+
+        if ("query" in inputs && inputs.query) {
+            axiosConfig.params = inputs.query;
+        }
+
+        if ("body" in inputs && inputs.body) {
+            axiosConfig.data = inputs.body;
+        }
+
+        // Perform the Axios request with the inferred type
+        const response = await axiosInstance.request<ApiResponseTypes[K]>(
+            axiosConfig
+        );
+
+        return response;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Handle Axios-specific errors
+            console.error(
+                `API call to ${key} failed:`,
+                error.response?.data || error.message
+            );
+            throw new Error(error.response?.data?.message || "API call failed");
+        } else {
+            // Handle non-Axios errors
+            console.error(`Unexpected error during API call to ${key}:`, error);
+            throw new Error("An unexpected error occurred");
+        }
+    }
 }
 
-// Example usage functions
-
-// Fetch all books
-export async function getBooks() {
-  const response = await apiFetch('GET book');
-  return response.data;
-}
-
-// Fetch user books
-export async function getUserBooks() {
-  const response = await apiFetch('GET book/getUserBooks');
-  return response.data;
-}
-
-// Fetch a book by ID
-export async function getBookById(id: string){
-  const endpoint = `GET book/${id}` as const;
-  const response = await apiFetch(endpoint);
-  return response.data;
-}
-
-// Create a new book
-export async function createBook(newBook: Partial<Book>){
-  const response = await apiFetch('POST book', {data: newBook});
-  return response.data;
-}
-
-// Update a book by ID
-export async function updateBook(
-    id: string, updatedData: Partial<Book>) {
-  const endpoint = `PATCH /book/${id}` as const;
-  const response = await apiFetch(endpoint, {data: updatedData});
-  return response.data;
-}
-
-// Delete a book by ID
-export async function deleteBook(id: string){
-  const endpoint = `DELETE /book/${id}` as const;
-  const response = await apiFetch(endpoint);
-  return response.data;
-}
