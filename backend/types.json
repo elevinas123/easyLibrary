@@ -1,4 +1,102 @@
 {
+    "User": [
+        {
+            "name": "username",
+            "type": "string",
+            "fullType": "username: string"
+        },
+        {
+            "name": "age",
+            "type": "number",
+            "fullType": "age: number"
+        },
+        {
+            "name": "password",
+            "type": "string",
+            "fullType": "password: string"
+        },
+        {
+            "name": "comment",
+            "type": "string",
+            "fullType": "comment: string"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        },
+        {
+            "name": "bookshelves",
+            "type": "ObjectId[]",
+            "fullType": "bookshelves: ObjectId[]"
+        }
+    ],
+    "CreateUserDto": [
+        {
+            "name": "username",
+            "type": "string",
+            "fullType": "username: string"
+        },
+        {
+            "name": "password",
+            "type": "string",
+            "fullType": "password: string"
+        },
+        {
+            "name": "age",
+            "type": "number",
+            "fullType": "age: number"
+        },
+        {
+            "name": "comment",
+            "type": "string",
+            "fullType": "comment: string"
+        },
+        {
+            "name": "books",
+            "type": "string[]",
+            "fullType": "books: string[]"
+        },
+        {
+            "name": "bookshelves",
+            "type": "string[]",
+            "fullType": "bookshelves: string[]"
+        }
+    ],
+    "Bookshelve": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        }
+    ],
+    "CreateBookshelveDto": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        }
+    ],
     "ProcessedElement": [
         {
             "name": "text",
@@ -208,13 +306,6 @@
             "fullType": "lineY: number"
         }
     ],
-    "BookElementsDto": [
-        {
-            "name": "bookElements",
-            "type": "ProcessedElementDto[]",
-            "fullType": "bookElements: ProcessedElementDto[]"
-        }
-    ],
     "HighlightPointsDto": [
         {
             "name": "x",
@@ -411,13 +502,6 @@
             "fullType": "rotation: number"
         }
     ],
-    "CanvaElementsDto": [
-        {
-            "name": "canvaElements",
-            "type": "(TextElementDto | RectElementDto)[]",
-            "fullType": "canvaElements: TextElementDto | RectElementDto[]"
-        }
-    ],
     "ArrowElementDto": [
         {
             "name": "type",
@@ -515,13 +599,6 @@
             "fullType": "hachureGap: number"
         }
     ],
-    "CurveElementsDto": [
-        {
-            "name": "curveElements",
-            "type": "ArrowElementDto[]",
-            "fullType": "curveElements: ArrowElementDto[]"
-        }
-    ],
     "HighlightDto": [
         {
             "name": "id",
@@ -552,18 +629,18 @@
     "UpdateBookDto": [
         {
             "name": "bookElements",
-            "type": "BookElementsDto",
-            "fullType": "bookElements: BookElementsDto"
+            "type": "ProcessedElementDto[]",
+            "fullType": "bookElements: ProcessedElementDto[]"
         },
         {
             "name": "canvaElements",
-            "type": "CanvaElementsDto",
-            "fullType": "canvaElements: CanvaElementsDto"
+            "type": "(TextElementDto | RectElementDto)[]",
+            "fullType": "canvaElements: TextElementDto | RectElementDto[]"
         },
         {
             "name": "curveElements",
-            "type": "CurveElementsDto",
-            "fullType": "curveElements: CurveElementsDto"
+            "type": "ArrowElementDto[]",
+            "fullType": "curveElements: ArrowElementDto[]"
         },
         {
             "name": "highlights",
@@ -676,23 +753,23 @@
         },
         {
             "name": "bookElements",
-            "type": "BookElementsDto",
-            "fullType": "bookElements: BookElementsDto"
+            "type": "ProcessedElementDto[]",
+            "fullType": "bookElements: ProcessedElementDto[]"
         },
         {
             "name": "canvaElements",
-            "type": "CanvaElementsDto",
-            "fullType": "canvaElements: CanvaElementsDto"
-        },
-        {
-            "name": "curveElements",
-            "type": "CurveElementsDto",
-            "fullType": "curveElements: CurveElementsDto"
+            "type": "(TextElementDto | RectElementDto)[]",
+            "fullType": "canvaElements: TextElementDto | RectElementDto[]"
         },
         {
             "name": "scale",
             "type": "number",
             "fullType": "scale: number"
+        },
+        {
+            "name": "curveElements",
+            "type": "ArrowElementDto[]",
+            "fullType": "curveElements: ArrowElementDto[]"
         },
         {
             "name": "offsetPosition",

@@ -1,5 +1,35 @@
 // This file is auto-generated from types.json. Do not modify manually.
 
+export interface User {
+  username: string;
+  age: number;
+  password: string;
+  comment: string;
+  books: ObjectId[];
+  bookshelves: ObjectId[];
+}
+
+export interface CreateUserDto {
+  username: string;
+  password: string;
+  age: number;
+  comment: string;
+  books: string[];
+  bookshelves: string[];
+}
+
+export interface Bookshelve {
+  name: string;
+  createdAt: Date;
+  books: ObjectId[];
+}
+
+export interface CreateBookshelveDto {
+  name: string;
+  createdAt: Date;
+  books: ObjectId[];
+}
+
 export interface ProcessedElement {
   text: string;
   lineX: number;
@@ -60,10 +90,6 @@ export interface ProcessedElementDto {
   lineY: number;
 }
 
-export interface BookElementsDto {
-  bookElements: ProcessedElementDto[];
-}
-
 export interface HighlightPointsDto {
   x: number;
   y: number;
@@ -111,10 +137,6 @@ export interface RectElementDto {
   rotation: number;
 }
 
-export interface CanvaElementsDto {
-  canvaElements: (TextElementDto | RectElementDto)[];
-}
-
 export interface ArrowElementDto {
   type: "arrow";
   startId: string;
@@ -137,10 +159,6 @@ export interface ArrowElementDto {
   hachureGap: number;
 }
 
-export interface CurveElementsDto {
-  curveElements: ArrowElementDto[];
-}
-
 export interface HighlightDto {
   id: string;
   startingX: number;
@@ -150,20 +168,20 @@ export interface HighlightDto {
 }
 
 export interface UpdateBookDto {
-  bookElements: BookElementsDto;
-  canvaElements: CanvaElementsDto;
-  curveElements: CurveElementsDto;
+  bookElements: ProcessedElementDto[];
+  canvaElements: (TextElementDto | RectElementDto)[];
+  curveElements: ArrowElementDto[];
   highlights: HighlightDto[];
   liked: boolean;
   scale: number;
   offsetPosition: { x: number; y: number; };
   title: any;
-  userId: any;
+  userId?: any;
   description: any;
   author: any;
   genre: any;
   imageUrl: any;
-  dateAdded: any;
+  dateAdded?: any;
 }
 
 export interface OffsetPositionDto {
@@ -180,10 +198,10 @@ export interface CreateBookDto {
   imageUrl: string;
   liked: boolean;
   dateAdded: string;
-  bookElements: BookElementsDto;
-  canvaElements: CanvaElementsDto;
-  curveElements: CurveElementsDto;
+  bookElements: ProcessedElementDto[];
+  canvaElements: (TextElementDto | RectElementDto)[];
   scale: number;
+  curveElements: ArrowElementDto[];
   offsetPosition: OffsetPositionDto;
 }
 

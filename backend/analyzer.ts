@@ -1,7 +1,7 @@
 // type-generator.ts
 
 import * as fs from "fs";
-import glob from "glob";
+import { glob } from "glob";
 import * as path from "path";
 import * as ts from "typescript";
 
@@ -562,23 +562,23 @@ const generateDocumentation = (
     }
 };
 
-// Example usage with your controller file
-const generateAllDocumentation = () => {
-    const pattern = path.resolve(__dirname, "./src/**/*.controller.ts"); // Adjust the path as needed
+// Function to generate documentation for all controllers
+const generateAllDocumentation = async () => {
+    const pattern = "./backend/src/**/*.controller.ts"; // Relative pattern
 
-    // Use glob to find all controller files
-    glob(pattern, (err, files) => {
-        if (err) {
-            console.error("Error finding controller files:", err);
-            return;
-        }
-
+    try {
+        const files = await glob(pattern, {
+            absolute: true,
+            ignore: ["**/__tests__/**", "**/*.spec.ts", "**/*.test.ts"],
+        });
         console.log("Processing files:", files);
         generateDocumentation(files, {
             target: ts.ScriptTarget.ES5,
             module: ts.ModuleKind.CommonJS,
         });
-    });
+    } catch (err) {
+        console.error("Error finding controller files:", err);
+    }
 };
 
 // Execute the function to generate documentation for all controllers

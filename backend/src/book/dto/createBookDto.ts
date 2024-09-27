@@ -14,6 +14,10 @@ import { CurveElementsDto } from "./curveElementsDto/curveElements.dto";
 import { CanvaElementsDto } from "./canvaElementsDto/canvaElements.dto";
 import { BookElementsDto } from "./bookElementsDto/bookElements.dto";
 import { OffsetPositionDto } from "../schema/offsetPosition/offsetPosition.dto";
+import { ProcessedElementDto } from "./bookElementsDto/processedElement.dto";
+import { RectElementDto } from "./canvaElementsDto/elements/rectElement.dto";
+import { TextElementDto } from "./canvaElementsDto/elements/textElement.dto";
+import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 
 export class CreateBookDto {
     @IsString() @IsNotEmpty() title: string;
@@ -34,19 +38,22 @@ export class CreateBookDto {
 
     @IsDateString() dateAdded: string;
 
-    @ValidateNested()
-    @Type(() => BookElementsDto)
-    bookElements: BookElementsDto;
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ProcessedElementDto)
+    bookElements: ProcessedElementDto[];
 
-    @ValidateNested()
-    @Type(() => CanvaElementsDto)
-    canvaElements: CanvaElementsDto;
-
-    @ValidateNested()
-    @Type(() => CurveElementsDto)
-    curveElements: CurveElementsDto;
-
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => TextElementDto) // First type
+    @Type(() => RectElementDto) // Second type
+    canvaElements: (TextElementDto | RectElementDto)[];
     @IsNumber() scale: number;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ArrowElementDto) // Currently only ArrowElement
+    curveElements: ArrowElementDto[];
 
     @ValidateNested()
     @Type(() => OffsetPositionDto)

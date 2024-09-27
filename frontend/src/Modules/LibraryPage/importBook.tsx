@@ -13,7 +13,7 @@ import {
     processElements,
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
-import { off } from "process";
+import { apiFetch } from "../../endPointTypes/apiClient";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -39,7 +39,7 @@ const importBook = async ({
         indentLevel: number | null;
     }[];
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
-}): Promise<any> => {
+}) => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
@@ -61,24 +61,25 @@ const importBook = async ({
         url = data.secure_url;
         console.log("data", data);
     }
-    const { data } = await axios.post(
-        "/api/book",
-        {
-            userId: userId,
-            title: metaData["dc:title"] || "No Title",
-            description: metaData.description || "No Description",
-            author: metaData.author || metaData["dc:creator"] || "No Author",
-            genre: ["Classic", "Fiction"],
-            imageUrl: url,
-            liked: true,
-            bookElements: bookElements,
-            dateAdded: new Date().toISOString(),
-            canvaElements: [],
-            curveElements: [],
-            highlights: [],
-            offsetPosition: { x: 0, y: 0 },
-            scale: 1,
-        },
+    const dataSending = {
+        userId: userId,
+        title: metaData["dc:title"] || "No Title",
+        description: metaData.description || "No Description",
+        author: metaData.author || metaData["dc:creator"] || "No Author",
+        genre: ["Classic", "Fiction"],
+        imageUrl: url,
+        liked: true,
+        bookElements: bookElements,
+        dateAdded: new Date().toISOString(),
+        canvaElements: [],
+        curveElements: [],
+        highlights: [],
+        offsetPosition: { x: 0, y: 0 },
+        scale: 1,
+    };
+    const data = await apiFetch(
+        "POST /book",
+        { body: dataSending },
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,

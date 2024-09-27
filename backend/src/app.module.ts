@@ -8,7 +8,6 @@ import { AuthModule } from "./auth/auth.module";
 import { BookModule } from "./book/book.module";
 import { BookshelveModule } from "./bookshelve/bookshelve.module";
 import { UserModule } from "./user/user.module";
-import { testControllerScanner } from "pathExtractor";
 
 @Module({
     imports: [
@@ -33,7 +32,5 @@ import { testControllerScanner } from "pathExtractor";
     providers: [AppService],
 })
 export class AppModule {
-    constructor() {
-        testControllerScanner();
-    }
+    constructor() {}
 }

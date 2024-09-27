@@ -5,8 +5,5 @@ import { ProcessedElementDto } from './processedElement.dto';
 
 
 export class BookElementsDto {
-  @IsArray()
-  @ValidateNested({each: true})
-  @Type(() => ProcessedElementDto)
-  bookElements: ProcessedElementDto[];
+  
 }

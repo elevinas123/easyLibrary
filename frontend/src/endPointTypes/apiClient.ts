@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { ApiResponseTypes, Endpoint } from "./endpointMap";
 import InputMap from "./inputMap"; // Import the generated InputMap
@@ -13,7 +13,7 @@ export async function apiFetch<K extends Endpoint>(
     key: K,
     inputs: InputMap[K],
     config?: AxiosRequestConfig
-): Promise<AxiosResponse<ApiResponseTypes[K]>> {
+) {
     try {
         const [method, ...pathParts] = key.split(" ");
         let path = pathParts.join(" "); // Join in case path contains spaces

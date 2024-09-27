@@ -10,6 +10,7 @@ import BookInfoPage from "./BookInfoPage";
 import { CanvaElement } from "../BookPage/Konva/shapes/CanvaElement";
 import { CurveElement } from "../BookPage/Konva/shapes/Arrow/ArrowShape";
 import { Highlight } from "../BookPage/Konva/konvaAtoms";
+import { apiFetch } from "../../endPointTypes/apiClient";
 
 type LibraryPageProps = {
     // Define your prop types here
@@ -32,7 +33,7 @@ export type Book = {
     offsetPosition: { x: number; y: number };
 };
 
-const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {
+const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
         throw new Error("No user ID found");
     }
@@ -40,15 +41,20 @@ const fetchBooks = async (userId: string | undefined): Promise<Book[]> => {
     if (!token) {
         throw new Error("No token found");
     }
-    const response = await axios.get(
-        `/api/book/getUserBooks?userId=${userId}`,
+    const data = await apiFetch(
+        "GET /book/getUserBooks",
+        {
+            query: {
+                userId: userId,
+            },
+        },
         {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         }
     );
-    return response.data;
+    return data.data;
 };
 
 export default function LibraryPage({}: LibraryPageProps) {
@@ -76,11 +82,15 @@ export default function LibraryPage({}: LibraryPageProps) {
     }
     const deleteBook = async (bookId: string) => {
         try {
-            const bookDeleted = await axios.delete(`/api/book/${bookId}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            const bookDeleted = await apiFetch(
+                "DELETE /book/:id",
+                { params: { id: bookId } },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
             if (bookDeleted.status === 200) {
                 queryClient.invalidateQueries({ queryKey: ["book"] });
                 toast({
@@ -109,9 +119,9 @@ export default function LibraryPage({}: LibraryPageProps) {
     }
     const updateBook = async (updatedBook: Book) => {
         try {
-            const bookUpdated = await axios.put(
-                `/api/book/${updatedBook._id}`,
-                updatedBook,
+            const bookUpdated = await apiFetch(
+                "PATCH /book/:id",
+                { params: { id: updatedBook._id }, body: updatedBook },
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
