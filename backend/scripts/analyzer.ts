@@ -294,7 +294,6 @@ const fillDoc = (
     currentType: DocEntry,
     typeDict: TypeDict
 ): TypeDict => {
-    console.log("Processing type:", currentType.name);
     if (!currentType.name || !currentType.properties) {
         return typeDict;
     }
@@ -501,19 +500,16 @@ const createTsType = (
         }));
     }
 
-    console.log("Generated Type Dictionary:", typeDict);
-    console.log("Generated Endpoint Mapping:", endpointMap);
-    console.log("Generated Input Mapping:", inputMap);
     fs.writeFileSync(
-        path.join(__dirname, "../backend/types.json"),
+        path.join(__dirname, "./types.json"),
         JSON.stringify(typeDict, undefined, 4)
     );
     fs.writeFileSync(
-        path.join(__dirname, "../backend/endpointMap.json"),
+        path.join(__dirname, "./endPointMap.json"),
         JSON.stringify(endpointMap, undefined, 4)
     );
     fs.writeFileSync(
-        path.join(__dirname, "../backend/inputMap.json"),
+        path.join(__dirname, "./inputMap.json"),
         JSON.stringify(inputMap, undefined, 4)
     );
     return { typeDict, endpointMap, inputMap };
@@ -558,10 +554,47 @@ const generateDocumentation = (
         }
     }
 };
+const getSourceDirectory = (): string => {
+    const tsconfigPath = path.resolve(__dirname, "..", "tsconfig.json");
 
-// Function to generate documentation for all controllers
+    if (!fs.existsSync(tsconfigPath)) {
+        console.warn(
+            `tsconfig.json not found at ${tsconfigPath}. Defaulting to 'src/'.`
+        );
+        return "src";
+    }
+
+    const tsconfigFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
+    if (tsconfigFile.error) {
+        console.error(
+            "Error reading tsconfig.json:",
+            tsconfigFile.error.messageText
+        );
+        return "src";
+    }
+
+    const parsedConfig = ts.parseJsonConfigFileContent(
+        tsconfigFile.config,
+        ts.sys,
+        path.dirname(tsconfigPath)
+    );
+
+    if (parsedConfig.options.rootDir) {
+        return parsedConfig.options.rootDir;
+    } else {
+        console.warn(
+            "rootDir not specified in tsconfig.json. Defaulting to 'src/'."
+        );
+        return "src";
+    }
+};
 const generateAllDocumentation = async () => {
-    const pattern = "./backend/src/**/*.controller.ts"; // Relative pattern
+    / /;
+    const sourceDir = getSourceDirectory();
+    const pattern = path.join(sourceDir, "**", "*.controller.ts"); // Constructed pattern
+
+    console.log(`Using source directory: ${sourceDir}`);
+    console.log(`Glob pattern: ${pattern}`);
 
     try {
         const files = await glob(pattern, {
@@ -573,10 +606,18 @@ const generateAllDocumentation = async () => {
             target: ts.ScriptTarget.ES5,
             module: ts.ModuleKind.CommonJS,
         });
+
+        if (files.length === 0) {
+            console.warn(
+                "No controller files found. Please check the source directory and glob pattern."
+            );
+            return;
+        }
+
+        console.log("Documentation generated successfully.");
     } catch (err) {
         console.error("Error finding controller files:", err);
     }
 };
-
 // Execute the function to generate documentation for all controllers
 generateAllDocumentation();

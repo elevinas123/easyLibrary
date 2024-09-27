@@ -62,8 +62,8 @@ export interface TextElement {
 export interface ArrowElement {
   startId: string;
   endId: string;
-  startType: StartType;
-  endType: StartType;
+  startType: "bookText" | "text";
+  endType: "bookText" | "text";
 }
 
 export interface Book {

@@ -19,6 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "types": ["vite-tsconfig-paths", "vitest/globals"]
   },
-  "include": ["./analyzer.ts", "src/**/*.ts"],  // Include your analyzer and all .ts files in src
+  "include": ["scripts/**/*.ts", "src/**/*.ts"],  // Include your analyzer and all .ts files in src
   "exclude": ["node_modules", "**/*.d.ts"]
 }

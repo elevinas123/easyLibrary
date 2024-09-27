@@ -13,7 +13,6 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./schemas/user.schema";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { ExtractJwt } from "passport-jwt";
 
 @UseGuards(JwtAuthGuard)
 @Controller("user")

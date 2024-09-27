@@ -63,6 +63,40 @@
             "fullType": "bookshelves: string[]"
         }
     ],
+    "Bookshelve": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        }
+    ],
+    "CreateBookshelveDto": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        }
+    ],
     "ProcessedElement": [
         {
             "name": "text",
@@ -741,40 +775,6 @@
             "name": "offsetPosition",
             "type": "OffsetPositionDto",
             "fullType": "offsetPosition: OffsetPositionDto"
-        }
-    ],
-    "Bookshelve": [
-        {
-            "name": "name",
-            "type": "string",
-            "fullType": "name: string"
-        },
-        {
-            "name": "createdAt",
-            "type": "Date",
-            "fullType": "createdAt: Date"
-        },
-        {
-            "name": "books",
-            "type": "ObjectId[]",
-            "fullType": "books: ObjectId[]"
-        }
-    ],
-    "CreateBookshelveDto": [
-        {
-            "name": "name",
-            "type": "string",
-            "fullType": "name: string"
-        },
-        {
-            "name": "createdAt",
-            "type": "Date",
-            "fullType": "createdAt: Date"
-        },
-        {
-            "name": "books",
-            "type": "ObjectId[]",
-            "fullType": "books: ObjectId[]"
         }
     ]
 }

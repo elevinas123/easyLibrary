@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-
+import InputMap from "./inputMap";
 import { ApiResponseTypes, Endpoint } from "./endpointMap";
-import InputMap from "./inputMap"; // Import the generated InputMap
+
 
 // Axios instance
 const axiosInstance: AxiosInstance = axios.create({
