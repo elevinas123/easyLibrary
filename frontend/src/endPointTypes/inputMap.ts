@@ -1,6 +1,6 @@
 // This file is auto-generated from inputMap.json and endpointMap.json. Do not modify manually.
 
-import { CreateBookDto, CreateBookshelveDto, CreateUserDto, UpdateBookDto } from "./types";
+import { CreateUserDto, CreateBookshelveDto, UpdateBookDto, CreateBookDto } from './types';
 
 export type InputMap = {
   "POST /user": {

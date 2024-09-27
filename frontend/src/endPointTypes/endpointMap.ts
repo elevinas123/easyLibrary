@@ -1,8 +1,6 @@
 // This file is auto-generated from endpointMap.json. Do not modify manually.
 
-import { User } from "../atoms";
-import { Book } from "../Modules/LibraryPage/LibraryPage";
-import { Bookshelve } from "./types";
+import { User, Bookshelve, Book } from './types';
 
 export const endpointMap = {
   "POST /user": "User",

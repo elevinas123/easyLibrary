@@ -25,15 +25,12 @@ const convertTypeToInterface = (typeName: string, properties: any[]) => {
 // Generate TypeScript interfaces
 let typesTsContent =
     `// This file is auto-generated from types.json. Do not modify manually.\n\n`;
-
 for (const [typeName, properties] of Object.entries(typesJson)) {
   const prop = properties as any[];
   typesTsContent += convertTypeToInterface(typeName, prop);
 }
 
 // Handle custom types if necessary, e.g., StartType, ObjectId
-// For example:
-typesTsContent += `export type StartType = 'start' | 'end';\n`;
 typesTsContent += `export type ObjectId = string;\n`;
 
 // Write to types.ts

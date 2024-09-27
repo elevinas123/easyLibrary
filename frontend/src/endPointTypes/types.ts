@@ -176,12 +176,12 @@ export interface UpdateBookDto {
   scale: number;
   offsetPosition: { x: number; y: number; };
   title: any;
-  userId?: any;
+  userId: any;
   description: any;
   author: any;
   genre: any;
   imageUrl: any;
-  dateAdded?: any;
+  dateAdded: any;
 }
 
 export interface OffsetPositionDto {
@@ -205,5 +205,4 @@ export interface CreateBookDto {
   offsetPosition: OffsetPositionDto;
 }
 
-export type StartType = 'start' | 'end';
 export type ObjectId = string;
