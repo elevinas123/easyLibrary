@@ -543,9 +543,6 @@ const generateDocumentation = (
     // documentation
     const { typeDict, endpointMap } = createTsType(output);
 
-    // Write the collected documentation to a JSON file
-    fs.writeFileSync("classes.json", JSON.stringify(output, undefined, 4));
-
     // Function to visit nodes in the AST
     function visit(node: ts.Node) {
         if (!isNodeExported(node)) {

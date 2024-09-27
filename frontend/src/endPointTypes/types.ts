@@ -141,8 +141,8 @@ export interface ArrowElementDto {
   type: "arrow";
   startId: string;
   endId: string;
-  startType: StartType;
-  endType: StartType;
+  startType: "bookText" | "text";
+  endType: "bookText" | "text";
   points: number[];
   id: string;
   fill: string;

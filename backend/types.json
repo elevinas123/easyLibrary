@@ -63,40 +63,6 @@
             "fullType": "bookshelves: string[]"
         }
     ],
-    "Bookshelve": [
-        {
-            "name": "name",
-            "type": "string",
-            "fullType": "name: string"
-        },
-        {
-            "name": "createdAt",
-            "type": "Date",
-            "fullType": "createdAt: Date"
-        },
-        {
-            "name": "books",
-            "type": "ObjectId[]",
-            "fullType": "books: ObjectId[]"
-        }
-    ],
-    "CreateBookshelveDto": [
-        {
-            "name": "name",
-            "type": "string",
-            "fullType": "name: string"
-        },
-        {
-            "name": "createdAt",
-            "type": "Date",
-            "fullType": "createdAt: Date"
-        },
-        {
-            "name": "books",
-            "type": "ObjectId[]",
-            "fullType": "books: ObjectId[]"
-        }
-    ],
     "ProcessedElement": [
         {
             "name": "text",
@@ -203,13 +169,13 @@
         },
         {
             "name": "startType",
-            "type": "StartType",
-            "fullType": "startType: StartType"
+            "type": "\"bookText\" | \"text\"",
+            "fullType": "startType: \"bookText\" | \"text\""
         },
         {
             "name": "endType",
-            "type": "StartType",
-            "fullType": "endType: StartType"
+            "type": "\"bookText\" | \"text\"",
+            "fullType": "endType: \"bookText\" | \"text\""
         }
     ],
     "Book": [
@@ -520,13 +486,13 @@
         },
         {
             "name": "startType",
-            "type": "StartType",
-            "fullType": "startType: StartType"
+            "type": "\"bookText\" | \"text\"",
+            "fullType": "startType: \"bookText\" | \"text\""
         },
         {
             "name": "endType",
-            "type": "StartType",
-            "fullType": "endType: StartType"
+            "type": "\"bookText\" | \"text\"",
+            "fullType": "endType: \"bookText\" | \"text\""
         },
         {
             "name": "points",
@@ -775,6 +741,40 @@
             "name": "offsetPosition",
             "type": "OffsetPositionDto",
             "fullType": "offsetPosition: OffsetPositionDto"
+        }
+    ],
+    "Bookshelve": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
+        }
+    ],
+    "CreateBookshelveDto": [
+        {
+            "name": "name",
+            "type": "string",
+            "fullType": "name: string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "fullType": "createdAt: Date"
+        },
+        {
+            "name": "books",
+            "type": "ObjectId[]",
+            "fullType": "books: ObjectId[]"
         }
     ]
 }

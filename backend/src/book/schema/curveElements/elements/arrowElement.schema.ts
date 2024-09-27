@@ -6,14 +6,12 @@ import {
     CurveElementSkeletonType,
 } from "../curveElementSkeleton";
 
-export type StartType = "bookText" | "text" | null;
-
 export interface ArrowElementType extends CurveElementSkeletonType {
     type: "arrow";
     startId: string | null;
     endId: string | null;
-    startType: StartType;
-    endType: StartType;
+    startType: "bookText" | "text" | null;
+    endType: "bookText" | "text" | null;
 }
 @Schema({ _id: false })
 export class ArrowElement {
@@ -22,10 +20,10 @@ export class ArrowElement {
     @Prop({ type: String, default: null }) endId: string | null;
 
     @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    startType: StartType;
+    startType: "bookText" | "text" | null;
 
     @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    endType: StartType;
+    endType: "bookText" | "text" | null;
 }
 
 export type ArrowElementDocument = ArrowElement & Document;

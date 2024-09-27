@@ -6,16 +6,16 @@
     "GET /user/:username": "User",
     "PUT /user/:id": "User",
     "DELETE /user/:id": "User",
-    "GET /bookshelve": "Bookshelve[]",
-    "POST /bookshelve": "Bookshelve",
-    "PUT /bookshelve/:id": "Bookshelve",
-    "DELETE /bookshelve/:id": "Bookshelve",
-    "POST /auth/login": "{ access_token: string; user: any; }",
-    "POST /auth/register": "User",
     "GET /book": "Book[]",
     "GET /book/getUserBooks": "Book[]",
     "PATCH /book/:id": "Book",
     "GET /book/:id": "Book",
     "POST /book": "Book",
-    "DELETE /book/:id": "Book"
+    "DELETE /book/:id": "Book",
+    "GET /bookshelve": "Bookshelve[]",
+    "POST /bookshelve": "Bookshelve",
+    "PUT /bookshelve/:id": "Bookshelve",
+    "DELETE /bookshelve/:id": "Bookshelve",
+    "POST /auth/login": "{ access_token: string; user: any; }",
+    "POST /auth/register": "User"
 }

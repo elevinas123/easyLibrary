@@ -15,19 +15,6 @@
     "DELETE /user/:id": {
         "params": "{ id: string }"
     },
-    "POST /bookshelve": {
-        "body": "CreateBookshelveDto"
-    },
-    "PUT /bookshelve/:id": {
-        "params": "{ id: string }",
-        "body": "CreateBookshelveDto"
-    },
-    "DELETE /bookshelve/:id": {
-        "params": "{ id: string }"
-    },
-    "POST /auth/register": {
-        "body": "CreateUserDto"
-    },
     "GET /book/getUserBooks": {
         "query": "{ userId: string }"
     },
@@ -43,5 +30,18 @@
     },
     "DELETE /book/:id": {
         "params": "{ id: string }"
+    },
+    "POST /bookshelve": {
+        "body": "CreateBookshelveDto"
+    },
+    "PUT /bookshelve/:id": {
+        "params": "{ id: string }",
+        "body": "CreateBookshelveDto"
+    },
+    "DELETE /bookshelve/:id": {
+        "params": "{ id: string }"
+    },
+    "POST /auth/register": {
+        "body": "CreateUserDto"
     }
 }
