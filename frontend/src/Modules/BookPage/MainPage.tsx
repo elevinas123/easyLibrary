@@ -17,7 +17,7 @@ import {
 } from "./Konva/konvaAtoms";
 import { Book } from "../LibraryPage/LibraryPage";
 import debounce from "lodash/debounce";
-import { set } from "lodash";
+import { isEqual } from "lodash";
 
 export type HighlightRange = {
     startElementId: string;
@@ -72,7 +72,7 @@ function MainPage() {
     const [highlights, setHighlights] = useAtom(highlightsAtom);
     const [scale, setScale] = useAtom(scaleAtom);
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
-
+    const [updated, setUpdated] = useState(false);
     // Initialize chapters (assuming this will be populated elsewhere)
     const [chapters] = useState<Chapter[]>([]);
     const queryClient = useQueryClient();
@@ -102,50 +102,54 @@ function MainPage() {
         },
     });
 
-    // Debounced update function
     const debouncedUpdate = useCallback(
         debounce((updatedFields: Partial<Book>) => {
             mutation.mutate(updatedFields);
-        }, 500), // Adjust the delay as needed (e.g., 1000ms)
+        }, 500),
         [mutation]
     );
     useEffect(() => {
-        setArrows(book?.curveElements ?? []);
-        setCanvaElements(book?.canvaElements ?? []);
-        setHighlights(book?.highlights ?? []);
-        setScale(book?.scale ?? 1);
-        setOffsetPosition(
-            book?.offsetPosition ?? {
-                x: 0,
-                y: 0,
-            }
-        );
+        if (book && !updated) {
+            setArrows(book?.curveElements ?? []);
+            setCanvaElements(book?.canvaElements ?? []);
+            setHighlights(book?.highlights ?? []);
+            setScale(book?.scale ?? 1);
+            setOffsetPosition(
+                book?.offsetPosition ?? {
+                    x: 0,
+                    y: 0,
+                }
+            );
+            console.log("boookUpdated", book);
+            setUpdated(true);
+        }
         console.log("Book data updated:", book);
     }, [book]);
 
-    // Consolidated useEffect for updating the book
+    const hasChanged = (newValue: any, oldValue: any) =>
+        !isEqual(newValue, oldValue);
+
     useEffect(() => {
         if (!bookId || !accessToken || !book) return;
 
         const updateData: Partial<Book> = {};
 
-        if (arrows !== book.curveElements) {
+        if (hasChanged(arrows, book.curveElements)) {
             updateData.curveElements = arrows;
         }
-        if (canvaElements !== book.canvaElements) {
+        if (hasChanged(canvaElements, book.canvaElements)) {
             updateData.canvaElements = canvaElements;
         }
-        if (highlights !== book.highlights) {
+        if (hasChanged(highlights, book.highlights)) {
             updateData.highlights = highlights;
         }
-        if (scale !== book.scale) {
+        if (hasChanged(scale, book.scale)) {
             updateData.scale = scale;
         }
-        if (offsetPosition !== book.offsetPosition) {
+        if (hasChanged(offsetPosition, book.offsetPosition)) {
             updateData.offsetPosition = offsetPosition;
         }
-
-        // If there are changes, debounce the update
+        console.log("updateData", updateData);
         if (Object.keys(updateData).length > 0) {
             debouncedUpdate(updateData);
         }
@@ -160,10 +164,8 @@ function MainPage() {
         highlights,
         scale,
         offsetPosition,
-        book,
         bookId,
         accessToken,
-        debouncedUpdate,
     ]);
 
     // Handle loading and error states
