@@ -14,6 +14,8 @@ export class ArrowElementDto
 
     @IsOptional() @IsString() startId!: string | null;
 
+    @IsOptional() @IsString() endId!: string | null;
+
     @IsString() @IsEnum(["bookText", "text", null]) startType: StartType;
 
     @IsString() @IsEnum(["bookText", "text", null]) endType: StartType;

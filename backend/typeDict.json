@@ -78,14 +78,14 @@
       },
       {
         "name": "books",
-        "type": "string[]",
-        "fullType": "books: string[]",
+        "type": "any[]",
+        "fullType": "books: any[]",
         "optional": false
       },
       {
         "name": "bookshelves",
-        "type": "string[]",
-        "fullType": "bookshelves: string[]",
+        "type": "any[]",
+        "fullType": "bookshelves: any[]",
         "optional": false
       }
     ],
@@ -331,12 +331,6 @@
         "optional": false
       },
       {
-        "name": "sd",
-        "type": "number",
-        "fullType": "sd: number",
-        "optional": false
-      },
-      {
         "name": "type",
         "type": "\"text\"",
         "fullType": "type: \"text\"",
@@ -441,7 +435,7 @@
   "StartType": {
     "isType": true,
     "name": "StartType",
-    "type": "\"bookText\" | \"text\""
+    "type": "\"text\" | \"bookText\""
   },
   "ArrowElement": {
     "isType": false,
@@ -469,6 +463,12 @@
         "name": "endType",
         "type": "StartType",
         "fullType": "endType: StartType",
+        "optional": false
+      },
+      {
+        "name": "type",
+        "type": "\"arrow\"",
+        "fullType": "type: \"arrow\"",
         "optional": false
       }
     ],
@@ -708,39 +708,6 @@
     ],
     "extends": []
   },
-  "TextElementDto": {
-    "isType": false,
-    "name": "TextElementDto",
-    "properties": [
-      {
-        "name": "type",
-        "type": "\"text\"",
-        "fullType": "type: \"text\"",
-        "optional": false
-      },
-      {
-        "name": "text",
-        "type": "string",
-        "fullType": "text: string",
-        "optional": false
-      },
-      {
-        "name": "fontFamily",
-        "type": "string",
-        "fullType": "fontFamily: string",
-        "optional": false
-      },
-      {
-        "name": "fontSize",
-        "type": "number",
-        "fullType": "fontSize: number",
-        "optional": false
-      }
-    ],
-    "extends": [
-      "CanvaElementSkeletonDto"
-    ]
-  },
   "RectElementDto": {
     "isType": false,
     "name": "RectElementDto",
@@ -779,6 +746,39 @@
         "name": "hachureAngle",
         "type": "number",
         "fullType": "hachureAngle: number",
+        "optional": false
+      }
+    ],
+    "extends": [
+      "CanvaElementSkeletonDto"
+    ]
+  },
+  "TextElementDto": {
+    "isType": false,
+    "name": "TextElementDto",
+    "properties": [
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "fullType": "type: \"text\"",
+        "optional": false
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "fullType": "text: string",
+        "optional": false
+      },
+      {
+        "name": "fontFamily",
+        "type": "string",
+        "fullType": "fontFamily: string",
+        "optional": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "fullType": "fontSize: number",
         "optional": false
       }
     ],
@@ -965,8 +965,8 @@
       },
       {
         "name": "canvaElements",
-        "type": "(TextElementDto | RectElementDto)[]",
-        "fullType": "canvaElements: TextElementDto | RectElementDto[]",
+        "type": "(RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
         "optional": true
       },
       {
@@ -1028,15 +1028,27 @@
     "name": "CreateBookDto",
     "properties": [
       {
-        "name": "title",
+        "name": "_id",
         "type": "string",
-        "fullType": "title: string",
+        "fullType": "_id: string",
         "optional": false
       },
       {
         "name": "userId",
         "type": "string",
         "fullType": "userId: string",
+        "optional": false
+      },
+      {
+        "name": "highlights",
+        "type": "HighlightDto[]",
+        "fullType": "highlights: HighlightDto[]",
+        "optional": false
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "fullType": "title: string",
         "optional": false
       },
       {
@@ -1083,20 +1095,20 @@
       },
       {
         "name": "canvaElements",
-        "type": "(TextElementDto | RectElementDto)[]",
-        "fullType": "canvaElements: TextElementDto | RectElementDto[]",
-        "optional": false
-      },
-      {
-        "name": "scale",
-        "type": "number",
-        "fullType": "scale: number",
+        "type": "(RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
         "optional": false
       },
       {
         "name": "curveElements",
         "type": "ArrowElementDto[]",
         "fullType": "curveElements: ArrowElementDto[]",
+        "optional": false
+      },
+      {
+        "name": "scale",
+        "type": "number",
+        "fullType": "scale: number",
         "optional": false
       },
       {
@@ -1126,8 +1138,8 @@
       },
       {
         "name": "books",
-        "type": "ObjectId[]",
-        "fullType": "books: ObjectId[]",
+        "type": "any[]",
+        "fullType": "books: any[]",
         "optional": false
       }
     ],

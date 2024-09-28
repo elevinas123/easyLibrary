@@ -9,11 +9,11 @@ export class TextElementDto
     extends CanvaElementSkeletonDto
     implements TextElementType
 {
-    @IsString() @IsEnum(["text"]) type: "text";
+    @IsString() @IsEnum(["text"]) type!: "text";
 
-    @IsString() text: string;
+    @IsString() text!: string;
 
-    @IsString() fontFamily: string;
+    @IsString() fontFamily!: string;
 
-    @IsNumber() fontSize: number;
+    @IsNumber() fontSize!: number;
 }

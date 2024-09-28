@@ -19,11 +19,24 @@ import { HighlightDto } from "./highlightsDto/highlights.dto";
 
 // Infer the types from Book schema
 
-type CreateBookType = Book;
+interface CreateBookType
+    extends Omit<Book, "canvaElements" | "curveElements" | "_id" | "userId"> {
+    canvaElements: (TextElementDto | RectElementDto)[];
+    curveElements: ArrowElementDto[];
+    _id: string;
+    userId: string;
+}
 
-export class CreateBookDto
-    implements Omit<CreateBookType, "canvaElements" | "curveElements">
-{
+export class CreateBookDto implements CreateBookType {
+    @IsString() @IsNotEmpty() _id!: string;
+
+    @IsString() userId!: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => HighlightDto)
+    highlights!: HighlightDto[];
+
     @IsString() @IsNotEmpty() title!: string;
 
     @IsString() @IsNotEmpty() description!: string;

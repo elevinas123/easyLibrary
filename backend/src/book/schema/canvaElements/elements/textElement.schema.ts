@@ -9,10 +9,7 @@ export class TextElement extends CanvaElementSkeleton {
 
     @prop({ required: true }) fontSize!: number;
 
-    @prop({ required: true }) sd!: number;
-
-    // The 'type' getter will return the discriminator value ('text')
-    @prop({ required: true, default: "text" }) // Enforce 'type' field explicitly
-    readonly type!: "text"; // TypeScript now recognizes the type as 'text'
+    @prop({ required: true, default: "text" })
+    readonly type!: "text";
 }
 export const TextElementModel = getModelForClass(TextElement);

@@ -1,7 +1,10 @@
+// src/app.module.ts
+
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { MongooseModule } from "@nestjs/mongoose";
+import { JwtModule } from "@nestjs/jwt"; // Ensure proper configuration
+import { TypegooseModule } from "nestjs-typegoose"; // Import TypegooseModule
+
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
@@ -14,14 +17,17 @@ import { UserModule } from "./user/user.module";
         ConfigModule.forRoot({
             isGlobal: true, // Makes ConfigModule available globally
         }),
-        MongooseModule.forRootAsync({
+        TypegooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
                 uri: configService.get<string>("MONGODB_URI"),
             }),
             inject: [ConfigService],
         }),
-        JwtModule,
+        JwtModule.register({
+            secret: process.env.JWT_SECRET || "default_secret",
+            signOptions: { expiresIn: "60m" },
+        }),
         UserModule,
         BookModule,
         BookshelveModule,
@@ -31,6 +37,4 @@ import { UserModule } from "./user/user.module";
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {
-    constructor() {}
-}
+export class AppModule {}

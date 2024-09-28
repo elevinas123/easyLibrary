@@ -1,9 +1,9 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { prop } from "@typegoose/typegoose";
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
 
-import { HighlightPointsDto } from "./highlightPoints.dto";
 import { CanvaElementSkeleton } from "src/book/schema/canvaElements/canvaElementSkeleton";
+import { HighlightPointsDto } from "./highlightPoints.dto";
 
 // DTO Class with Typegoose for MongoDB schema
 export class CanvaElementSkeletonDto implements CanvaElementSkeleton {

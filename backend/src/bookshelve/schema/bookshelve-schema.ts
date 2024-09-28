@@ -1,22 +1,21 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+// src/bookshelve/schema/bookshelve.schema.ts
+
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Book } from "src/book/schema/book.schema";
 
-export type BookshelveDocument = Bookshelve & Document;
-
-@Schema()
 export class Bookshelve {
-    @Prop({ required: true }) name: string;
+    @prop({ required: true }) public name!: string;
 
-    @Prop({ required: true, default: Date.now }) createdAt: Date;
+    @prop({ required: true, default: () => new Date() })
+    public createdAt!: Date;
 
     // Reference to Book collection
-    @Prop({
-        require: true,
-        type: [{ type: Types.ObjectId, ref: "Book" }],
-        default: [],
+    @prop({
+        required: true,
+        ref: () => Book, // Typegoose uses a function to reference other classes
+        default: () => [],
     })
-    books: Types.ObjectId[];
+    public books!: Ref<Book>[];
 }
 
-export const BookshelveSchema = SchemaFactory.createForClass(Bookshelve);
+export const BookshelveModel = getModelForClass(Bookshelve);

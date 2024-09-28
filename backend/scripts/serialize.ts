@@ -269,6 +269,9 @@ export function serializeTypeAlias(
             // Handle object types (types with properties)
             const symbolProperties = (declaration.type as ts.TypeLiteralNode)
                 .members;
+            if (!symbolProperties) {
+                return details;
+            }
             symbolProperties.forEach((member) => {
                 if (ts.isPropertySignature(member)) {
                     const memberSymbol = checker.getSymbolAtLocation(
