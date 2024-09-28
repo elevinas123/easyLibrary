@@ -34,7 +34,28 @@ export interface Highlight {
   endY: number;
 }
 
-export interface RectElement {
+export interface HighlightPointsType {
+  x: number;
+  y: number;
+}
+
+export interface CanvaElementSkeleton {
+  fill: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  id: string;
+  outgoingArrowIds: string[];
+  incomingArrowIds: string[];
+  points: HighlightPointsType[];
+  strokeColor: string;
+  strokeWidth: number;
+  opacity: number;
+  rotation: number;
+}
+
+export interface RectElement extends CanvaElementSkeleton {
   fillStyle: string;
   roughness: number;
   seed: number;
@@ -42,7 +63,7 @@ export interface RectElement {
   hachureAngle: number;
 }
 
-export interface TextElement {
+export interface TextElement extends CanvaElementSkeleton {
   text: string;
   fontFamily: string;
   fontSize: number;
@@ -87,11 +108,7 @@ export interface HighlightPointsDto {
   y: number;
 }
 
-export interface TextElementDto {
-  type: "text";
-  text: string;
-  fontFamily: string;
-  fontSize: number;
+export interface CanvaElementSkeletonDto {
   fill: string;
   x: number;
   y: number;
@@ -107,34 +124,23 @@ export interface TextElementDto {
   rotation: number;
 }
 
-export interface RectElementDto {
+export interface TextElementDto extends CanvaElementSkeletonDto {
+  type: "text";
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+}
+
+export interface RectElementDto extends CanvaElementSkeletonDto {
   type: "rect";
   roughness: number;
   seed: number;
   fillStyle: string;
   hachureGap: number;
   hachureAngle: number;
-  fill: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  id: string;
-  outgoingArrowIds: string[];
-  incomingArrowIds: string[];
-  points: HighlightPointsDto[];
-  strokeColor: string;
-  strokeWidth: number;
-  opacity: number;
-  rotation: number;
 }
 
-export interface ArrowElementDto {
-  type: "arrow";
-  startId: string;
-  endId: string;
-  startType: StartType;
-  endType: StartType;
+export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
   fill: string;
@@ -151,6 +157,14 @@ export interface ArrowElementDto {
   hachureGap: number;
 }
 
+export interface ArrowElementDto extends CurveElementSkeletonDto {
+  type: "arrow";
+  startId: string;
+  endId: string;
+  startType: StartType;
+  endType: StartType;
+}
+
 export interface HighlightDto {
   id: string;
   startingX: number;
@@ -159,21 +173,14 @@ export interface HighlightDto {
   endY: number;
 }
 
-export interface UpdateBookDto {
-  bookElements: ProcessedElementDto[];
-  canvaElements: (TextElementDto | RectElementDto)[];
-  curveElements: ArrowElementDto[];
-  highlights: HighlightDto[];
-  liked: boolean;
-  scale: number;
-  offsetPosition: { x: number; y: number; };
-  title: any;
-  userId: any;
-  description: any;
-  author: any;
-  genre: any;
-  imageUrl: any;
-  dateAdded: any;
+export interface UpdateBookDto extends Partial<CreateBookDto> {
+  bookElements?: ProcessedElementDto[];
+  canvaElements?: (TextElementDto | RectElementDto)[];
+  curveElements?: ArrowElementDto[];
+  highlights?: HighlightDto[];
+  liked?: boolean;
+  scale?: number;
+  offsetPosition?: { x: number; y: number; };
 }
 
 export interface OffsetPositionDto {

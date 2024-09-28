@@ -3,8 +3,8 @@
     "name": "AppService",
     "documentation": "",
     "type": "typeof AppService",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "getHello",
@@ -14,14 +14,15 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "AppController",
     "documentation": "",
     "type": "typeof AppController",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "getHello",
@@ -32,29 +33,32 @@
         "httpMethod": "GET"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "LoginResponseDto",
     "documentation": "",
     "type": "typeof LoginResponseDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "access_token",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "AuthService",
     "documentation": "",
     "type": "typeof AuthService",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "validateUser",
@@ -101,32 +105,39 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "JwtAuthGuard",
     "documentation": "",
     "type": "typeof JwtAuthGuard",
-    "constructors": [],
-    "path": "",
+    "extends": [
+      "IAuthGuard"
+    ],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "LocalAuthGuard",
     "documentation": "",
     "type": "typeof LocalAuthGuard",
-    "constructors": [],
-    "path": "",
+    "extends": [
+      "IAuthGuard"
+    ],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "AuthController",
     "documentation": "",
     "type": "typeof AuthController",
-    "constructors": [],
-    "path": "auth",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "login",
@@ -157,14 +168,17 @@
         "httpMethod": "POST"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": "auth"
   },
   {
     "name": "JwtStrategy",
     "documentation": "",
     "type": "typeof JwtStrategy",
-    "constructors": [],
-    "path": "",
+    "extends": [
+      "any"
+    ],
+    "properties": [],
     "methods": [
       {
         "name": "validate",
@@ -180,14 +194,17 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "LocalStrategy",
     "documentation": "",
     "type": "typeof LocalStrategy",
-    "constructors": [],
-    "path": "",
+    "extends": [
+      "Strategy"
+    ],
+    "properties": [],
     "methods": [
       {
         "name": "validate",
@@ -206,1239 +223,1002 @@
         ],
         "returnType": "Promise<any>",
         "methodPath": ""
-      },
-      {
-        "name": "authenticate",
-        "documentation": "Performs authentication for the request.\nNote: Virtual function - re-implement in the strategy.",
-        "parameters": [
-          {
-            "name": "req",
-            "type": "Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>",
-            "decorator": "Unknown"
-          },
-          {
-            "name": "options",
-            "type": "any",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "void",
-        "methodPath": ""
-      },
-      {
-        "name": "success",
-        "documentation": "Authenticate `user`, with optional `info`.\n\nStrategies should call this function to successfully authenticate a\nuser.  `user` should be an object supplied by the application after it\nhas been given an opportunity to verify credentials.  `info` is an\noptional argument containing additional user information.  This is\nuseful for third-party authentication strategies to pass profile\ndetails.",
-        "parameters": [
-          {
-            "name": "user",
-            "type": "any",
-            "decorator": "Unknown"
-          },
-          {
-            "name": "info",
-            "type": "any",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "void",
-        "methodPath": ""
-      },
-      {
-        "name": "fail",
-        "documentation": "Fail authentication, with optional `challenge` and `status`, defaulting\nto 401.\n\nStrategies should call this function to fail an authentication attempt.",
-        "parameters": [
-          {
-            "name": "challenge",
-            "type": "any",
-            "decorator": "Unknown"
-          },
-          {
-            "name": "status",
-            "type": "number",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "void",
-        "methodPath": ""
-      },
-      {
-        "name": "redirect",
-        "documentation": "Redirect to `url` with optional `status`, defaulting to 302.\n\nStrategies should call this function to redirect the user (via their\nuser agent) to a third-party website for authentication.",
-        "parameters": [
-          {
-            "name": "url",
-            "type": "string",
-            "decorator": "Unknown"
-          },
-          {
-            "name": "status",
-            "type": "number",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "void",
-        "methodPath": ""
-      },
-      {
-        "name": "pass",
-        "documentation": "Pass without making a success or fail decision.\n\nUnder most circumstances, Strategies should not need to call this\nfunction.  It exists primarily to allow previous authentication state\nto be restored, for example from an HTTP session.",
-        "parameters": [],
-        "returnType": "void",
-        "methodPath": ""
-      },
-      {
-        "name": "error",
-        "documentation": "Internal error while performing authentication.\n\nStrategies should call this function when an internal error occurs\nduring the process of performing authentication; for example, if the\nuser directory is not available.",
-        "parameters": [
-          {
-            "name": "err",
-            "type": "Error",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "void",
-        "methodPath": ""
       }
     ],
-    "properties": [
-      {
-        "name": "name",
-        "documentation": "",
-        "type": "string"
-      }
-    ]
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "AuthModule",
     "documentation": "",
     "type": "typeof AuthModule",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CurveElementSkeletonDto",
     "documentation": "",
     "type": "typeof CurveElementSkeletonDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "points",
-        "documentation": "",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bowing",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "stroke",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "StartType",
     "documentation": "",
-    "type": "StartType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/dto/curveElementsDto/elements/arrowElement.dto.ts"
+    "type": "\"bookText\" | \"text\"",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/dto/curveElementsDto/elements/arrowElement.dto.ts",
+    "properties": []
   },
   {
     "name": "ArrowElementDto",
     "documentation": "",
     "type": "typeof ArrowElementDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "CurveElementSkeletonDto"
+    ],
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"arrow\""
+        "type": "\"arrow\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endType",
-        "documentation": "",
-        "type": "StartType"
-      },
-      {
-        "name": "points",
-        "documentation": "",
-        "type": "number[]"
-      },
-      {
-        "name": "id",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "fill",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "text",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "roughness",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "bowing",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "seed",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
-      },
-      {
-        "name": "stroke",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
-      },
-      {
-        "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CurveElementsDto",
     "documentation": "",
     "type": "typeof CurveElementsDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "HighlightPointsDto",
     "documentation": "",
     "type": "typeof HighlightPointsDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CanvaElementSkeletonDto",
     "documentation": "",
     "type": "typeof CanvaElementSkeletonDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
+        "type": "HighlightPointsDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "TextElementDto",
     "documentation": "",
     "type": "typeof TextElementDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "CanvaElementSkeletonDto"
+    ],
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"text\""
+        "type": "\"text\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontFamily",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontSize",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "fill",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "x",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "y",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "width",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "height",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "id",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
-      },
-      {
-        "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
-      },
-      {
-        "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
-      },
-      {
-        "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "opacity",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "RectElementDto",
     "documentation": "",
     "type": "typeof RectElementDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "CanvaElementSkeletonDto"
+    ],
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"rect\""
+        "type": "\"rect\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "fill",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "x",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "y",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "width",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "height",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "id",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
-      },
-      {
-        "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
-      },
-      {
-        "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
-      },
-      {
-        "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
-      },
-      {
-        "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "opacity",
-        "documentation": "",
-        "type": "number"
-      },
-      {
-        "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CanvaElementsDto",
     "documentation": "",
     "type": "typeof CanvaElementsDto",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "ProcessedElementDto",
     "documentation": "",
     "type": "typeof ProcessedElementDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookElementsDto",
     "documentation": "",
     "type": "typeof BookElementsDto",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "OffsetPositionDto",
     "documentation": "",
     "type": "typeof OffsetPositionDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CreateBookDto",
     "documentation": "",
     "type": "typeof CreateBookDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "title",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "userId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "description",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "author",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "genre",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "imageUrl",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "dateAdded",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElementDto[]"
+        "type": "ProcessedElementDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(TextElementDto | RectElementDto)[]"
+        "type": "(TextElementDto | RectElementDto)[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "OffsetPositionDto"
+        "type": "OffsetPositionDto",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "HighlightsDto",
     "documentation": "",
     "type": "typeof HighlightsDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "HighlightDto[]"
+        "type": "HighlightDto[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "HighlightDto",
     "documentation": "",
     "type": "typeof HighlightDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "UpdateBookDto",
     "documentation": "",
     "type": "typeof UpdateBookDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "Partial<CreateBookDto>"
+    ],
     "properties": [
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElementDto[]"
+        "type": "ProcessedElementDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(TextElementDto | RectElementDto)[]"
+        "type": "(TextElementDto | RectElementDto)[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "HighlightDto[]"
+        "type": "HighlightDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "{ x: number; y: number; }"
-      },
-      {
-        "name": "title",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "userId",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "description",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "author",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "genre",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "imageUrl",
-        "documentation": "",
-        "type": "any"
-      },
-      {
-        "name": "dateAdded",
-        "documentation": "",
-        "type": "any"
+        "type": "{ x: number; y: number; }",
+        "optional": true,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "ProcessedElement",
     "documentation": "",
     "type": "typeof ProcessedElement",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "ProcessedElementDocument",
     "documentation": "",
-    "type": "ProcessedElementDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/bookElements/processedElement.schema.ts"
+    "type": "ProcessedElement & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/bookElements/processedElement.schema.ts",
+    "properties": []
   },
   {
     "name": "HighlightPointsType",
     "documentation": "",
     "type": "HighlightPointsType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts",
+    "properties": [
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "HighlightPoints",
     "documentation": "",
     "type": "typeof HighlightPoints",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "HighlightPointsDocument",
     "documentation": "",
-    "type": "HighlightPointsDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts"
-  },
-  {
-    "name": "RectElementType",
-    "documentation": "",
-    "properties": [
-      {
-        "name": "fill",
-        "type": "string"
-      },
-      {
-        "name": "x",
-        "type": "number"
-      },
-      {
-        "name": "y",
-        "type": "number"
-      },
-      {
-        "name": "width",
-        "type": "number"
-      },
-      {
-        "name": "height",
-        "type": "number"
-      },
-      {
-        "name": "id",
-        "type": "string"
-      },
-      {
-        "name": "outgoingArrowIds",
-        "type": "string[]"
-      },
-      {
-        "name": "incomingArrowIds",
-        "type": "string[]"
-      },
-      {
-        "name": "points",
-        "type": "HighlightPointsType[]"
-      },
-      {
-        "name": "strokeColor",
-        "type": "string"
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number"
-      },
-      {
-        "name": "opacity",
-        "type": "number"
-      }
-    ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/rectElement.schema.ts"
+    "type": "HighlightPoints & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts",
+    "properties": []
   },
   {
     "name": "RectElement",
     "documentation": "",
     "type": "typeof RectElement",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "CanvaElementSkeleton"
+    ],
     "properties": [
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "RectElementDocument",
     "documentation": "",
-    "type": "RectElementDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/rectElement.schema.ts"
-  },
-  {
-    "name": "TextElementType",
-    "documentation": "",
-    "properties": [
-      {
-        "name": "text",
-        "type": "string"
-      },
-      {
-        "name": "fontFamily",
-        "type": "string"
-      },
-      {
-        "name": "fontSize",
-        "type": "number"
-      },
-      {
-        "name": "fill",
-        "type": "string"
-      },
-      {
-        "name": "x",
-        "type": "number"
-      },
-      {
-        "name": "y",
-        "type": "number"
-      },
-      {
-        "name": "width",
-        "type": "number"
-      },
-      {
-        "name": "height",
-        "type": "number"
-      },
-      {
-        "name": "id",
-        "type": "string"
-      },
-      {
-        "name": "outgoingArrowIds",
-        "type": "string[]"
-      },
-      {
-        "name": "incomingArrowIds",
-        "type": "string[]"
-      },
-      {
-        "name": "points",
-        "type": "HighlightPointsType[]"
-      },
-      {
-        "name": "strokeColor",
-        "type": "string"
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number"
-      },
-      {
-        "name": "opacity",
-        "type": "number"
-      }
-    ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/textElement.schema.ts"
+    "type": "RectElement & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/rectElement.schema.ts",
+    "properties": []
   },
   {
     "name": "TextElement",
     "documentation": "",
     "type": "typeof TextElement",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [
+      "CanvaElementSkeleton"
+    ],
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontFamily",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontSize",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "TextElementDocument",
     "documentation": "",
-    "type": "TextElementDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/textElement.schema.ts"
+    "type": "TextElement & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/textElement.schema.ts",
+    "properties": []
   },
   {
     "name": "CanvaElementSkeletonType",
     "documentation": "",
     "type": "CanvaElementSkeletonType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts",
+    "properties": [
+      {
+        "name": "fill",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "width",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "height",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "outgoingArrowIds",
+        "type": "string[]",
+        "optional": false
+      },
+      {
+        "name": "incomingArrowIds",
+        "type": "string[]",
+        "optional": false
+      },
+      {
+        "name": "points",
+        "type": "HighlightPointsType[]",
+        "optional": false
+      },
+      {
+        "name": "strokeColor",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "opacity",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "CanvaElementSkeleton",
     "documentation": "",
     "type": "typeof CanvaElementSkeleton",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsType[]"
+        "type": "HighlightPointsType[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CanvaElementSkeletonDocument",
     "documentation": "",
-    "type": "CanvaElementSkeletonDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts"
+    "type": "CanvaElementSkeleton & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts",
+    "properties": []
   },
   {
     "name": "ArrowElementType",
@@ -1446,124 +1226,82 @@
     "properties": [
       {
         "name": "type",
-        "type": "\"arrow\""
+        "type": "\"arrow\"",
+        "optional": false
       },
       {
         "name": "startId",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "endId",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "startType",
-        "type": "\"StartTyp\""
+        "type": "\"StartTyp\"",
+        "optional": false
       },
       {
         "name": "endType",
-        "type": "StartType"
-      },
-      {
-        "name": "points",
-        "type": "number[]"
-      },
-      {
-        "name": "id",
-        "type": "string"
-      },
-      {
-        "name": "fill",
-        "type": "string"
-      },
-      {
-        "name": "text",
-        "type": "string"
-      },
-      {
-        "name": "roughness",
-        "type": "number"
-      },
-      {
-        "name": "bowing",
-        "type": "number"
-      },
-      {
-        "name": "seed",
-        "type": "number"
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number"
-      },
-      {
-        "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
-      },
-      {
-        "name": "stroke",
-        "type": "string"
-      },
-      {
-        "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
-      },
-      {
-        "name": "fillWeight",
-        "type": "number"
-      },
-      {
-        "name": "hachureAngle",
-        "type": "number"
-      },
-      {
-        "name": "hachureGap",
-        "type": "number"
+        "type": "StartType",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts"
+    "extends": [
+      "CurveElementSkeletonType"
+    ]
   },
   {
     "name": "StartType",
     "documentation": "",
-    "type": "StartType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts"
+    "type": "\"bookText\" | \"text\"",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts",
+    "properties": []
   },
   {
     "name": "ArrowElement",
     "documentation": "",
     "type": "typeof ArrowElement",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "startId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "ArrowElementDocument",
     "documentation": "",
-    "type": "ArrowElementDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts"
+    "type": "ArrowElement & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts",
+    "properties": []
   },
   {
     "name": "CurveElementSkeletonType",
@@ -1571,288 +1309,374 @@
     "properties": [
       {
         "name": "points",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false
       },
       {
         "name": "id",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fill",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "text",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "roughness",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "bowing",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "seed",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeWidth",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false
       },
       {
         "name": "stroke",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false
       },
       {
         "name": "fillWeight",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureAngle",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureGap",
-        "type": "number"
+        "type": "number",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/curveElementSkeleton.ts"
+    "extends": []
   },
   {
     "name": "CurveElementSkeleton",
     "documentation": "",
     "type": "typeof CurveElementSkeleton",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bowing",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "stroke",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CurveElementSkeletonDocument",
     "documentation": "",
-    "type": "CurveElementSkeletonDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/curveElementSkeleton.ts"
+    "type": "CurveElementSkeleton & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/curveElementSkeleton.ts",
+    "properties": []
   },
   {
     "name": "HighlightType",
     "documentation": "",
     "type": "HighlightType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "HighlightDocument",
     "documentation": "",
-    "type": "HighlightDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts"
+    "type": "Highlight & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts",
+    "properties": []
   },
   {
     "name": "Highlight",
     "documentation": "",
     "type": "typeof Highlight",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookDocument",
     "documentation": "",
-    "type": "BookDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/book.schema.ts"
+    "type": "Book & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/book.schema.ts",
+    "properties": []
   },
   {
     "name": "Book",
     "documentation": "",
     "type": "typeof Book",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
         "name": "title",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "userId",
-        "documentation": "",
-        "type": "ObjectId"
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "description",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "author",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "genre",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "imageUrl",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "dateAdded",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElement[]"
+        "type": "ProcessedElement[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "Highlight[]"
+        "type": "Highlight[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(RectElement | TextElement)[]"
+        "type": "(RectElement | TextElement)[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElement[]"
+        "type": "ArrowElement[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "{ x: number; y: number; }"
+        "type": "{ x: number; y: number; }",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookService",
     "documentation": "",
     "type": "typeof BookService",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "addBook",
@@ -1932,14 +1756,15 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookController",
     "documentation": "",
     "type": "typeof BookController",
-    "constructors": [],
-    "path": "book",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "getAllBooks",
@@ -2025,79 +1850,90 @@
         "httpMethod": "DELETE"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": "book"
   },
   {
     "name": "BookModule",
     "documentation": "",
     "type": "typeof BookModule",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CreateBookshelveDto",
     "documentation": "",
     "type": "typeof CreateBookshelveDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "name",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "createdAt",
-        "documentation": "",
-        "type": "Date"
+        "type": "Date",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookshelveDocument",
     "documentation": "",
-    "type": "BookshelveDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/bookshelve/schema/bookshelve-schema.ts"
+    "type": "Bookshelve & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/bookshelve/schema/bookshelve-schema.ts",
+    "properties": []
   },
   {
     "name": "Bookshelve",
     "documentation": "",
     "type": "typeof Bookshelve",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "name",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "createdAt",
-        "documentation": "",
-        "type": "Date"
+        "type": "Date",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookshelveService",
     "documentation": "",
     "type": "typeof BookshelveService",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "addBookshelve",
@@ -2182,14 +2018,15 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookshelveController",
     "documentation": "",
     "type": "typeof BookshelveController",
-    "constructors": [],
-    "path": "bookshelve",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "getAllBooks",
@@ -2247,109 +2084,132 @@
         "httpMethod": "DELETE"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": "bookshelve"
   },
   {
     "name": "BookshelveModule",
     "documentation": "",
     "type": "typeof BookshelveModule",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "UserDocument",
     "documentation": "",
-    "type": "UserDocument",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts"
+    "type": "User & Document<unknown, any, any>",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
+    "properties": []
   },
   {
     "name": "User",
     "documentation": "",
     "type": "typeof User",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
         "name": "username",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "age",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "password",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "comment",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookshelves",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "CreateUserDto",
     "documentation": "",
     "type": "typeof CreateUserDto",
-    "constructors": [],
-    "path": "",
-    "methods": [],
+    "extends": [],
     "properties": [
       {
         "name": "username",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "password",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "age",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "comment",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookshelves",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       }
-    ]
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "UserService",
     "documentation": "",
     "type": "typeof UserService",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "create",
@@ -2442,14 +2302,15 @@
         "methodPath": ""
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "UserController",
     "documentation": "",
     "type": "typeof UserController",
-    "constructors": [],
-    "path": "user",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "create",
@@ -2549,32 +2410,35 @@
         "httpMethod": "DELETE"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": "user"
   },
   {
     "name": "UserModule",
     "documentation": "",
     "type": "typeof UserModule",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "AppModule",
     "documentation": "",
     "type": "typeof AppModule",
-    "constructors": [],
-    "path": "",
+    "extends": [],
+    "properties": [],
     "methods": [],
-    "properties": []
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "BookController",
     "documentation": "",
     "type": "typeof BookController",
-    "constructors": [],
-    "path": "book",
+    "extends": [],
+    "properties": [],
     "methods": [
       {
         "name": "getAllBooks",
@@ -2660,6 +2524,7 @@
         "httpMethod": "DELETE"
       }
     ],
-    "properties": []
+    "constructors": [],
+    "path": "book"
   }
 ]

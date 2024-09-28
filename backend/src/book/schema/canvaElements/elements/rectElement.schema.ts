@@ -1,11 +1,10 @@
 // rect-element.schema.ts
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { CanvaElementSkeletonType } from "../canvaElementSkeleton";
+import { CanvaElementSkeleton } from "../canvaElementSkeleton";
 
-export interface RectElementType extends CanvaElementSkeletonType {}
 @Schema({ _id: false })
-export class RectElement {
+export class RectElement extends CanvaElementSkeleton {
     @Prop({ required: true }) fillStyle: string;
 
     @Prop({ required: true }) roughness: number;

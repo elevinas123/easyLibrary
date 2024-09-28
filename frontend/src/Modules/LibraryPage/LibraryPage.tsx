@@ -95,11 +95,7 @@ export default function LibraryPage({}: LibraryPageProps) {
         setBookSelected(bookId);
     };
     if (error) {
-        if (error.response?.status === 401) {
-            return <div>Unauthorized</div>;
-        } else {
-            return <div>An error occurred: {error.message}</div>;
-        }
+        return <div>An error occurred: {error.message}</div>;
     }
     const updateBook = async (updatedBook: Book) => {
         try {

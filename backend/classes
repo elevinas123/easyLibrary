@@ -44,8 +44,9 @@
     "properties": [
       {
         "name": "access_token",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -303,8 +304,9 @@
     "properties": [
       {
         "name": "name",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -327,73 +329,87 @@
     "properties": [
       {
         "name": "points",
-        "documentation": "",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bowing",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "stroke",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -413,98 +429,117 @@
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"arrow\""
+        "type": "\"arrow\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bowing",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "stroke",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -518,8 +553,9 @@
     "properties": [
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -533,13 +569,15 @@
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -553,68 +591,81 @@
     "properties": [
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
+        "type": "HighlightPointsDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -628,88 +679,105 @@
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"text\""
+        "type": "\"text\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontFamily",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontSize",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
+        "type": "HighlightPointsDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -723,98 +791,117 @@
     "properties": [
       {
         "name": "type",
-        "documentation": "",
-        "type": "\"rect\""
+        "type": "\"rect\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsDto[]"
+        "type": "HighlightPointsDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -837,23 +924,27 @@
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -876,13 +967,15 @@
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -896,68 +989,81 @@
     "properties": [
       {
         "name": "title",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "userId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "description",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "author",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "genre",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "imageUrl",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "dateAdded",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElementDto[]"
+        "type": "ProcessedElementDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(TextElementDto | RectElementDto)[]"
+        "type": "(TextElementDto | RectElementDto)[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "OffsetPositionDto"
+        "type": "OffsetPositionDto",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -971,8 +1077,9 @@
     "properties": [
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "HighlightDto[]"
+        "type": "HighlightDto[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -986,28 +1093,33 @@
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1021,73 +1133,87 @@
     "properties": [
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElementDto[]"
+        "type": "ProcessedElementDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(TextElementDto | RectElementDto)[]"
+        "type": "(TextElementDto | RectElementDto)[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElementDto[]"
+        "type": "ArrowElementDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "HighlightDto[]"
+        "type": "HighlightDto[]",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "{ x: number; y: number; }"
+        "type": "{ x: number; y: number; }",
+        "optional": true,
+        "documentation": ""
       },
       {
         "name": "title",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "userId",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "description",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "author",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "genre",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "imageUrl",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "dateAdded",
-        "documentation": "",
-        "type": "any"
+        "type": "any",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1101,23 +1227,27 @@
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "lineY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1131,7 +1261,19 @@
     "name": "HighlightPointsType",
     "documentation": "",
     "type": "HighlightPointsType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts",
+    "properties": [
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "HighlightPoints",
@@ -1143,13 +1285,15 @@
     "properties": [
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1165,54 +1309,68 @@
     "properties": [
       {
         "name": "fill",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "x",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "y",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "width",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "height",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "id",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "outgoingArrowIds",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false
       },
       {
         "name": "incomingArrowIds",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false
       },
       {
         "name": "points",
-        "type": "HighlightPointsType[]"
+        "type": "HighlightPointsType[]",
+        "optional": false
       },
       {
         "name": "strokeColor",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "strokeWidth",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "opacity",
-        "type": "number"
+        "type": "number",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/rectElement.schema.ts"
+    "extends": [
+      "CanvaElementSkeletonType"
+    ]
   },
   {
     "name": "RectElement",
@@ -1224,28 +1382,33 @@
     "properties": [
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1261,66 +1424,83 @@
     "properties": [
       {
         "name": "text",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fontFamily",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fontSize",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "fill",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "x",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "y",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "width",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "height",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "id",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "outgoingArrowIds",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false
       },
       {
         "name": "incomingArrowIds",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false
       },
       {
         "name": "points",
-        "type": "HighlightPointsType[]"
+        "type": "HighlightPointsType[]",
+        "optional": false
       },
       {
         "name": "strokeColor",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "strokeWidth",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "opacity",
-        "type": "number"
+        "type": "number",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/textElement.schema.ts"
+    "extends": [
+      "CanvaElementSkeletonType"
+    ]
   },
   {
     "name": "TextElement",
@@ -1332,18 +1512,21 @@
     "properties": [
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontFamily",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fontSize",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1357,7 +1540,69 @@
     "name": "CanvaElementSkeletonType",
     "documentation": "",
     "type": "CanvaElementSkeletonType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts",
+    "properties": [
+      {
+        "name": "fill",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "width",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "height",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "outgoingArrowIds",
+        "type": "string[]",
+        "optional": false
+      },
+      {
+        "name": "incomingArrowIds",
+        "type": "string[]",
+        "optional": false
+      },
+      {
+        "name": "points",
+        "type": "HighlightPointsType[]",
+        "optional": false
+      },
+      {
+        "name": "strokeColor",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "opacity",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "CanvaElementSkeleton",
@@ -1369,68 +1614,81 @@
     "properties": [
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "x",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "y",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "width",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "height",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "outgoingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "incomingArrowIds",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "HighlightPointsType[]"
+        "type": "HighlightPointsType[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeColor",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "opacity",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "rotation",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1446,82 +1704,103 @@
     "properties": [
       {
         "name": "type",
-        "type": "\"arrow\""
+        "type": "\"arrow\"",
+        "optional": false
       },
       {
         "name": "startId",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "endId",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "startType",
-        "type": "\"StartTyp\""
+        "type": "\"StartTyp\"",
+        "optional": false
       },
       {
         "name": "endType",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false
       },
       {
         "name": "points",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false
       },
       {
         "name": "id",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fill",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "text",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "roughness",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "bowing",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "seed",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeWidth",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false
       },
       {
         "name": "stroke",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false
       },
       {
         "name": "fillWeight",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureAngle",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureGap",
-        "type": "number"
+        "type": "number",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts"
+    "extends": [
+      "CurveElementSkeletonType"
+    ]
   },
   {
     "name": "StartType",
@@ -1539,23 +1818,27 @@
     "properties": [
       {
         "name": "startId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endId",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endType",
-        "documentation": "",
-        "type": "StartType"
+        "type": "StartType",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1571,62 +1854,76 @@
     "properties": [
       {
         "name": "points",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false
       },
       {
         "name": "id",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fill",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "text",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "roughness",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "bowing",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "seed",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeWidth",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false
       },
       {
         "name": "stroke",
-        "type": "string"
+        "type": "string",
+        "optional": false
       },
       {
         "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false
       },
       {
         "name": "fillWeight",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureAngle",
-        "type": "number"
+        "type": "number",
+        "optional": false
       },
       {
         "name": "hachureGap",
-        "type": "number"
+        "type": "number",
+        "optional": false
       }
     ],
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/curveElementSkeleton.ts"
+    "extends": []
   },
   {
     "name": "CurveElementSkeleton",
@@ -1638,73 +1935,87 @@
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fill",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "points",
-        "documentation": "",
-        "type": "number[]"
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "text",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "roughness",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bowing",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "seed",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeWidth",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "strokeStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"dotted\""
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "stroke",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillStyle",
-        "documentation": "",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\""
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "fillWeight",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureAngle",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "hachureGap",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1718,7 +2029,34 @@
     "name": "HighlightType",
     "documentation": "",
     "type": "HighlightType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts"
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "HighlightDocument",
@@ -1736,28 +2074,33 @@
     "properties": [
       {
         "name": "id",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "startingY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endX",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "endY",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -1777,78 +2120,93 @@
     "properties": [
       {
         "name": "_id",
-        "documentation": "",
-        "type": "ObjectId"
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "title",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "userId",
-        "documentation": "",
-        "type": "ObjectId"
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "description",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "author",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "genre",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "imageUrl",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "liked",
-        "documentation": "",
-        "type": "boolean"
+        "type": "boolean",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "dateAdded",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookElements",
-        "documentation": "",
-        "type": "ProcessedElement[]"
+        "type": "ProcessedElement[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "highlights",
-        "documentation": "",
-        "type": "Highlight[]"
+        "type": "Highlight[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "canvaElements",
-        "documentation": "",
-        "type": "(RectElement | TextElement)[]"
+        "type": "(RectElement | TextElement)[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "curveElements",
-        "documentation": "",
-        "type": "ArrowElement[]"
+        "type": "ArrowElement[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "scale",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "documentation": "",
-        "type": "{ x: number; y: number; }"
+        "type": "{ x: number; y: number; }",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -2051,18 +2409,21 @@
     "properties": [
       {
         "name": "name",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "createdAt",
-        "documentation": "",
-        "type": "Date"
+        "type": "Date",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -2082,18 +2443,21 @@
     "properties": [
       {
         "name": "name",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "createdAt",
-        "documentation": "",
-        "type": "Date"
+        "type": "Date",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -2279,38 +2643,45 @@
     "properties": [
       {
         "name": "_id",
-        "documentation": "",
-        "type": "ObjectId"
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "username",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "age",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "password",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "comment",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookshelves",
-        "documentation": "",
-        "type": "ObjectId[]"
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
@@ -2324,33 +2695,39 @@
     "properties": [
       {
         "name": "username",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "password",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "age",
-        "documentation": "",
-        "type": "number"
+        "type": "number",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "comment",
-        "documentation": "",
-        "type": "string"
+        "type": "string",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "books",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       },
       {
         "name": "bookshelves",
-        "documentation": "",
-        "type": "string[]"
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
       }
     ]
   },
