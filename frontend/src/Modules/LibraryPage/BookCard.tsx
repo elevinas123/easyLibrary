@@ -15,7 +15,7 @@ import {
     DialogHeader,
     DialogTrigger,
 } from "../../components/ui/dialog";
-import { Book } from "./LibraryPage";
+import { Book } from "../../endPointTypes/types";
 type BookCardProps = {
     book: Book;
     deleteBook: (bookId: string) => Promise<void>;

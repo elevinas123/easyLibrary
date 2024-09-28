@@ -6,7 +6,7 @@ import { HighlightPoints } from "../../schema/canvaElements/highlightPoints.sche
 type HighlightPointsType = HighlightPoints;
 
 export class HighlightPointsDto implements HighlightPointsType {
-    @IsNumber() x: number;
+    @IsNumber() x!: number;
 
-    @IsNumber() y: number;
+    @IsNumber() y!: number;
 }

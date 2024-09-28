@@ -1,11 +1,11 @@
 import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
 import {
     arrowsAtom,
     canvaElementsAtom,
     highlightsAtom,
 } from "./Konva/konvaAtoms";
-import { useEffect, useState } from "react";
-import { StartType } from "./Konva/KonvaStage";
+import { StartType } from "../../endPointTypes/types";
 
 type Note = {
     endText: string;

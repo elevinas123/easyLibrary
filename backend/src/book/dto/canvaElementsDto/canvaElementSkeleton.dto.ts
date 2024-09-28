@@ -47,5 +47,5 @@ export class CanvaElementSkeletonDto implements CanvaElementSkeleton {
 
     @IsNumber()
     @prop({ type: Number, required: true })
-    public rotation!: number;
+    public rotation!: null;
 }

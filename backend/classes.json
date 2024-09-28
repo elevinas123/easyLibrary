@@ -448,7 +448,7 @@
       },
       {
         "name": "rotation",
-        "type": "number",
+        "type": "null",
         "optional": false,
         "documentation": ""
       }
@@ -686,7 +686,7 @@
       {
         "name": "text",
         "type": "string",
-        "optional": false,
+        "optional": true,
         "documentation": ""
       },
       {
@@ -755,13 +755,6 @@
     "path": ""
   },
   {
-    "name": "StartType",
-    "documentation": "",
-    "type": "\"text\" | \"bookText\"",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/dto/curveElementsDto/elements/arrowElement.dto.ts",
-    "properties": []
-  },
-  {
     "name": "ArrowElementType",
     "documentation": "",
     "type": "ArrowElement",
@@ -796,13 +789,13 @@
       },
       {
         "name": "startType",
-        "type": "StartType",
+        "type": "string",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "endType",
-        "type": "StartType",
+        "type": "string",
         "optional": false,
         "documentation": ""
       }
@@ -921,7 +914,7 @@
       },
       {
         "name": "rotation",
-        "type": "number",
+        "type": "null",
         "optional": false,
         "documentation": ""
       }
@@ -1017,13 +1010,6 @@
     "path": ""
   },
   {
-    "name": "StartType",
-    "documentation": "",
-    "type": "\"text\" | \"bookText\"",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts",
-    "properties": []
-  },
-  {
     "name": "ArrowElement",
     "documentation": "",
     "type": "typeof ArrowElement",
@@ -1045,13 +1031,13 @@
       },
       {
         "name": "startType",
-        "type": "StartType",
+        "type": "string",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "endType",
-        "type": "StartType",
+        "type": "string",
         "optional": false,
         "documentation": ""
       },
@@ -1190,7 +1176,7 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
+        "type": "false | true",
         "optional": false,
         "documentation": ""
       },
@@ -1306,7 +1292,7 @@
       {
         "name": "_id",
         "type": "string",
-        "optional": false
+        "optional": true
       },
       {
         "name": "userId",
@@ -1327,7 +1313,7 @@
       {
         "name": "_id",
         "type": "string",
-        "optional": false,
+        "optional": true,
         "documentation": ""
       },
       {
@@ -1374,7 +1360,7 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
+        "type": "false | true",
         "optional": false,
         "documentation": ""
       },
@@ -1453,7 +1439,7 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
+        "type": "false | true",
         "optional": true,
         "documentation": ""
       },
@@ -1708,6 +1694,12 @@
     "type": "typeof Bookshelve",
     "extends": [],
     "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
       {
         "name": "name",
         "type": "string",

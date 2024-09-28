@@ -1,10 +1,8 @@
 // RenderArrow.tsx
 
-import React from "react";
-import { Shape } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Shape } from "react-konva";
 import rough from "roughjs/bin/rough";
-import { ArrowElement } from "./ArrowShape";
 
 // Define the component's props
 type RenderArrowProps = {

@@ -5,9 +5,9 @@ export interface User {
   username: string;
   age: number;
   password: string;
-  comment: string;
-  books: ObjectId[];
-  bookshelves: ObjectId[];
+  comment?: string;
+  books: any[];
+  bookshelves: any[];
 }
 
 export interface CreateUserDto {
@@ -15,8 +15,8 @@ export interface CreateUserDto {
   password: string;
   age: number;
   comment: string;
-  books: string[];
-  bookshelves: string[];
+  books: any[];
+  bookshelves: any[];
 }
 
 export interface ProcessedElement {
@@ -34,7 +34,7 @@ export interface Highlight {
   endY: number;
 }
 
-export interface HighlightPointsType {
+export interface HighlightPoints {
   x: number;
   y: number;
 }
@@ -48,11 +48,11 @@ export interface CanvaElementSkeleton {
   id: string;
   outgoingArrowIds: string[];
   incomingArrowIds: string[];
-  points: HighlightPointsType[];
+  points: HighlightPoints[];
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: number;
+  rotation: null;
 }
 
 export interface RectElement extends CanvaElementSkeleton {
@@ -61,32 +61,50 @@ export interface RectElement extends CanvaElementSkeleton {
   seed: number;
   hachureGap: number;
   hachureAngle: number;
+  type: "rect";
 }
 
 export interface TextElement extends CanvaElementSkeleton {
   text: string;
   fontFamily: string;
   fontSize: number;
+  type: "text";
 }
 
-export type StartType = "bookText" | "text";
+export interface CurveElementSkeleton {
+  id: string;
+  fill: string;
+  points: number[];
+  text?: string;
+  roughness: number;
+  bowing: number;
+  seed: number;
+  strokeWidth: number;
+  strokeStyle: "solid" | "dashed" | "dotted";
+  stroke: string;
+  fillStyle: "solid" | "dashed" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "zigzag-line";
+  fillWeight: number;
+  hachureAngle: number;
+  hachureGap: number;
+}
 
-export interface ArrowElement {
+export interface ArrowElement extends CurveElementSkeleton {
   startId: string;
   endId: string;
-  startType: StartType;
-  endType: StartType;
+  startType: string;
+  endType: string;
+  type: "arrow";
 }
 
 export interface Book {
   _id: string;
   title: string;
-  userId: string;
+  userId: any;
   description: string;
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: false | true;
   dateAdded: string;
   bookElements: ProcessedElement[];
   highlights: Highlight[];
@@ -121,14 +139,7 @@ export interface CanvaElementSkeletonDto {
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: number;
-}
-
-export interface TextElementDto extends CanvaElementSkeletonDto {
-  type: "text";
-  text: string;
-  fontFamily: string;
-  fontSize: number;
+  rotation: null;
 }
 
 export interface RectElementDto extends CanvaElementSkeletonDto {
@@ -140,11 +151,18 @@ export interface RectElementDto extends CanvaElementSkeletonDto {
   hachureAngle: number;
 }
 
+export interface TextElementDto extends CanvaElementSkeletonDto {
+  type: "text";
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+}
+
 export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
   fill: string;
-  text: string;
+  text?: string;
   roughness: number;
   bowing: number;
   seed: number;
@@ -161,8 +179,8 @@ export interface ArrowElementDto extends CurveElementSkeletonDto {
   type: "arrow";
   startId: string;
   endId: string;
-  startType: StartType;
-  endType: StartType;
+  startType: string;
+  endType: string;
 }
 
 export interface HighlightDto {
@@ -175,10 +193,10 @@ export interface HighlightDto {
 
 export interface UpdateBookDto extends Partial<CreateBookDto> {
   bookElements?: ProcessedElementDto[];
-  canvaElements?: (TextElementDto | RectElementDto)[];
+  canvaElements?: (RectElementDto | TextElementDto)[];
   curveElements?: ArrowElementDto[];
   highlights?: HighlightDto[];
-  liked?: boolean;
+  liked?: false | true;
   scale?: number;
   offsetPosition?: { x: number; y: number; };
 }
@@ -189,25 +207,28 @@ export interface OffsetPositionDto {
 }
 
 export interface CreateBookDto {
-  title: string;
+  _id?: string;
   userId: string;
+  highlights: HighlightDto[];
+  title: string;
   description: string;
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: false | true;
   dateAdded: string;
   bookElements: ProcessedElementDto[];
-  canvaElements: (TextElementDto | RectElementDto)[];
-  scale: number;
+  canvaElements: (RectElementDto | TextElementDto)[];
   curveElements: ArrowElementDto[];
+  scale: number;
   offsetPosition: OffsetPositionDto;
 }
 
 export interface Bookshelve {
+  _id: string;
   name: string;
   createdAt: Date;
-  books: ObjectId[];
+  books: any[];
 }
 
 export interface CreateBookshelveDto {

@@ -6,12 +6,12 @@ type CreateBookshelveDtoType = Omit<CreateBookshelveDto, "_id">;
 
 export class CreateBookshelveDto implements CreateBookshelveDtoType {
     @IsString()
-    readonly name: string;
+    readonly name!: string;
 
     @IsDate()
     @Type(() => Date)
-    readonly createdAt: Date;
+    readonly createdAt!: Date;
 
     @IsArray()
-    readonly books: Types.ObjectId[];
+    readonly books!: Types.ObjectId[];
 }

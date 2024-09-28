@@ -22,11 +22,11 @@ export class BookshelveService {
     }
 
     async getAllBookshelves(): Promise<Bookshelve[]> {
-        return this.bookshelveModel.find().exec();
+        return await this.bookshelveModel.find().exec();
     }
 
     async getBookshelveById(id: string): Promise<Bookshelve> {
-        const bookFound = this.bookshelveModel.findById(id).exec();
+        const bookFound = await this.bookshelveModel.findById(id).exec();
         if (!bookFound) {
             throw new NotFoundException(`Book with ID ${id} not found`);
         }
@@ -68,7 +68,9 @@ export class BookshelveService {
     }
 
     async deleteBookshelve(id: string): Promise<Bookshelve> {
-        const deletedBook = this.bookshelveModel.findByIdAndDelete(id).exec();
+        const deletedBook = await this.bookshelveModel
+            .findByIdAndDelete(id)
+            .exec();
         if (!deletedBook) {
             throw new NotFoundException(`Book with ID ${id} not found`);
         }

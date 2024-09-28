@@ -2,13 +2,14 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { EndpointMapping, InputMapping } from "./analyzer";
+import { basicTypes, EndpointMapping, InputMapping } from "./analyzer";
 import { findDirectoryUpwards } from "./findDirectory";
 export const generateInputTypes = (
     inputMap: InputMapping,
     endPointMap: EndpointMapping
 ) => {
     const frontendDirPath = findDirectoryUpwards();
+    if (!frontendDirPath) return;
 
     // Define the output path for the generated TypeScript file
     const outputPath = path.join(
@@ -25,8 +26,6 @@ export const generateInputTypes = (
         console.log(`Created directory: ${outputDir}`);
     }
 
-    // Define basic primitive types to exclude from imports
-    const basicTypes = ["string", "number", "boolean"];
 
     // Set to collect unique non-primitive type names
     const imports = new Set<string>();

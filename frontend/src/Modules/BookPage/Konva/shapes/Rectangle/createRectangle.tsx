@@ -1,15 +1,5 @@
-import { CanvaElementSkeleton } from "../../KonvaStage";
 import { v4 as uuidv4 } from "uuid";
-
-export interface RectElement extends CanvaElementSkeleton {
-    type: "rect";
-    roughness: number;
-    seed: number;
-    fillStyle: string;
-    hachureGap: number;
-    hachureAngle: number;
-    // Add any other Rough.js options you might need
-}
+import { RectElement } from "../../../../../endPointTypes/types";
 
 type CreateRectangleProps = {
     x: number;

@@ -8,12 +8,10 @@ import { FiPlus } from "react-icons/fi";
 import { accessTokenAtom, userAtom } from "../../atoms";
 import { useToast } from "../../hooks/use-toast";
 import { extractToc } from "../../preprocess/epub/extractToc";
-import {
-    ProcessedElement,
-    processElements,
-} from "../../preprocess/epub/htmlToBookElements";
+import { processElements } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { apiFetch } from "../../endPointTypes/apiClient";
+import { ProcessedElement } from "../../endPointTypes/types";
 
 type ImportBookProps = {
     isCollapsed: boolean;

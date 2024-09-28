@@ -4,11 +4,11 @@ import { ProcessedElement } from "../../schema/bookElements/processedElement.sch
 
 type ProcessedElementType = ProcessedElement;
 export class ProcessedElementDto implements ProcessedElementType {
-    @IsString() text: string;
+    @IsString() text!: string;
 
-    @IsNumber() lineX: number;
+    @IsNumber() lineX!: number;
 
-    @IsNumber() lineWidth: number;
+    @IsNumber() lineWidth!: number;
 
-    @IsNumber() lineY: number;
+    @IsNumber() lineY!: number;
 }

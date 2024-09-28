@@ -256,8 +256,8 @@
       },
       {
         "name": "rotation",
-        "type": "number",
-        "fullType": "rotation: number",
+        "type": "null",
+        "fullType": "rotation: null",
         "optional": false
       }
     ],
@@ -432,11 +432,6 @@
     ],
     "extends": []
   },
-  "StartType": {
-    "isType": true,
-    "name": "StartType",
-    "type": "\"text\" | \"bookText\""
-  },
   "ArrowElement": {
     "isType": false,
     "name": "ArrowElement",
@@ -455,14 +450,14 @@
       },
       {
         "name": "startType",
-        "type": "StartType",
-        "fullType": "startType: StartType",
+        "type": "string",
+        "fullType": "startType: string",
         "optional": false
       },
       {
         "name": "endType",
-        "type": "StartType",
-        "fullType": "endType: StartType",
+        "type": "string",
+        "fullType": "endType: string",
         "optional": false
       },
       {
@@ -524,8 +519,8 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
+        "type": "false | true",
+        "fullType": "liked: false | true",
         "optional": false
       },
       {
@@ -701,8 +696,8 @@
       },
       {
         "name": "rotation",
-        "type": "number",
-        "fullType": "rotation: number",
+        "type": "null",
+        "fullType": "rotation: null",
         "optional": false
       }
     ],
@@ -812,7 +807,7 @@
         "name": "text",
         "type": "string",
         "fullType": "text: string",
-        "optional": false
+        "optional": true
       },
       {
         "name": "roughness",
@@ -901,14 +896,14 @@
       },
       {
         "name": "startType",
-        "type": "StartType",
-        "fullType": "startType: StartType",
+        "type": "string",
+        "fullType": "startType: string",
         "optional": false
       },
       {
         "name": "endType",
-        "type": "StartType",
-        "fullType": "endType: StartType",
+        "type": "string",
+        "fullType": "endType: string",
         "optional": false
       }
     ],
@@ -983,8 +978,8 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
+        "type": "false | true",
+        "fullType": "liked: false | true",
         "optional": true
       },
       {
@@ -1031,7 +1026,7 @@
         "name": "_id",
         "type": "string",
         "fullType": "_id: string",
-        "optional": false
+        "optional": true
       },
       {
         "name": "userId",
@@ -1077,8 +1072,8 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
+        "type": "false | true",
+        "fullType": "liked: false | true",
         "optional": false
       },
       {
@@ -1124,6 +1119,12 @@
     "isType": false,
     "name": "Bookshelve",
     "properties": [
+      {
+        "name": "_id",
+        "type": "string",
+        "fullType": "_id: ObjectId",
+        "optional": false
+      },
       {
         "name": "name",
         "type": "string",

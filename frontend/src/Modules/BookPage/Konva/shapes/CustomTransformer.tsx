@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
 import Konva from "konva";
-import { CanvaElement } from "./CanvaElement";
+import { CanvaElement } from "../konvaAtoms";
 
 type CustomTransformerProps = {
     selectedIds: string[];

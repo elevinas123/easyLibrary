@@ -1,14 +1,14 @@
 import { useAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
-import { Book } from "../../LibraryPage/LibraryPage";
+import { ProcessedElement } from "../../../endPointTypes/types";
 import Tools from "./components/Tools";
+import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
     canvaElementsAtom,
-    HighlightPoints,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
@@ -21,8 +21,6 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
-import { getPos } from "./functions/getPos";
-import Konva from "konva";
 
 export type VisibleArea = {
     x: number;
@@ -30,46 +28,6 @@ export type VisibleArea = {
     width: number;
     height: number;
 };
-export type CurveSkeleton = {
-    points: number[];
-    id: string;
-    fill: string;
-    text: null | string;
-    roughness: number;
-    bowing: number;
-    seed: number;
-    strokeWidth: number;
-    strokeStyle: "solid" | "dashed" | "dotted";
-    stroke: string;
-    fillStyle:
-        | "solid"
-        | "hachure"
-        | "cross-hatch"
-        | "zigzag"
-        | "dots"
-        | "dashed"
-        | "zigzag-line";
-    fillWeight: number;
-    hachureAngle: number;
-    hachureGap: number;
-};
-// Base skeleton for all elements
-export type CanvaElementSkeleton = {
-    fill: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    id: string;
-    outgoingArrowIds: string[];
-    incomingArrowIds: string[];
-    points: HighlightPoints[];
-    strokeColor: string;
-    strokeWidth: number;
-    opacity: number;
-    rotation: number;
-};
-export type StartType = "bookText" | "text" | null;
 
 type KonvaStageProps = {
     bookElements: ProcessedElement[];

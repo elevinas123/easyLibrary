@@ -1,7 +1,7 @@
 import { Shape } from "react-konva";
-import { RectElement } from "./createRectangle";
 import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
+import { RectElement } from "../../../../../endPointTypes/types";
 
 type RenderRectangleProps = {
     draggable: boolean;
@@ -32,7 +32,7 @@ export default function RenderRectangle({
 
                 // Save the context state
                 context.save();
-                
+
                 // Apply transformations
                 context.rotate((shape.rotation() * Math.PI) / 180);
 

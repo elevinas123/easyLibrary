@@ -1,12 +1,7 @@
 // Function to serialize a class symbol into DocEntry
 import * as ts from "typescript";
 
-import {
-    getControllerPath,
-    getHttpMethod,
-    getMethodPath,
-    getParameterDecorator,
-} from "./extract";
+import { getHttpMethod, getMethodPath, getParameterDecorator } from "./extract";
 import { DocEntry, ParamEntry } from "./analyzer";
 export function serializeClass(
     symbol: ts.Symbol,
@@ -18,10 +13,11 @@ export function serializeClass(
         documentation: ts.displayPartsToString(
             symbol.getDocumentationComment(checker)
         ),
-        type: checker.typeToString(
-            checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
+        type: serializeType(
+            checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!),
+            checker
         ),
-        extends: [], // Add extends property to DocEntry to track inheritance
+        extends: [],
         properties: [],
         methods: [],
         constructors: [],
@@ -35,23 +31,24 @@ export function serializeClass(
         .getConstructSignatures()
         .map(serializeSignature(checker));
 
-    details.path = controllerPath || ""; // Add controller path
+    details.path = controllerPath || "";
 
-    // Serialize properties and check if they are optional (directly declared
-    // properties only)
+    // Serialize properties
     if (classDeclaration.members) {
         classDeclaration.members.forEach((member) => {
             if (ts.isPropertyDeclaration(member)) {
                 const memberSymbol = checker.getSymbolAtLocation(member.name);
+
                 if (memberSymbol) {
                     const propType = checker.getTypeOfSymbolAtLocation(
                         memberSymbol,
                         member
                     );
+                    const serializedType = serializeType(propType, checker);
                     const isOptional = !!member.questionToken;
                     details.properties.push({
                         name: memberSymbol.getName(),
-                        type: checker.typeToString(propType),
+                        type: serializedType,
                         optional: isOptional,
                         documentation: ts.displayPartsToString(
                             memberSymbol.getDocumentationComment(checker)
@@ -62,31 +59,47 @@ export function serializeClass(
         });
     }
 
-    // Serialize methods (directly declared methods only)
+    // Serialize methods
     classDeclaration.members.forEach((member) => {
         if (ts.isMethodDeclaration(member)) {
             const methodSymbol = checker.getSymbolAtLocation(member.name);
             if (methodSymbol) {
-                details.methods.push(
+                details.methods?.push(
                     serializeMethod(methodSymbol, checker, classType)
                 );
             }
         }
     });
 
-    // Handle class inheritance (extends)
+    // Handle class inheritance (extends and implements)
     if (classDeclaration.heritageClauses) {
         classDeclaration.heritageClauses.forEach((clause) => {
             if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
                 clause.types.forEach((typeNode) => {
                     const extendsType = checker.getTypeAtLocation(typeNode);
-                    details.extends.push(checker.typeToString(extendsType));
+                    details.extends?.push(checker.typeToString(extendsType));
                 });
             }
         });
     }
 
     return details;
+}
+
+export function serializeType(type: ts.Type, checker: ts.TypeChecker): string {
+    if (type.isUnion()) {
+        return type.types
+            .map((t) => serializeType(t, checker))
+            .flat()
+            .join(" | ");
+    } else if (type.isIntersection()) {
+        return type.types
+            .map((t) => serializeType(t, checker))
+            .flat()
+            .join(" & ");
+    } else {
+        return checker.typeToString(type);
+    }
 }
 
 // Function to serialize a method symbol into DocEntry
@@ -243,10 +256,17 @@ export function serializeTypeAlias(
         path: symbol.declarations?.[0]?.getSourceFile().fileName,
         properties: [],
     };
+    if (symbol.getName() === "StartType") {
+        console.log("symbol.declarations", symbol.declarations);
+        console.log(
+            "StartType",
+            checker.typeToString(checker.getDeclaredTypeOfSymbol(symbol))
+        );
+    }
 
     // Handle more complex types (union, intersection, array, or object types)
-    if (ts.isTypeAliasDeclaration(symbol.declarations?.[0])) {
-        const declaration = symbol.declarations[0] as ts.TypeAliasDeclaration;
+    if (ts.isTypeAliasDeclaration(symbol.declarations?.[0] as ts.Declaration)) {
+        const declaration = symbol.declarations?.[0] as ts.TypeAliasDeclaration;
         const type = checker.getTypeAtLocation(declaration.type);
 
         if (type.isUnion()) {

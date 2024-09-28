@@ -1,7 +1,7 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { CanvaElement } from "./CanvaElement";
-import RenderRectangle from "./Rectangle/RenderRectangle";
 import RenderText from "./Text/RenderText";
+import RenderRectangle from "./Rectangle/RenderRectangle";
+import { CanvaElement } from "../konvaAtoms";
 
 export const renderCanvaElement = (
     element: CanvaElement,
@@ -22,7 +22,7 @@ export const renderCanvaElement = (
             <RenderRectangle
                 draggable={draggable}
                 element={element}
-                handleDragMove={handleDragMove }
+                handleDragMove={handleDragMove}
                 key={element.id}
             />
         );

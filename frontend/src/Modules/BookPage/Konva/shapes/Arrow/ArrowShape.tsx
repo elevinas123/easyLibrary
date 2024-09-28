@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import {
     activeToolAtom,
     arrowsAtom,
+    CanvaElement,
     canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
@@ -12,23 +13,11 @@ import {
 import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { CurveSkeleton, StartType } from "../../KonvaStage";
-import { Arrow, Circle } from "react-konva";
+import { Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
-import { CanvaElement } from "../CanvaElement";
 import { getPos } from "../../functions/getPos";
 import RenderArrow from "./RenderArrow";
-
-export type CurveElement = ArrowElement;
-
-export interface ArrowElement extends CurveSkeleton {
-    type: "arrow";
-    points: number[];
-    startId: string | null;
-    endId: string | null;
-    startType: StartType;
-    endType: StartType;
-}
+import { ArrowElement, StartType } from "../../../../../endPointTypes/types";
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -49,8 +38,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
-    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
-    const [scale, setScale] = useAtom(scaleAtom); // State to handle scale
+    const [offsetPosition] = useAtom(offsetPositionAtom);
+    const [scale] = useAtom(scaleAtom); // State to handle scale
 
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);

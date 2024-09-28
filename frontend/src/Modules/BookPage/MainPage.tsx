@@ -15,9 +15,10 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "./Konva/konvaAtoms";
-import { Book } from "../LibraryPage/LibraryPage";
 import debounce from "lodash/debounce";
 import { isEqual } from "lodash";
+import { Book } from "../../endPointTypes/types";
+import { apiFetch } from "../../endPointTypes/apiClient";
 
 export type HighlightRange = {
     startElementId: string;
@@ -51,14 +52,19 @@ const patchBook = async (
     updateData: Partial<Book>,
     id: string,
     accessToken: string
-): Promise<Book> => {
-    const { data } = await axios.patch(`/api/book/${id}`, updateData, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    console.log("Updated Book Data:", data);
-    return data;
+) => {
+    const request = await apiFetch(
+        "PATCH /book/:id",
+        { params: { id }, body: updateData },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+
+    console.log("Updated Book Data:", request.data);
+    return request.data;
 };
 
 function MainPage() {
@@ -120,7 +126,7 @@ function MainPage() {
                     y: 0,
                 }
             );
-            console.log("boookUpdated", book);
+            console.log("bookUpdated", book);
             setUpdated(true);
         }
         console.log("Book data updated:", book);

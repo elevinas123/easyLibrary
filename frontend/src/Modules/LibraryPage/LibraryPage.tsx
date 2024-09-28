@@ -1,17 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { useAuth } from "../../hooks/userAuth";
-import { ProcessedElement } from "../../preprocess/epub/htmlToBookElements";
-import BookCards from "./BookCards";
-import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
-import { useToast } from "../../hooks/use-toast";
-import BookInfoPage from "./BookInfoPage";
-import { CanvaElement } from "../BookPage/Konva/shapes/CanvaElement";
-import { CurveElement } from "../BookPage/Konva/shapes/Arrow/ArrowShape";
-import { Highlight } from "../BookPage/Konva/konvaAtoms";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { Book } from "../../endPointTypes/types";
+import { useToast } from "../../hooks/use-toast";
+import { useAuth } from "../../hooks/userAuth";
+import BookCards from "./BookCards";
+import BookInfoPage from "./BookInfoPage";
+import Sidebar from "./Sidebar";
 
 type LibraryPageProps = {
     // Define your prop types here

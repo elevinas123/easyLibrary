@@ -1,9 +1,13 @@
 import { atom } from "jotai";
-
-import { DrawingToolNames } from "./components/Tools";
+import {
+    ArrowElement,
+    Highlight,
+    HighlightPoints,
+    RectElement,
+    TextElement,
+} from "../../../endPointTypes/types";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
-import { ArrowElement } from "./shapes/Arrow/ArrowShape";
-import { CanvaElement } from "./shapes/CanvaElement";
+import { DrawingToolNames } from "./components/Tools";
 
 export type ArrowHover = {
     points: HighlightPoints[];
@@ -11,10 +15,6 @@ export type ArrowHover = {
     rects?: HighlightRect[];
 };
 
-export type HighlightPoints = {
-    x: number;
-    y: number;
-};
 export const activeToolAtom = atom<DrawingToolNames>("Select");
 export const stageStateAtom = atom({
     isDrawing: false,
@@ -24,13 +24,8 @@ export const offsetPositionAtom = atom({
     x: 0,
     y: 0,
 });
-export type Highlight = {
-    id: string;
-    startingX: number;
-    startingY: number;
-    endX: number;
-    endY: number;
-};
+
+export type CanvaElement = RectElement | TextElement;
 
 export type TextItem = {
     id: string;

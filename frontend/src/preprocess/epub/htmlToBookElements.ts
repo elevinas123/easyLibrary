@@ -1,11 +1,5 @@
 import { HtmlElementObject, HtmlObject } from "./preprocessEpub";
 
-export type ProcessedElement = {
-    text: string;
-    lineX: number;
-    lineWidth: number;
-    lineY: number;
-};
 export const processElements = (
     bookElements: (HtmlObject | null)[],
     fontSize: number,

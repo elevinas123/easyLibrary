@@ -29,7 +29,7 @@ export class CanvaElementSkeleton {
 
     @prop({ required: true }) opacity!: number;
 
-    @prop({ required: true }) rotation!: number;
+    @prop({ required: true }) rotation!: null;
 
     // `type` will be set by the discriminator, not directly in the base class
 }

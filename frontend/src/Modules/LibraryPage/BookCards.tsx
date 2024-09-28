@@ -1,4 +1,4 @@
-import { Book } from "./LibraryPage";
+import { Book } from "../../endPointTypes/types";
 import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
 

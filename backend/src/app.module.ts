@@ -20,7 +20,7 @@ import { UserModule } from "./user/user.module";
         TypegooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
-                uri: configService.get<string>("MONGODB_URI"),
+                uri: configService.get<string>("MONGODB_URI")!,
             }),
             inject: [ConfigService],
         }),

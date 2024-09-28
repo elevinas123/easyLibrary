@@ -12,22 +12,20 @@ import { v4 as uuidv4 } from "uuid";
 import {
     activeToolAtom,
     arrowsAtom,
+    CanvaElement,
     canvaElementsAtom,
     offsetPositionAtom,
     scaleAtom,
     selectedItemsIdsAtom,
 } from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
-import CreateRectangle, { RectElement } from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderCanvaElement";
-import CreateText, { TextElement } from "./Text/CreateText";
 import CustomTransformer from "./CustomTransformer";
 import Konva from "konva";
-import { off } from "process";
-import { Vector2d } from "konva/lib/types";
 import { getPos } from "../functions/getPos";
-
-export type CanvaElement = TextElement | RectElement;
+import { RectElement, TextElement } from "../../../../endPointTypes/types";
+import CreateText from "./Text/CreateText";
+import CreateRectangle from "./Rectangle/createRectangle";
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -50,12 +48,12 @@ function CanvasElement(
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds, setSelectedItemsIds] =
         useAtom(selectedItemsIdsAtom);
-    const [arrows, setArrows] = useAtom(arrowsAtom);
+    const [arrows] = useAtom(arrowsAtom);
 
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);
-    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
+    const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
 
     useImperativeHandle(ref, () => ({
@@ -171,7 +169,7 @@ function CanvasElement(
     };
 
     const getItemsAtPosition = (pos: { x: number; y: number }) => {
-        const items =  [
+        const items = [
             ...canvaElements.filter(
                 (item) =>
                     pos.x >= item.x &&
@@ -198,7 +196,7 @@ function CanvasElement(
             }),
         ];
         console.log("getting items", items);
-        return items
+        return items;
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {

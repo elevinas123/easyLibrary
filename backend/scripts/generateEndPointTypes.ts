@@ -7,6 +7,7 @@ import { findDirectoryUpwards } from "./findDirectory";
 
 export const generateEndPointTypes = (endPointMap: EndpointMapping) => {
     const frontendDirPath = findDirectoryUpwards();
+    if (!frontendDirPath) return;
 
     // Define the output path for the generated TypeScript file
     const outputPath = path.join(

@@ -5,6 +5,7 @@ import {
     IsDateString,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
     ValidateNested,
 } from "class-validator";
@@ -23,12 +24,12 @@ interface CreateBookType
     extends Omit<Book, "canvaElements" | "curveElements" | "_id" | "userId"> {
     canvaElements: (TextElementDto | RectElementDto)[];
     curveElements: ArrowElementDto[];
-    _id: string;
+    _id?: string;
     userId: string;
 }
 
 export class CreateBookDto implements CreateBookType {
-    @IsString() @IsNotEmpty() _id!: string;
+    @IsString() @IsNotEmpty() @IsOptional() _id?: string;
 
     @IsString() userId!: string;
 
