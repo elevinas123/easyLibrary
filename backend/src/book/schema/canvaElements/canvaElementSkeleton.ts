@@ -1,61 +1,37 @@
-// canva-element-skeleton.schema.ts
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import {
-    HighlightPointsSchema,
-    HighlightPointsType,
-} from "./highlightPoints.schema";
-import { RectElementSchema } from "./elements/rectElement.schema";
-import { TextElementSchema } from "./elements/textElement.schema";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
-export type CanvaElementSkeletonType = {
-    fill: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    id: string;
-    outgoingArrowIds: string[];
-    incomingArrowIds: string[];
-    points: HighlightPointsType[];
-    strokeColor: string;
-    strokeWidth: number;
-    opacity: number;
-};
+import { HighlightPoints } from "./highlightPoints.schema";
 
-@Schema({ discriminatorKey: "type", _id: false })
-export class CanvaElementSkeleton implements CanvaElementSkeletonType {
-    @Prop({ required: true }) fill: string;
+@modelOptions({ schemaOptions: { discriminatorKey: "type", _id: false } })
+export class CanvaElementSkeleton {
+    @prop({ required: true }) fill!: string;
 
-    @Prop({ required: true }) x: number;
+    @prop({ required: true }) x!: number;
 
-    @Prop({ required: true }) y: number;
+    @prop({ required: true }) y!: number;
 
-    @Prop({ required: true }) width: number;
+    @prop({ required: true }) width!: number;
 
-    @Prop({ required: true }) height: number;
+    @prop({ required: true }) height!: number;
 
-    @Prop({ required: true }) id: string;
+    @prop({ required: true }) id!: string;
 
-    @Prop({ type: [String], required: true }) outgoingArrowIds: string[];
+    @prop({ type: () => [String], required: true }) outgoingArrowIds!: string[];
 
-    @Prop({ type: [String], required: true }) incomingArrowIds: string[];
+    @prop({ type: () => [String], required: true }) incomingArrowIds!: string[];
 
-    @Prop({ type: [HighlightPointsSchema], required: true })
-    points: HighlightPointsType[];
+    @prop({ type: () => [HighlightPoints], required: true })
+    points!: HighlightPoints[];
 
-    @Prop({ required: true }) strokeColor: string;
+    @prop({ required: true }) strokeColor!: string;
 
-    @Prop({ required: true }) strokeWidth: number;
+    @prop({ required: true }) strokeWidth!: number;
 
-    @Prop({ required: true }) opacity: number;
+    @prop({ required: true }) opacity!: number;
 
-    @Prop({ required: true }) rotation: number;
+    @prop({ required: true }) rotation!: number;
+
+    // `type` will be set by the discriminator, not directly in the base class
 }
 
-export type CanvaElementSkeletonDocument = CanvaElementSkeleton & Document;
-export const CanvaElementSkeletonSchema =
-    SchemaFactory.createForClass(CanvaElementSkeleton);
-// Access the schema of the array items
-CanvaElementSkeletonSchema.discriminator("rect", RectElementSchema);
-CanvaElementSkeletonSchema.discriminator("text", TextElementSchema);
+export const CanvaElementModel = getModelForClass(CanvaElementSkeleton);

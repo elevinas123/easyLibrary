@@ -1,38 +1,30 @@
-// src/cats/schemas/cat.schema.ts
+import {getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
+import {Types} from 'mongoose';
+import {Book} from 'src/book/schema/book.schema';
+import {Bookshelve} from 'src/bookshelve/schema/bookshelve-schema';
 
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
-import { Bookshelve } from "src/bookshelve/schema/bookshelve-schema";
+export type UserDocument = User&Document;
 
-export type UserDocument = User & Document;
-
-@Schema()
+@modelOptions({schemaOptions: {_id: true}})
 export class User {
-    @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id: Types.ObjectId;
-    
-    @Prop({ required: true }) username: string;
+  @prop({type: () => String, required: true, auto: true}) _id!: Types.ObjectId;
 
-    @Prop({ require: true }) age: number;
+  @prop({required: true}) username!: string;
 
-    @Prop({ required: true }) password: string;
+  @prop({required: true}) age!: number;
 
-    @Prop() comment: string;
+  @prop({required: true}) password!: string;
 
-    @Prop({
-        required: true,
-        type: [{ type: Types.ObjectId, ref: "Book" }],
-        default: [],
-    })
-    books: Types.ObjectId[];
+  @prop() comment?: string;
 
-    // Reference to Bookshelve collection
-    @Prop({
-        required: true,
-        type: [{ type: Types.ObjectId, ref: "Bookshelve" }],
-        default: [],
-    })
-    bookshelves: Types.ObjectId[];
+  // Reference to books in the Book collection
+  @prop({ref: () => Book, type: () => [Types.ObjectId], default: []})
+  books!: Ref<Book>[];
+
+  // Reference to bookshelves in the Bookshelve collection
+  @prop({ref: () => Bookshelve, type: () => [Types.ObjectId], default: []})
+  bookshelves!: Ref<Bookshelve>[];
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+// Create the model for User
+export const UserModel = getModelForClass(User);

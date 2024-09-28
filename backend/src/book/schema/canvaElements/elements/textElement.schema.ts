@@ -1,19 +1,18 @@
-// text-element.schema.ts
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import {
-    CanvaElementSkeleton,
-} from "../canvaElementSkeleton";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
-
-@Schema({ _id: false })
+import { CanvaElementSkeleton } from "../canvaElementSkeleton";
+@modelOptions({ schemaOptions: { _id: false } })
 export class TextElement extends CanvaElementSkeleton {
-    @Prop({ required: true }) text: string;
+    @prop({ required: true }) text!: string;
 
-    @Prop({ required: true }) fontFamily: string;
+    @prop({ required: true }) fontFamily!: string;
 
-    @Prop({ required: true }) fontSize: number;
+    @prop({ required: true }) fontSize!: number;
+
+    @prop({ required: true }) sd!: number;
+
+    // The 'type' getter will return the discriminator value ('text')
+    @prop({ required: true, default: "text" }) // Enforce 'type' field explicitly
+    readonly type!: "text"; // TypeScript now recognizes the type as 'text'
 }
-
-export type TextElementDocument = TextElement & Document;
-export const TextElementSchema = SchemaFactory.createForClass(TextElement);
+export const TextElementModel = getModelForClass(TextElement);

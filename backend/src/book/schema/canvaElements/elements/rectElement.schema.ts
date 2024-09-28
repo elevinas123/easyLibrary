@@ -1,20 +1,25 @@
-// rect-element.schema.ts
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
+
 import { CanvaElementSkeleton } from "../canvaElementSkeleton";
 
-@Schema({ _id: false })
+// Extend the base class CanvaElementSkeleton
+@modelOptions({ schemaOptions: { _id: false } })
 export class RectElement extends CanvaElementSkeleton {
-    @Prop({ required: true }) fillStyle: string;
+    @prop({ required: true }) fillStyle!: string;
 
-    @Prop({ required: true }) roughness: number;
+    @prop({ required: true }) roughness!: number;
 
-    @Prop({ required: true }) seed: number;
+    @prop({ required: true }) seed!: number;
 
-    @Prop({ required: true }) hachureGap: number;
+    @prop({ required: true }) hachureGap!: number;
 
-    @Prop({ required: true }) hachureAngle: number;
+    @prop({ required: true }) hachureAngle!: number;
+
+    // The 'type' getter will return the discriminator value ('text')
+    @prop({required: true, default: 'rect'})  // Enforce 'type' field explicitly
+    readonly type!: 'rect';  // TypeScript now recognizes the type as 'text
 }
 
-export type RectElementDocument = RectElement & Document;
-export const RectElementSchema = SchemaFactory.createForClass(RectElement);
+// You don't need `SchemaFactory` or `@Schema` decorators, as Typegoose handles
+// this Define the model using Typegoose
+export const RectElementModel = getModelForClass(RectElement);

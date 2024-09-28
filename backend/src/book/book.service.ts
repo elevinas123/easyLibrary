@@ -4,11 +4,13 @@ import { Model } from "mongoose";
 
 import { CreateBookDto } from "./dto/createBookDto";
 import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
-import { Book, BookDocument } from "./schema/book.schema";
+import { Book } from "./schema/book.schema";
+import { ReturnModelType } from "@typegoose/typegoose";
 @Injectable()
 export class BookService {
     constructor(
-        @InjectModel(Book.name) private bookModel: Model<BookDocument>
+        @InjectModel(Book.name)
+        private readonly bookModel: ReturnModelType<typeof Book>
     ) {}
 
     async addBook(createBookDto: CreateBookDto): Promise<Book> {
@@ -35,10 +37,7 @@ export class BookService {
         return book;
     }
 
-    async updateBook(
-        id: string,
-        updateBookDto: UpdateBookDto
-    ): Promise<Book> {
+    async updateBook(id: string, updateBookDto: UpdateBookDto): Promise<Book> {
         const updatedBook = await this.bookModel
             .findByIdAndUpdate(id, { $set: updateBookDto }, { new: true })
             .exec();

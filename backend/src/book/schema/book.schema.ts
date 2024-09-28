@@ -1,75 +1,63 @@
-// book.schema.ts
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Schema as MongooseSchema, Types } from "mongoose";
+import {
+    getModelForClass,
+    modelOptions,
+    prop,
+    Ref,
+} from "@typegoose/typegoose";
+import { Types } from "mongoose";
 
-import {
-    ProcessedElement,
-    ProcessedElementSchema,
-} from "./bookElements/processedElement.schema";
-import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
-import {
-    RectElement,
-    RectElementSchema,
-} from "./canvaElements/elements/rectElement.schema";
-import {
-    TextElement,
-    TextElementSchema,
-} from "./canvaElements/elements/textElement.schema";
-import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
-import {
-    ArrowElement,
-    ArrowElementSchema,
-} from "./curveElements/elements/arrowElement.schema";
-import { HighlightSchema } from "./highlights/highlights.schema";
+import { ProcessedElement } from "./bookElements/processedElement.schema";
+import { CanvaElementSkeleton } from "./canvaElements/canvaElementSkeleton";
+import { RectElement } from "./canvaElements/elements/rectElement.schema";
+import { TextElement } from "./canvaElements/elements/textElement.schema";
+import { CurveElementSkeleton } from "./curveElements/curveElementSkeleton";
+import { ArrowElement } from "./curveElements/elements/arrowElement.schema";
+import { Highlight } from "./highlights/highlights.schema";
+import { User } from "src/user/schemas/user.schema";
 
-export type BookDocument = Book & Document;
-
-@Schema()
+@modelOptions({ schemaOptions: { _id: true } })
 export class Book {
-    @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id: Types.ObjectId;
+    @prop({ type: () => Types.ObjectId, required: true, auto: true })
+    _id!: Types.ObjectId;
 
-    @Prop({ type: String, required: true }) title: string;
+    @prop({ required: true }) title!: string;
 
-    @Prop({ type: Types.ObjectId, ref: "User", required: true })
-    userId: Types.ObjectId;
+    @prop({ ref: "User", required: true }) userId!: Ref<User>;
 
-    @Prop({ type: String, required: true }) description: string;
+    @prop({ required: true }) description!: string;
 
-    @Prop({ type: String, required: true }) author: string;
+    @prop({ required: true }) author!: string;
 
-    @Prop({ type: [String], required: true }) genre: string[];
+    @prop({ type: () => [String], required: true }) genre!: string[];
 
-    @Prop({ type: String, required: true }) imageUrl: string;
+    @prop({ required: true }) imageUrl!: string;
 
-    @Prop({ type: Boolean, required: true }) liked: boolean;
+    @prop({ required: true }) liked!: boolean;
 
-    @Prop({ type: String, required: true }) dateAdded: string;
+    @prop({ required: true }) dateAdded!: string;
 
-    @Prop({
-        type: [ProcessedElementSchema],
+    @prop({ type: () => [ProcessedElement], required: true })
+    bookElements!: ProcessedElement[];
+
+    @prop({ type: () => [Highlight], required: true }) highlights!: Highlight[];
+
+    @prop({ type: () => [CanvaElementSkeleton], required: true })
+    canvaElements!: (RectElement | TextElement)[];
+
+    @prop({ type: () => [CurveElementSkeleton], required: true })
+    curveElements!: ArrowElement[];
+
+    @prop({ required: true }) scale!: number;
+
+    @prop({
+        type: () => ({
+            x: Number,
+            y: Number,
+        }),
         required: true,
     })
-    bookElements: ProcessedElement[];
-
-    @Prop({ type: [HighlightSchema], required: true }) highlights: Highlight[];
-
-    @Prop({ type: [CanvaElementSkeletonSchema], required: true })
-    canvaElements: (RectElement | TextElement)[];
-
-    @Prop({
-        type: [CurveElementSkeletonSchema],
-        required: true,
-    })
-    curveElements: ArrowElement[];
-
-    @Prop({ type: Number, required: true }) scale: number;
-
-    @Prop({
-        type: { x: Number, y: Number },
-        required: true,
-    })
-    offsetPosition: { x: number; y: number };
+    offsetPosition!: { x: number; y: number };
 }
 
-export const BookSchema = SchemaFactory.createForClass(Book);
+// Create the model for Book
+export const BookModel = getModelForClass(Book);

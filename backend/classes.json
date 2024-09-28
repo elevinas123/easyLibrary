@@ -921,24 +921,6 @@
     "properties": []
   },
   {
-    "name": "HighlightPointsType",
-    "documentation": "",
-    "type": "HighlightPointsType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts",
-    "properties": [
-      {
-        "name": "x",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "y",
-        "type": "number",
-        "optional": false
-      }
-    ]
-  },
-  {
     "name": "HighlightPoints",
     "documentation": "",
     "type": "typeof HighlightPoints",
@@ -960,169 +942,6 @@
     "methods": [],
     "constructors": [],
     "path": ""
-  },
-  {
-    "name": "HighlightPointsDocument",
-    "documentation": "",
-    "type": "HighlightPoints & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/highlightPoints.schema.ts",
-    "properties": []
-  },
-  {
-    "name": "RectElement",
-    "documentation": "",
-    "type": "typeof RectElement",
-    "extends": [
-      "CanvaElementSkeleton"
-    ],
-    "properties": [
-      {
-        "name": "fillStyle",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "roughness",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "seed",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureGap",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureAngle",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "RectElementDocument",
-    "documentation": "",
-    "type": "RectElement & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/rectElement.schema.ts",
-    "properties": []
-  },
-  {
-    "name": "TextElement",
-    "documentation": "",
-    "type": "typeof TextElement",
-    "extends": [
-      "CanvaElementSkeleton"
-    ],
-    "properties": [
-      {
-        "name": "text",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fontFamily",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fontSize",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "TextElementDocument",
-    "documentation": "",
-    "type": "TextElement & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/elements/textElement.schema.ts",
-    "properties": []
-  },
-  {
-    "name": "CanvaElementSkeletonType",
-    "documentation": "",
-    "type": "CanvaElementSkeletonType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts",
-    "properties": [
-      {
-        "name": "fill",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "x",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "y",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "width",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "height",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "outgoingArrowIds",
-        "type": "string[]",
-        "optional": false
-      },
-      {
-        "name": "incomingArrowIds",
-        "type": "string[]",
-        "optional": false
-      },
-      {
-        "name": "points",
-        "type": "HighlightPointsType[]",
-        "optional": false
-      },
-      {
-        "name": "strokeColor",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "opacity",
-        "type": "number",
-        "optional": false
-      }
-    ]
   },
   {
     "name": "CanvaElementSkeleton",
@@ -1180,7 +999,7 @@
       },
       {
         "name": "points",
-        "type": "HighlightPointsType[]",
+        "type": "HighlightPoints[]",
         "optional": false,
         "documentation": ""
       },
@@ -1214,45 +1033,96 @@
     "path": ""
   },
   {
-    "name": "CanvaElementSkeletonDocument",
+    "name": "RectElement",
     "documentation": "",
-    "type": "CanvaElementSkeleton & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/canvaElements/canvaElementSkeleton.ts",
-    "properties": []
-  },
-  {
-    "name": "ArrowElementType",
-    "documentation": "",
+    "type": "typeof RectElement",
+    "extends": [
+      "CanvaElementSkeleton"
+    ],
     "properties": [
       {
+        "name": "fillStyle",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "roughness",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "seed",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureGap",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureAngle",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
         "name": "type",
-        "type": "\"arrow\"",
-        "optional": false
-      },
-      {
-        "name": "startId",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "endId",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "startType",
-        "type": "\"StartTyp\"",
-        "optional": false
-      },
-      {
-        "name": "endType",
-        "type": "StartType",
-        "optional": false
+        "type": "\"rect\"",
+        "optional": false,
+        "documentation": ""
       }
     ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "TextElement",
+    "documentation": "",
+    "type": "typeof TextElement",
     "extends": [
-      "CurveElementSkeletonType"
-    ]
+      "CanvaElementSkeleton"
+    ],
+    "properties": [
+      {
+        "name": "text",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fontFamily",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "sd",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
   },
   {
     "name": "StartType",
@@ -1265,7 +1135,9 @@
     "name": "ArrowElement",
     "documentation": "",
     "type": "typeof ArrowElement",
-    "extends": [],
+    "extends": [
+      "CurveElementSkeleton"
+    ],
     "properties": [
       {
         "name": "startId",
@@ -1295,90 +1167,6 @@
     "methods": [],
     "constructors": [],
     "path": ""
-  },
-  {
-    "name": "ArrowElementDocument",
-    "documentation": "",
-    "type": "ArrowElement & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/elements/arrowElement.schema.ts",
-    "properties": []
-  },
-  {
-    "name": "CurveElementSkeletonType",
-    "documentation": "",
-    "properties": [
-      {
-        "name": "points",
-        "type": "number[]",
-        "optional": false
-      },
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "fill",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "text",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "roughness",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "bowing",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "seed",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\"",
-        "optional": false
-      },
-      {
-        "name": "stroke",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
-        "optional": false
-      },
-      {
-        "name": "fillWeight",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "hachureAngle",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "hachureGap",
-        "type": "number",
-        "optional": false
-      }
-    ],
-    "extends": []
   },
   {
     "name": "CurveElementSkeleton",
@@ -1407,7 +1195,7 @@
       {
         "name": "text",
         "type": "string",
-        "optional": false,
+        "optional": true,
         "documentation": ""
       },
       {
@@ -1474,13 +1262,6 @@
     "methods": [],
     "constructors": [],
     "path": ""
-  },
-  {
-    "name": "CurveElementSkeletonDocument",
-    "documentation": "",
-    "type": "CurveElementSkeleton & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/curveElements/curveElementSkeleton.ts",
-    "properties": []
   },
   {
     "name": "HighlightType",
@@ -1564,13 +1345,6 @@
     "path": ""
   },
   {
-    "name": "BookDocument",
-    "documentation": "",
-    "type": "Book & Document<unknown, any, any>",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/book.schema.ts",
-    "properties": []
-  },
-  {
     "name": "Book",
     "documentation": "",
     "type": "typeof Book",
@@ -1590,7 +1364,7 @@
       },
       {
         "name": "userId",
-        "type": "ObjectId",
+        "type": "any",
         "optional": false,
         "documentation": ""
       },
@@ -2100,7 +1874,7 @@
   {
     "name": "UserDocument",
     "documentation": "",
-    "type": "User & Document<unknown, any, any>",
+    "type": "User & Document",
     "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
     "properties": []
   },
@@ -2137,18 +1911,18 @@
       {
         "name": "comment",
         "type": "string",
-        "optional": false,
+        "optional": true,
         "documentation": ""
       },
       {
         "name": "books",
-        "type": "ObjectId[]",
+        "type": "any[]",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "bookshelves",
-        "type": "ObjectId[]",
+        "type": "any[]",
         "optional": false,
         "documentation": ""
       }

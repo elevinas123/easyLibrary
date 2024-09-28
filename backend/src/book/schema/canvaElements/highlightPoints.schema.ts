@@ -1,19 +1,11 @@
-// canva-element-skeleton.schema.ts
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { getModelForClass, prop } from "@typegoose/typegoose";
 
-export type HighlightPointsType = {
-    x: number;
-    y: number;
-}; // Example structure for HighlightPoints
-
-@Schema({ _id: false })
+// Use Typegoose for the HighlightPoints class
 export class HighlightPoints {
-    @Prop({ required: true }) x: number;
+    @prop({ required: true }) x!: number;
 
-    @Prop({ required: true }) y: number;
+    @prop({ required: true }) y!: number;
 }
 
-export type HighlightPointsDocument = HighlightPoints & Document;
-export const HighlightPointsSchema =
-    SchemaFactory.createForClass(HighlightPoints);
+// Create the model for HighlightPoints
+export const HighlightPointsModel = getModelForClass(HighlightPoints);

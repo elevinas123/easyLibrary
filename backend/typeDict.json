@@ -31,18 +31,18 @@
         "name": "comment",
         "type": "string",
         "fullType": "comment: string",
-        "optional": false
+        "optional": true
       },
       {
         "name": "books",
-        "type": "ObjectId[]",
-        "fullType": "books: ObjectId[]",
+        "type": "any[]",
+        "fullType": "books: any[]",
         "optional": false
       },
       {
         "name": "bookshelves",
-        "type": "ObjectId[]",
-        "fullType": "bookshelves: ObjectId[]",
+        "type": "any[]",
+        "fullType": "bookshelves: any[]",
         "optional": false
       }
     ],
@@ -159,9 +159,9 @@
     ],
     "extends": []
   },
-  "HighlightPointsType": {
+  "HighlightPoints": {
     "isType": false,
-    "name": "HighlightPointsType",
+    "name": "HighlightPoints",
     "properties": [
       {
         "name": "x",
@@ -175,7 +175,8 @@
         "fullType": "y: number",
         "optional": false
       }
-    ]
+    ],
+    "extends": []
   },
   "CanvaElementSkeleton": {
     "isType": false,
@@ -231,8 +232,8 @@
       },
       {
         "name": "points",
-        "type": "HighlightPointsType[]",
-        "fullType": "points: HighlightPointsType[]",
+        "type": "HighlightPoints[]",
+        "fullType": "points: HighlightPoints[]",
         "optional": false
       },
       {
@@ -295,6 +296,12 @@
         "type": "number",
         "fullType": "hachureAngle: number",
         "optional": false
+      },
+      {
+        "name": "type",
+        "type": "\"rect\"",
+        "fullType": "type: \"rect\"",
+        "optional": false
       }
     ],
     "extends": [
@@ -322,11 +329,114 @@
         "type": "number",
         "fullType": "fontSize: number",
         "optional": false
+      },
+      {
+        "name": "sd",
+        "type": "number",
+        "fullType": "sd: number",
+        "optional": false
+      },
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "fullType": "type: \"text\"",
+        "optional": false
       }
     ],
     "extends": [
       "CanvaElementSkeleton"
     ]
+  },
+  "CurveElementSkeleton": {
+    "isType": false,
+    "name": "CurveElementSkeleton",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "fullType": "id: string",
+        "optional": false
+      },
+      {
+        "name": "fill",
+        "type": "string",
+        "fullType": "fill: string",
+        "optional": false
+      },
+      {
+        "name": "points",
+        "type": "number[]",
+        "fullType": "points: number[]",
+        "optional": false
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "fullType": "text: string",
+        "optional": true
+      },
+      {
+        "name": "roughness",
+        "type": "number",
+        "fullType": "roughness: number",
+        "optional": false
+      },
+      {
+        "name": "bowing",
+        "type": "number",
+        "fullType": "bowing: number",
+        "optional": false
+      },
+      {
+        "name": "seed",
+        "type": "number",
+        "fullType": "seed: number",
+        "optional": false
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "fullType": "strokeWidth: number",
+        "optional": false
+      },
+      {
+        "name": "strokeStyle",
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "fullType": "strokeStyle: \"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false
+      },
+      {
+        "name": "stroke",
+        "type": "string",
+        "fullType": "stroke: string",
+        "optional": false
+      },
+      {
+        "name": "fillStyle",
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "fullType": "fillStyle: \"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false
+      },
+      {
+        "name": "fillWeight",
+        "type": "number",
+        "fullType": "fillWeight: number",
+        "optional": false
+      },
+      {
+        "name": "hachureAngle",
+        "type": "number",
+        "fullType": "hachureAngle: number",
+        "optional": false
+      },
+      {
+        "name": "hachureGap",
+        "type": "number",
+        "fullType": "hachureGap: number",
+        "optional": false
+      }
+    ],
+    "extends": []
   },
   "StartType": {
     "isType": true,
@@ -362,7 +472,9 @@
         "optional": false
       }
     ],
-    "extends": []
+    "extends": [
+      "CurveElementSkeleton"
+    ]
   },
   "Book": {
     "isType": false,
@@ -382,8 +494,8 @@
       },
       {
         "name": "userId",
-        "type": "string",
-        "fullType": "userId: ObjectId",
+        "type": "any",
+        "fullType": "userId: any",
         "optional": false
       },
       {
