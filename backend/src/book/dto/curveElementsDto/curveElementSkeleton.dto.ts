@@ -1,8 +1,10 @@
 // src/books/dto/curve-element-skeleton.dto.ts
 
 import { IsArray, IsNumber, IsOptional, IsString, IsIn } from "class-validator";
+import { CurveElementSkeleton } from "../../schema/curveElements/curveElementSkeleton";
 
-export class CurveElementSkeletonDto {
+type CurveElementSkeletonType = CurveElementSkeleton;
+export class CurveElementSkeletonDto implements CurveElementSkeletonType {
     @IsArray() @IsNumber({}, { each: true }) points: number[];
 
     @IsString() id: string;
@@ -19,7 +21,10 @@ export class CurveElementSkeletonDto {
 
     @IsNumber() strokeWidth: number;
 
-    @IsIn(["solid", "dashed", "dotted"]) strokeStyle: "solid" | "dashed" | "dotted";
+    @IsIn(["solid", "dashed", "dotted"]) strokeStyle:
+        | "solid"
+        | "dashed"
+        | "dotted";
 
     @IsString() stroke: string;
 
@@ -30,8 +35,9 @@ export class CurveElementSkeletonDto {
         "zigzag",
         "dots",
         "dashed",
-        "zigzag-line"
-    ]) fillStyle: 
+        "zigzag-line",
+    ])
+    fillStyle:
         | "solid"
         | "hachure"
         | "cross-hatch"

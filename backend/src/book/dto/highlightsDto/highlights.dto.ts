@@ -1,14 +1,9 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
+import { Highlight } from "src/book/schema/highlights/highlights.schema";
 
-export class HighlightsDto {
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => HighlightDto)
-    highlights: HighlightDto[];
-}
-
-class HighlightDto {
+type HighlightType = Highlight;
+export class HighlightDto implements HighlightType {
     @IsString() id: string;
 
     @IsNumber() startingX: number;

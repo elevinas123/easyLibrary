@@ -16,7 +16,10 @@ import { Highlight } from "./highlights/highlights.schema";
 import { User } from "src/user/schemas/user.schema";
 
 @modelOptions({ schemaOptions: { _id: true } })
-export class Book {
+export class Random  {
+    @prop({required: true}) random!: string;
+    }
+export class Book extends Random {
     @prop({ type: () => Types.ObjectId, required: true, auto: true })
     _id!: Types.ObjectId;
 
@@ -36,8 +39,9 @@ export class Book {
 
     @prop({ required: true }) dateAdded!: string;
 
-    @prop({ type: () => [ProcessedElement], required: true })
+    @prop({type: () => [ProcessedElement], required: true})
     bookElements!: ProcessedElement[];
+    
 
     @prop({ type: () => [Highlight], required: true }) highlights!: Highlight[];
 
