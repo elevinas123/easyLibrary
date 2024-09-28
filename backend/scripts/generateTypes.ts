@@ -2,6 +2,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { TypeDict } from "./analyzer";
+import { findDirectoryUpwards } from "./findDirectory";
 
 /**
  * Function to traverse upwards from a starting directory to find a directory
@@ -10,59 +12,15 @@ import * as path from "path";
  * @param targetDirName - The name of the directory to find.
  * @returns The absolute path to the target directory if found; otherwise, null.
  */
-const findDirectoryUpwards = (
-    startDir: string,
-    targetDirName: string
-): string | null => {
-    let currentDir = path.resolve(startDir);
-
-    while (true) {
-        const potentialPath = path.join(currentDir, targetDirName);
-        if (
-            fs.existsSync(potentialPath) &&
-            fs.lstatSync(potentialPath).isDirectory()
-        ) {
-            return potentialPath;
-        }
-
-        const parentDir = path.dirname(currentDir);
-        if (parentDir === currentDir) {
-            // Reached the root directory without finding the target
-            break;
-        }
-        currentDir = parentDir;
-    }
-
-    return null;
-};
 
 /**
  * Main function to generate TypeScript interfaces from types.json
  */
-const generateTypes = () => {
-    // Step 1: Retrieve the frontend directory name from the environment variable
-    const frontendDirName = process.env.FRONTEND_DIR || "frontend";
-    console.log(`Frontend directory name to locate: "${frontendDirName}"`);
+export const generateTypes = (typesDict: TypeDict) => {
+    // Step 1: Retrieve the frontend directory name from the environment
+    // variable
 
-    // Step 2: Find the frontend directory path by searching upwards from the
-    // current script's directory
-    const scriptDir = __dirname;
-    const frontendDirPath = findDirectoryUpwards(scriptDir, frontendDirName);
-
-    if (!frontendDirPath) {
-        console.error(
-            `Error: Unable to locate a directory named "${
-                frontendDirName
-            }" from "${scriptDir}".`
-        );
-        console.error(
-            `Please ensure that the frontend directory exists and is named correctly.`
-        );
-        process.exit(1); // Exit the script with an error code
-    }
-
-    console.log(`Frontend directory found at: "${frontendDirPath}"`);
-
+    const frontendDirPath = findDirectoryUpwards();
     // Step 3: Define the path to the frontend's endPointTypes directory
     const endPointTypesDir = path.join(frontendDirPath, "src", "endPointTypes");
 
@@ -80,29 +38,13 @@ const generateTypes = () => {
         }
     }
 
-    // Step 4: Define paths to types.json and the output types.ts
-    const typesJsonPath = path.resolve(__dirname, "./types.json");
     const typesTsPath = path.join(endPointTypesDir, "types.ts");
 
-    // Step 5: Verify that types.json exists
-    if (!fs.existsSync(typesJsonPath)) {
-        console.error(
-            `Error: types.json not found at path: "${typesJsonPath}"`
-        );
-        process.exit(1); // Exit the script with an error code
-    }
-
     // Step 6: Read and parse types.json
-    let typesJson: Record<string, any>;
-    try {
-        const typesJsonContent = fs.readFileSync(typesJsonPath, "utf-8");
-        typesJson = JSON.parse(typesJsonContent);
-    } catch (err) {
-        console.error(`Error reading or parsing "${typesJsonPath}":`, err);
-        process.exit(1); // Exit the script with an error code
-    }
+    let typesJson = typesDict;
 
-    // Step 7: Function to convert a single type entry to a TypeScript interface
+    // Step 7: Function to convert a single type entry to a TypeScript
+    // interface
     const convertTypeToInterface = (typeName: string, properties: any[]) => {
         let interfaceStr = `export interface ${typeName} {\n`;
         properties.forEach((prop: any) => {
@@ -144,6 +86,3 @@ const generateTypes = () => {
         process.exit(1); // Exit the script with an error code
     }
 };
-
-// Execute the main function
-generateTypes();

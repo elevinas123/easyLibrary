@@ -4,16 +4,17 @@ import * as fs from "fs";
 import { glob } from "glob";
 import * as path from "path";
 import * as ts from "typescript";
-import {
-    getControllerPath
-} from "./extract";
+import { getControllerPath } from "./extract";
 import {
     extractArrayType,
     extractInnerType,
     extractUnionTypes,
 } from "./extractType";
-import { getSourceDirectory } from "./getSourceDirectory";
+import { getSourceDirectory } from "./findDirectory";
 import { serializeClass } from "./serialize";
+import { generateTypes } from "./generateTypes";
+import { generateInputTypes } from "./generateInputTypes";
+import { generateEndPointTypes } from "./generateEndPointTypes";
 
 // Define the structure for documentation entries
 
@@ -38,7 +39,7 @@ export interface ParamEntry {
     type: string;
     decorator: string;
 }
-type InputMapping = {
+export type InputMapping = {
     [key: string]: { query?: string; params?: string; body?: string };
 };
 interface PropertyEntry {
@@ -47,17 +48,17 @@ interface PropertyEntry {
 }
 
 // Type dictionary to store type definitions
-type TypeDict = {
+export type TypeDict = {
     [key: string]: { name: string; type: string; fullType: string }[];
 };
 
 // Endpoint mapping to associate API endpoints with their return types
-type EndpointMapping = {
+export type EndpointMapping = {
     [key: string]: string; // e.g., "GET /books": "Book[]"
 };
 
 // List of simple types to recognize
-const simpleTypes = ["string", "number", "boolean", "Date", "any"];
+export const basicTypes = ["string", "number", "boolean", "Date", "any", "void", "null", "undefined", "never", "unknown", ];
 
 // Function to check if a node is exported
 function isNodeExported(node: ts.Node): boolean {
@@ -100,7 +101,7 @@ const fillDoc = (
         const typeStrings: string[] = [];
 
         unionTypes.forEach((ut) => {
-            if (simpleTypes.includes(ut)) {
+            if (basicTypes.includes(ut)) {
                 typeStrings.push(ut);
             } else {
                 // Check if the type exists in doc
@@ -206,7 +207,7 @@ const createTsType = (
                 // Handle union types for parameter types
                 const paramUnionTypes = extractUnionTypes(paramTypeOriginal);
                 paramUnionTypes.forEach((put) => {
-                    if (!simpleTypes.includes(put)) {
+                    if (!basicTypes.includes(put)) {
                         // Only add complex types
                         const mappedType = mapType(put);
                         const typeEntry = doc.find(
@@ -319,8 +320,10 @@ const generateDocumentation = (
 
     // Generate TypeScript types and endpoint mapping from the collected
     // documentation
-    const { typeDict, endpointMap } = createTsType(output);
-
+    const { typeDict, endpointMap, inputMap } = createTsType(output);
+    generateTypes(typeDict);
+    generateInputTypes(inputMap, endpointMap);
+    generateEndPointTypes(endpointMap);
     // Function to visit nodes in the AST
     function visit(node: ts.Node) {
         if (!isNodeExported(node)) {

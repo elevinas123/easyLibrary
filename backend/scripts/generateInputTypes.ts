@@ -2,218 +2,154 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { EndpointMapping, InputMapping } from "./analyzer";
+import { findDirectoryUpwards } from "./findDirectory";
+export const generateInputTypes = (
+    inputMap: InputMapping,
+    endPointMap: EndpointMapping
+) => {
+    const frontendDirPath = findDirectoryUpwards();
 
-/**
- * Function to locate the frontend directory based on the FRONTEND_DIR
- * environment variable. It searches for a directory with the specified name
- * starting from the current directory and moving up the directory tree.
- *
- * @param frontendDirName - The name of the frontend directory to locate.
- * @returns The absolute path to the frontend directory if found; otherwise,
- *     null.
- */
-const locateFrontendDirectory = (frontendDirName: string): string | null => {
-    let currentDir = path.resolve(__dirname);
-    const rootDir = path.parse(currentDir).root;
+    // Define the output path for the generated TypeScript file
+    const outputPath = path.join(
+        frontendDirPath,
+        "src",
+        "endPointTypes",
+        "inputMap.ts"
+    );
 
-    while (currentDir !== rootDir) {
-        const potentialPath = path.join(currentDir, frontendDirName);
-        if (
-            fs.existsSync(potentialPath) &&
-            fs.lstatSync(potentialPath).isDirectory()
-        ) {
-            return potentialPath;
-        }
-        currentDir = path.dirname(currentDir);
+    // Ensure the output directory exists
+    const outputDir = path.dirname(outputPath);
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        console.log(`Created directory: ${outputDir}`);
     }
 
-    return null;
-};
+    // Define basic primitive types to exclude from imports
+    const basicTypes = ["string", "number", "boolean"];
 
-// Retrieve the frontend directory name from the environment variable
-const frontendDirName = process.env.FRONTEND_DIR || 'frontend';
-console.log(`Frontend directory name to locate: "${frontendDirName}"`);
-if (!frontendDirName) {
-    console.error(
-        "Error: FRONTEND_DIR environment variable is not set. Please set it to the name of your frontend directory."
-    );
-    process.exit(1);
-}
+    // Set to collect unique non-primitive type names
+    const imports = new Set<string>();
 
-// Locate the frontend directory
-const frontendDirPath = locateFrontendDirectory(frontendDirName);
+    /**
+     * Extracts type names from a given type string.
+     * This function handles basic types, arrays, unions, intersections, and
+     * generics. It assumes that non-primitive types are single words (e.g.,
+     * CreateBookDto).
+     *
+     * @param typeStr - The type string to extract from (e.g., "CreateBookDto
+     *     | UpdateBookDto[]")
+     * @returns An array of extracted type names
+     */
+    function extractTypeNames(typeStr: string): string[] {
+        const typeNames: string[] = [];
 
-if (!frontendDirPath) {
-    console.error(
-        `Error: Could not locate a directory named "${
-            frontendDirName
-        }" in the current path hierarchy.`
-    );
-    process.exit(1);
-}
+        // Remove array brackets
+        const cleanedTypeStr = typeStr.replace(/\[\]/g, "");
 
-// Define the output path for the generated TypeScript file
-const outputPath = path.join(
-    frontendDirPath,
-    "src",
-    "endPointTypes",
-    "inputMap.ts"
-);
+        // Split by union and intersection operators
+        const splitTypes = cleanedTypeStr
+            .split(/[\|\&]/)
+            .map((type) => type.trim());
 
-// Ensure the output directory exists
-const outputDir = path.dirname(outputPath);
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-    console.log(`Created directory: ${outputDir}`);
-}
+        splitTypes.forEach((type) => {
+            // Remove generic wrappers (e.g., Partial<CreateBookDto> => CreateBookDto)
+            const genericMatch = type.match(/^(\w+)<(.+)>$/);
+            if (genericMatch) {
+                const innerType = genericMatch[2];
+                typeNames.push(...extractTypeNames(innerType));
+            } else {
+                // Exclude basic types and inline object types
+                if (
+                    !basicTypes.includes(type.toLowerCase()) &&
+                    !type.startsWith("{") &&
+                    /^[A-Za-z_][A-Za-z0-9_]*$/.test(type)
+                ) {
+                    typeNames.push(type);
+                }
+            }
+        });
 
-// Paths to the JSON files
-const inputMapPath = path.resolve(__dirname, "./inputMap.json");
-const endpointMapPath = path.resolve(__dirname, './endPointMap.json');
+        return typeNames;
+    }
 
-// Check if JSON files exist
-if (!fs.existsSync(inputMapPath)) {
-    console.error(`Error: inputMap.json not found at path: ${inputMapPath}`);
-    process.exit(1);
-}
+    // Iterate over each endpoint in endpointMapData
+    for (const endpoint of Object.keys(endPointMap)) {
+        if (inputMap.hasOwnProperty(endpoint)) {
+            const inputs = inputMap[endpoint];
 
-if (!fs.existsSync(endpointMapPath)) {
-    console.error(
-        `Error: endpointMap.json not found at path: ${endpointMapPath}`
-    );
-    process.exit(1);
-}
+            // Check and collect types from query
+            if (inputs.query) {
+                const queryTypes = extractTypeNames(inputs.query);
+                queryTypes.forEach((type) => imports.add(type));
+            }
 
-// Read and parse JSON files
-const inputMapJson = fs.readFileSync(inputMapPath, "utf-8");
-const inputMapData = JSON.parse(inputMapJson);
+            // Check and collect types from params
+            if (inputs.params) {
+                const paramsTypes = extractTypeNames(inputs.params);
+                paramsTypes.forEach((type) => imports.add(type));
+            }
 
-const endpointMapJson = fs.readFileSync(endpointMapPath, "utf-8");
-const endpointMapData: Record<string, string> = JSON.parse(endpointMapJson);
-
-// Define basic primitive types to exclude from imports
-const basicTypes = ["string", "number", "boolean"];
-
-// Set to collect unique non-primitive type names
-const imports = new Set<string>();
-
-/**
- * Extracts type names from a given type string.
- * This function handles basic types, arrays, unions, intersections, and
- * generics. It assumes that non-primitive types are single words (e.g.,
- * CreateBookDto).
- *
- * @param typeStr - The type string to extract from (e.g., "CreateBookDto |
- *     UpdateBookDto[]")
- * @returns An array of extracted type names
- */
-function extractTypeNames(typeStr: string): string[] {
-    const typeNames: string[] = [];
-
-    // Remove array brackets
-    const cleanedTypeStr = typeStr.replace(/\[\]/g, "");
-
-    // Split by union and intersection operators
-    const splitTypes = cleanedTypeStr
-        .split(/[\|\&]/)
-        .map((type) => type.trim());
-
-    splitTypes.forEach((type) => {
-        // Remove generic wrappers (e.g., Partial<CreateBookDto> => CreateBookDto)
-        const genericMatch = type.match(/^(\w+)<(.+)>$/);
-        if (genericMatch) {
-            const innerType = genericMatch[2];
-            typeNames.push(...extractTypeNames(innerType));
-        } else {
-            // Exclude basic types and inline object types
-            if (
-                !basicTypes.includes(type.toLowerCase()) &&
-                !type.startsWith("{") &&
-                /^[A-Za-z_][A-Za-z0-9_]*$/.test(type)
-            ) {
-                typeNames.push(type);
+            // Check and collect types from body
+            if (inputs.body) {
+                const bodyTypes = extractTypeNames(inputs.body);
+                bodyTypes.forEach((type) => imports.add(type));
             }
         }
-    });
+    }
 
-    return typeNames;
-}
+    // Define the module path where all non-primitive types are exported from
+    const typesModulePath = "./types";
 
-// Iterate over each endpoint in endpointMapData
-for (const endpoint of Object.keys(endpointMapData)) {
-    if (inputMapData.hasOwnProperty(endpoint)) {
-        const inputs = inputMapData[endpoint];
+    // Generate import statements
+    let importStatements = "";
+    if (imports.size > 0) {
+        importStatements = `import { ${Array.from(imports).join(", ")} } from '${
+            typesModulePath
+        }';\n\n`;
+    }
 
-        // Check and collect types from query
-        if (inputs.query) {
-            const queryTypes = extractTypeNames(inputs.query);
-            queryTypes.forEach((type) => imports.add(type));
-        }
+    // Start building the TypeScript content
+    let tsContent = `// This file is auto-generated from inputMap.json and endpointMap.json. Do not modify manually.\n\n`;
 
-        // Check and collect types from params
-        if (inputs.params) {
-            const paramsTypes = extractTypeNames(inputs.params);
-            paramsTypes.forEach((type) => imports.add(type));
-        }
+    tsContent += importStatements;
+    tsContent += `export type InputMap = {\n`;
 
-        // Check and collect types from body
-        if (inputs.body) {
-            const bodyTypes = extractTypeNames(inputs.body);
-            bodyTypes.forEach((type) => imports.add(type));
+    // Iterate over each endpoint in endpointMapData to build the InputMap
+    // type
+    for (const endpoint of Object.keys(endPointMap)) {
+        if (inputMap.hasOwnProperty(endpoint)) {
+            const inputs = inputMap[endpoint];
+            tsContent += `  "${endpoint}": {\n`;
+
+            if (inputs.query) {
+                tsContent += `    query: ${inputs.query};\n`;
+            }
+
+            if (inputs.params) {
+                tsContent += `    params: ${inputs.params};\n`;
+            }
+
+            if (inputs.body) {
+                tsContent += `    body: ${inputs.body};\n`;
+            }
+
+            tsContent += `  };\n`;
+        } else {
+            // No inputs for this endpoint
+            tsContent += `  "${endpoint}": {};\n`;
         }
     }
-}
 
-// Define the module path where all non-primitive types are exported from
-const typesModulePath = "./types";
+    tsContent += `};\n\n`;
+    tsContent += `export default InputMap;\n`;
 
-// Generate import statements
-let importStatements = "";
-if (imports.size > 0) {
-    importStatements = `import { ${Array.from(imports).join(", ")} } from '${
-        typesModulePath
-    }';\n\n`;
-}
-
-// Start building the TypeScript content
-let tsContent = `// This file is auto-generated from inputMap.json and endpointMap.json. Do not modify manually.\n\n`;
-
-tsContent += importStatements;
-tsContent += `export type InputMap = {\n`;
-
-// Iterate over each endpoint in endpointMapData to build the InputMap type
-for (const endpoint of Object.keys(endpointMapData)) {
-    if (inputMapData.hasOwnProperty(endpoint)) {
-        const inputs = inputMapData[endpoint];
-        tsContent += `  "${endpoint}": {\n`;
-
-        if (inputs.query) {
-            tsContent += `    query: ${inputs.query};\n`;
-        }
-
-        if (inputs.params) {
-            tsContent += `    params: ${inputs.params};\n`;
-        }
-
-        if (inputs.body) {
-            tsContent += `    body: ${inputs.body};\n`;
-        }
-
-        tsContent += `  };\n`;
-    } else {
-        // No inputs for this endpoint
-        tsContent += `  "${endpoint}": {};\n`;
+    // Write to inputMap.ts
+    try {
+        fs.writeFileSync(outputPath, tsContent, "utf-8");
+        console.log(`Successfully generated ${outputPath}`);
+    } catch (err) {
+        console.error(`Error writing to ${outputPath}:`, err);
+        process.exit(1);
     }
-}
-
-tsContent += `};\n\n`;
-tsContent += `export default InputMap;\n`;
-
-// Write to inputMap.ts
-try {
-    fs.writeFileSync(outputPath, tsContent, "utf-8");
-    console.log(`Successfully generated ${outputPath}`);
-} catch (err) {
-    console.error(`Error writing to ${outputPath}:`, err);
-    process.exit(1);
-}
+};
