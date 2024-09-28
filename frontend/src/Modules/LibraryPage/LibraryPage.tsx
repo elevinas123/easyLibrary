@@ -11,26 +11,10 @@ import { CanvaElement } from "../BookPage/Konva/shapes/CanvaElement";
 import { CurveElement } from "../BookPage/Konva/shapes/Arrow/ArrowShape";
 import { Highlight } from "../BookPage/Konva/konvaAtoms";
 import { apiFetch } from "../../endPointTypes/apiClient";
+import { Book } from "../../endPointTypes/types";
 
 type LibraryPageProps = {
     // Define your prop types here
-};
-
-export type Book = {
-    _id: string;
-    title: string;
-    description: string;
-    author: string;
-    genre: string[];
-    imageUrl: string;
-    liked: boolean;
-    dateAdded: Date;
-    bookElements: ProcessedElement[];
-    curveElements: CurveElement[];
-    canvaElements: CanvaElement[];
-    highlights: Highlight[];
-    scale: number;
-    offsetPosition: { x: number; y: number };
 };
 
 const fetchBooks = async (userId: string | undefined) => {
@@ -68,7 +52,7 @@ export default function LibraryPage({}: LibraryPageProps) {
         data: bookData,
         isLoading,
         error,
-    } = useQuery<Book[], AxiosError>({
+    } = useQuery({
         queryKey: ["book"],
         queryFn: () => fetchBooks(user?._id),
 

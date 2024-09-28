@@ -4,17 +4,23 @@ import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { accessTokenAtom, User, userAtom } from "../atoms";
 import axios from "axios";
+import { apiFetch } from "../endPointTypes/apiClient";
 
 const fetchUser = async (accessToken: string | null) => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
-    const { data } = await axios.get("/api/user/findOneByJwtPayload", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    return data;
+    const userData = await apiFetch(
+        "GET /user/findOneByJwtPayload",
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+
+    return userData.data;
 };
 // Define the mutation function
 const loginUser = async (username: string, password: string) => {

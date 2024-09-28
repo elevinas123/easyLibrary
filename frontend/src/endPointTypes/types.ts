@@ -1,6 +1,7 @@
 // This file is auto-generated from types.json. Do not modify manually.
 
 export interface User {
+  _id: string;
   username: string;
   age: number;
   password: string;
@@ -57,6 +58,7 @@ export interface ArrowElement {
 }
 
 export interface Book {
+  _id: string;
   title: string;
   userId: string;
   description: string;

@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import InputMap from "./inputMap";
-import { ApiResponseTypes, Endpoint } from "./endpointMap";
-
+import { ApiResponseTypes, Endpoint } from "./endpointTypes";
 
 // Axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -66,4 +65,3 @@ export async function apiFetch<K extends Endpoint>(
         }
     }
 }
-

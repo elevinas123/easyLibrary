@@ -8,6 +8,9 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
+    @Prop({ type: Types.ObjectId, required: true, auto: true })
+    _id: Types.ObjectId;
+    
     @Prop({ required: true }) username: string;
 
     @Prop({ require: true }) age: number;
@@ -16,11 +19,19 @@ export class User {
 
     @Prop() comment: string;
 
-    @Prop({required:true, type: [{ type: Types.ObjectId, ref: "Book" }], default: [] })
+    @Prop({
+        required: true,
+        type: [{ type: Types.ObjectId, ref: "Book" }],
+        default: [],
+    })
     books: Types.ObjectId[];
 
     // Reference to Bookshelve collection
-    @Prop({required: true, type: [{ type: Types.ObjectId, ref: "Bookshelve" }], default: [] })
+    @Prop({
+        required: true,
+        type: [{ type: Types.ObjectId, ref: "Bookshelve" }],
+        default: [],
+    })
     bookshelves: Types.ObjectId[];
 }
 

@@ -2278,6 +2278,11 @@
     "methods": [],
     "properties": [
       {
+        "name": "_id",
+        "documentation": "",
+        "type": "ObjectId"
+      },
+      {
         "name": "username",
         "documentation": "",
         "type": "string"
