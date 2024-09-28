@@ -5,23 +5,9 @@ import * as path from "path";
 import { TypeDict } from "./analyzer";
 import { findDirectoryUpwards } from "./findDirectory";
 
-/**
- * Function to traverse upwards from a starting directory to find a directory
- * with a given name.
- * @param startDir - The directory to start searching from.
- * @param targetDirName - The name of the directory to find.
- * @returns The absolute path to the target directory if found; otherwise, null.
- */
-
-/**
- * Main function to generate TypeScript interfaces from types.json
- */
 export const generateTypes = (typesDict: TypeDict) => {
     // Step 1: Retrieve the frontend directory name from the environment
-    // variable
-
     const frontendDirPath = findDirectoryUpwards();
-    // Step 3: Define the path to the frontend's endPointTypes directory
     const endPointTypesDir = path.join(frontendDirPath, "src", "endPointTypes");
 
     // Ensure that the endPointTypes directory exists; create it if it doesn't
@@ -43,38 +29,43 @@ export const generateTypes = (typesDict: TypeDict) => {
     // Step 6: Read and parse types.json
     let typesJson = typesDict;
 
-    // Step 7: Function to convert a single type entry to a TypeScript
-    // interface
-    const convertTypeToInterface = (typeName: string, properties: any[]) => {
-        let interfaceStr = `export interface ${typeName} {\n`;
-        properties.forEach((prop: any) => {
-            // Handle optional properties
-            const optionalFlag = prop.optional ? "?" : "";
-            interfaceStr += `  ${prop.name}${optionalFlag}: ${prop.type};\n`;
-        });
-        interfaceStr += `}\n\n`;
-        return interfaceStr;
+    // Step 7: Function to convert a single type entry to TypeScript
+    const convertEntryToTypeScript = (typeName: string, entry: any) => {
+        if (entry.isType) {
+            // If the entry is marked as a type, generate a type alias
+            return `export type ${typeName} = ${entry.type};\n\n`;
+        } else {
+            // Otherwise, generate an interface
+            let interfaceStr = `export interface ${typeName} {\n`;
+            entry.properties.forEach((prop: any) => {
+                // Handle optional properties
+                const optionalFlag = prop.optional ? "?" : "";
+                interfaceStr += `  ${prop.name}${optionalFlag}: ${prop.type};\n`;
+            });
+            interfaceStr += `}\n\n`;
+            return interfaceStr;
+        }
     };
 
-    // Step 8: Generate TypeScript interfaces
+    // Step 8: Generate TypeScript content
     let typesTsContent = `// This file is auto-generated from types.json. Do not modify manually.\n\n`;
 
-    for (const [typeName, properties] of Object.entries(typesJson)) {
-        // Validate that properties is an array
-        if (!Array.isArray(properties)) {
+    for (const [typeName, entry] of Object.entries(typesJson)) {
+        // Validate if it's an object
+        if (typeof entry !== "object") {
             console.warn(
-                `Warning: Properties for type "${
+                `Warning: Entry for type "${
                     typeName
-                }" should be an array. Skipping this type.`
+                }" should be an object. Skipping this type.`
             );
             continue;
         }
 
-        typesTsContent += convertTypeToInterface(typeName, properties);
+        // Add the appropriate TypeScript (either type or interface)
+        typesTsContent += convertEntryToTypeScript(typeName, entry);
     }
 
-    // Step 9: Handle custom types if necessary (e.g., StartType, ObjectId)
-    // You can expand this section based on your project's requirements
+    // Step 9: Handle custom types if necessary (e.g., ObjectId)
     typesTsContent += `export type ObjectId = string;\n`;
 
     // Step 10: Write the generated content to types.ts

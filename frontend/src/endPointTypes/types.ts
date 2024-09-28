@@ -18,18 +18,6 @@ export interface CreateUserDto {
   bookshelves: string[];
 }
 
-export interface Bookshelve {
-  name: string;
-  createdAt: Date;
-  books: ObjectId[];
-}
-
-export interface CreateBookshelveDto {
-  name: string;
-  createdAt: Date;
-  books: ObjectId[];
-}
-
 export interface ProcessedElement {
   text: string;
   lineX: number;
@@ -59,11 +47,13 @@ export interface TextElement {
   fontSize: number;
 }
 
+export type StartType = "bookText" | "text";
+
 export interface ArrowElement {
   startId: string;
   endId: string;
-  startType: "bookText" | "text";
-  endType: "bookText" | "text";
+  startType: StartType;
+  endType: StartType;
 }
 
 export interface Book {
@@ -141,8 +131,8 @@ export interface ArrowElementDto {
   type: "arrow";
   startId: string;
   endId: string;
-  startType: "bookText" | "text";
-  endType: "bookText" | "text";
+  startType: StartType;
+  endType: StartType;
   points: number[];
   id: string;
   fill: string;
@@ -203,6 +193,18 @@ export interface CreateBookDto {
   scale: number;
   curveElements: ArrowElementDto[];
   offsetPosition: OffsetPositionDto;
+}
+
+export interface Bookshelve {
+  name: string;
+  createdAt: Date;
+  books: ObjectId[];
+}
+
+export interface CreateBookshelveDto {
+  name: string;
+  createdAt: Date;
+  books: ObjectId[];
 }
 
 export type ObjectId = string;

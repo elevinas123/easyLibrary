@@ -125,3 +125,95 @@ function serializeParameter(
         decorator: paramDecorator || "Unknown",
     };
 }
+
+export function serializeInterface(
+    symbol: ts.Symbol,
+    checker: ts.TypeChecker
+): DocEntry {
+    const details: DocEntry = {
+        name: symbol.getName(),
+        documentation: ts.displayPartsToString(
+            symbol.getDocumentationComment(checker)
+        ),
+        properties: [],
+        path: symbol.declarations?.[0]?.getSourceFile().fileName,
+    };
+
+    const type = checker.getDeclaredTypeOfSymbol(symbol);
+    type.getProperties().forEach((prop) => {
+        const propType = checker.getTypeOfSymbolAtLocation(
+            prop,
+            prop.valueDeclaration!
+        );
+        details.properties.push({
+            name: prop.getName(),
+            type: checker.typeToString(propType),
+        });
+    });
+
+    return details;
+}
+export function serializeTypeAlias(
+    symbol: ts.Symbol,
+    checker: ts.TypeChecker
+): DocEntry {
+    const details: DocEntry = {
+        name: symbol.getName(),
+        documentation: ts.displayPartsToString(
+            symbol.getDocumentationComment(checker)
+        ),
+        type: checker.typeToString(checker.getDeclaredTypeOfSymbol(symbol)),
+        path: symbol.declarations?.[0]?.getSourceFile().fileName,
+    };
+
+    
+
+    // Handle union types or complex types
+    if (ts.isTypeAliasDeclaration(symbol.declarations?.[0])) {
+        const declaration = symbol.declarations[0] as ts.TypeAliasDeclaration;
+        const type = checker.getTypeAtLocation(declaration.type);
+
+        // Check if the type is a union (e.g., `TypeA | TypeB`)
+        if (type.isUnion()) {
+            details.type = type.types
+                .map((t) => checker.typeToString(t))
+                .join(" | ");
+        } else if (type.isIntersection()) {
+            details.type = type.types
+                .map((t) => checker.typeToString(t))
+                .join(" & ");
+        } else if (ts.isArrayTypeNode(declaration.type)) {
+            // Handle array types
+            const elementType = checker.getTypeAtLocation(
+                declaration.type.elementType
+            );
+            details.type = `${checker.typeToString(elementType)}[]`;
+        }
+    }
+
+    return details;
+}
+
+export function serializeEnum(
+    symbol: ts.Symbol,
+    checker: ts.TypeChecker
+): DocEntry {
+    const details: DocEntry = {
+        name: symbol.getName(),
+        documentation: ts.displayPartsToString(
+            symbol.getDocumentationComment(checker)
+        ),
+        properties: [],
+        path: symbol.declarations?.[0]?.getSourceFile().fileName,
+    };
+
+    const type = checker.getDeclaredTypeOfSymbol(symbol);
+    type.getProperties().forEach((prop) => {
+        details.properties.push({
+            name: prop.getName(),
+            type: "enum",
+        });
+    });
+
+    return details;
+}

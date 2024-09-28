@@ -8,6 +8,7 @@ import {
     IsString,
 } from "class-validator";
 import { CurveElementSkeletonDto } from "../curveElementSkeleton.dto";
+export type StartType = "bookText" | "text" | null;
 
 export class ArrowElementDto extends CurveElementSkeletonDto {
     @IsString() @IsEnum(["arrow"]) type: "arrow";
@@ -16,12 +17,7 @@ export class ArrowElementDto extends CurveElementSkeletonDto {
 
     @IsOptional() @IsString() endId: string | null;
 
-    @IsString()
-    @IsEnum(["bookText", "text"])
-    startType: "bookText" | "text" | null;
+    @IsString() @IsEnum(["bookText", "text", null]) startType: StartType;
 
-    @IsString() @IsEnum(["bookText", "text"]) endType:
-        | "bookText"
-        | "text"
-        | null;
+    @IsString() @IsEnum(["bookText", "text", null]) endType: StartType;
 }

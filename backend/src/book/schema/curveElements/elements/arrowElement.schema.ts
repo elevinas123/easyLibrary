@@ -10,9 +10,11 @@ export interface ArrowElementType extends CurveElementSkeletonType {
     type: "arrow";
     startId: string | null;
     endId: string | null;
-    startType: "bookText" | "text" | null;
-    endType: "bookText" | "text" | null;
+    startType: "StartTyp";
+    endType: StartType;
 }
+export type StartType = "bookText" | "text" | null;
+
 @Schema({ _id: false })
 export class ArrowElement {
     @Prop({ type: String, default: null }) startId: string | null;
@@ -20,10 +22,10 @@ export class ArrowElement {
     @Prop({ type: String, default: null }) endId: string | null;
 
     @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    startType: "bookText" | "text" | null;
+    startType: StartType;
 
     @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    endType: "bookText" | "text" | null;
+    endType: StartType;
 }
 
 export type ArrowElementDocument = ArrowElement & Document;
