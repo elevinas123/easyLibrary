@@ -4,10 +4,20 @@ import * as fs from "fs";
 import { glob } from "glob";
 import * as path from "path";
 import * as ts from "typescript";
+import {
+    getControllerPath
+} from "./extract";
+import {
+    extractArrayType,
+    extractInnerType,
+    extractUnionTypes,
+} from "./extractType";
+import { getSourceDirectory } from "./getSourceDirectory";
+import { serializeClass } from "./serialize";
 
 // Define the structure for documentation entries
 
-interface DocEntry {
+export interface DocEntry {
     name?: string;
     fileName?: string;
     documentation?: string;
@@ -23,7 +33,7 @@ interface DocEntry {
     decorators?: any;
 }
 
-interface ParamEntry {
+export interface ParamEntry {
     name: string;
     type: string;
     decorator: string;
@@ -49,148 +59,6 @@ type EndpointMapping = {
 // List of simple types to recognize
 const simpleTypes = ["string", "number", "boolean", "Date", "any"];
 
-// Helper function to extract inner type from generics like Promise<T>
-const extractInnerType = (type: string): string => {
-    const promiseMatch = type.match(/Promise<(.*)>/);
-    if (promiseMatch) {
-        return promiseMatch[1].trim(); // Extract the type inside Promise<>
-    }
-    return type;
-};
-
-// Helper function to extract inner type from arrays like T[]
-const extractArrayType = (type: string): string => {
-    const arrayMatch = type.match(/^(.*)\[\]$/);
-    return arrayMatch ? arrayMatch[1].trim() : type; // Extract the type inside array brackets
-};
-
-// Helper function to extract union types like (TypeA | TypeB)
-const extractUnionTypes = (type: string): string[] => {
-    const unionMatch = type.match(/^\((.*)\)$/);
-    if (unionMatch) {
-        return unionMatch[1].split("|").map((t) => t.trim()); // Split union types
-    }
-    return [type]; // Return the type as an array if not a union
-};
-
-// Function to serialize a class symbol into DocEntry
-function serializeClass(
-    symbol: ts.Symbol,
-    checker: ts.TypeChecker,
-    controllerPath?: string
-): DocEntry {
-    const details: DocEntry = {
-        name: symbol.getName(),
-        documentation: ts.displayPartsToString(
-            symbol.getDocumentationComment(checker)
-        ),
-        type: checker.typeToString(
-            checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
-        ),
-    };
-
-    const classType = checker.getDeclaredTypeOfSymbol(symbol);
-
-    details.constructors = classType
-        .getConstructSignatures()
-        .map(serializeSignature(checker));
-    details.path = controllerPath || ""; // Add controller path
-
-    details.methods = classType
-        .getProperties()
-        .filter((prop) => prop.declarations?.some(ts.isMethodDeclaration))
-        .map((method) => serializeMethod(method, checker, classType));
-
-    details.properties = classType
-        .getProperties()
-        .filter((prop) => prop.declarations?.some(ts.isPropertyDeclaration))
-        .map((prop) => serializeSymbol(prop, checker));
-
-    return details;
-}
-
-// Function to serialize a method symbol into DocEntry
-function serializeMethod(
-    symbol: ts.Symbol,
-    checker: ts.TypeChecker,
-    classType: ts.Type
-): DocEntry {
-    const methodType = checker.getTypeOfSymbolAtLocation(
-        symbol,
-        symbol.valueDeclaration!
-    );
-    const methodDeclaration = symbol.valueDeclaration as ts.MethodDeclaration;
-
-    const httpMethod = getHttpMethod(methodDeclaration);
-    const methodPath = getMethodPath(methodDeclaration) || "";
-    const parameters = methodType
-        .getCallSignatures()[0]
-        ?.parameters.map((param) => {
-            return serializeParameter(param, checker, methodDeclaration);
-        });
-
-    return {
-        name: symbol.getName(),
-        documentation: ts.displayPartsToString(
-            symbol.getDocumentationComment(checker)
-        ),
-        parameters,
-        returnType: checker.typeToString(
-            methodType.getCallSignatures()[0].getReturnType()
-        ),
-        methodPath,
-        httpMethod, // HTTP method: GET, POST, etc.
-    };
-}
-
-// Function to serialize a symbol into DocEntry
-function serializeSymbol(symbol: ts.Symbol, checker: ts.TypeChecker): DocEntry {
-    return {
-        name: symbol.getName(),
-        documentation: ts.displayPartsToString(
-            symbol.getDocumentationComment(checker)
-        ),
-        type: checker.typeToString(
-            checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
-        ),
-    };
-}
-
-// Function to serialize a signature into DocEntry
-function serializeSignature(checker: ts.TypeChecker) {
-    return (signature: ts.Signature): DocEntry => ({
-        parameters: signature.parameters.map((param) =>
-            serializeSymbol(param, checker)
-        ),
-        returnType: checker.typeToString(signature.getReturnType()),
-        documentation: ts.displayPartsToString(
-            signature.getDocumentationComment(checker)
-        ),
-    });
-}
-
-// Function to serialize a parameter symbol into ParamEntry
-function serializeParameter(
-    paramSymbol: ts.Symbol,
-    checker: ts.TypeChecker,
-    methodDeclaration: ts.MethodDeclaration
-): ParamEntry {
-    const paramDecorator = getParameterDecorator(
-        methodDeclaration,
-        paramSymbol
-    );
-    return {
-        name: paramSymbol.getName(),
-        type: checker.typeToString(
-            checker.getTypeOfSymbolAtLocation(
-                paramSymbol,
-                paramSymbol.valueDeclaration!
-            )
-        ),
-        decorator: paramDecorator || "Unknown",
-    };
-}
-
 // Function to check if a node is exported
 function isNodeExported(node: ts.Node): boolean {
     return (
@@ -199,92 +67,6 @@ function isNodeExported(node: ts.Node): boolean {
             0 ||
         (!!node.parent && node.parent.kind === ts.SyntaxKind.SourceFile)
     );
-}
-
-// Extract the controller path from the `@Controller` decorator
-function getControllerPath(node: ts.ClassDeclaration): string | undefined {
-    const decorators = ts.getDecorators(node);
-    if (decorators) {
-        for (const decorator of decorators) {
-            const callExpression = decorator.expression as ts.CallExpression;
-            if (
-                ts.isIdentifier(callExpression.expression) &&
-                callExpression.expression.text === "Controller"
-            ) {
-                const pathArgument = callExpression.arguments[0];
-                if (pathArgument && ts.isStringLiteral(pathArgument)) {
-                    return pathArgument.text;
-                }
-            }
-        }
-    }
-    return undefined;
-}
-
-// Extract the method path from the HTTP method decorators (e.g., `@Get`,
-// `@Post`)
-function getMethodPath(node: ts.MethodDeclaration): string | undefined {
-    const decorators = ts.getDecorators(node);
-    if (decorators) {
-        for (const decorator of decorators) {
-            const callExpression = decorator.expression as ts.CallExpression;
-            const decoratorName = (callExpression.expression as ts.Identifier)
-                .text;
-
-            if (
-                ["Get", "Post", "Put", "Delete", "Patch"].includes(
-                    decoratorName
-                )
-            ) {
-                const pathArgument = callExpression.arguments[0];
-                if (pathArgument && ts.isStringLiteral(pathArgument)) {
-                    return pathArgument.text;
-                }
-            }
-        }
-    }
-    return undefined;
-}
-
-// Get the HTTP method type from decorators
-function getHttpMethod(node: ts.MethodDeclaration): string | undefined {
-    const decorators = ts.getDecorators(node);
-    if (decorators) {
-        for (const decorator of decorators) {
-            const callExpression = decorator.expression as ts.CallExpression;
-            const decoratorName = (callExpression.expression as ts.Identifier)
-                .text;
-            if (
-                ["Get", "Post", "Put", "Delete", "Patch"].includes(
-                    decoratorName
-                )
-            ) {
-                return decoratorName.toUpperCase();
-            }
-        }
-    }
-    return undefined;
-}
-
-// Extract parameter decorator type (e.g., `@Query`, `@Param`, `@Body`)
-function getParameterDecorator(
-    methodDeclaration: ts.MethodDeclaration,
-    paramSymbol: ts.Symbol
-): string | undefined {
-    const paramDeclaration =
-        paramSymbol.valueDeclaration as ts.ParameterDeclaration;
-    const decorators = ts.getDecorators(paramDeclaration);
-    if (decorators) {
-        for (const decorator of decorators) {
-            const callExpression = decorator.expression as ts.CallExpression;
-            const decoratorName = (callExpression.expression as ts.Identifier)
-                .text;
-            if (["Query", "Param", "Body", "Headers"].includes(decoratorName)) {
-                return decoratorName;
-            }
-        }
-    }
-    return undefined;
 }
 
 // Fill documentation with type details, handling generics, arrays, and union
@@ -554,40 +336,7 @@ const generateDocumentation = (
         }
     }
 };
-const getSourceDirectory = (): string => {
-    const tsconfigPath = path.resolve(__dirname, "..", "tsconfig.json");
 
-    if (!fs.existsSync(tsconfigPath)) {
-        console.warn(
-            `tsconfig.json not found at ${tsconfigPath}. Defaulting to 'src/'.`
-        );
-        return "src";
-    }
-
-    const tsconfigFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
-    if (tsconfigFile.error) {
-        console.error(
-            "Error reading tsconfig.json:",
-            tsconfigFile.error.messageText
-        );
-        return "src";
-    }
-
-    const parsedConfig = ts.parseJsonConfigFileContent(
-        tsconfigFile.config,
-        ts.sys,
-        path.dirname(tsconfigPath)
-    );
-
-    if (parsedConfig.options.rootDir) {
-        return parsedConfig.options.rootDir;
-    } else {
-        console.warn(
-            "rootDir not specified in tsconfig.json. Defaulting to 'src/'."
-        );
-        return "src";
-    }
-};
 const generateAllDocumentation = async () => {
     / /;
     const sourceDir = getSourceDirectory();
