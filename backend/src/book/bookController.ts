@@ -15,8 +15,6 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dto/createBookDto";
 import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
-import { Book } from "./schema/book.schema";
-import { ReturnType } from "src/ReturnTypeDecorator";
 
 @UseGuards(JwtAuthGuard)
 @Controller("book")
