@@ -2,7 +2,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema, Types } from "mongoose";
 
-import { ProcessedElement, ProcessedElementSchema } from "./bookElements/processedElement.schema";
+import {
+    ProcessedElement,
+    ProcessedElementSchema,
+} from "./bookElements/processedElement.schema";
 import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
 import {
     RectElement,
@@ -23,6 +26,9 @@ export type BookDocument = Book & Document;
 
 @Schema()
 export class Book {
+    @Prop({ type: Types.ObjectId, required: true, auto: true })
+    _id: Types.ObjectId;
+
     @Prop({ type: String, required: true }) title: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })
@@ -46,8 +52,7 @@ export class Book {
     })
     bookElements: ProcessedElement[];
 
-    @Prop({ type: [HighlightSchema], required: true })
-    highlights: Highlight[];
+    @Prop({ type: [HighlightSchema], required: true }) highlights: Highlight[];
 
     @Prop({ type: [CanvaElementSkeletonSchema], required: true })
     canvaElements: (RectElement | TextElement)[];

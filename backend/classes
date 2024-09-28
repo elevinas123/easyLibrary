@@ -1776,6 +1776,11 @@
     "methods": [],
     "properties": [
       {
+        "name": "_id",
+        "documentation": "",
+        "type": "ObjectId"
+      },
+      {
         "name": "title",
         "documentation": "",
         "type": "string"
