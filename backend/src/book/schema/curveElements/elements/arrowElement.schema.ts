@@ -17,9 +17,9 @@ export class ArrowElement extends CurveElementSkeleton {
     @prop({ enum: ["bookText", "text", null], default: null })
     endType!: StartType;
 
-    get type(): "rect" {
-        return "rect";
-    }
+    @prop({ required: true, default: "arrow" })
+    // Enforce 'type' field explicitly
+    readonly type!: "arrow"; // TypeScript now recognizes the type as 'text'
 }
 
 // Create the model for ArrowElement

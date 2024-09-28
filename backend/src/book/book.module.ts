@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { TypegooseModule } from "nestjs-typegoose"; // Import TypegooseModule
+import {TypegooseModule} from 'nestjs-typegoose';  // Import TypegooseModule
 
 import { BookController } from "./book.controller";
 import { BookService } from "./book.service";

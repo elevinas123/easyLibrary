@@ -1,26 +1,22 @@
-import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import {getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
 
+// Define the TypeScript type for Highlight
 export type HighlightType = {
-    id: string;
-    startingX: number;
-    startingY: number;
-    endX: number;
-    endY: number;
+  id: string; startingX: number; startingY: number; endX: number; endY: number;
 };
-export type HighlightDocument = Highlight & Document;
 
-@Schema({ _id: false })
+@modelOptions({schemaOptions: {_id: false}})  // Disable _id for subdocuments
 export class Highlight {
-    @Prop({ required: true }) id: string;
+  @prop({required: true}) id!: string;
 
-    @Prop({ required: true }) startingX: number;
+  @prop({required: true}) startingX!: number;
 
-    @Prop({ required: true }) startingY: number;
+  @prop({required: true}) startingY!: number;
 
-    @Prop({ required: true }) endX: number;
+  @prop({required: true}) endX!: number;
 
-    @Prop({ required: true }) endY: number;
+  @prop({required: true}) endY!: number;
 }
 
-export const HighlightSchema = SchemaFactory.createForClass(Highlight);
+// Create the Highlight model using Typegoose
+export const HighlightModel = getModelForClass(Highlight);
