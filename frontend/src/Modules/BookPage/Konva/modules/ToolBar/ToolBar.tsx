@@ -3,10 +3,9 @@
 import { FaTrash } from "react-icons/fa";
 import ToolBarItem from "./ToolBarItem";
 import { useAtom } from "jotai";
-import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
+import { arrowsAtom, CanvaElement, canvaElementsAtom } from "../../konvaAtoms";
 import { toolbarConfig } from "./ToolBar.config";
-import { CanvaElement } from "../../shapes/CanvaElement";
-import { ArrowElement } from "../../shapes/Arrow/ArrowShape";
+import { ArrowElement } from "../../../../../endPointTypes/types";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -32,9 +31,8 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         );
     };
 
-    let controlShape: CanvaElement | ArrowElement | undefined = canvaElements.find(
-        (element) => element.id === selectedItemsIds[0]
-    );
+    let controlShape: CanvaElement | ArrowElement | undefined =
+        canvaElements.find((element) => element.id === selectedItemsIds[0]);
     if (!controlShape)
         controlShape = arrows.find(
             (element) => element.id === selectedItemsIds[0]

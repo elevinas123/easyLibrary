@@ -12,15 +12,14 @@ import { measureTextWidth } from "../../functions/measureTextWidth";
 import { useAtom } from "jotai";
 import {
     activeToolAtom,
-    HighlightPoints,
     highlightsAtom,
     hoveredItemsAtom,
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { getPos } from "../../functions/getPos";
+import { HighlightPoints, ProcessedElement } from "../../../../../endPointTypes/types";
 
 export type FullHighlight = {
     rects: HighlightRect[];

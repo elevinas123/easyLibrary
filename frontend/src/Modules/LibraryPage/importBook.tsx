@@ -116,8 +116,7 @@ export default function ImportBook({
             console.error("Failed to import book:", err);
         },
     });
-    const fileInputRef = useRef(null);
-
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const handleButtonClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();

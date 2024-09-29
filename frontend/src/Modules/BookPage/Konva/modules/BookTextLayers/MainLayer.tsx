@@ -5,7 +5,7 @@ import { VisibleArea } from "../../KonvaStage";
 
 import HighlightLayer, { HighlightLayerRef } from "./HighlightLayer";
 import TextLayer, { TextLayerRef } from "./TextLayer";
-import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
+import { ProcessedElement } from "../../../../../endPointTypes/types";
 
 type MainLayerProps = {
     bookElements: ProcessedElement[];

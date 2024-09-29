@@ -5,6 +5,7 @@ import { TextElementDto } from "./canvaElementsDto/elements/textElement.dto";
 import { CreateBookDto } from "./createBookDto";
 import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 import { HighlightDto } from "./highlightsDto/highlights.dto";
+import { OffsetPosition } from "../schema/offsetPosition.schema";
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
     bookElements?: ProcessedElementDto[];
@@ -13,5 +14,5 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     highlights?: HighlightDto[];
     liked?: boolean;
     scale?: number;
-    offsetPosition?: { x: number; y: number };
+    offsetPosition?: OffsetPosition;
 }

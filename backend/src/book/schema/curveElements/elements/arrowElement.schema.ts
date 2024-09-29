@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { CurveElementSkeleton } from "../curveElementSkeleton";
 
+export type StartType = string | null|  undefined;
 @modelOptions({ schemaOptions: { _id: false } })
 // No separate _id for sub-documents
 export class ArrowElement extends CurveElementSkeleton {
@@ -9,10 +10,10 @@ export class ArrowElement extends CurveElementSkeleton {
     @prop({ default: null }) endId!: string | null;
 
     @prop({ enum: ["bookText", "text", null], default: null })
-    startType!: string | null;
+    startType!: StartType;
 
     @prop({ enum: ["bookText", "text", null], default: null })
-    endType!: string | null;
+    endType!: StartType;
 
     @prop({ required: true, default: "arrow" })
     // Enforce 'type' field explicitly

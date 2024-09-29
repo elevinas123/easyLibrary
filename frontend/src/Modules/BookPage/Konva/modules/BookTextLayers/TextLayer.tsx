@@ -8,7 +8,7 @@ import {
 import { Text } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 
-import { CanvaElementSkeleton, VisibleArea } from "../../KonvaStage";
+import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../../functions/measureTextWidth";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useAtom } from "jotai";
@@ -19,8 +19,11 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
-import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { getPos } from "../../functions/getPos";
+import {
+    CanvaElementSkeleton,
+    ProcessedElement,
+} from "../../../../../endPointTypes/types";
 
 export interface BookTextElement extends CanvaElementSkeleton {
     type: "bookText";
@@ -208,6 +211,7 @@ function TextLayer(
                 opacity: 1,
                 outgoingArrowIds: [],
                 incomingArrowIds: [],
+                rotation: 0,
                 points: [
                     {
                         x: textElement.lineX + 600,

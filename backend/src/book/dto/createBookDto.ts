@@ -69,7 +69,7 @@ export class CreateBookDto implements CreateBookType {
     curveElements!: ArrowElementDto[];
 
     @IsNumber() scale!: number;
-    @ValidateNested()
+
     @Type(() => OffsetPositionDto)
     offsetPosition!: OffsetPositionDto;
 }

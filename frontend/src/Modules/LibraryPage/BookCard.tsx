@@ -97,11 +97,11 @@ type DeleteDialogProps = {
 };
 
 export function DeleteDialog({ hovered, book, deleteBook }: DeleteDialogProps) {
-    const closeRefButton = useRef(null);
+    const closeRefButton = useRef<HTMLButtonElement>(null);
     const handleBookDelete = () => {
         deleteBook(book._id);
         if (closeRefButton.current) {
-            closeRefButton.current?.click();
+            closeRefButton.current.click();
         }
     };
     return (

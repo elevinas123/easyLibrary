@@ -4,9 +4,11 @@ import * as ts from "typescript";
 import { getHttpMethod, getMethodPath, getParameterDecorator } from "./extract";
 import { DocEntry, ParamEntry } from "./analyzer";
 export function serializeClass(
-    symbol: ts.Symbol, checker: ts.TypeChecker,
-    controllerPath?: string): DocEntry {
-  const details: DocEntry = {
+    symbol: ts.Symbol,
+    checker: ts.TypeChecker,
+    controllerPath?: string
+): DocEntry {
+    const details: DocEntry = {
         name: symbol.getName(),
         documentation: ts.displayPartsToString(
             symbol.getDocumentationComment(checker)
@@ -21,95 +23,92 @@ export function serializeClass(
         constructors: [],
     };
 
-  const classDeclaration = symbol.valueDeclaration as ts.ClassDeclaration;
+    const classDeclaration = symbol.valueDeclaration as ts.ClassDeclaration;
 
-  // Serialize constructors
-  const classType = checker.getDeclaredTypeOfSymbol(symbol);
-  details.constructors =
-      classType.getConstructSignatures().map(serializeSignature(checker));
+    // Serialize constructors
+    const classType = checker.getDeclaredTypeOfSymbol(symbol);
+    details.constructors = classType
+        .getConstructSignatures()
+        .map(serializeSignature(checker));
 
-  details.path = controllerPath || '';
+    details.path = controllerPath || "";
 
-  // Serialize properties
-  if (classDeclaration.members) {
-    classDeclaration.members.forEach((member) => {
-      if (ts.isPropertyDeclaration(member)) {
-        const memberSymbol = checker.getSymbolAtLocation(member.name);
+    // Serialize properties
+    if (classDeclaration.members) {
+        classDeclaration.members.forEach((member) => {
+            if (ts.isPropertyDeclaration(member)) {
+                const memberSymbol = checker.getSymbolAtLocation(member.name);
 
-        if (memberSymbol) {
-          const propType =
-              checker.getTypeOfSymbolAtLocation(memberSymbol, member);
+                if (memberSymbol) {
+                    const propType = checker.getTypeOfSymbolAtLocation(
+                        memberSymbol,
+                        member
+                    );
 
-          // Detailed Debugging Logs
-          console.log(`Property: ${memberSymbol.getName()}`);
-          console.log('Full Type:', checker.typeToString(propType));
-          console.log('Type Flags:', ts.TypeFlags[propType.flags]);
-          const hasNull = (propType.flags & ts.TypeFlags.Null) !== 0;
-          const hasUndefined = (propType.flags & ts.TypeFlags.Undefined) !== 0;
-          console.log(`Has Null: ${hasNull}, Has Undefined: ${hasUndefined}`);
+                    // Detailed Debugging Logs
+                    console.log(`Property: ${memberSymbol.getName()}`);
+                    console.log("Full Type:", checker.typeToString(propType));
+                    console.log("Type Flags:", ts.TypeFlags[propType.flags]);
+                    const hasNull = (propType.flags & ts.TypeFlags.Null) !== 0;
+                    const hasUndefined =
+                        (propType.flags & ts.TypeFlags.Undefined) !== 0;
+                    console.log(
+                        `Has Null: ${hasNull}, Has Undefined: ${hasUndefined}`
+                    );
 
-          if (memberSymbol.getName() === 'rotation') {
-            console.log('rotation');
-            console.log('propType', propType);
-            console.log(
-                'checker.typeToString(propType)',
-                checker.typeToString(propType));
-          }
+                    if (memberSymbol.getName() === "rotation") {
+                        console.log("rotation");
+                        console.log("propType", propType);
+                        console.log(
+                            "checker.typeToString(propType)",
+                            checker.typeToString(propType)
+                        );
+                    }
 
-          const serializedType = serializeType(propType, checker);
-          const isOptional = !!member.questionToken;
-          details.properties.push({
-            name: memberSymbol.getName(),
-            type: serializedType,
-            optional: isOptional,
-            documentation: ts.displayPartsToString(
-                memberSymbol.getDocumentationComment(checker)),
-          });
-        }
-      }
-    });
-  }
-
-  // Serialize methods
-  classDeclaration.members.forEach((member) => {
-    if (ts.isMethodDeclaration(member)) {
-      const methodSymbol = checker.getSymbolAtLocation(member.name);
-      if (methodSymbol) {
-        details.methods?.push(
-            serializeMethod(methodSymbol, checker, classType));
-      }
-    }
-  });
-
-  // Handle class inheritance (extends and implements)
-  if (classDeclaration.heritageClauses) {
-    classDeclaration.heritageClauses.forEach((clause) => {
-      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
-        clause.types.forEach((typeNode) => {
-          const extendsType = checker.getTypeAtLocation(typeNode);
-          details.extends?.push(checker.typeToString(extendsType));
+                    const serializedType = serializeType(propType, checker);
+                    const isOptional = !!member.questionToken;
+                    details.properties.push({
+                        name: memberSymbol.getName(),
+                        type: serializedType,
+                        optional: isOptional,
+                        documentation: ts.displayPartsToString(
+                            memberSymbol.getDocumentationComment(checker)
+                        ),
+                    });
+                }
+            }
         });
-      }
-    });
-  }
+    }
 
-  return details;
+    // Serialize methods
+    classDeclaration.members.forEach((member) => {
+        if (ts.isMethodDeclaration(member)) {
+            const methodSymbol = checker.getSymbolAtLocation(member.name);
+            if (methodSymbol) {
+                details.methods?.push(
+                    serializeMethod(methodSymbol, checker, classType)
+                );
+            }
+        }
+    });
+
+    // Handle class inheritance (extends and implements)
+    if (classDeclaration.heritageClauses) {
+        classDeclaration.heritageClauses.forEach((clause) => {
+            if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+                clause.types.forEach((typeNode) => {
+                    const extendsType = checker.getTypeAtLocation(typeNode);
+                    details.extends?.push(checker.typeToString(extendsType));
+                });
+            }
+        });
+    }
+
+    return details;
 }
 
 export function serializeType(type: ts.Type, checker: ts.TypeChecker): string {
-    if (type.isUnion()) {
-        return type.types
-            .map((t) => serializeType(t, checker))
-            .flat()
-            .join(" | ");
-    } else if (type.isIntersection()) {
-        return type.types
-            .map((t) => serializeType(t, checker))
-            .flat()
-            .join(" & ");
-    } else {
-        return checker.typeToString(type);
-    }
+    return checker.typeToString(type);
 }
 
 // Function to serialize a method symbol into DocEntry

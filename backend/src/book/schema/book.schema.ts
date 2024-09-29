@@ -14,6 +14,7 @@ import { CurveElementSkeleton } from "./curveElements/curveElementSkeleton";
 import { ArrowElement } from "./curveElements/elements/arrowElement.schema";
 import { Highlight } from "./highlights/highlights.schema";
 import { User } from "src/user/schemas/user.schema";
+import { OffsetPosition } from "./offsetPosition.schema";
 
 @modelOptions({ schemaOptions: { _id: true } })
 export class Book {
@@ -50,13 +51,10 @@ export class Book {
     @prop({ required: true }) scale!: number;
 
     @prop({
-        type: () => ({
-            x: Number,
-            y: Number,
-        }),
+        type: () => OffsetPosition,
         required: true,
     })
-    offsetPosition!: { x: number; y: number };
+    offsetPosition!: OffsetPosition;
 }
 
 // Create the model for Book

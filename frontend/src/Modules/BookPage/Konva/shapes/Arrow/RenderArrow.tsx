@@ -3,6 +3,7 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape } from "react-konva";
 import rough from "roughjs/bin/rough";
+import { ArrowElement } from "../../../../../endPointTypes/types";
 
 // Define the component's props
 type RenderArrowProps = {
@@ -96,10 +97,9 @@ export default function RenderArrow({
                 roughCanvas.line(0, 0, relativeX2, relativeY2, {
                     stroke: element.stroke || "black",
                     strokeWidth: element.strokeWidth || 2,
-                    strokeStyle: element.strokeStyle || "solid",
                     roughness: element.roughness || 1,
                     bowing: element.bowing || 1,
-                    seed: element.seed
+                    seed: element.seed,
                 });
 
                 // Calculate the angle of the line

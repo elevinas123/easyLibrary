@@ -2,7 +2,7 @@
 
 import { IsDefined, IsEnum, IsOptional, IsString } from "class-validator";
 import { CurveElementSkeletonDto } from "../curveElementSkeleton.dto";
-import { ArrowElement } from "src/book/schema/curveElements/elements/arrowElement.schema";
+import { ArrowElement, StartType } from "src/book/schema/curveElements/elements/arrowElement.schema";
 
 type ArrowElementType = ArrowElement;
 export class ArrowElementDto
@@ -15,7 +15,7 @@ export class ArrowElementDto
 
     @IsOptional() @IsString() endId!: string | null;
 
-    @IsString() @IsEnum(["bookText", "text", null]) startType!: string | null;
+    @IsString() @IsEnum(['bookText', 'text', null]) startType!: StartType;
 
-    @IsString() @IsEnum(["bookText", "text", null]) endType!: string | null;
+    @IsString() @IsEnum(['bookText', 'text', null]) endType!: StartType;
 }
