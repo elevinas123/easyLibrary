@@ -29,20 +29,20 @@
       },
       {
         "name": "comment",
-        "type": "string",
-        "fullType": "comment: string",
+        "type": "undefined | string",
+        "fullType": "comment: undefined | string",
         "optional": true
       },
       {
         "name": "books",
-        "type": "any[]",
-        "fullType": "books: any[]",
+        "type": "ObjectId[]",
+        "fullType": "books: ObjectId[]",
         "optional": false
       },
       {
         "name": "bookshelves",
-        "type": "any[]",
-        "fullType": "bookshelves: any[]",
+        "type": "ObjectId[]",
+        "fullType": "bookshelves: ObjectId[]",
         "optional": false
       }
     ],
@@ -78,14 +78,14 @@
       },
       {
         "name": "books",
-        "type": "any[]",
-        "fullType": "books: any[]",
+        "type": "string[]",
+        "fullType": "books: string[]",
         "optional": false
       },
       {
         "name": "bookshelves",
-        "type": "any[]",
-        "fullType": "bookshelves: any[]",
+        "type": "string[]",
+        "fullType": "bookshelves: string[]",
         "optional": false
       }
     ],
@@ -256,8 +256,8 @@
       },
       {
         "name": "rotation",
-        "type": "null",
-        "fullType": "rotation: null",
+        "type": "number",
+        "fullType": "rotation: number",
         "optional": false
       }
     ],
@@ -365,8 +365,8 @@
       },
       {
         "name": "text",
-        "type": "string",
-        "fullType": "text: string",
+        "type": "undefined | null | string",
+        "fullType": "text: undefined | null | string",
         "optional": true
       },
       {
@@ -438,26 +438,26 @@
     "properties": [
       {
         "name": "startId",
-        "type": "string",
-        "fullType": "startId: string",
+        "type": "null | string",
+        "fullType": "startId: null | string",
         "optional": false
       },
       {
         "name": "endId",
-        "type": "string",
-        "fullType": "endId: string",
+        "type": "null | string",
+        "fullType": "endId: null | string",
         "optional": false
       },
       {
         "name": "startType",
-        "type": "string",
-        "fullType": "startType: string",
+        "type": "null | string",
+        "fullType": "startType: null | string",
         "optional": false
       },
       {
         "name": "endType",
-        "type": "string",
-        "fullType": "endType: string",
+        "type": "null | string",
+        "fullType": "endType: null | string",
         "optional": false
       },
       {
@@ -489,8 +489,8 @@
       },
       {
         "name": "userId",
-        "type": "any",
-        "fullType": "userId: any",
+        "type": "string",
+        "fullType": "userId: ObjectId",
         "optional": false
       },
       {
@@ -563,6 +563,94 @@
         "name": "offsetPosition",
         "type": "{ x: number; y: number; }",
         "fullType": "offsetPosition: { x: number; y: number; }",
+        "optional": false
+      }
+    ],
+    "extends": []
+  },
+  "UpdateBookDto": {
+    "isType": false,
+    "name": "UpdateBookDto",
+    "properties": [
+      {
+        "name": "bookElements",
+        "type": "undefined | ProcessedElementDto[]",
+        "fullType": "bookElements: undefined | ProcessedElementDto[]",
+        "optional": true
+      },
+      {
+        "name": "canvaElements",
+        "type": "undefined | (RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: undefined | (RectElementDto | TextElementDto)[]",
+        "optional": true
+      },
+      {
+        "name": "curveElements",
+        "type": "undefined | ArrowElementDto[]",
+        "fullType": "curveElements: undefined | ArrowElementDto[]",
+        "optional": true
+      },
+      {
+        "name": "highlights",
+        "type": "undefined | HighlightDto[]",
+        "fullType": "highlights: undefined | HighlightDto[]",
+        "optional": true
+      },
+      {
+        "name": "liked",
+        "type": "undefined | false | true",
+        "fullType": "liked: undefined | false | true",
+        "optional": true
+      },
+      {
+        "name": "scale",
+        "type": "undefined | number",
+        "fullType": "scale: undefined | number",
+        "optional": true
+      },
+      {
+        "name": "offsetPosition",
+        "type": "undefined | { x: number; y: number; }",
+        "fullType": "offsetPosition: undefined | { x: number; y: number; }",
+        "optional": true
+      }
+    ],
+    "extends": [
+      "Partial<CreateBookDto>"
+    ]
+  },
+  "HighlightDto": {
+    "isType": false,
+    "name": "HighlightDto",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "fullType": "id: string",
+        "optional": false
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "fullType": "startingX: number",
+        "optional": false
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "fullType": "startingY: number",
+        "optional": false
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "fullType": "endX: number",
+        "optional": false
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "fullType": "endY: number",
         "optional": false
       }
     ],
@@ -696,8 +784,8 @@
       },
       {
         "name": "rotation",
-        "type": "null",
-        "fullType": "rotation: null",
+        "type": "number",
+        "fullType": "rotation: number",
         "optional": false
       }
     ],
@@ -805,8 +893,8 @@
       },
       {
         "name": "text",
-        "type": "string",
-        "fullType": "text: string",
+        "type": "undefined | null | string",
+        "fullType": "text: undefined | null | string",
         "optional": true
       },
       {
@@ -884,119 +972,31 @@
       },
       {
         "name": "startId",
-        "type": "string",
-        "fullType": "startId: string",
+        "type": "null | string",
+        "fullType": "startId: null | string",
         "optional": false
       },
       {
         "name": "endId",
-        "type": "string",
-        "fullType": "endId: string",
+        "type": "null | string",
+        "fullType": "endId: null | string",
         "optional": false
       },
       {
         "name": "startType",
-        "type": "string",
-        "fullType": "startType: string",
+        "type": "null | string",
+        "fullType": "startType: null | string",
         "optional": false
       },
       {
         "name": "endType",
-        "type": "string",
-        "fullType": "endType: string",
+        "type": "null | string",
+        "fullType": "endType: null | string",
         "optional": false
       }
     ],
     "extends": [
       "CurveElementSkeletonDto"
-    ]
-  },
-  "HighlightDto": {
-    "isType": false,
-    "name": "HighlightDto",
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "fullType": "id: string",
-        "optional": false
-      },
-      {
-        "name": "startingX",
-        "type": "number",
-        "fullType": "startingX: number",
-        "optional": false
-      },
-      {
-        "name": "startingY",
-        "type": "number",
-        "fullType": "startingY: number",
-        "optional": false
-      },
-      {
-        "name": "endX",
-        "type": "number",
-        "fullType": "endX: number",
-        "optional": false
-      },
-      {
-        "name": "endY",
-        "type": "number",
-        "fullType": "endY: number",
-        "optional": false
-      }
-    ],
-    "extends": []
-  },
-  "UpdateBookDto": {
-    "isType": false,
-    "name": "UpdateBookDto",
-    "properties": [
-      {
-        "name": "bookElements",
-        "type": "ProcessedElementDto[]",
-        "fullType": "bookElements: ProcessedElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "canvaElements",
-        "type": "(RectElementDto | TextElementDto)[]",
-        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "curveElements",
-        "type": "ArrowElementDto[]",
-        "fullType": "curveElements: ArrowElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "highlights",
-        "type": "HighlightDto[]",
-        "fullType": "highlights: HighlightDto[]",
-        "optional": true
-      },
-      {
-        "name": "liked",
-        "type": "false | true",
-        "fullType": "liked: false | true",
-        "optional": true
-      },
-      {
-        "name": "scale",
-        "type": "number",
-        "fullType": "scale: number",
-        "optional": true
-      },
-      {
-        "name": "offsetPosition",
-        "type": "{ x: number; y: number; }",
-        "fullType": "offsetPosition: { x: number; y: number; }",
-        "optional": true
-      }
-    ],
-    "extends": [
-      "Partial<CreateBookDto>"
     ]
   },
   "OffsetPositionDto": {
@@ -1024,8 +1024,8 @@
     "properties": [
       {
         "name": "_id",
-        "type": "string",
-        "fullType": "_id: string",
+        "type": "undefined | string",
+        "fullType": "_id: undefined | string",
         "optional": true
       },
       {
@@ -1139,8 +1139,8 @@
       },
       {
         "name": "books",
-        "type": "any[]",
-        "fullType": "books: any[]",
+        "type": "ObjectId[]",
+        "fullType": "books: ObjectId[]",
         "optional": false
       }
     ],
@@ -1164,8 +1164,8 @@
       },
       {
         "name": "books",
-        "type": "ObjectId[]",
-        "fullType": "books: ObjectId[]",
+        "type": "string[]",
+        "fullType": "books: string[]",
         "optional": false
       }
     ],

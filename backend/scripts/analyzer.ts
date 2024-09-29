@@ -422,12 +422,53 @@ const createTsType = (
 
     return { typeDict, endpointMap, inputMap };
 };
-// Create TypeScript types and endpoint mappings
 const generateDocumentation = (
     fileNames: string[],
-    options: ts.CompilerOptions
+    configFileName: string = "tsconfig.json"
 ): void => {
-    const program = ts.createProgram(fileNames, options);
+    // Resolve the path to tsconfig.json
+    const configPath = ts.findConfigFile(
+        /*searchPath*/ "./",
+        ts.sys.fileExists,
+        configFileName
+    );
+
+    if (!configPath) {
+        throw new Error("Could not find a valid 'tsconfig.json'.");
+    }
+
+    // Read and parse the tsconfig.json
+    const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+
+    if (configFile.error) {
+        const errorMessage = ts.flattenDiagnosticMessageText(
+            configFile.error.messageText,
+            "\n"
+        );
+        throw new Error(`Error reading tsconfig.json: ${errorMessage}`);
+    }
+
+    // Parse the JSON to get compiler options
+    const parsedCommandLine = ts.parseJsonConfigFileContent(
+        configFile.config,
+        ts.sys,
+        path.dirname(configPath)
+    );
+
+    if (parsedCommandLine.errors.length > 0) {
+        const errorMessage = ts.flattenDiagnosticMessageText(
+            parsedCommandLine.errors[0].messageText,
+            "\n"
+        );
+        throw new Error(`Error parsing tsconfig.json: ${errorMessage}`);
+    }
+
+    // Create the TypeScript program with the parsed options
+    const program = ts.createProgram({
+        rootNames: parsedCommandLine.fileNames,
+        options: parsedCommandLine.options,
+    });
+
     const checker = program.getTypeChecker();
     const output: DocEntry[] = [];
 
@@ -442,8 +483,7 @@ const generateDocumentation = (
         ts.forEachChild(sourceFile, visit);
     }
 
-    // Generate TypeScript types and endpoint mapping from the collected
-    // documentation
+    // Generate TypeScript types and endpoint mapping from the collected documentation
     fs.writeFileSync("./classes.json", JSON.stringify(output, null, 2));
     const { typeDict, endpointMap, inputMap } = createTsType(output);
     fs.writeFileSync("./typeDict.json", JSON.stringify(typeDict, null, 2));
@@ -501,7 +541,6 @@ const generateDocumentation = (
 };
 
 const generateAllDocumentation = async () => {
-    / /;
     const sourceDir = getSourceDirectory();
     const pattern = path.join(sourceDir, "**", "*.ts"); // Include all TypeScript files
 
@@ -509,10 +548,6 @@ const generateAllDocumentation = async () => {
         const files = await glob(pattern, {
             absolute: true,
             ignore: ["**/__tests__/**", "**/*.spec.ts", "**/*.test.ts"],
-        });
-        generateDocumentation(files, {
-            target: ts.ScriptTarget.ES5,
-            module: ts.ModuleKind.CommonJS,
         });
 
         if (files.length === 0) {
@@ -522,10 +557,13 @@ const generateAllDocumentation = async () => {
             return;
         }
 
+        generateDocumentation(files); // tsconfig.json is loaded within generateDocumentation
+
         console.log("Documentation generated successfully.");
     } catch (err) {
         console.error("Error finding controller files:", err);
     }
 };
+
 // Execute the function to generate documentation for all controllers
 generateAllDocumentation();

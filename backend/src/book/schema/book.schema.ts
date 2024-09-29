@@ -22,7 +22,7 @@ export class Book {
 
     @prop({ required: true }) title!: string;
 
-    @prop({ ref: "User", required: true }) userId!: Ref<User>;
+    @prop({ ref: "User", required: true }) userId!: Types.ObjectId;
 
     @prop({ required: true }) description!: string;
 

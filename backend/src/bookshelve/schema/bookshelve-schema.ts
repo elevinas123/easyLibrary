@@ -19,7 +19,7 @@ export class Bookshelve {
         ref: () => Book, // Typegoose uses a function to reference other classes
         default: () => [],
     })
-    public books!: Ref<Book>[];
+    public books!: Types.ObjectId[];
 }
 
 export const BookshelveModel = getModelForClass(Bookshelve);

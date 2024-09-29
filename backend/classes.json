@@ -1,5 +1,142 @@
 [
   {
+    "name": "DocEntry",
+    "documentation": "",
+    "properties": [
+      {
+        "name": "name",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "fileName",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "documentation",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "type",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "constructors",
+        "type": "DocEntry[] | undefined",
+        "optional": true
+      },
+      {
+        "name": "parameters",
+        "type": "any",
+        "optional": true
+      },
+      {
+        "name": "returnType",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "methods",
+        "type": "DocEntry[] | undefined",
+        "optional": true
+      },
+      {
+        "name": "properties",
+        "type": "any",
+        "optional": true
+      },
+      {
+        "name": "path",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "methodPath",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "httpMethod",
+        "type": "string | undefined",
+        "optional": true
+      },
+      {
+        "name": "decorators",
+        "type": "any",
+        "optional": true
+      },
+      {
+        "name": "extends",
+        "type": "string[] | undefined",
+        "optional": true
+      }
+    ],
+    "extends": []
+  },
+  {
+    "name": "ParamEntry",
+    "documentation": "",
+    "properties": [
+      {
+        "name": "name",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "decorator",
+        "type": "string",
+        "optional": false
+      }
+    ],
+    "extends": []
+  },
+  {
+    "name": "InputMapping",
+    "documentation": "",
+    "type": "InputMapping",
+    "path": "scripts/analyzer.ts",
+    "properties": []
+  },
+  {
+    "name": "PropertyEntry",
+    "documentation": "",
+    "properties": [
+      {
+        "name": "name",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "optional": false
+      }
+    ],
+    "extends": []
+  },
+  {
+    "name": "TypeDict",
+    "documentation": "",
+    "type": "TypeDict",
+    "path": "scripts/analyzer.ts",
+    "properties": []
+  },
+  {
+    "name": "EndpointMapping",
+    "documentation": "",
+    "type": "EndpointMapping",
+    "path": "scripts/analyzer.ts",
+    "properties": []
+  },
+  {
     "name": "AppService",
     "documentation": "",
     "type": "typeof AppService",
@@ -33,6 +170,944 @@
         "httpMethod": "GET"
       }
     ],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "ProcessedElement",
+    "documentation": "",
+    "type": "typeof ProcessedElement",
+    "extends": [],
+    "properties": [
+      {
+        "name": "text",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "lineX",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "lineWidth",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "lineY",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "HighlightPoints",
+    "documentation": "",
+    "type": "typeof HighlightPoints",
+    "extends": [],
+    "properties": [
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "CanvaElementSkeleton",
+    "documentation": "",
+    "type": "typeof CanvaElementSkeleton",
+    "extends": [],
+    "properties": [
+      {
+        "name": "fill",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "width",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "height",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "outgoingArrowIds",
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "incomingArrowIds",
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "points",
+        "type": "HighlightPoints[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "strokeColor",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "opacity",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "rotation",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "RectElement",
+    "documentation": "",
+    "type": "typeof RectElement",
+    "extends": [
+      "CanvaElementSkeleton"
+    ],
+    "properties": [
+      {
+        "name": "fillStyle",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "roughness",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "seed",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureGap",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureAngle",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "type",
+        "type": "\"rect\"",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "TextElement",
+    "documentation": "",
+    "type": "typeof TextElement",
+    "extends": [
+      "CanvaElementSkeleton"
+    ],
+    "properties": [
+      {
+        "name": "text",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fontFamily",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "CurveElementSkeleton",
+    "documentation": "",
+    "type": "typeof CurveElementSkeleton",
+    "extends": [],
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fill",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "points",
+        "type": "number[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "text",
+        "type": "undefined | null | string",
+        "optional": true,
+        "documentation": ""
+      },
+      {
+        "name": "roughness",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "bowing",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "seed",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "strokeStyle",
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "stroke",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fillStyle",
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "fillWeight",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureAngle",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "hachureGap",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "ArrowElement",
+    "documentation": "",
+    "type": "typeof ArrowElement",
+    "extends": [
+      "CurveElementSkeleton"
+    ],
+    "properties": [
+      {
+        "name": "startId",
+        "type": "null | string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endId",
+        "type": "null | string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "startType",
+        "type": "null | string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endType",
+        "type": "null | string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "type",
+        "type": "\"arrow\"",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "HighlightType",
+    "documentation": "",
+    "type": "HighlightType",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Highlight",
+    "documentation": "",
+    "type": "typeof Highlight",
+    "extends": [],
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "Book",
+    "documentation": "",
+    "type": "typeof Book",
+    "extends": [],
+    "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "userId",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "author",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "genre",
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "imageUrl",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "liked",
+        "type": "false | true",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "dateAdded",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "bookElements",
+        "type": "ProcessedElement[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "highlights",
+        "type": "Highlight[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "canvaElements",
+        "type": "(RectElement | TextElement)[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "curveElements",
+        "type": "ArrowElement[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "scale",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "offsetPosition",
+        "type": "{ x: number; y: number; }",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "Bookshelve",
+    "documentation": "",
+    "type": "typeof Bookshelve",
+    "extends": [],
+    "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "createdAt",
+        "type": "Date",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "books",
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "UserDocument",
+    "documentation": "",
+    "type": "User & Document",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
+    "properties": []
+  },
+  {
+    "name": "User",
+    "documentation": "",
+    "type": "typeof User",
+    "extends": [],
+    "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "username",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "age",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "password",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "comment",
+        "type": "undefined | string",
+        "optional": true,
+        "documentation": ""
+      },
+      {
+        "name": "books",
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "bookshelves",
+        "type": "ObjectId[]",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "CreateUserDtoType",
+    "documentation": "",
+    "properties": [
+      {
+        "name": "books",
+        "type": "string[]",
+        "optional": false
+      },
+      {
+        "name": "bookshelves",
+        "type": "string[]",
+        "optional": false
+      }
+    ],
+    "extends": [
+      "Omit<User, \"_id\" | \"books\" | \"bookshelves\">"
+    ]
+  },
+  {
+    "name": "CreateUserDto",
+    "documentation": "",
+    "type": "typeof CreateUserDto",
+    "extends": [],
+    "properties": [
+      {
+        "name": "username",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "password",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "age",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "comment",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "books",
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "bookshelves",
+        "type": "string[]",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "UserService",
+    "documentation": "",
+    "type": "typeof UserService",
+    "extends": [],
+    "properties": [],
+    "methods": [
+      {
+        "name": "create",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "createUserDto",
+            "type": "CreateUserDto",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      },
+      {
+        "name": "findAll",
+        "documentation": "",
+        "parameters": [],
+        "returnType": "Promise<User[]>",
+        "methodPath": ""
+      },
+      {
+        "name": "findOneByUsername",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "username",
+            "type": "string",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      },
+      {
+        "name": "findOneByJwtPayload",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "jwt",
+            "type": "string",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      },
+      {
+        "name": "findOne",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      },
+      {
+        "name": "update",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Unknown"
+          },
+          {
+            "name": "updateUserDto",
+            "type": "CreateUserDto",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      },
+      {
+        "name": "remove",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Unknown"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ""
+      }
+    ],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "JwtAuthGuard",
+    "documentation": "",
+    "type": "typeof JwtAuthGuard",
+    "extends": [
+      "IAuthGuard"
+    ],
+    "properties": [],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
+    "name": "UserController",
+    "documentation": "",
+    "type": "typeof UserController",
+    "extends": [],
+    "properties": [],
+    "methods": [
+      {
+        "name": "create",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "createUserDto",
+            "type": "CreateUserDto",
+            "decorator": "Body"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": "",
+        "httpMethod": "POST"
+      },
+      {
+        "name": "findAll",
+        "documentation": "",
+        "parameters": [],
+        "returnType": "Promise<User[]>",
+        "methodPath": "",
+        "httpMethod": "GET"
+      },
+      {
+        "name": "findOneByJwtPayload",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "type": "string",
+            "decorator": "Headers"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": "/findOneByJwtPayload",
+        "httpMethod": "GET"
+      },
+      {
+        "name": "findOne",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Param"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ":id",
+        "httpMethod": "GET"
+      },
+      {
+        "name": "findOneByUsername",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "username",
+            "type": "string",
+            "decorator": "Param"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ":username",
+        "httpMethod": "GET"
+      },
+      {
+        "name": "update",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Param"
+          },
+          {
+            "name": "updateUserDto",
+            "type": "CreateUserDto",
+            "decorator": "Body"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ":id",
+        "httpMethod": "PUT"
+      },
+      {
+        "name": "remove",
+        "documentation": "",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "decorator": "Param"
+          }
+        ],
+        "returnType": "Promise<User>",
+        "methodPath": ":id",
+        "httpMethod": "DELETE"
+      }
+    ],
+    "constructors": [],
+    "path": "user"
+  },
+  {
+    "name": "UserModule",
+    "documentation": "",
+    "type": "typeof UserModule",
+    "extends": [],
+    "properties": [],
+    "methods": [],
     "constructors": [],
     "path": ""
   },
@@ -105,18 +1180,6 @@
         "methodPath": ""
       }
     ],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "JwtAuthGuard",
-    "documentation": "",
-    "type": "typeof JwtAuthGuard",
-    "extends": [
-      "IAuthGuard"
-    ],
-    "properties": [],
-    "methods": [],
     "constructors": [],
     "path": ""
   },
@@ -239,41 +1302,6 @@
     "path": ""
   },
   {
-    "name": "ProcessedElement",
-    "documentation": "",
-    "type": "typeof ProcessedElement",
-    "extends": [],
-    "properties": [
-      {
-        "name": "text",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "lineX",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "lineWidth",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "lineY",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
     "name": "ProcessedElementType",
     "documentation": "",
     "type": "ProcessedElement",
@@ -306,29 +1334,6 @@
       },
       {
         "name": "lineY",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "HighlightPoints",
-    "documentation": "",
-    "type": "typeof HighlightPoints",
-    "extends": [],
-    "properties": [
-      {
-        "name": "x",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "y",
         "type": "number",
         "optional": false,
         "documentation": ""
@@ -448,7 +1453,7 @@
       },
       {
         "name": "rotation",
-        "type": "null",
+        "type": "number",
         "optional": false,
         "documentation": ""
       }
@@ -558,101 +1563,6 @@
     "path": ""
   },
   {
-    "name": "CurveElementSkeleton",
-    "documentation": "",
-    "type": "typeof CurveElementSkeleton",
-    "extends": [],
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fill",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "points",
-        "type": "number[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "text",
-        "type": "string",
-        "optional": true,
-        "documentation": ""
-      },
-      {
-        "name": "roughness",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "bowing",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "seed",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "strokeStyle",
-        "type": "\"solid\" | \"dashed\" | \"dotted\"",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "stroke",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fillStyle",
-        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fillWeight",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureAngle",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureGap",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
     "name": "CurveElementSkeletonType",
     "documentation": "",
     "type": "CurveElementSkeleton",
@@ -685,7 +1595,7 @@
       },
       {
         "name": "text",
-        "type": "string",
+        "type": "undefined | null | string",
         "optional": true,
         "documentation": ""
       },
@@ -777,25 +1687,25 @@
       },
       {
         "name": "startId",
-        "type": "string",
+        "type": "null | string",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "endId",
-        "type": "string",
+        "type": "null | string",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "startType",
-        "type": "string",
+        "type": "null | string",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "endType",
-        "type": "string",
+        "type": "null | string",
         "optional": false,
         "documentation": ""
       }
@@ -807,7 +1717,7 @@
   {
     "name": "OffsetPosition",
     "documentation": "",
-    "type": "Book",
+    "type": "{ x: number; y: number; }",
     "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/dto/offsetPositionDto/offsetPosition.dto.ts",
     "properties": []
   },
@@ -826,399 +1736,6 @@
       {
         "name": "y",
         "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "CanvaElementSkeleton",
-    "documentation": "",
-    "type": "typeof CanvaElementSkeleton",
-    "extends": [],
-    "properties": [
-      {
-        "name": "fill",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "x",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "y",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "width",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "height",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "outgoingArrowIds",
-        "type": "string[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "incomingArrowIds",
-        "type": "string[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "points",
-        "type": "HighlightPoints[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "strokeColor",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "strokeWidth",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "opacity",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "rotation",
-        "type": "null",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "RectElement",
-    "documentation": "",
-    "type": "typeof RectElement",
-    "extends": [
-      "CanvaElementSkeleton"
-    ],
-    "properties": [
-      {
-        "name": "fillStyle",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "roughness",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "seed",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureGap",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "hachureAngle",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "type",
-        "type": "\"rect\"",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "TextElement",
-    "documentation": "",
-    "type": "typeof TextElement",
-    "extends": [
-      "CanvaElementSkeleton"
-    ],
-    "properties": [
-      {
-        "name": "text",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fontFamily",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "fontSize",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "type",
-        "type": "\"text\"",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "ArrowElement",
-    "documentation": "",
-    "type": "typeof ArrowElement",
-    "extends": [
-      "CurveElementSkeleton"
-    ],
-    "properties": [
-      {
-        "name": "startId",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endId",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "startType",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endType",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "type",
-        "type": "\"arrow\"",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "HighlightType",
-    "documentation": "",
-    "type": "HighlightType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/schema/highlights/highlights.schema.ts",
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false
-      },
-      {
-        "name": "startingX",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "startingY",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "endX",
-        "type": "number",
-        "optional": false
-      },
-      {
-        "name": "endY",
-        "type": "number",
-        "optional": false
-      }
-    ]
-  },
-  {
-    "name": "Highlight",
-    "documentation": "",
-    "type": "typeof Highlight",
-    "extends": [],
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "startingX",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "startingY",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endX",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endY",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "Book",
-    "documentation": "",
-    "type": "typeof Book",
-    "extends": [],
-    "properties": [
-      {
-        "name": "_id",
-        "type": "ObjectId",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "title",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "userId",
-        "type": "any",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "description",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "author",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "genre",
-        "type": "string[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "imageUrl",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "liked",
-        "type": "false | true",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "dateAdded",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "bookElements",
-        "type": "ProcessedElement[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "highlights",
-        "type": "Highlight[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "canvaElements",
-        "type": "(RectElement | TextElement)[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "curveElements",
-        "type": "ArrowElement[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "scale",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "offsetPosition",
-        "type": "{ x: number; y: number; }",
         "optional": false,
         "documentation": ""
       }
@@ -1291,7 +1808,7 @@
       },
       {
         "name": "_id",
-        "type": "string",
+        "type": "string | undefined",
         "optional": true
       },
       {
@@ -1312,7 +1829,7 @@
     "properties": [
       {
         "name": "_id",
-        "type": "string",
+        "type": "undefined | string",
         "optional": true,
         "documentation": ""
       },
@@ -1415,43 +1932,43 @@
     "properties": [
       {
         "name": "bookElements",
-        "type": "ProcessedElementDto[]",
+        "type": "undefined | ProcessedElementDto[]",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "canvaElements",
-        "type": "(RectElementDto | TextElementDto)[]",
+        "type": "undefined | (RectElementDto | TextElementDto)[]",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "curveElements",
-        "type": "ArrowElementDto[]",
+        "type": "undefined | ArrowElementDto[]",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "highlights",
-        "type": "HighlightDto[]",
+        "type": "undefined | HighlightDto[]",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "liked",
-        "type": "false | true",
+        "type": "undefined | false | true",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "scale",
-        "type": "number",
+        "type": "undefined | number",
         "optional": true,
         "documentation": ""
       },
       {
         "name": "offsetPosition",
-        "type": "{ x: number; y: number; }",
+        "type": "undefined | { x: number; y: number; }",
         "optional": true,
         "documentation": ""
       }
@@ -1655,9 +2172,16 @@
   {
     "name": "CreateBookshelveDtoType",
     "documentation": "",
-    "type": "CreateBookshelveDtoType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/bookshelve/dto/create-bookshelve.dto.ts",
-    "properties": []
+    "properties": [
+      {
+        "name": "books",
+        "type": "string[]",
+        "optional": false
+      }
+    ],
+    "extends": [
+      "Omit<CreateBookshelveDto, \"_id\" | \"books\">"
+    ]
   },
   {
     "name": "CreateBookshelveDto",
@@ -1679,42 +2203,7 @@
       },
       {
         "name": "books",
-        "type": "ObjectId[]",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "Bookshelve",
-    "documentation": "",
-    "type": "typeof Bookshelve",
-    "extends": [],
-    "properties": [
-      {
-        "name": "_id",
-        "type": "ObjectId",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "name",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "createdAt",
-        "type": "Date",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "books",
-        "type": "any[]",
+        "type": "string[]",
         "optional": false,
         "documentation": ""
       }
@@ -1886,339 +2375,6 @@
     "name": "BookshelveModule",
     "documentation": "",
     "type": "typeof BookshelveModule",
-    "extends": [],
-    "properties": [],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "UserDocument",
-    "documentation": "",
-    "type": "User & Document",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
-    "properties": []
-  },
-  {
-    "name": "User",
-    "documentation": "",
-    "type": "typeof User",
-    "extends": [],
-    "properties": [
-      {
-        "name": "_id",
-        "type": "ObjectId",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "username",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "age",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "password",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "comment",
-        "type": "string",
-        "optional": true,
-        "documentation": ""
-      },
-      {
-        "name": "books",
-        "type": "any[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "bookshelves",
-        "type": "any[]",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "CreateUserDtoType",
-    "documentation": "",
-    "type": "CreateUserDtoType",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/dto/create-user.dto.ts",
-    "properties": []
-  },
-  {
-    "name": "CreateUserDto",
-    "documentation": "",
-    "type": "typeof CreateUserDto",
-    "extends": [],
-    "properties": [
-      {
-        "name": "username",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "password",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "age",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "comment",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "books",
-        "type": "any[]",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "bookshelves",
-        "type": "any[]",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "UserService",
-    "documentation": "",
-    "type": "typeof UserService",
-    "extends": [],
-    "properties": [],
-    "methods": [
-      {
-        "name": "create",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "createUserDto",
-            "type": "CreateUserDto",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      },
-      {
-        "name": "findAll",
-        "documentation": "",
-        "parameters": [],
-        "returnType": "Promise<User[]>",
-        "methodPath": ""
-      },
-      {
-        "name": "findOneByUsername",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "username",
-            "type": "string",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      },
-      {
-        "name": "findOneByJwtPayload",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "jwt",
-            "type": "string",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      },
-      {
-        "name": "findOne",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      },
-      {
-        "name": "update",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Unknown"
-          },
-          {
-            "name": "updateUserDto",
-            "type": "CreateUserDto",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      },
-      {
-        "name": "remove",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Unknown"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ""
-      }
-    ],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "UserController",
-    "documentation": "",
-    "type": "typeof UserController",
-    "extends": [],
-    "properties": [],
-    "methods": [
-      {
-        "name": "create",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "createUserDto",
-            "type": "CreateUserDto",
-            "decorator": "Body"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": "",
-        "httpMethod": "POST"
-      },
-      {
-        "name": "findAll",
-        "documentation": "",
-        "parameters": [],
-        "returnType": "Promise<User[]>",
-        "methodPath": "",
-        "httpMethod": "GET"
-      },
-      {
-        "name": "findOneByJwtPayload",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "type": "string",
-            "decorator": "Headers"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": "/findOneByJwtPayload",
-        "httpMethod": "GET"
-      },
-      {
-        "name": "findOne",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Param"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ":id",
-        "httpMethod": "GET"
-      },
-      {
-        "name": "findOneByUsername",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "username",
-            "type": "string",
-            "decorator": "Param"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ":username",
-        "httpMethod": "GET"
-      },
-      {
-        "name": "update",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Param"
-          },
-          {
-            "name": "updateUserDto",
-            "type": "CreateUserDto",
-            "decorator": "Body"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ":id",
-        "httpMethod": "PUT"
-      },
-      {
-        "name": "remove",
-        "documentation": "",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "decorator": "Param"
-          }
-        ],
-        "returnType": "Promise<User>",
-        "methodPath": ":id",
-        "httpMethod": "DELETE"
-      }
-    ],
-    "constructors": [],
-    "path": "user"
-  },
-  {
-    "name": "UserModule",
-    "documentation": "",
-    "type": "typeof UserModule",
     "extends": [],
     "properties": [],
     "methods": [],

@@ -5,9 +5,9 @@ export interface User {
   username: string;
   age: number;
   password: string;
-  comment?: string;
-  books: any[];
-  bookshelves: any[];
+  comment?: undefined | string;
+  books: ObjectId[];
+  bookshelves: ObjectId[];
 }
 
 export interface CreateUserDto {
@@ -15,8 +15,8 @@ export interface CreateUserDto {
   password: string;
   age: number;
   comment: string;
-  books: any[];
-  bookshelves: any[];
+  books: string[];
+  bookshelves: string[];
 }
 
 export interface ProcessedElement {
@@ -52,7 +52,7 @@ export interface CanvaElementSkeleton {
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: null;
+  rotation: number;
 }
 
 export interface RectElement extends CanvaElementSkeleton {
@@ -75,7 +75,7 @@ export interface CurveElementSkeleton {
   id: string;
   fill: string;
   points: number[];
-  text?: string;
+  text?: undefined | null | string;
   roughness: number;
   bowing: number;
   seed: number;
@@ -89,17 +89,17 @@ export interface CurveElementSkeleton {
 }
 
 export interface ArrowElement extends CurveElementSkeleton {
-  startId: string;
-  endId: string;
-  startType: string;
-  endType: string;
+  startId: null | string;
+  endId: null | string;
+  startType: null | string;
+  endType: null | string;
   type: "arrow";
 }
 
 export interface Book {
   _id: string;
   title: string;
-  userId: any;
+  userId: string;
   description: string;
   author: string;
   genre: string[];
@@ -112,6 +112,24 @@ export interface Book {
   curveElements: ArrowElement[];
   scale: number;
   offsetPosition: { x: number; y: number; };
+}
+
+export interface UpdateBookDto extends Partial<CreateBookDto> {
+  bookElements?: undefined | ProcessedElementDto[];
+  canvaElements?: undefined | (RectElementDto | TextElementDto)[];
+  curveElements?: undefined | ArrowElementDto[];
+  highlights?: undefined | HighlightDto[];
+  liked?: undefined | false | true;
+  scale?: undefined | number;
+  offsetPosition?: undefined | { x: number; y: number; };
+}
+
+export interface HighlightDto {
+  id: string;
+  startingX: number;
+  startingY: number;
+  endX: number;
+  endY: number;
 }
 
 export interface ProcessedElementDto {
@@ -139,7 +157,7 @@ export interface CanvaElementSkeletonDto {
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: null;
+  rotation: number;
 }
 
 export interface RectElementDto extends CanvaElementSkeletonDto {
@@ -162,7 +180,7 @@ export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
   fill: string;
-  text?: string;
+  text?: undefined | null | string;
   roughness: number;
   bowing: number;
   seed: number;
@@ -177,28 +195,10 @@ export interface CurveElementSkeletonDto {
 
 export interface ArrowElementDto extends CurveElementSkeletonDto {
   type: "arrow";
-  startId: string;
-  endId: string;
-  startType: string;
-  endType: string;
-}
-
-export interface HighlightDto {
-  id: string;
-  startingX: number;
-  startingY: number;
-  endX: number;
-  endY: number;
-}
-
-export interface UpdateBookDto extends Partial<CreateBookDto> {
-  bookElements?: ProcessedElementDto[];
-  canvaElements?: (RectElementDto | TextElementDto)[];
-  curveElements?: ArrowElementDto[];
-  highlights?: HighlightDto[];
-  liked?: false | true;
-  scale?: number;
-  offsetPosition?: { x: number; y: number; };
+  startId: null | string;
+  endId: null | string;
+  startType: null | string;
+  endType: null | string;
 }
 
 export interface OffsetPositionDto {
@@ -207,7 +207,7 @@ export interface OffsetPositionDto {
 }
 
 export interface CreateBookDto {
-  _id?: string;
+  _id?: undefined | string;
   userId: string;
   highlights: HighlightDto[];
   title: string;
@@ -228,13 +228,13 @@ export interface Bookshelve {
   _id: string;
   name: string;
   createdAt: Date;
-  books: any[];
+  books: ObjectId[];
 }
 
 export interface CreateBookshelveDto {
   name: string;
   createdAt: Date;
-  books: ObjectId[];
+  books: string[];
 }
 
 export type ObjectId = string;

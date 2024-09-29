@@ -4,8 +4,11 @@ import { Bookshelve } from "src/bookshelve/schema/bookshelve-schema";
 import { Ref } from "@typegoose/typegoose";
 import { Book } from "src/book/schema/book.schema";
 
-type CreateUserDtoType = Omit<User, "_id">;
-
+interface CreateUserDtoType
+    extends Omit<User, "_id" | "books" | "bookshelves"> {
+    books: string[];
+    bookshelves: string[];
+}
 export class CreateUserDto implements CreateUserDtoType {
     @IsString() readonly username!: string;
 
@@ -19,11 +22,11 @@ export class CreateUserDto implements CreateUserDtoType {
     @IsArray()
     @IsMongoId({ each: true })
     // Validate each item in the array as a valid ObjectId
-    readonly books!: Ref<Book>[]; // Required, but can be an empty array
+    readonly books!: string[]; // Required, but can be an empty array
 
     // Bookshelves array that must contain valid MongoDB ObjectId references
     @IsArray()
     @IsMongoId({ each: true })
     // Validate each item in the array as a valid ObjectId
-    readonly bookshelves!: Ref<Bookshelve>[]; // Required, but can be an empty array
+    readonly bookshelves!: string[]; // Required, but can be an empty array
 }

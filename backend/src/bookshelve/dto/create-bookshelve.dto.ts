@@ -2,7 +2,10 @@ import { Type } from "class-transformer";
 import { IsArray, IsDate, IsOptional, IsString } from "class-validator";
 import { Types } from "mongoose";
 
-type CreateBookshelveDtoType = Omit<CreateBookshelveDto, "_id">;
+interface CreateBookshelveDtoType
+    extends Omit<CreateBookshelveDto, "_id" | "books"> {
+    books: string[];
+}
 
 export class CreateBookshelveDto implements CreateBookshelveDtoType {
     @IsString()
@@ -13,5 +16,5 @@ export class CreateBookshelveDto implements CreateBookshelveDtoType {
     readonly createdAt!: Date;
 
     @IsArray()
-    readonly books!: Types.ObjectId[];
+    readonly books!: string[];
 }
