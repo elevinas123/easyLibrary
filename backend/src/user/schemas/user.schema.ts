@@ -12,7 +12,7 @@ export type UserDocument = User & Document;
 
 @modelOptions({ schemaOptions: { _id: true } })
 export class User {
-    @prop({ type: () => String, required: true, auto: true })
+    @prop({ type: () => Types.ObjectId, required: true, auto: true })
     _id!: Types.ObjectId;
 
     @prop({ required: true }) username!: string;

@@ -104,9 +104,7 @@ export interface OffsetPosition {
 }
 
 export interface Book {
-  _id: string;
   title: string;
-  userId: string;
   description: string;
   author: string;
   genre: string[];
@@ -242,6 +240,11 @@ export interface CreateBookshelveDto {
   name: string;
   createdAt: Date;
   books: string[];
+}
+
+export interface LoginDto {
+  username: string;
+  password: string;
 }
 
 export type ObjectId = string;

@@ -18,12 +18,8 @@ import { OffsetPosition } from "./offsetPosition.schema";
 
 @modelOptions({ schemaOptions: { _id: true } })
 export class Book {
-    @prop({ type: () => Types.ObjectId, required: true, auto: true })
-    _id!: Types.ObjectId;
 
     @prop({ required: true }) title!: string;
-
-    @prop({ ref: "User", required: true }) userId!: Types.ObjectId;
 
     @prop({ required: true }) description!: string;
 

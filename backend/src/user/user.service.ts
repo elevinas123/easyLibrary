@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { User, UserDocument } from "./schemas/user.schema";
-import { Model } from "mongoose";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
+import { ReturnModelType } from "@typegoose/typegoose"; // Correct model type for Typegoose
+import { InjectModel } from "nestjs-typegoose"; // Correct import from nestjs-typegoose
+
+import { CreateUserDto } from "./dto/create-user.dto";
+import { User, UserDocument } from "./schemas/user.schema";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel(User) private userModel: ReturnModelType<typeof User>, // Correct usage with class reference
         private jwtService: JwtService
     ) {}
 
@@ -20,10 +21,9 @@ export class UserService {
     async findAll(): Promise<User[]> {
         return this.userModel.find().exec();
     }
+
     async findOneByUsername(username: string): Promise<User> {
-        const userFound = await this.userModel.findOne({
-            username: username,
-        });
+        const userFound = await this.userModel.findOne({ username }).exec();
         if (!userFound) {
             throw new NotFoundException(
                 `User with username ${username} not found`
@@ -31,15 +31,13 @@ export class UserService {
         }
         return userFound;
     }
+
     async findOneByJwtPayload(jwt: string): Promise<User> {
-        console.log("jwt", jwt);
-        const decodedToken = this.jwtService.decode(jwt) as any; // Decode JWT payload
-        const username = decodedToken?.username; // Extract data from JWT payload
+        const decodedToken = this.jwtService.decode(jwt) as any;
+        const username = decodedToken?.username;
         if (!username) {
             throw new Error("Invalid JWT");
         }
-
-        // Fetch the user based on the username or other payload data
         return this.findOneByUsername(username);
     }
 
@@ -50,6 +48,7 @@ export class UserService {
         }
         return userFound;
     }
+
     async update(id: string, updateUserDto: CreateUserDto): Promise<User> {
         const updatedUser = await this.userModel
             .findByIdAndUpdate(id, updateUserDto, { new: true })
@@ -59,6 +58,7 @@ export class UserService {
         }
         return updatedUser;
     }
+
     async remove(id: string): Promise<User> {
         const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
         if (!deletedUser) {

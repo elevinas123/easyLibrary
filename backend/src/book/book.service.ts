@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
 
 import { ReturnModelType } from "@typegoose/typegoose";
 import { CreateBookDto } from "./dto/createBookDto";
 import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
 import { Book } from "./schema/book.schema";
+import { InjectModel } from "nestjs-typegoose";
+
 @Injectable()
 export class BookService {
     constructor(
-        @InjectModel(Book.name)
+        @InjectModel(Book)
         private readonly bookModel: ReturnModelType<typeof Book>
     ) {}
 

@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { accessTokenAtom, userAtom } from "../../atoms";
+import { apiFetch } from "../../endPointTypes/apiClient";
 
 const Login: React.FC = () => {
     const [user, setUser] = useAtom(userAtom);
@@ -16,14 +17,13 @@ const Login: React.FC = () => {
 
     // Define the mutation function
     const loginUser = async () => {
-        const response = await axios.post("/api/auth/login", {
-            username,
-            password,
+        const response = await apiFetch("POST /auth/login", {
+            body: { username, password },
         });
+        
         console.log("response", response);
         return response.data;
     };
-
 
     // Use the useMutation hook with the mutation function
     const mutation = useMutation({

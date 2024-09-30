@@ -10,8 +10,6 @@ export const endpointMap = {
   "GET /user/:username": "User",
   "PUT /user/:id": "User",
   "DELETE /user/:id": "User",
-  "POST /auth/login": "{ access_token: string; user: any; }",
-  "POST /auth/register": "User",
   "GET /book": "Book[]",
   "GET /book/getUserBooks": "Book[]",
   "PATCH /book/:id": "Book",
@@ -22,6 +20,8 @@ export const endpointMap = {
   "POST /bookshelve": "Bookshelve",
   "PUT /bookshelve/:id": "Bookshelve",
   "DELETE /bookshelve/:id": "Bookshelve",
+  "POST /auth/login": "{ access_token: string; user: any; }",
+  "POST /auth/register": "User",
 } as const;
 
 export type Endpoint = keyof typeof endpointMap;
@@ -34,8 +34,6 @@ export type ApiResponseTypes = {
   "GET /user/:username": User;
   "PUT /user/:id": User;
   "DELETE /user/:id": User;
-  "POST /auth/login": { access_token: string; user: any; };
-  "POST /auth/register": User;
   "GET /book": Book[];
   "GET /book/getUserBooks": Book[];
   "PATCH /book/:id": Book;
@@ -46,4 +44,6 @@ export type ApiResponseTypes = {
   "POST /bookshelve": Bookshelve;
   "PUT /bookshelve/:id": Bookshelve;
   "DELETE /bookshelve/:id": Bookshelve;
+  "POST /auth/login": { access_token: string; user: any; };
+  "POST /auth/register": User;
 };

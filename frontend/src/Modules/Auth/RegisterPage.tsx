@@ -1,10 +1,10 @@
 // src/pages/Register.tsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { accessTokenAtom, userAtom } from "../../atoms";
+import { apiFetch } from "../../endPointTypes/apiClient";
 
 const Register: React.FC = () => {
     const [user, setUser] = useAtom(userAtom);
@@ -19,9 +19,15 @@ const Register: React.FC = () => {
         if (password !== confirmPassword) {
             throw new Error("Passwords do not match.");
         }
-        const response = await axios.post("/api/auth/register", {
-            username,
-            password,
+        const response = await apiFetch("POST /auth/register", {
+            body: {
+                username,
+                password,
+                age: 10,
+                comment: "hi",
+                books: [],
+                bookshelves: [],
+            },
         });
         return response.data;
     };
@@ -41,7 +47,7 @@ const Register: React.FC = () => {
     useEffect(() => {
         console.log("user", user);
         console.log("accessToken", accessTokenAtom);
-    }, [user, accessTokenAtom])
+    }, [user, accessTokenAtom]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

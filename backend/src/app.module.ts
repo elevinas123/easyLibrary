@@ -19,9 +19,14 @@ import { UserModule } from "./user/user.module";
         }),
         TypegooseModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                uri: configService.get<string>("MONGODB_URI")!,
-            }),
+            useFactory: async (configService: ConfigService) => {
+                const mongoUri = configService.get<string>("MONGODB_URI");
+                console.log("MongoDB URI:", mongoUri);
+
+                return {
+                    uri: mongoUri!,
+                };
+            },
             inject: [ConfigService],
         }),
         JwtModule.register({

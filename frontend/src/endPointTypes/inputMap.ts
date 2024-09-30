@@ -1,6 +1,6 @@
 // This file is auto-generated from inputMap.json and endpointMap.json. Do not modify manually.
 
-import { CreateUserDto, UpdateBookDto, CreateBookDto, CreateBookshelveDto } from './types';
+import { CreateUserDto, UpdateBookDto, CreateBookDto, CreateBookshelveDto, LoginDto } from './types';
 
 export type InputMap = {
   "POST /user": {
@@ -20,10 +20,6 @@ export type InputMap = {
   };
   "DELETE /user/:id": {
     params: { id: string };
-  };
-  "POST /auth/login": {};
-  "POST /auth/register": {
-    body: CreateUserDto;
   };
   "GET /book": {};
   "GET /book/getUserBooks": {
@@ -52,6 +48,12 @@ export type InputMap = {
   };
   "DELETE /bookshelve/:id": {
     params: { id: string };
+  };
+  "POST /auth/login": {
+    body: LoginDto;
+  };
+  "POST /auth/register": {
+    body: CreateUserDto;
   };
 };
 

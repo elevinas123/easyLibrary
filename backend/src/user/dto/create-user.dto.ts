@@ -20,13 +20,13 @@ export class CreateUserDto implements CreateUserDtoType {
 
     // Books array that must contain valid MongoDB ObjectId references
     @IsArray()
-    @IsMongoId({ each: true })
+    @IsString({ each: true })
     // Validate each item in the array as a valid ObjectId
     readonly books!: string[]; // Required, but can be an empty array
 
     // Bookshelves array that must contain valid MongoDB ObjectId references
     @IsArray()
-    @IsMongoId({ each: true })
+    @IsString({ each: true })
     // Validate each item in the array as a valid ObjectId
     readonly bookshelves!: string[]; // Required, but can be an empty array
 }
