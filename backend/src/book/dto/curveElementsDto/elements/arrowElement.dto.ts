@@ -1,16 +1,20 @@
 // src/books/dto/arrow-element.dto.ts
 
 import {
-    IsArray,
     IsEnum,
-    IsNumber,
     IsOptional,
-    IsString,
+    IsString
 } from "class-validator";
+import {
+    ArrowElementType,
+    StartType,
+} from "src/book/schema/curveElements/elements/arrowElement.schema";
 import { CurveElementSkeletonDto } from "../curveElementSkeleton.dto";
-export type StartType = "bookText" | "text" | null;
 
-export class ArrowElementDto extends CurveElementSkeletonDto {
+export class ArrowElementDto
+    extends CurveElementSkeletonDto
+    implements ArrowElementType
+{
     @IsString() @IsEnum(["arrow"]) type: "arrow";
 
     @IsOptional() @IsString() startId: string | null;

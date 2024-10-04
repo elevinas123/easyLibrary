@@ -1,37 +1,40 @@
-import {Type} from 'class-transformer';
-import {IsArray, IsNumber, IsString, ValidateNested} from 'class-validator';
-import {CanvaElementSkeleton, CanvaElementSkeletonType} from 'src/book/schema/canvaElements/canvaElementSkeleton.schema';
+import { Type } from "class-transformer";
+import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
+import {
+    CanvaElementSkeleton,
+    CanvaElementSkeletonType,
+} from "src/book/schema/canvaElements/canvaElementSkeleton.schema";
 
-import {HighlightPointsDto} from './highlightPoints.dto';
+import { HighlightPointsDto } from "./highlightPoints.dto";
 
 // DTO Class with Typegoose for MongoDB schema
 export class CanvaElementSkeletonDto implements CanvaElementSkeletonType {
-  @IsString() public fill!: string;
+    @IsString() public fill!: string;
 
-  @IsNumber() public x!: number;
+    @IsNumber() public x!: number;
 
-  @IsNumber() public y!: number;
+    @IsNumber() public y!: number;
 
-  @IsNumber() public width!: number;
+    @IsNumber() public width!: number;
 
-  @IsNumber() public height!: number;
+    @IsNumber() public height!: number;
 
-  @IsString() public id!: string;
+    @IsString() public id!: string;
 
-  @IsArray() @IsString({each: true}) public outgoingArrowIds!: string[];
+    @IsArray() @IsString({ each: true }) public outgoingArrowIds!: string[];
 
-  @IsArray() @IsString({each: true}) public incomingArrowIds!: string[];
+    @IsArray() @IsString({ each: true }) public incomingArrowIds!: string[];
 
-  @IsArray()
-  @ValidateNested({each: true})
-  @Type(() => HighlightPointsDto)
-  public points!: HighlightPointsDto[];
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => HighlightPointsDto)
+    public points!: HighlightPointsDto[];
 
-  @IsString() public strokeColor!: string;
+    @IsString() public strokeColor!: string;
 
-  @IsNumber() public strokeWidth!: number;
+    @IsNumber() public strokeWidth!: number;
 
-  @IsNumber() public opacity!: number;
+    @IsNumber() public opacity!: number;
 
-  @IsNumber() public rotation!: number;
+    @IsNumber() public rotation!: number;
 }

@@ -11,7 +11,7 @@ export type HighlightType = {
 export type HighlightDocument = Highlight & Document;
 
 @Schema({ _id: false })
-export class Highlight implements HighlightType{
+export class Highlight implements HighlightType {
     @Prop({ required: true }) id: string;
 
     @Prop({ required: true }) startingX: number;

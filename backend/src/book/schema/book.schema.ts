@@ -4,28 +4,23 @@ import { Document, Types } from "mongoose";
 
 import {
     ProcessedElementSchema,
-    ProcessedElementType
+    ProcessedElementType,
 } from "./bookElements/processedElement.schema";
 import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton.schema";
-import {
-    RectElementType
-} from "./canvaElements/elements/rectElement.schema";
-import {
-    TextElementType
-} from "./canvaElements/elements/textElement.schema";
+import { RectElementType } from "./canvaElements/elements/rectElement.schema";
+import { TextElementType } from "./canvaElements/elements/textElement.schema";
 import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
-import {
-    ArrowElementType
-} from "./curveElements/elements/arrowElement.schema";
-import { HighlightSchema } from "./highlights/highlights.schema";
+import { ArrowElementType } from "./curveElements/elements/arrowElement.schema";
+import { HighlightSchema, HighlightType } from "./highlights/highlights.schema";
 import {
     OffsetPositionSchema,
-    OffsetPositionType
+    OffsetPositionType,
 } from "./offsetPosition/offsetPosition.schema";
 
 export type BookDocument = Book & Document;
 
-type BookType = {
+export type BookType = {
+    _id: Types.ObjectId;
     title: string;
     userId: Types.ObjectId;
     description: string;
@@ -44,6 +39,9 @@ type BookType = {
 
 @Schema()
 export class Book implements BookType {
+    get _id(): Types.ObjectId {
+        return this._id;
+    }
     @Prop({ type: String, required: true }) title: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })

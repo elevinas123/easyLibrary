@@ -2,8 +2,12 @@
 
 import { IsEnum, IsNumber, IsString } from "class-validator";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
+import { RectElementType } from "src/book/schema/canvaElements/elements/rectElement.schema";
 
-export class RectElementDto extends CanvaElementSkeletonDto {
+export class RectElementDto
+    extends CanvaElementSkeletonDto
+    implements RectElementType
+{
     @IsString() @IsEnum(["rect"]) type: "rect";
 
     @IsNumber() roughness: number;

@@ -1,8 +1,7 @@
+import { IsNumber } from "class-validator";
+import { OffsetPositionType } from "../schema/offsetPosition/offsetPosition.schema";
 
-import {IsNumber} from 'class-validator';
-
-
-export class OffsetPositionDto {
-  @IsNumber() x: number;
-  @IsNumber() y: number;
+export class OffsetPositionDto implements OffsetPositionType {
+    @IsNumber() x: number;
+    @IsNumber() y: number;
 }

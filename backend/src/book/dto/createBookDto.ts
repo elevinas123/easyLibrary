@@ -15,13 +15,16 @@ import { RectElementDto } from "./canvaElementsDto/elements/rectElement.dto";
 import { TextElementDto } from "./canvaElementsDto/elements/textElement.dto";
 import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 import { OffsetPositionDto } from "./offsetPosition.dto";
+import { BookType } from "../schema/book.schema";
+import { Types } from "mongoose";
+import { HighlightDto } from "./highlightsDto/highlights.dto";
 
-export class CreateBookDto {
+export class CreateBookDto implements Omit<BookType, "_id"> {
     @IsString() @IsNotEmpty() title: string;
 
     @IsString()
     @IsNotEmpty()
-    userId: string; // Will be converted to ObjectId in the service
+    userId: Types.ObjectId; // Will be converted to ObjectId in the service
 
     @IsString() @IsNotEmpty() description: string;
 
@@ -40,6 +43,11 @@ export class CreateBookDto {
     @Type(() => ProcessedElementDto)
     bookElements: ProcessedElementDto[];
 
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => HighlightDto) // First type
+    highlights: HighlightDto[];
+    
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => TextElementDto) // First type
