@@ -107,7 +107,7 @@ const fillDoc = (
     if (!currentType.name || (!currentType.properties && !currentType.type)) {
         return typeDict;
     }
-    if (currentType.name === "StartType") {
+    if (currentType.name === "CanvaElementType") {
         console.log("currentType", currentType);
     }
 
@@ -155,7 +155,9 @@ const fillDoc = (
                 isArray = true;
                 innerType = extractArrayType(innerType);
             }
-
+            if (currentType.name === "CanvaElementType") {
+                console.log("innerType", innerType);
+            }
             // Handle union types like (TypeA | TypeB)
             const unionTypes = extractUnionTypes(innerType);
             const typeStrings: string[] = [];
@@ -221,7 +223,9 @@ const fillDoc = (
         // type is a union (for types)
         const unionTypes = extractUnionTypes(currentType.type);
         const typeStrings: string[] = [];
-
+        if (currentType.name === "CanvaElementType") {
+            console.log("unionTypes", unionTypes);
+        }
         unionTypes.forEach((ut) => {
             if (currentType.name === "StartType") {
                 console.log("ut", ut);
