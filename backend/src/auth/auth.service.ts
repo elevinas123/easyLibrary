@@ -4,7 +4,6 @@ import { CreateUserDto } from "src/user/dto/create-user.dto";
 import { UserService } from "src/user/user.service";
 
 import { User } from "src/user/schemas/user.schema";
-import { LoginResponseDto } from "./dto/login-response.dto";
 
 @Injectable()
 export class AuthService {

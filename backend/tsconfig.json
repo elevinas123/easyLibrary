@@ -17,6 +17,8 @@
         "strictBindCallApply": false,
         "forceConsistentCasingInFileNames": false,
         "noEmitOnError": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": false,
         "types": ["vite-tsconfig-paths", "vitest/globals"]
     },

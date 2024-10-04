@@ -1,7 +1,6 @@
 // curve-element-skeleton.schema.ts
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { ArrowElementSchema } from "./elements/arrowElement.schema";
 
 export interface CurveElementSkeletonType {
     points: number[];

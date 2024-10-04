@@ -72,7 +72,7 @@ export const generateEndPointTypes = (endPointMap: EndpointMapping) => {
     }
 
     // Iterate over each endpoint in endpointMapData to collect types
-    for (const [endpoint, returnType] of Object.entries(endpointMapData)) {
+    for (const [_, returnType] of Object.entries(endpointMapData)) {
         // Extract the type inside Promise<>
         const promiseMatch = (returnType as string).match(/Promise<(.*)>/);
         const actualType = promiseMatch

@@ -1,10 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { CreateBookDto } from "src/book/dto/createBookDto";
-import { BookDocument } from "src/book/schema/book.schema";
 
-import { BookService } from "../book/book.service";
 
 import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";
 import { Bookshelve } from "./schema/bookshelve-schema";
@@ -14,7 +11,6 @@ export class BookshelveService {
     constructor(
         @InjectModel(Bookshelve.name)
         private bookshelveModel: Model<Bookshelve>,
-        private readonly bookModel: BookService // Inject BookService
     ) {}
     async addBookshelve(
         createBookshelveDto: CreateBookshelveDto

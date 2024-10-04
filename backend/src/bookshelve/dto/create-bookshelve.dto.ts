@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsDate, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDate, IsString } from "class-validator";
 import { Types } from "mongoose";
 import { BookshelveType } from "../schema/bookshelve-schema";
 

@@ -86,9 +86,7 @@ export function serializeClass(
         if (ts.isMethodDeclaration(member)) {
             const methodSymbol = checker.getSymbolAtLocation(member.name);
             if (methodSymbol) {
-                details.methods?.push(
-                    serializeMethod(methodSymbol, checker, classType)
-                );
+                details.methods?.push(serializeMethod(methodSymbol, checker));
             }
         }
     });
@@ -125,11 +123,7 @@ export function serializeType(type: ts.Type, checker: ts.TypeChecker): string {
 }
 
 // Function to serialize a method symbol into DocEntry
-function serializeMethod(
-    symbol: ts.Symbol,
-    checker: ts.TypeChecker,
-    classType: ts.Type
-): DocEntry {
+function serializeMethod(symbol: ts.Symbol, checker: ts.TypeChecker): DocEntry {
     const methodType = checker.getTypeOfSymbolAtLocation(
         symbol,
         symbol.valueDeclaration!
@@ -219,8 +213,6 @@ export function serializeInterface(
         properties: [],
         extends: [], // Initialize the extends array
     };
-
-    const type = checker.getDeclaredTypeOfSymbol(symbol);
 
     // Get only direct properties (i.e., properties declared directly in the
     // interface)

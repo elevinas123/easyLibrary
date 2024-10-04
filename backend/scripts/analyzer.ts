@@ -1,5 +1,4 @@
 // type-generator.ts
-import * as fs from "fs";
 import { glob } from "glob";
 import * as path from "path";
 import * as ts from "typescript";
@@ -48,10 +47,6 @@ export interface ParamEntry {
 export type InputMapping = {
     [key: string]: { query?: string; params?: string; body?: string };
 };
-interface PropertyEntry {
-    name: string;
-    type: string;
-}
 
 // Type dictionary to store type definitions
 // Type dictionary to store type and interface definitions
@@ -339,7 +334,6 @@ const createTsType = (
                 paramUnionTypes.forEach((put) => {
                     if (!basicTypes.includes(put)) {
                         // Only add complex types
-                        const mappedType = mapType(put);
                         const typeEntry = doc.find(
                             (entry) => entry.name === put
                         );
@@ -425,7 +419,6 @@ const createTsType = (
     return { typeDict, endpointMap, inputMap };
 };
 const generateDocumentation = (
-    fileNames: string[],
     configFileName: string = "tsconfig.json"
 ): void => {
     // Resolve the path to tsconfig.json
@@ -554,7 +547,7 @@ const generateAllDocumentation = async () => {
             return;
         }
 
-        generateDocumentation(files); // tsconfig.json is loaded within generateDocumentation
+        generateDocumentation(); // tsconfig.json is loaded within generateDocumentation
 
         console.log("Documentation generated successfully.");
     } catch (err) {

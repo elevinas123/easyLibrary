@@ -2,7 +2,6 @@
 
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
-import { Bookshelve } from "src/bookshelve/schema/bookshelve-schema";
 
 export type UserDocument = User & Document;
 
