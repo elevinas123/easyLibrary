@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { KonvaEventObject } from "konva/lib/Node";
 import {
     ForwardedRef,
     forwardRef,
@@ -7,9 +9,10 @@ import {
 } from "react";
 import { Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
+import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
-import { useAtom } from "jotai";
 import {
     activeToolAtom,
     highlightsAtom,
@@ -17,9 +20,12 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
+<<<<<<< HEAD
 import { KonvaEventObject } from "konva/lib/Node";
 import { getPos } from "../../functions/getPos";
 import { HighlightPoints, ProcessedElement } from "../../../../../endPointTypes/types";
+=======
+>>>>>>> MongooseBackend
 
 export type FullHighlight = {
     rects: HighlightRect[];

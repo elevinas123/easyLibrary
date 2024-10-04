@@ -1,10 +1,18 @@
 import { Text } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
+<<<<<<< HEAD
 import { TextElement } from "../../../../../endPointTypes/types";
 
 export type RenderTextProps = {
     draggable: boolean;
     element: TextElement;
+=======
+import { TextElementType } from "../../../../../endPointTypes/types";
+
+export type RenderTextProps = {
+    draggable: boolean;
+    element: TextElementType;
+>>>>>>> MongooseBackend
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 export default function RenderText({

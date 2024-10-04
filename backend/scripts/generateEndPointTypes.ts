@@ -7,8 +7,15 @@ import { findDirectoryUpwards } from "./findDirectory";
 
 export const generateEndPointTypes = (endPointMap: EndpointMapping) => {
     const frontendDirPath = findDirectoryUpwards();
+<<<<<<< HEAD
     if (!frontendDirPath) return;
 
+=======
+    if (!frontendDirPath) {
+      console.error('Frontend directory not found.');
+      process.exit(1);
+    }
+>>>>>>> MongooseBackend
     // Define the output path for the generated TypeScript file
     const outputPath = path.join(
         frontendDirPath,
@@ -70,7 +77,7 @@ export const generateEndPointTypes = (endPointMap: EndpointMapping) => {
     }
 
     // Iterate over each endpoint in endpointMapData to collect types
-    for (const [endpoint, returnType] of Object.entries(endpointMapData)) {
+    for (const [_, returnType] of Object.entries(endpointMapData)) {
         // Extract the type inside Promise<>
         const promiseMatch = (returnType as string).match(/Promise<(.*)>/);
         const actualType = promiseMatch

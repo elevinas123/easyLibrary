@@ -1,23 +1,20 @@
-import React, { useState } from "react";
+import { BiRectangle } from "react-icons/bi";
 import {
-    FaHandPaper,
-    FaSquare,
-    FaCircle,
-    FaDrawPolygon,
     FaArrowRight,
-    FaPalette,
-    FaFont,
-    FaImage,
+    FaCircle,
     FaEraser,
-    FaSlash,
+    FaFont,
+    FaHandPaper,
+    FaImage,
+    FaPalette,
+    FaSlash
 } from "react-icons/fa";
 import { FiMousePointer } from "react-icons/fi";
-import { BiRectangle } from "react-icons/bi";
 
-import { CgShapeRhombus } from "react-icons/cg";
 import { useAtom } from "jotai";
-import { activeToolAtom } from "../konvaAtoms";
+import { CgShapeRhombus } from "react-icons/cg";
 import { Button } from "../../../../components/ui/button";
+import { activeToolAtom } from "../konvaAtoms";
 
 export type DrawingToolNames =
     | "Pan"

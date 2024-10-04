@@ -1,13 +1,21 @@
 // RenderArrow.tsx
 
+<<<<<<< HEAD
+=======
+import { Shape } from "react-konva";
+>>>>>>> MongooseBackend
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape } from "react-konva";
 import rough from "roughjs/bin/rough";
+<<<<<<< HEAD
 import { ArrowElement } from "../../../../../endPointTypes/types";
+=======
+import { ArrowElementType } from "../../../../../endPointTypes/types";
+>>>>>>> MongooseBackend
 
 // Define the component's props
 type RenderArrowProps = {
-    element: ArrowElement;
+    element: ArrowElementType;
     draggable: boolean;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
@@ -18,7 +26,7 @@ const drawArrowHead = (
     relativeX2: number,
     relativeY2: number,
     angle: number,
-    element: ArrowElement
+    element: ArrowElementType
 ) => {
     const arrowLength = 10; // Length of the arrowhead lines
     const arrowAngle = Math.PI / 6; // 30 degrees

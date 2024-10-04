@@ -4,6 +4,28 @@ import { CreateUserDto, UpdateBookDto, CreateBookDto, CreateBookshelveDto, Login
 
 export type InputMap = {
   "POST /user": {
+<<<<<<< HEAD
+=======
+    body: CreateUserDto;
+  };
+  "GET /user": {};
+  "GET /user/findOneByJwtPayload": {};
+  "GET /user/:id": {
+    params: { id: string };
+  };
+  "GET /user/:username": {
+    params: { username: string };
+  };
+  "PUT /user/:id": {
+    params: { id: string };
+    body: CreateUserDto;
+  };
+  "DELETE /user/:id": {
+    params: { id: string };
+  };
+  "POST /auth/login": {};
+  "POST /auth/register": {
+>>>>>>> MongooseBackend
     body: CreateUserDto;
   };
   "GET /user": {};
@@ -49,12 +71,15 @@ export type InputMap = {
   "DELETE /bookshelve/:id": {
     params: { id: string };
   };
+<<<<<<< HEAD
   "POST /auth/login": {
     body: LoginDto;
   };
   "POST /auth/register": {
     body: CreateUserDto;
   };
+=======
+>>>>>>> MongooseBackend
 };
 
 export default InputMap;

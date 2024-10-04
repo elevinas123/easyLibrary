@@ -12,12 +12,21 @@
         "baseUrl": "./",
         "incremental": true,
         "skipLibCheck": true,
+<<<<<<< HEAD
         "strict": true,
         "strictPropertyInitialization": true,
+=======
+>>>>>>> MongooseBackend
         "strictNullChecks": true,
         "noImplicitAny": false,
         "strictBindCallApply": false,
         "forceConsistentCasingInFileNames": false,
+<<<<<<< HEAD
+=======
+        "noEmitOnError": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+>>>>>>> MongooseBackend
         "noFallthroughCasesInSwitch": false,
         "types": ["vite-tsconfig-paths", "vitest/globals"]
     },

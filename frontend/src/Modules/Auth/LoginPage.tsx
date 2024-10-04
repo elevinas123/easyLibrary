@@ -1,9 +1,9 @@
 // src/pages/Login.tsx
-import React, { useState } from "react";
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useAtom } from "jotai";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { accessTokenAtom, userAtom } from "../../atoms";
 import { apiFetch } from "../../endPointTypes/apiClient";
 
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
             setAccessToken(data.access_token);
             navigate("/");
         },
-        onError: (error: any) => {
+        onError: () => {
             setErrorMessage("Invalid username or password.");
         },
     });

@@ -13,11 +13,23 @@ import {
 import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
+<<<<<<< HEAD
 import { Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
 import { getPos } from "../../functions/getPos";
 import RenderArrow from "./RenderArrow";
 import { ArrowElement, StartType } from "../../../../../endPointTypes/types";
+=======
+import { Vector2d } from "konva/lib/types";
+import { getPos } from "../../functions/getPos";
+import RenderArrow from "./RenderArrow";
+import {
+    ArrowElementType,
+    CanvaElementType,
+    StartType,
+} from "../../../../../endPointTypes/types";
+import { Circle } from "react-konva";
+>>>>>>> MongooseBackend
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -53,7 +65,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         handleSelectedArrowMove,
     }));
     const calculateClosestPointOnShape = (
-        element: CanvaElement,
+        element: CanvaElementType,
         points: number[]
     ) => {
         const referenceX = points[0];
@@ -149,35 +161,24 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         const id = uuidv4();
 
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            if (highlight.rects) {
-                return highlight.rects.some((rect) => {
-                    return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
-                    );
-                });
-            } else {
-                return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
-                );
-            }
+            return (
+                pos.x >= highlight.points[0].x - 10 &&
+                pos.x <= highlight.points[1].x &&
+                pos.y >= highlight.points[0].y - 10 &&
+                pos.y <= highlight.points[2].y + 10
+            );
         });
         let startId: null | string = null;
         let type: StartType = null;
         if (highlightsUnderMouse.length > 0) {
             startId = highlightsUnderMouse[0].id;
-            if (highlightsUnderMouse[0].rects) {
+            if (highlightsUnderMouse[0].points) {
                 type = "bookText";
             } else {
                 type = "text";
             }
         }
-        const arrow: ArrowElement = {
+        const arrow: ArrowElementType = {
             id: id,
             startId: startId,
             endId: null,
@@ -439,7 +440,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
     return (
         <>
-            {arrows.map((arrow, i) => (
+            {arrows.map((arrow) => (
                 <RenderArrow
                     element={arrow}
                     draggable={false}

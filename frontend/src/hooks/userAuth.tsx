@@ -1,9 +1,9 @@
 // src/hooks/useAuth.ts
+import axios from "axios";
+import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
-import { accessTokenAtom, User, userAtom } from "../atoms";
-import axios from "axios";
+import { accessTokenAtom, userAtom } from "../atoms";
 import { apiFetch } from "../endPointTypes/apiClient";
 
 const fetchUser = async (accessToken: string | null) => {

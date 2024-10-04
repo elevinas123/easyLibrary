@@ -10,6 +10,11 @@ export const endpointMap = {
   "GET /user/:username": "User",
   "PUT /user/:id": "User",
   "DELETE /user/:id": "User",
+<<<<<<< HEAD
+=======
+  "POST /auth/login": "{ access_token: string; user: any; }",
+  "POST /auth/register": "User",
+>>>>>>> MongooseBackend
   "GET /book": "Book[]",
   "GET /book/getUserBooks": "Book[]",
   "PATCH /book/:id": "Book",
@@ -20,8 +25,11 @@ export const endpointMap = {
   "POST /bookshelve": "Bookshelve",
   "PUT /bookshelve/:id": "Bookshelve",
   "DELETE /bookshelve/:id": "Bookshelve",
+<<<<<<< HEAD
   "POST /auth/login": "{ access_token: string; user: any; }",
   "POST /auth/register": "User",
+=======
+>>>>>>> MongooseBackend
 } as const;
 
 export type Endpoint = keyof typeof endpointMap;
@@ -34,6 +42,11 @@ export type ApiResponseTypes = {
   "GET /user/:username": User;
   "PUT /user/:id": User;
   "DELETE /user/:id": User;
+<<<<<<< HEAD
+=======
+  "POST /auth/login": { access_token: string; user: any; };
+  "POST /auth/register": User;
+>>>>>>> MongooseBackend
   "GET /book": Book[];
   "GET /book/getUserBooks": Book[];
   "PATCH /book/:id": Book;
@@ -44,6 +57,9 @@ export type ApiResponseTypes = {
   "POST /bookshelve": Bookshelve;
   "PUT /bookshelve/:id": Bookshelve;
   "DELETE /bookshelve/:id": Bookshelve;
+<<<<<<< HEAD
   "POST /auth/login": { access_token: string; user: any; };
   "POST /auth/register": User;
+=======
+>>>>>>> MongooseBackend
 };

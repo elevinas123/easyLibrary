@@ -6,9 +6,8 @@ import {
     Param,
     Patch,
     Post,
-    Put,
     Query,
-    UseGuards,
+    UseGuards
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 

@@ -8,10 +8,19 @@ import {
 import { Text } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 
+<<<<<<< HEAD
 import { VisibleArea } from "../../KonvaStage";
 import { measureTextWidth } from "../../functions/measureTextWidth";
 import { KonvaEventObject } from "konva/lib/Node";
+=======
+>>>>>>> MongooseBackend
 import { useAtom } from "jotai";
+import { KonvaEventObject } from "konva/lib/Node";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
+import { VisibleArea } from "../../KonvaStage";
+import { getPos } from "../../functions/getPos";
+import { measureTextWidth } from "../../functions/measureTextWidth";
+import { BookTextElementType } from "../../../../../endPointTypes/types";
 import {
     activeToolAtom,
     currentHighlightIdAtom,
@@ -19,18 +28,15 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
+<<<<<<< HEAD
 import { getPos } from "../../functions/getPos";
 import {
     CanvaElementSkeleton,
     ProcessedElement,
 } from "../../../../../endPointTypes/types";
+=======
+>>>>>>> MongooseBackend
 
-export interface BookTextElement extends CanvaElementSkeleton {
-    type: "bookText";
-    text: string;
-    fontSize: number;
-    fontFamily: string;
-}
 type TextLayerProps = {
     visibleArea: VisibleArea;
     fontSize: number;
@@ -49,7 +55,7 @@ function TextLayer(
     { visibleArea, fontSize, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
-    const [textElements, setTextElements] = useState<BookTextElement[]>([]);
+    const [textElements, setTextElements] = useState<BookTextElementType[]>([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [_, setHighlights] = useAtom(highlightsAtom);
@@ -188,7 +194,7 @@ function TextLayer(
                 ))
         );
     }, [visibleArea, textElements, offsetPosition, scale]);
-    const createTextElements = (): BookTextElement[] => {
+    const createTextElements = (): BookTextElementType[] => {
         // Process the text elements from the book
 
         // Render the text elements with highlights

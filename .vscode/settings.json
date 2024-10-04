@@ -15,7 +15,11 @@
         "lucide",
         "nestjs",
         "rootfile",
+<<<<<<< HEAD
         "subdocuments",
+=======
+        "roughjs",
+>>>>>>> MongooseBackend
         "tailwindcss",
         "tanstack",
         "tesseract",

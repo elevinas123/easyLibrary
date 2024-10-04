@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import {
     arrowsAtom,
     canvaElementsAtom,
-    highlightsAtom,
 } from "./Konva/konvaAtoms";
+<<<<<<< HEAD
+=======
+import { useEffect, useState } from "react";
+>>>>>>> MongooseBackend
 import { StartType } from "../../endPointTypes/types";
 
 type Note = {
@@ -19,7 +22,6 @@ type Note = {
 };
 export default function Notes() {
     const [arrows] = useAtom(arrowsAtom);
-    const [highlights] = useAtom(highlightsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
     const [notes, setNotes] = useState<Note[]>([]);
     useEffect(() => {

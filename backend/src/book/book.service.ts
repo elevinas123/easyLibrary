@@ -19,11 +19,11 @@ export class BookService {
     }
 
     async getAllBooks(): Promise<Book[]> {
-        return this.bookModel.find().exec();
+        return await this.bookModel.find().exec();
     }
 
     async getUserBooks(userId: string): Promise<Book[]> {
-        return this.bookModel
+        return await this.bookModel
             .find({ userId })
             .select("-bookElements") // Exclude bookElements if not needed
             .exec();

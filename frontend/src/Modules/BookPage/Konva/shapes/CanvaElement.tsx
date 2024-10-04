@@ -1,4 +1,5 @@
 import { useAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import {
     ForwardedRef,
@@ -9,6 +10,7 @@ import {
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { getPos } from "../functions/getPos";
 import {
     activeToolAtom,
     arrowsAtom,
@@ -19,6 +21,7 @@ import {
     selectedItemsIdsAtom,
 } from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
+<<<<<<< HEAD
 import { renderCanvaElement } from "./RenderCanvaElement";
 import CustomTransformer from "./CustomTransformer";
 import Konva from "konva";
@@ -26,6 +29,17 @@ import { getPos } from "../functions/getPos";
 import { RectElement, TextElement } from "../../../../endPointTypes/types";
 import CreateText from "./Text/CreateText";
 import CreateRectangle from "./Rectangle/createRectangle";
+=======
+import CustomTransformer from "./CustomTransformer";
+import CreateRectangle from "./Rectangle/createRectangle";
+import { renderCanvaElement } from "./RenderCanvaElement";
+import {
+    CanvaElementType,
+    RectElementType,
+    TextElementType,
+} from "../../../../endPointTypes/types";
+import CreateText from "./Text/CreateText";
+>>>>>>> MongooseBackend
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -70,7 +84,7 @@ function CanvasElement(
             const textItem = canvaElements.find(
                 (item) =>
                     item.type === "text" && item.id === selectedItemsIds[0]
-            ) as TextElement | undefined;
+            ) as TextElementType | undefined;
 
             if (textItem) {
                 const input = inputRef.current;
@@ -212,7 +226,7 @@ function CanvasElement(
             if (lastElement.id === selectedItemsIds[0]) {
                 if (lastElement.type === "rect") {
                     const updatedElement = updateRectangleElement(
-                        lastElement as RectElement,
+                        lastElement as RectElementType,
                         pos
                     );
                     updatedElements[updatedElements.length - 1] =
@@ -225,9 +239,9 @@ function CanvasElement(
     };
 
     const updateRectangleElement = (
-        element: RectElement,
+        element: RectElementType,
         pos: { x: number; y: number }
-    ): RectElement => {
+    ): RectElementType => {
         const { x: startX, y: startY } = element;
         const newWidth = Math.abs(pos.x - startX);
         const newHeight = Math.abs(pos.y - startY);
@@ -333,7 +347,7 @@ function CanvasElement(
 
     const updateElementInState = (
         id: string,
-        newAttrs: Partial<CanvaElement>
+        newAttrs: Partial<CanvaElementType>
     ) => {
         setCanvaElements((elements) =>
             elements.map((el) => {
@@ -342,7 +356,7 @@ function CanvasElement(
                         ...el,
                         ...newAttrs,
                         type: el.type, // Ensure the type remains the same
-                    } as CanvaElement;
+                    } as CanvaElementType;
                 }
                 return el;
             })

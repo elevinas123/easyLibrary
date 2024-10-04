@@ -1,6 +1,5 @@
 // SliderControl.tsx
 
-import React from "react";
 
 type SliderControlProps = {
   label: string;

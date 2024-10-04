@@ -1,5 +1,4 @@
 // type-generator.ts
-import * as fs from "fs";
 import { glob } from "glob";
 import * as path from "path";
 import * as ts from "typescript";
@@ -48,10 +47,6 @@ export interface ParamEntry {
 export type InputMapping = {
     [key: string]: { query?: string; params?: string; body?: string };
 };
-interface PropertyEntry {
-    name: string;
-    type: string;
-}
 
 // Type dictionary to store type definitions
 // Type dictionary to store type and interface definitions
@@ -107,7 +102,7 @@ const fillDoc = (
     if (!currentType.name || (!currentType.properties && !currentType.type)) {
         return typeDict;
     }
-    if (currentType.name === "StartType") {
+    if (currentType.name === "CanvaElementType") {
         console.log("currentType", currentType);
     }
 
@@ -155,7 +150,9 @@ const fillDoc = (
                 isArray = true;
                 innerType = extractArrayType(innerType);
             }
-
+            if (currentType.name === "CanvaElementType") {
+                console.log("innerType", innerType);
+            }
             // Handle union types like (TypeA | TypeB)
             const unionTypes = extractUnionTypes(innerType);
             const typeStrings: string[] = [];
@@ -221,7 +218,9 @@ const fillDoc = (
         // type is a union (for types)
         const unionTypes = extractUnionTypes(currentType.type);
         const typeStrings: string[] = [];
-
+        if (currentType.name === "CanvaElementType") {
+            console.log("unionTypes", unionTypes);
+        }
         unionTypes.forEach((ut) => {
             if (currentType.name === "StartType") {
                 console.log("ut", ut);
@@ -335,7 +334,6 @@ const createTsType = (
                 paramUnionTypes.forEach((put) => {
                     if (!basicTypes.includes(put)) {
                         // Only add complex types
-                        const mappedType = mapType(put);
                         const typeEntry = doc.find(
                             (entry) => entry.name === put
                         );
@@ -423,7 +421,6 @@ const createTsType = (
     return { typeDict, endpointMap, inputMap };
 };
 const generateDocumentation = (
-    fileNames: string[],
     configFileName: string = "tsconfig.json"
 ): void => {
     // Resolve the path to tsconfig.json
@@ -483,7 +480,8 @@ const generateDocumentation = (
         ts.forEachChild(sourceFile, visit);
     }
 
-    // Generate TypeScript types and endpoint mapping from the collected documentation
+    // Generate TypeScript types and endpoint mapping from the collected
+    // documentation
     const { typeDict, endpointMap, inputMap } = createTsType(output);
 
     generateTypes(typeDict);
@@ -551,7 +549,7 @@ const generateAllDocumentation = async () => {
             return;
         }
 
-        generateDocumentation(files); // tsconfig.json is loaded within generateDocumentation
+        generateDocumentation(); // tsconfig.json is loaded within generateDocumentation
 
         console.log("Documentation generated successfully.");
     } catch (err) {

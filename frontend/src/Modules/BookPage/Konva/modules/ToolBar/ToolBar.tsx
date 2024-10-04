@@ -5,7 +5,14 @@ import ToolBarItem from "./ToolBarItem";
 import { useAtom } from "jotai";
 import { arrowsAtom, CanvaElement, canvaElementsAtom } from "../../konvaAtoms";
 import { toolbarConfig } from "./ToolBar.config";
+<<<<<<< HEAD
 import { ArrowElement } from "../../../../../endPointTypes/types";
+=======
+import {
+    ArrowElementType,
+    CanvaElementType,
+} from "../../../../../endPointTypes/types";
+>>>>>>> MongooseBackend
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -31,7 +38,11 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         );
     };
 
+<<<<<<< HEAD
     let controlShape: CanvaElement | ArrowElement | undefined =
+=======
+    let controlShape: CanvaElementType | ArrowElementType | undefined =
+>>>>>>> MongooseBackend
         canvaElements.find((element) => element.id === selectedItemsIds[0]);
     if (!controlShape)
         controlShape = arrows.find(

@@ -1,12 +1,17 @@
 // CreateText.ts
 import { v4 as uuidv4 } from "uuid";
+<<<<<<< HEAD
 import { TextElement } from "../../../../../endPointTypes/types";
 
 
+=======
+import { TextElementType } from "../../../../../endPointTypes/types";
+
+>>>>>>> MongooseBackend
 type CreateTextProps = {
     x: number;
     y: number;
-} & Partial<Omit<TextElement, "type" | "x" | "y">>;
+} & Partial<Omit<TextElementType, "type" | "x" | "y">>;
 
 export default function CreateText({
     x,
@@ -23,10 +28,9 @@ export default function CreateText({
     width = 24 * 8 + 10,
     height = 24 + 10,
     opacity = 1,
-    rotation = 0,
     points,
     ...overrides
-}: CreateTextProps): TextElement {
+}: CreateTextProps): TextElementType {
     return {
         type: "text",
         text,
@@ -47,7 +51,6 @@ export default function CreateText({
             { x, y },
             { x, y: y + fontSize },
         ],
-        rotation,
         ...overrides,
     };
 }

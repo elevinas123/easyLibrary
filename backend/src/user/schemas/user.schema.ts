@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
     getModelForClass,
     modelOptions,
@@ -14,6 +15,30 @@ export type UserDocument = User & Document;
 export class User {
     @prop({ type: () => Types.ObjectId, required: true, auto: true })
     _id!: Types.ObjectId;
+=======
+// src/cats/schemas/cat.schema.ts
+
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Types } from "mongoose";
+
+export type UserDocument = User & Document;
+
+export type UserType = {
+    _id: Types.ObjectId;
+    username: string;
+    age: number;
+    password: string;
+    comment: string;
+    books: Types.ObjectId[];
+    bookshelves: Types.ObjectId[];
+};
+@Schema()
+export class User implements UserType {
+    @Prop({ type: Types.ObjectId, required: true, auto: true })
+    _id: Types.ObjectId;
+
+    @Prop({ required: true }) username: string;
+>>>>>>> MongooseBackend
 
     @prop({ required: true }) username!: string;
 

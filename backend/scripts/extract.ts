@@ -22,7 +22,7 @@ export function getHttpMethod(node: ts.MethodDeclaration): string | undefined {
 
 // Extract parameter decorator type (e.g., `@Query`, `@Param`, `@Body`)
 export function getParameterDecorator(
-    methodDeclaration: ts.MethodDeclaration,
+    _: ts.MethodDeclaration,
     paramSymbol: ts.Symbol
 ): string | undefined {
     const paramDeclaration =

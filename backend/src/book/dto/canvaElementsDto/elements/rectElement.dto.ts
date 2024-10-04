@@ -3,8 +3,17 @@
 import { IsEnum, IsNumber, IsString } from "class-validator";
 import { RectElement } from "src/book/schema/canvaElements/elements/rectElement.schema";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
+import { RectElementType } from "src/book/schema/canvaElements/elements/rectElement.schema";
 
+<<<<<<< HEAD
 type RectElementType = RectElement
+=======
+export class RectElementDto
+    extends CanvaElementSkeletonDto
+    implements RectElementType
+{
+    @IsString() @IsEnum(["rect"]) type: "rect";
+>>>>>>> MongooseBackend
 
 export class RectElementDto
     extends CanvaElementSkeletonDto

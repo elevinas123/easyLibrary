@@ -9,7 +9,6 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { CreateBookDto } from "src/book/dto/createBookDto";
 
 import { BookshelveService } from "./bookshelve.service";
 import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";

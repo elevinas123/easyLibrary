@@ -1,11 +1,18 @@
 // src/books/dto/curve-element-skeleton.dto.ts
 
 import { IsArray, IsNumber, IsOptional, IsString, IsIn } from "class-validator";
+<<<<<<< HEAD
 import { CurveElementSkeleton } from "../../schema/curveElements/curveElementSkeleton";
 
 type CurveElementSkeletonType = CurveElementSkeleton;
 export class CurveElementSkeletonDto implements CurveElementSkeletonType {
     @IsArray() @IsNumber({}, { each: true }) points!: number[];
+=======
+import { CurveElementSkeletonType } from "src/book/schema/curveElements/curveElementSkeleton";
+
+export class CurveElementSkeletonDto implements CurveElementSkeletonType {
+    @IsArray() @IsNumber({}, { each: true }) points: number[];
+>>>>>>> MongooseBackend
 
     @IsString() id!: string;
 
@@ -21,7 +28,11 @@ export class CurveElementSkeletonDto implements CurveElementSkeletonType {
 
     @IsNumber() strokeWidth!: number;
 
+<<<<<<< HEAD
     @IsIn(["solid", "dashed", "dotted"]) strokeStyle!:
+=======
+    @IsIn(["solid", "dashed", "dotted"]) strokeStyle:
+>>>>>>> MongooseBackend
         | "solid"
         | "dashed"
         | "dotted";
@@ -37,7 +48,11 @@ export class CurveElementSkeletonDto implements CurveElementSkeletonType {
         "dashed",
         "zigzag-line",
     ])
+<<<<<<< HEAD
     fillStyle!:
+=======
+    fillStyle:
+>>>>>>> MongooseBackend
         | "solid"
         | "hachure"
         | "cross-hatch"

@@ -18,7 +18,10 @@ import {
 import debounce from "lodash/debounce";
 import { isEqual } from "lodash";
 import { Book } from "../../endPointTypes/types";
+<<<<<<< HEAD
 import { apiFetch } from "../../endPointTypes/apiClient";
+=======
+>>>>>>> MongooseBackend
 
 export type HighlightRange = {
     startElementId: string;
@@ -88,7 +91,7 @@ function MainPage() {
         data: book,
         error,
         isLoading,
-    } = useQuery<Book, Error>({
+    } = useQuery({
         queryFn: () => fetchBook(bookId!, accessToken!),
         queryKey: ["book", bookId],
         enabled: !!accessToken && !!user && !!bookId,

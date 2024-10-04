@@ -9,8 +9,15 @@ export const generateInputTypes = (
     endPointMap: EndpointMapping
 ) => {
     const frontendDirPath = findDirectoryUpwards();
+<<<<<<< HEAD
     if (!frontendDirPath) return;
 
+=======
+    if (!frontendDirPath) {
+      console.error('Frontend directory not found.');
+      process.exit(1);
+    }
+>>>>>>> MongooseBackend
     // Define the output path for the generated TypeScript file
     const outputPath = path.join(
         frontendDirPath,

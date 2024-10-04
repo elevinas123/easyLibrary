@@ -1,11 +1,18 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
 import Konva from "konva";
+<<<<<<< HEAD
 import { CanvaElement } from "../konvaAtoms";
+=======
+import { CanvaElementType } from "../../../../endPointTypes/types";
+>>>>>>> MongooseBackend
 
 type CustomTransformerProps = {
     selectedIds: string[];
-    updateElementInState: (id: string, newAttrs: Partial<CanvaElement>) => void;
+    updateElementInState: (
+        id: string,
+        newAttrs: Partial<CanvaElementType>
+    ) => void;
 };
 
 export default function CustomTransformer({
@@ -44,7 +51,7 @@ export default function CustomTransformer({
                 const id = node.id();
                 const type = node.getClassName();
 
-                let newAttrs: Partial<CanvaElement> = {};
+                let newAttrs: Partial<CanvaElementType> = {};
 
                 if (type === "Rect") {
                     newAttrs = {
@@ -52,7 +59,6 @@ export default function CustomTransformer({
                         y: node.y(),
                         width: node.width() * node.scaleX(),
                         height: node.height() * node.scaleY(),
-                        rotation: node.rotation(),
                     };
                 } else if (type === "Text") {
                     newAttrs = {
@@ -63,7 +69,6 @@ export default function CustomTransformer({
                         text: (node as Konva.Text).text(),
                         fontSize:
                             (node as Konva.Text).fontSize() * node.scaleY(),
-                        rotation: node.rotation(),
                     };
                 }
                 // Reset scale to avoid double-scaling

@@ -1,10 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
+<<<<<<< HEAD
 import { RectElement } from "../../../../../endPointTypes/types";
+=======
+import { RectElementType } from "../../../../../endPointTypes/types";
+>>>>>>> MongooseBackend
 
 type CreateRectangleProps = {
     x: number;
     y: number;
-} & Partial<Omit<RectElement, "type" | "x" | "y">>;
+} & Partial<Omit<RectElementType, "type" | "x" | "y">>;
 
 export default function CreateRectangle({
     x,
@@ -18,7 +22,6 @@ export default function CreateRectangle({
     strokeColor = "black",
     strokeWidth = 1,
     opacity = 1,
-    rotation = 0,
     points,
     roughness = 1,
     fillStyle = "hachure",
@@ -26,7 +29,7 @@ export default function CreateRectangle({
     hachureAngle = 60,
     seed = Math.floor(Math.random() * 1000000),
     ...overrides
-}: CreateRectangleProps): RectElement {
+}: CreateRectangleProps): RectElementType {
     return {
         type: "rect",
         fill,
@@ -46,7 +49,6 @@ export default function CreateRectangle({
         strokeColor,
         strokeWidth,
         opacity,
-        rotation,
         roughness,
         fillStyle,
         hachureGap,

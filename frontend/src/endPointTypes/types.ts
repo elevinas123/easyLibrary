@@ -15,18 +15,18 @@ export interface CreateUserDto {
   password: string;
   age: number;
   comment: string;
-  books: string[];
-  bookshelves: string[];
+  books: ObjectId[];
+  bookshelves: ObjectId[];
 }
 
-export interface ProcessedElement {
+export interface ProcessedElementType {
   text: string;
   lineX: number;
   lineWidth: number;
   lineY: number;
 }
 
-export interface Highlight {
+export interface HighlightType {
   id: string;
   startingX: number;
   startingY: number;
@@ -39,7 +39,7 @@ export interface HighlightPoints {
   y: number;
 }
 
-export interface CanvaElementSkeleton {
+export interface CanvaElementSkeletonType {
   fill: string;
   x: number;
   y: number;
@@ -52,10 +52,10 @@ export interface CanvaElementSkeleton {
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: number;
 }
 
-export interface RectElement extends CanvaElementSkeleton {
+export interface RectElementType extends CanvaElementSkeletonType {
+  type: "rect";
   fillStyle: string;
   roughness: number;
   seed: number;
@@ -64,13 +64,15 @@ export interface RectElement extends CanvaElementSkeleton {
   type: "rect";
 }
 
-export interface TextElement extends CanvaElementSkeleton {
+export interface TextElementType extends CanvaElementSkeletonType {
+  type: "text";
   text: string;
   fontFamily: string;
   fontSize: number;
   type: "text";
 }
 
+<<<<<<< HEAD
 export interface CurveElementSkeleton {
   id: string;
   fill: string;
@@ -93,6 +95,40 @@ export type StartType = undefined | null | string;
 export interface ArrowElement extends CurveElementSkeleton {
   startId: string | null;
   endId: string | null;
+=======
+export interface BookTextElementType extends CanvaElementSkeletonType {
+  type: "bookText";
+  text: string;
+  fontSize: number;
+  fontFamily: string;
+}
+
+export type CanvaElementType = RectElementType | TextElementType | BookTextElementType;
+
+export interface CurveElementSkeletonType {
+  points: number[];
+  id: string;
+  fill: string;
+  text: (string | null);
+  roughness: number;
+  bowing: number;
+  seed: number;
+  strokeWidth: number;
+  strokeStyle: ("solid" | "dashed" | "dotted");
+  stroke: string;
+  fillStyle: ("solid" | "dashed" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "zigzag-line");
+  fillWeight: number;
+  hachureAngle: number;
+  hachureGap: number;
+}
+
+export type StartType = null | "text" | "bookText";
+
+export interface ArrowElementType extends CurveElementSkeletonType {
+  type: "arrow";
+  startId: (string | null);
+  endId: (string | null);
+>>>>>>> MongooseBackend
   startType: StartType;
   endType: StartType;
   type: "arrow";
@@ -103,19 +139,25 @@ export interface OffsetPosition {
   y: number;
 }
 
+export interface OffsetPositionType {
+  x: number;
+  y: number;
+}
+
 export interface Book {
   title: string;
   description: string;
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: (false | true);
   dateAdded: string;
-  bookElements: ProcessedElement[];
-  highlights: Highlight[];
-  canvaElements: (RectElement | TextElement)[];
-  curveElements: ArrowElement[];
+  bookElements: ProcessedElementType[];
+  highlights: HighlightType[];
+  canvaElements: CanvaElementType[];
+  curveElements: ArrowElementType[];
   scale: number;
+<<<<<<< HEAD
   offsetPosition: OffsetPosition;
 }
 
@@ -135,6 +177,9 @@ export interface HighlightDto {
   startingY: number;
   endX: number;
   endY: number;
+=======
+  offsetPosition: OffsetPositionType;
+>>>>>>> MongooseBackend
 }
 
 export interface ProcessedElementDto {
@@ -144,6 +189,7 @@ export interface ProcessedElementDto {
   lineY: number;
 }
 
+<<<<<<< HEAD
 export interface HighlightPointsDto {
   x: number;
   y: number;
@@ -181,18 +227,24 @@ export interface TextElementDto extends CanvaElementSkeletonDto {
   fontSize: number;
 }
 
+=======
+>>>>>>> MongooseBackend
 export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
   fill: string;
+<<<<<<< HEAD
   text?: string | null | undefined;
+=======
+  text: (null | string);
+>>>>>>> MongooseBackend
   roughness: number;
   bowing: number;
   seed: number;
   strokeWidth: number;
-  strokeStyle: "solid" | "dashed" | "dotted";
+  strokeStyle: ("solid" | "dashed" | "dotted");
   stroke: string;
-  fillStyle: "solid" | "dashed" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "zigzag-line";
+  fillStyle: ("solid" | "dashed" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "zigzag-line");
   fillWeight: number;
   hachureAngle: number;
   hachureGap: number;
@@ -200,12 +252,39 @@ export interface CurveElementSkeletonDto {
 
 export interface ArrowElementDto extends CurveElementSkeletonDto {
   type: "arrow";
+<<<<<<< HEAD
   startId: string | null;
   endId: string | null;
   startType: StartType;
   endType: StartType;
 }
 
+=======
+  startId: (null | string);
+  endId: (null | string);
+  startType: (null | "text" | "bookText");
+  endType: (null | "text" | "bookText");
+}
+
+export interface HighlightDto {
+  id: string;
+  startingX: number;
+  startingY: number;
+  endX: number;
+  endY: number;
+}
+
+export interface UpdateBookDto extends Partial<CreateBookDto> {
+  bookElements?: undefined | ProcessedElementDto[];
+  canvaElements?: undefined | CanvaElementType[];
+  curveElements?: undefined | ArrowElementDto[];
+  highlights?: undefined | HighlightDto[];
+  liked?: (undefined | false | true);
+  scale?: (undefined | number);
+  offsetPosition?: (undefined | { x: number; y: number; });
+}
+
+>>>>>>> MongooseBackend
 export interface OffsetPositionDto {
   x: number;
   y: number;
@@ -220,10 +299,16 @@ export interface CreateBookDto {
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: (false | true);
   dateAdded: string;
   bookElements: ProcessedElementDto[];
+<<<<<<< HEAD
   canvaElements: (RectElementDto | TextElementDto)[];
+=======
+  highlights: HighlightDto[];
+  canvaElements: CanvaElementType[];
+  scale: number;
+>>>>>>> MongooseBackend
   curveElements: ArrowElementDto[];
   scale: number;
   offsetPosition: OffsetPositionDto;

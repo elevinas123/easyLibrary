@@ -2,9 +2,14 @@
 
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+<<<<<<< HEAD
 import { JwtModule } from "@nestjs/jwt"; // Ensure proper configuration
 import { TypegooseModule } from "nestjs-typegoose"; // Import TypegooseModule
 
+=======
+import { JwtModule } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
+>>>>>>> MongooseBackend
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";

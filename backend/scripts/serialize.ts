@@ -1,8 +1,13 @@
 // Function to serialize a class symbol into DocEntry
 import * as ts from "typescript";
 
+<<<<<<< HEAD
 import { getHttpMethod, getMethodPath, getParameterDecorator } from "./extract";
+=======
+>>>>>>> MongooseBackend
 import { DocEntry, ParamEntry } from "./analyzer";
+import { getHttpMethod, getMethodPath, getParameterDecorator } from "./extract";
+
 export function serializeClass(
     symbol: ts.Symbol,
     checker: ts.TypeChecker,
@@ -85,9 +90,13 @@ export function serializeClass(
         if (ts.isMethodDeclaration(member)) {
             const methodSymbol = checker.getSymbolAtLocation(member.name);
             if (methodSymbol) {
+<<<<<<< HEAD
                 details.methods?.push(
                     serializeMethod(methodSymbol, checker, classType)
                 );
+=======
+                details.methods?.push(serializeMethod(methodSymbol, checker));
+>>>>>>> MongooseBackend
             }
         }
     });
@@ -108,15 +117,27 @@ export function serializeClass(
 }
 
 export function serializeType(type: ts.Type, checker: ts.TypeChecker): string {
+<<<<<<< HEAD
     return checker.typeToString(type);
+=======
+    if (type.isUnion()) {
+        return type.types
+            .map((t) => serializeType(t, checker))
+            .flat()
+            .join(" | ");
+    } else if (type.isIntersection()) {
+        return type.types
+            .map((t) => serializeType(t, checker))
+            .flat()
+            .join(" & ");
+    } else {
+        return checker.typeToString(type);
+    }
+>>>>>>> MongooseBackend
 }
 
 // Function to serialize a method symbol into DocEntry
-function serializeMethod(
-    symbol: ts.Symbol,
-    checker: ts.TypeChecker,
-    classType: ts.Type
-): DocEntry {
+function serializeMethod(symbol: ts.Symbol, checker: ts.TypeChecker): DocEntry {
     const methodType = checker.getTypeOfSymbolAtLocation(
         symbol,
         symbol.valueDeclaration!
@@ -206,8 +227,6 @@ export function serializeInterface(
         properties: [],
         extends: [], // Initialize the extends array
     };
-
-    const type = checker.getDeclaredTypeOfSymbol(symbol);
 
     // Get only direct properties (i.e., properties declared directly in the
     // interface)

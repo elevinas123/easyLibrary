@@ -1,11 +1,15 @@
 import { Shape } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
+<<<<<<< HEAD
 import { RectElement } from "../../../../../endPointTypes/types";
+=======
+import { RectElementType } from "../../../../../endPointTypes/types";
+>>>>>>> MongooseBackend
 
 type RenderRectangleProps = {
     draggable: boolean;
-    element: RectElement;
+    element: RectElementType;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 
@@ -22,7 +26,6 @@ export default function RenderRectangle({
             y={element.y}
             width={element.width}
             height={element.height}
-            rotation={element.rotation}
             opacity={element.opacity}
             draggable={draggable}
             onDragMove={handleDragMove}
