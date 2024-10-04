@@ -2,7 +2,6 @@ import { useAtom } from "jotai";
 import {
     activeToolAtom,
     arrowsAtom,
-    CanvaElement,
     canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
@@ -18,6 +17,7 @@ import { getPos } from "../../functions/getPos";
 import RenderArrow from "./RenderArrow";
 import {
     ArrowElementType,
+    CanvaElementType,
     StartType,
 } from "../../../../../endPointTypes/types";
 import { Circle } from "react-konva";
@@ -56,7 +56,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         handleSelectedArrowMove,
     }));
     const calculateClosestPointOnShape = (
-        element: CanvaElement,
+        element: CanvaElementType,
         points: number[]
     ) => {
         const referenceX = points[0];

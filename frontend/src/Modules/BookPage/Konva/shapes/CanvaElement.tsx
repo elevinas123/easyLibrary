@@ -14,7 +14,6 @@ import { getPos } from "../functions/getPos";
 import {
     activeToolAtom,
     arrowsAtom,
-    CanvaElement,
     canvaElementsAtom,
     offsetPositionAtom,
     scaleAtom,
@@ -25,6 +24,7 @@ import CustomTransformer from "./CustomTransformer";
 import CreateRectangle from "./Rectangle/createRectangle";
 import { renderCanvaElement } from "./RenderCanvaElement";
 import {
+    CanvaElementType,
     RectElementType,
     TextElementType,
 } from "../../../../endPointTypes/types";
@@ -336,7 +336,7 @@ function CanvasElement(
 
     const updateElementInState = (
         id: string,
-        newAttrs: Partial<CanvaElement>
+        newAttrs: Partial<CanvaElementType>
     ) => {
         setCanvaElements((elements) =>
             elements.map((el) => {
@@ -345,7 +345,7 @@ function CanvasElement(
                         ...el,
                         ...newAttrs,
                         type: el.type, // Ensure the type remains the same
-                    } as CanvaElement;
+                    } as CanvaElementType;
                 }
                 return el;
             })

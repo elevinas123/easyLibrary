@@ -1,10 +1,10 @@
 import { KonvaEventObject } from "konva/lib/Node";
+import { CanvaElementType } from "../../../../endPointTypes/types";
 import RenderRectangle from "./Rectangle/RenderRectangle";
 import RenderText from "./Text/RenderText";
-import { CanvaElement } from "../konvaAtoms";
 
 export const renderCanvaElement = (
-    element: CanvaElement,
+    element: CanvaElementType,
     draggable: boolean,
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined
 ) => {
