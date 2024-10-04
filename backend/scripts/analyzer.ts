@@ -14,7 +14,12 @@ import { getSourceDirectory } from "./findDirectory";
 import { generateEndPointTypes } from "./generateEndPointTypes";
 import { generateInputTypes } from "./generateInputTypes";
 import { generateTypes } from "./generateTypes";
-import { serializeClass, serializeEnum, serializeInterface, serializeTypeAlias } from "./serialize";
+import {
+    serializeClass,
+    serializeEnum,
+    serializeInterface,
+    serializeTypeAlias,
+} from "./serialize";
 
 // Define the structure for documentation entries
 
@@ -221,6 +226,7 @@ const fillDoc = (
                 const referencedType = doc.find((entry) => entry.name === ut);
                 if (
                     referencedType &&
+                    referencedType.name &&
                     !processedTypes.has(referencedType.name)
                 ) {
                     // Recursively process referenced type
@@ -351,7 +357,7 @@ const createTsType = (
             });
 
             // **Formatted Endpoint Key Generation**
-            const formattedControllerPath = controller.path.startsWith("/")
+            const formattedControllerPath = controller.path?.startsWith("/")
                 ? controller.path
                 : `/${controller.path}`;
 
@@ -361,7 +367,7 @@ const createTsType = (
                     : `/${method.methodPath}`
                 : "";
 
-            const endpointKey = `${method.httpMethod.toUpperCase()} ${
+            const endpointKey = `${method.httpMethod?.toUpperCase()} ${
                 formattedControllerPath
             }${formattedMethodPath}`;
 
@@ -425,12 +431,14 @@ const generateDocumentation = (
 
     // Generate TypeScript types and endpoint mapping from the collected
     // documentation
-    fs.writeFileSync('./classes.json', JSON.stringify(output, null, 2));
+    fs.writeFileSync("./classes.json", JSON.stringify(output, null, 2));
     const { typeDict, endpointMap, inputMap } = createTsType(output);
-    fs.writeFileSync('./typeDict.json', JSON.stringify(typeDict, null, 2));
+    fs.writeFileSync("./typeDict.json", JSON.stringify(typeDict, null, 2));
     fs.writeFileSync(
-        './endpointMap.json', JSON.stringify(endpointMap, null, 2));
-    fs.writeFileSync('./inputMap.json', JSON.stringify(inputMap, null, 2));
+        "./endpointMap.json",
+        JSON.stringify(endpointMap, null, 2)
+    );
+    fs.writeFileSync("./inputMap.json", JSON.stringify(inputMap, null, 2));
     generateTypes(typeDict);
     generateInputTypes(inputMap, endpointMap);
     generateEndPointTypes(endpointMap);

@@ -17,12 +17,12 @@ export const offsetPositionAtom = atom({
     y: 0,
 });
 
-type CanvaElement = TextElementType | RectElementType;
+export type CanvaElement = TextElementType | RectElementType;
 
-export const highlightsAtom = atom<Highlight[]>([]);
+export const highlightsAtom = atom<HighlightType[]>([]);
 export const currentHighlightIdAtom = atom<string | null>(null);
 export const arrowsAtom = atom<ArrowElementType[]>([]);
-export const hoveredItemsAtom = atom<ArrowElementType[]>([]);
+export const hoveredItemsAtom = atom<CanvaElement[]>([]);
 export const newArrowAtom = atom<ArrowElementType | null>(null);
 export const canvaElementsAtom = atom<CanvaElement[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);

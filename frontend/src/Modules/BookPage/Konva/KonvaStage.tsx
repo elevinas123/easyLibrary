@@ -1,18 +1,19 @@
 import { useAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
 import Tools from "./components/Tools";
+import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
     canvaElementsAtom,
-    HighlightPoints,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
     scaleAtom,
-    selectedItemsIdsAtom,
+    selectedItemsIdsAtom
 } from "./konvaAtoms";
 import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
@@ -20,8 +21,6 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
-import { getPos } from "./functions/getPos";
-import Konva from "konva";
 
 export type VisibleArea = {
     x: number;

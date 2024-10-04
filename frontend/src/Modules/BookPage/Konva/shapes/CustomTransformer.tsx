@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
 import Konva from "konva";
-import { CanvaElement } from "./CanvaElement";
+import { CanvaElement } from "../konvaAtoms";
 
 type CustomTransformerProps = {
     selectedIds: string[];
@@ -52,7 +52,6 @@ export default function CustomTransformer({
                         y: node.y(),
                         width: node.width() * node.scaleX(),
                         height: node.height() * node.scaleY(),
-                        rotation: node.rotation(),
                     };
                 } else if (type === "Text") {
                     newAttrs = {
@@ -63,7 +62,6 @@ export default function CustomTransformer({
                         text: (node as Konva.Text).text(),
                         fontSize:
                             (node as Konva.Text).fontSize() * node.scaleY(),
-                        rotation: node.rotation(),
                     };
                 }
                 // Reset scale to avoid double-scaling

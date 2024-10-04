@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import {
     activeToolAtom,
     arrowsAtom,
+    CanvaElement,
     canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
@@ -12,23 +13,13 @@ import {
 import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { CurveSkeleton, StartType } from "../../KonvaStage";
-import { Arrow, Circle } from "react-konva";
 import { Vector2d } from "konva/lib/types";
-import { CanvaElement } from "../CanvaElement";
 import { getPos } from "../../functions/getPos";
 import RenderArrow from "./RenderArrow";
-
-export type CurveElement = ArrowElement;
-
-export interface ArrowElement extends CurveSkeleton {
-    type: "arrow";
-    points: number[];
-    startId: string | null;
-    endId: string | null;
-    startType: StartType;
-    endType: StartType;
-}
+import {
+    ArrowElementType,
+    StartType,
+} from "../../../../../endPointTypes/types";
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -49,8 +40,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
-    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
-    const [scale, setScale] = useAtom(scaleAtom); // State to handle scale
+    const [offsetPosition] = useAtom(offsetPositionAtom);
+    const [scale] = useAtom(scaleAtom); // State to handle scale
 
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
@@ -160,35 +151,24 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         const id = uuidv4();
 
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            if (highlight.rects) {
-                return highlight.rects.some((rect) => {
-                    return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
-                    );
-                });
-            } else {
-                return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
-                );
-            }
+            return (
+                pos.x >= highlight.points[0].x - 10 &&
+                pos.x <= highlight.points[1].x &&
+                pos.y >= highlight.points[0].y - 10 &&
+                pos.y <= highlight.points[2].y + 10
+            );
         });
         let startId: null | string = null;
         let type: StartType = null;
         if (highlightsUnderMouse.length > 0) {
             startId = highlightsUnderMouse[0].id;
-            if (highlightsUnderMouse[0].rects) {
+            if (highlightsUnderMouse[0].points) {
                 type = "bookText";
             } else {
                 type = "text";
             }
         }
-        const arrow: ArrowElement = {
+        const arrow: ArrowElementType = {
             id: id,
             startId: startId,
             endId: null,

@@ -9,8 +9,11 @@ import {findDirectoryUpwards} from './findDirectory';
 export const generateTypes = (typesDict: TypeDict) => {
   // Step 1: Retrieve the frontend directory name from the environment
   const frontendDirPath = findDirectoryUpwards();
+  if (!frontendDirPath) {
+    console.error('Frontend directory not found.');
+    process.exit(1);
+  }
   const endPointTypesDir = path.join(frontendDirPath, 'src', 'endPointTypes');
-
   // Ensure that the endPointTypes directory exists; create it if it doesn't
   if (!fs.existsSync(endPointTypesDir)) {
     try {

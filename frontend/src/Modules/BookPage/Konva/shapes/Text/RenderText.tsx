@@ -1,11 +1,11 @@
 import { Text } from "react-konva";
-import { TextElement } from "./CreateText";
 import { KonvaEventObject } from "konva/lib/Node";
+import { TextElementType } from "../../../../../endPointTypes/types";
 
 export type RenderTextProps = {
     draggable: boolean;
-    element: TextElement;
-    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void)|undefined;
+    element: TextElementType;
+    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 export default function RenderText({
     element,

@@ -67,7 +67,7 @@ export function serializeClass(
         if (ts.isMethodDeclaration(member)) {
             const methodSymbol = checker.getSymbolAtLocation(member.name);
             if (methodSymbol) {
-                details.methods.push(
+                details.methods?.push(
                     serializeMethod(methodSymbol, checker, classType)
                 );
             }
@@ -80,7 +80,7 @@ export function serializeClass(
             if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
                 clause.types.forEach((typeNode) => {
                     const extendsType = checker.getTypeAtLocation(typeNode);
-                    details.extends.push(checker.typeToString(extendsType));
+                    details.extends?.push(checker.typeToString(extendsType));
                 });
             }
         });
@@ -245,7 +245,10 @@ export function serializeTypeAlias(
     };
 
     // Handle more complex types (union, intersection, array, or object types)
-    if (ts.isTypeAliasDeclaration(symbol.declarations?.[0])) {
+    if (
+        symbol.declarations &&
+        ts.isTypeAliasDeclaration(symbol.declarations?.[0])
+    ) {
         const declaration = symbol.declarations[0] as ts.TypeAliasDeclaration;
         const type = checker.getTypeAtLocation(declaration.type);
 

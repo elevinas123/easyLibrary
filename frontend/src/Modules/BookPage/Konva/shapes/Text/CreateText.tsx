@@ -1,18 +1,11 @@
 // CreateText.ts
 import { v4 as uuidv4 } from "uuid";
+import { TextElementType } from "../../../../../endPointTypes/types";
 
-import { CanvaElementSkeleton } from "../../KonvaStage";
-
-export interface TextElement extends CanvaElementSkeleton {
-    type: "text";
-    text: string;
-    fontFamily: string;
-    fontSize: number;
-}
 type CreateTextProps = {
     x: number;
     y: number;
-} & Partial<Omit<TextElement, "type" | "x" | "y">>;
+} & Partial<Omit<TextElementType, "type" | "x" | "y">>;
 
 export default function CreateText({
     x,
@@ -29,10 +22,9 @@ export default function CreateText({
     width = 24 * 8 + 10,
     height = 24 + 10,
     opacity = 1,
-    rotation = 0,
     points,
     ...overrides
-}: CreateTextProps): TextElement {
+}: CreateTextProps): TextElementType {
     return {
         type: "text",
         text,
@@ -53,7 +45,6 @@ export default function CreateText({
             { x, y },
             { x, y: y + fontSize },
         ],
-        rotation,
         ...overrides,
     };
 }
