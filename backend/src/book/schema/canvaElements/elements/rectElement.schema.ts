@@ -4,7 +4,7 @@ import { Document } from "mongoose";
 import { CanvaElementSkeleton } from "../canvaElementSkeleton";
 
 @Schema({ _id: false })
-export class RectElement extends CanvaElementSkeleton {
+export class RectElement {
     @Prop({ required: true }) fillStyle: string;
 
     @Prop({ required: true }) roughness: number;

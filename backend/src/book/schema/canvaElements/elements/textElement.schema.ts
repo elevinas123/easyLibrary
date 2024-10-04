@@ -1,13 +1,11 @@
 // text-element.schema.ts
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import {
-    CanvaElementSkeleton,
-} from "../canvaElementSkeleton";
+import { CanvaElementSkeleton } from "../canvaElementSkeleton";
 
 
 @Schema({ _id: false })
-export class TextElement extends CanvaElementSkeleton {
+export class TextElement {
     @Prop({ required: true }) text: string;
 
     @Prop({ required: true }) fontFamily: string;

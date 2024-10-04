@@ -26,8 +26,7 @@ export type BookDocument = Book & Document;
 
 @Schema()
 export class Book {
-    @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id: Types.ObjectId;
+
 
     @Prop({ type: String, required: true }) title: string;
 
