@@ -1,14 +1,13 @@
 // RenderArrow.tsx
 
-import React from "react";
 import { Shape } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
-import { ArrowElement } from "./ArrowShape";
+import { ArrowElementType } from "../../../../../endPointTypes/types";
 
 // Define the component's props
 type RenderArrowProps = {
-    element: ArrowElement;
+    element: ArrowElementType;
     draggable: boolean;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
@@ -19,7 +18,7 @@ const drawArrowHead = (
     relativeX2: number,
     relativeY2: number,
     angle: number,
-    element: ArrowElement
+    element: ArrowElementType
 ) => {
     const arrowLength = 10; // Length of the arrowhead lines
     const arrowAngle = Math.PI / 6; // 30 degrees
@@ -98,10 +97,9 @@ export default function RenderArrow({
                 roughCanvas.line(0, 0, relativeX2, relativeY2, {
                     stroke: element.stroke || "black",
                     strokeWidth: element.strokeWidth || 2,
-                    strokeStyle: element.strokeStyle || "solid",
                     roughness: element.roughness || 1,
                     bowing: element.bowing || 1,
-                    seed: element.seed
+                    seed: element.seed,
                 });
 
                 // Calculate the angle of the line

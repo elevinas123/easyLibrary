@@ -120,7 +120,7 @@ function MainPage() {
                     y: 0,
                 }
             );
-            console.log("boookUpdated", book);
+            console.log("bookUpdated", book);
             setUpdated(true);
         }
         console.log("Book data updated:", book);

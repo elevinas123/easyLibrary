@@ -2,10 +2,9 @@ import { useAtom } from "jotai";
 import {
     arrowsAtom,
     canvaElementsAtom,
-    highlightsAtom,
 } from "./Konva/konvaAtoms";
 import { useEffect, useState } from "react";
-import { StartType } from "./Konva/KonvaStage";
+import { StartType } from "../../endPointTypes/types";
 
 type Note = {
     endText: string;
@@ -19,7 +18,6 @@ type Note = {
 };
 export default function Notes() {
     const [arrows] = useAtom(arrowsAtom);
-    const [highlights] = useAtom(highlightsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
     const [notes, setNotes] = useState<Note[]>([]);
     useEffect(() => {

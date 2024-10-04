@@ -20,6 +20,7 @@ import {
     ArrowElementType,
     StartType,
 } from "../../../../../endPointTypes/types";
+import { Circle } from "react-konva";
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -430,7 +431,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
     return (
         <>
-            {arrows.map((arrow, i) => (
+            {arrows.map((arrow) => (
                 <RenderArrow
                     element={arrow}
                     draggable={false}

@@ -3,6 +3,13 @@
 import { User, Book, Bookshelve } from './types';
 
 export const endpointMap = {
+  "POST /user": "User",
+  "GET /user": "User[]",
+  "GET /user/findOneByJwtPayload": "User",
+  "GET /user/:id": "User",
+  "GET /user/:username": "User",
+  "PUT /user/:id": "User",
+  "DELETE /user/:id": "User",
   "POST /auth/login": "{ access_token: string; user: any; }",
   "POST /auth/register": "User",
   "GET /book": "Book[]",
@@ -15,18 +22,18 @@ export const endpointMap = {
   "POST /bookshelve": "Bookshelve",
   "PUT /bookshelve/:id": "Bookshelve",
   "DELETE /bookshelve/:id": "Bookshelve",
-  "POST /user": "User",
-  "GET /user": "User[]",
-  "GET /user/findOneByJwtPayload": "User",
-  "GET /user/:id": "User",
-  "GET /user/:username": "User",
-  "PUT /user/:id": "User",
-  "DELETE /user/:id": "User",
 } as const;
 
 export type Endpoint = keyof typeof endpointMap;
 
 export type ApiResponseTypes = {
+  "POST /user": User;
+  "GET /user": User[];
+  "GET /user/findOneByJwtPayload": User;
+  "GET /user/:id": User;
+  "GET /user/:username": User;
+  "PUT /user/:id": User;
+  "DELETE /user/:id": User;
   "POST /auth/login": { access_token: string; user: any; };
   "POST /auth/register": User;
   "GET /book": Book[];
@@ -39,11 +46,4 @@ export type ApiResponseTypes = {
   "POST /bookshelve": Bookshelve;
   "PUT /bookshelve/:id": Bookshelve;
   "DELETE /bookshelve/:id": Bookshelve;
-  "POST /user": User;
-  "GET /user": User[];
-  "GET /user/findOneByJwtPayload": User;
-  "GET /user/:id": User;
-  "GET /user/:username": User;
-  "PUT /user/:id": User;
-  "DELETE /user/:id": User;
 };

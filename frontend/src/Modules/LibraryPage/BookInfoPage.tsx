@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Book } from "./LibraryPage";
 import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { DeleteDialog } from "./BookCard";
+import { Book } from "../../endPointTypes/types";
 
 type BookInfoPageProps = {
     book: Book;

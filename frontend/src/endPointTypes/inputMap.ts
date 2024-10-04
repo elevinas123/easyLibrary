@@ -3,6 +3,24 @@
 import { CreateUserDto, UpdateBookDto, CreateBookDto, CreateBookshelveDto } from './types';
 
 export type InputMap = {
+  "POST /user": {
+    body: CreateUserDto;
+  };
+  "GET /user": {};
+  "GET /user/findOneByJwtPayload": {};
+  "GET /user/:id": {
+    params: { id: string };
+  };
+  "GET /user/:username": {
+    params: { username: string };
+  };
+  "PUT /user/:id": {
+    params: { id: string };
+    body: CreateUserDto;
+  };
+  "DELETE /user/:id": {
+    params: { id: string };
+  };
   "POST /auth/login": {};
   "POST /auth/register": {
     body: CreateUserDto;
@@ -33,24 +51,6 @@ export type InputMap = {
     body: CreateBookshelveDto;
   };
   "DELETE /bookshelve/:id": {
-    params: { id: string };
-  };
-  "POST /user": {
-    body: CreateUserDto;
-  };
-  "GET /user": {};
-  "GET /user/findOneByJwtPayload": {};
-  "GET /user/:id": {
-    params: { id: string };
-  };
-  "GET /user/:username": {
-    params: { username: string };
-  };
-  "PUT /user/:id": {
-    params: { id: string };
-    body: CreateUserDto;
-  };
-  "DELETE /user/:id": {
     params: { id: string };
   };
 };

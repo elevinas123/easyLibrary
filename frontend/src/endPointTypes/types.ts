@@ -74,7 +74,7 @@ export interface CurveElementSkeletonType {
   points: number[];
   id: string;
   fill: string;
-  text: string;
+  text: string | null;
   roughness: number;
   bowing: number;
   seed: number;
@@ -87,12 +87,12 @@ export interface CurveElementSkeletonType {
   hachureGap: number;
 }
 
-export type StartType = "text" | "bookText";
+export type StartType = null | "text" | "bookText";
 
 export interface ArrowElementType extends CurveElementSkeletonType {
   type: "arrow";
-  startId: string;
-  endId: string;
+  startId: string | null;
+  endId: string | null;
   startType: StartType;
   endType: StartType;
 }
@@ -109,7 +109,7 @@ export interface Book {
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: false | true;
   dateAdded: string;
   bookElements: ProcessedElementType[];
   highlights: HighlightType[];
@@ -117,6 +117,16 @@ export interface Book {
   curveElements: ArrowElementType[];
   scale: number;
   offsetPosition: OffsetPositionType;
+}
+
+export interface UpdateBookDto extends Partial<CreateBookDto> {
+  bookElements?: undefined | ProcessedElementDto[];
+  canvaElements?: undefined | (RectElementDto | TextElementDto)[];
+  curveElements?: undefined | ArrowElementDto[];
+  highlights?: undefined | HighlightDto[];
+  liked?: undefined | false | true;
+  scale?: undefined | number;
+  offsetPosition?: undefined | { x: number; y: number; };
 }
 
 export interface ProcessedElementDto {
@@ -167,7 +177,7 @@ export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
   fill: string;
-  text: string;
+  text: null | string;
   roughness: number;
   bowing: number;
   seed: number;
@@ -182,28 +192,10 @@ export interface CurveElementSkeletonDto {
 
 export interface ArrowElementDto extends CurveElementSkeletonDto {
   type: "arrow";
-  startId: string;
-  endId: string;
-  startType: StartType;
-  endType: StartType;
-}
-
-export interface HighlightDto {
-  id: string;
-  startingX: number;
-  startingY: number;
-  endX: number;
-  endY: number;
-}
-
-export interface UpdateBookDto extends Partial<CreateBookDto> {
-  bookElements?: ProcessedElementDto[];
-  canvaElements?: (RectElementDto | TextElementDto)[];
-  curveElements?: ArrowElementDto[];
-  highlights?: HighlightDto[];
-  liked?: boolean;
-  scale?: number;
-  offsetPosition?: { x: number; y: number; };
+  startId: null | string;
+  endId: null | string;
+  startType: null | "text" | "bookText";
+  endType: null | "text" | "bookText";
 }
 
 export interface OffsetPositionDto {
@@ -218,7 +210,7 @@ export interface CreateBookDto {
   author: string;
   genre: string[];
   imageUrl: string;
-  liked: boolean;
+  liked: false | true;
   dateAdded: string;
   bookElements: ProcessedElementDto[];
   canvaElements: (RectElementDto | TextElementDto)[];
