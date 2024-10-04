@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     FiBook,
     FiHome,
