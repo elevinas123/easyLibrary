@@ -15,8 +15,8 @@ export interface CreateUserDto {
   password: string;
   age: number;
   comment: string;
-  books: string[];
-  bookshelves: string[];
+  books: ObjectId[];
+  bookshelves: ObjectId[];
 }
 
 export interface ProcessedElementType {
@@ -103,6 +103,7 @@ export interface OffsetPositionType {
 }
 
 export interface Book {
+  _id: string;
   title: string;
   userId: string;
   description: string;
@@ -134,6 +135,14 @@ export interface ProcessedElementDto {
   lineX: number;
   lineWidth: number;
   lineY: number;
+}
+
+export interface HighlightDto {
+  id: string;
+  startingX: number;
+  startingY: number;
+  endX: number;
+  endY: number;
 }
 
 export interface HighlightPointsDto {
@@ -213,6 +222,7 @@ export interface CreateBookDto {
   liked: false | true;
   dateAdded: string;
   bookElements: ProcessedElementDto[];
+  highlights: HighlightDto[];
   canvaElements: (RectElementDto | TextElementDto)[];
   scale: number;
   curveElements: ArrowElementDto[];
@@ -220,6 +230,7 @@ export interface CreateBookDto {
 }
 
 export interface Bookshelve {
+  _id: string;
   name: string;
   createdAt: Date;
   books: ObjectId[];

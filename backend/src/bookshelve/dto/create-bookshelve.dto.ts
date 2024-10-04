@@ -1,8 +1,9 @@
 import { Type } from "class-transformer";
 import { IsArray, IsDate, IsOptional, IsString } from "class-validator";
 import { Types } from "mongoose";
+import { BookshelveType } from "../schema/bookshelve-schema";
 
-export class CreateBookshelveDto {
+export class CreateBookshelveDto implements Omit<BookshelveType, "_id"> {
     @IsString()
     readonly name: string;
 
@@ -11,5 +12,6 @@ export class CreateBookshelveDto {
     readonly createdAt: Date;
 
     @IsArray()
+    @Type(() => String)
     readonly books: Types.ObjectId[];
 }

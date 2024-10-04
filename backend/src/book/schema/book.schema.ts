@@ -39,9 +39,9 @@ export type BookType = {
 
 @Schema()
 export class Book implements BookType {
-    get _id(): Types.ObjectId {
-        return this._id;
-    }
+    @Prop({ type: Types.ObjectId, required: true, auto: true })
+    _id: Types.ObjectId;
+
     @Prop({ type: String, required: true }) title: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })

@@ -4,8 +4,17 @@ import { Book } from "src/book/schema/book.schema";
 
 export type BookshelveDocument = Bookshelve & Document;
 
+export type BookshelveType = {
+    _id: Types.ObjectId;
+    name: string;
+    createdAt: Date;
+    books: Types.ObjectId[];
+};
 @Schema()
-export class Bookshelve {
+export class Bookshelve implements BookshelveType {
+    @Prop({ type: Types.ObjectId, required: true, auto: true })
+    _id: Types.ObjectId;
+
     @Prop({ required: true }) name: string;
 
     @Prop({ required: true, default: Date.now }) createdAt: Date;

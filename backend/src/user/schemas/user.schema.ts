@@ -6,11 +6,20 @@ import { Bookshelve } from "src/bookshelve/schema/bookshelve-schema";
 
 export type UserDocument = User & Document;
 
+export type UserType = {
+    _id: Types.ObjectId;
+    username: string;
+    age: number;
+    password: string;
+    comment: string;
+    books: Types.ObjectId[];
+    bookshelves: Types.ObjectId[];
+};
 @Schema()
-export class User {
+export class User implements UserType {
     @Prop({ type: Types.ObjectId, required: true, auto: true })
     _id: Types.ObjectId;
-    
+
     @Prop({ required: true }) username: string;
 
     @Prop({ require: true }) age: number;

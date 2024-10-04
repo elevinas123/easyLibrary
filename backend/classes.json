@@ -1018,6 +1018,11 @@
     "path": "src/book/schema/book.schema.ts",
     "properties": [
       {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false
+      },
+      {
         "name": "title",
         "type": "string",
         "optional": false
@@ -1095,6 +1100,12 @@
     "type": "typeof Book",
     "extends": [],
     "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
       {
         "name": "title",
         "type": "string",
@@ -1192,11 +1203,45 @@
     "properties": []
   },
   {
+    "name": "BookshelveType",
+    "documentation": "",
+    "type": "BookshelveType",
+    "path": "src/bookshelve/schema/bookshelve-schema.ts",
+    "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "createdAt",
+        "type": "Date",
+        "optional": false
+      },
+      {
+        "name": "books",
+        "type": "ObjectId[]",
+        "optional": false
+      }
+    ]
+  },
+  {
     "name": "Bookshelve",
     "documentation": "",
     "type": "typeof Bookshelve",
     "extends": [],
     "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false,
+        "documentation": ""
+      },
       {
         "name": "name",
         "type": "string",
@@ -1226,6 +1271,49 @@
     "type": "User & Document<unknown, any, any>",
     "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
     "properties": []
+  },
+  {
+    "name": "UserType",
+    "documentation": "",
+    "type": "UserType",
+    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/user/schemas/user.schema.ts",
+    "properties": [
+      {
+        "name": "_id",
+        "type": "ObjectId",
+        "optional": false
+      },
+      {
+        "name": "username",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "age",
+        "type": "number",
+        "optional": false
+      },
+      {
+        "name": "password",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "comment",
+        "type": "string",
+        "optional": false
+      },
+      {
+        "name": "books",
+        "type": "ObjectId[]",
+        "optional": false
+      },
+      {
+        "name": "bookshelves",
+        "type": "ObjectId[]",
+        "optional": false
+      }
+    ]
   },
   {
     "name": "User",
@@ -1312,13 +1400,13 @@
       },
       {
         "name": "books",
-        "type": "string[]",
+        "type": "ObjectId[]",
         "optional": false,
         "documentation": ""
       },
       {
         "name": "bookshelves",
-        "type": "string[]",
+        "type": "ObjectId[]",
         "optional": false,
         "documentation": ""
       }
@@ -2077,13 +2165,6 @@
     "path": ""
   },
   {
-    "name": "StartType",
-    "documentation": "",
-    "type": "null | \"text\" | \"bookText\"",
-    "path": "/home/elevinas123/Documents/coding/easyLibrary/backend/src/book/dto/curveElementsDto/elements/arrowElement.dto.ts",
-    "properties": []
-  },
-  {
     "name": "ArrowElementDto",
     "documentation": "",
     "type": "typeof ArrowElementDto",
@@ -2150,6 +2231,47 @@
     "path": ""
   },
   {
+    "name": "HighlightDto",
+    "documentation": "",
+    "type": "typeof HighlightDto",
+    "extends": [],
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "optional": false,
+        "documentation": ""
+      }
+    ],
+    "methods": [],
+    "constructors": [],
+    "path": ""
+  },
+  {
     "name": "CreateBookDto",
     "documentation": "",
     "type": "typeof CreateBookDto",
@@ -2163,7 +2285,7 @@
       },
       {
         "name": "userId",
-        "type": "string",
+        "type": "ObjectId",
         "optional": false,
         "documentation": ""
       },
@@ -2210,6 +2332,12 @@
         "documentation": ""
       },
       {
+        "name": "highlights",
+        "type": "HighlightDto[]",
+        "optional": false,
+        "documentation": ""
+      },
+      {
         "name": "canvaElements",
         "type": "(RectElementDto | TextElementDto)[]",
         "optional": false,
@@ -2230,64 +2358,6 @@
       {
         "name": "offsetPosition",
         "type": "OffsetPositionDto",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "HighlightsDto",
-    "documentation": "",
-    "type": "typeof HighlightsDto",
-    "extends": [],
-    "properties": [
-      {
-        "name": "highlights",
-        "type": "HighlightDto[]",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "HighlightDto",
-    "documentation": "",
-    "type": "typeof HighlightDto",
-    "extends": [],
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "startingX",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "startingY",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endX",
-        "type": "number",
-        "optional": false,
-        "documentation": ""
-      },
-      {
-        "name": "endY",
-        "type": "number",
         "optional": false,
         "documentation": ""
       }
@@ -2844,42 +2914,5 @@
     ],
     "constructors": [],
     "path": "book"
-  },
-  {
-    "name": "BookElementsDto",
-    "documentation": "",
-    "type": "typeof BookElementsDto",
-    "extends": [],
-    "properties": [],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "CanvaElementsDto",
-    "documentation": "",
-    "type": "typeof CanvaElementsDto",
-    "extends": [],
-    "properties": [],
-    "methods": [],
-    "constructors": [],
-    "path": ""
-  },
-  {
-    "name": "CurveElementsDto",
-    "documentation": "",
-    "type": "typeof CurveElementsDto",
-    "extends": [],
-    "properties": [
-      {
-        "name": "curveElements",
-        "type": "ArrowElementDto[]",
-        "optional": false,
-        "documentation": ""
-      }
-    ],
-    "methods": [],
-    "constructors": [],
-    "path": ""
   }
 ]

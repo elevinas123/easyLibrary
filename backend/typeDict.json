@@ -78,14 +78,14 @@
       },
       {
         "name": "books",
-        "type": "string[]",
-        "fullType": "books: string[]",
+        "type": "ObjectId[]",
+        "fullType": "books: ObjectId[]",
         "optional": false
       },
       {
         "name": "bookshelves",
-        "type": "string[]",
-        "fullType": "bookshelves: string[]",
+        "type": "ObjectId[]",
+        "fullType": "bookshelves: ObjectId[]",
         "optional": false
       }
     ],
@@ -489,6 +489,12 @@
     "name": "Book",
     "properties": [
       {
+        "name": "_id",
+        "type": "string",
+        "fullType": "_id: ObjectId",
+        "optional": false
+      },
+      {
         "name": "title",
         "type": "string",
         "fullType": "title: string",
@@ -652,6 +658,43 @@
         "name": "lineY",
         "type": "number",
         "fullType": "lineY: number",
+        "optional": false
+      }
+    ],
+    "extends": []
+  },
+  "HighlightDto": {
+    "isType": false,
+    "name": "HighlightDto",
+    "properties": [
+      {
+        "name": "id",
+        "type": "string",
+        "fullType": "id: string",
+        "optional": false
+      },
+      {
+        "name": "startingX",
+        "type": "number",
+        "fullType": "startingX: number",
+        "optional": false
+      },
+      {
+        "name": "startingY",
+        "type": "number",
+        "fullType": "startingY: number",
+        "optional": false
+      },
+      {
+        "name": "endX",
+        "type": "number",
+        "fullType": "endX: number",
+        "optional": false
+      },
+      {
+        "name": "endY",
+        "type": "number",
+        "fullType": "endY: number",
         "optional": false
       }
     ],
@@ -1001,7 +1044,7 @@
       {
         "name": "userId",
         "type": "string",
-        "fullType": "userId: string",
+        "fullType": "userId: ObjectId",
         "optional": false
       },
       {
@@ -1047,6 +1090,12 @@
         "optional": false
       },
       {
+        "name": "highlights",
+        "type": "HighlightDto[]",
+        "fullType": "highlights: HighlightDto[]",
+        "optional": false
+      },
+      {
         "name": "canvaElements",
         "type": "(RectElementDto | TextElementDto)[]",
         "fullType": "canvaElements: RectElementDto | TextElementDto[]",
@@ -1077,6 +1126,12 @@
     "isType": false,
     "name": "Bookshelve",
     "properties": [
+      {
+        "name": "_id",
+        "type": "string",
+        "fullType": "_id: ObjectId",
+        "optional": false
+      },
       {
         "name": "name",
         "type": "string",
