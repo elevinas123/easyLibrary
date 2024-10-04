@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
-import { Book } from "../../LibraryPage/LibraryPage";
 import Tools from "./components/Tools";
 import {
     activeToolAtom,
@@ -30,50 +29,12 @@ export type VisibleArea = {
     width: number;
     height: number;
 };
-export type CurveSkeleton = {
-    points: number[];
-    id: string;
-    fill: string;
-    text: null | string;
-    roughness: number;
-    bowing: number;
-    seed: number;
-    strokeWidth: number;
-    strokeStyle: "solid" | "dashed" | "dotted";
-    stroke: string;
-    fillStyle:
-        | "solid"
-        | "hachure"
-        | "cross-hatch"
-        | "zigzag"
-        | "dots"
-        | "dashed"
-        | "zigzag-line";
-    fillWeight: number;
-    hachureAngle: number;
-    hachureGap: number;
-};
-// Base skeleton for all elements
-export type CanvaElementSkeleton = {
-    fill: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    id: string;
-    outgoingArrowIds: string[];
-    incomingArrowIds: string[];
-    points: HighlightPoints[];
-    strokeColor: string;
-    strokeWidth: number;
-    opacity: number;
-    rotation: number;
-};
-export type StartType = "bookText" | "text" | null;
+// ... other type definitions
 
 type KonvaStageProps = {
     bookElements: ProcessedElement[];
 };
+
 export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const fontSize = 24;
     const width = 1200;
@@ -91,6 +52,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     useEffect(() => {}, [canvaElements]);
 
+    // Ref to track the current animation frame
     const [dragStartPos, setDragStartPos] = useState<{
         x: number;
         y: number;
@@ -103,18 +65,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     });
 
     useEffect(() => {
-        const stage = stageRef.current;
-        if (stage) {
-            stage.on("wheel", handleWheel); // Attach zoom on mouse wheel
-        }
-
-        return () => {
-            if (stage) {
-                stage.off("wheel", handleWheel); // Clean up listener
-            }
-        };
-    }, []);
-    useEffect(() => {
         // Add event listener to the document to catch keydown events
         document.addEventListener("keydown", handleKeyDown);
 
@@ -123,49 +73,48 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             document.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
-
-    // Zoom handler (existing)
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (mainNotesLayerRef) {
-            mainNotesLayerRef.current?.handleKeyDown(e);
-        }
-    };
-    const easeOut = (t: number) => t * (2 - t); // Simple easing function
-
-    const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-        console.log("handlePanWheel");
-        e.evt.preventDefault();
+    useEffect(() => {
         const stage = stageRef.current;
+        if (stage) {
+            stage.on("wheel", handleWheel); // Attach wheel handler
+        }
 
-        if (!stage) return;
-
-        const scale = stage.scaleX(); // Assuming uniform scaling on both axes
-        const { deltaX, deltaY } = e.evt;
-
-        // Define panning speed. Adjust the multiplier as needed for desired sensitivity.
-        const panSpeed = 1 / scale;
-
-        const targetOffsetX = deltaX * panSpeed;
-        const targetOffsetY = deltaY * panSpeed;
-
-        let startTime: number | null = null;
-
-        const animatePan = (time: number) => {
-            console.log("animating pan", time);
-            if (startTime === null) startTime = time;
-            const elapsed = (time - startTime) / 10; // Adjust the duration (300ms) for a smoother/slower transition
-            const progress = Math.min(easeOut(elapsed), 1);
-            console.log("animatePanProgress", progress);
-            console.log("animateStartTime", startTime);
-
-            if (progress < 1) {
-                requestAnimationFrame(animatePan);
+        return () => {
+            if (stage) {
+                stage.off("wheel", handleWheel); // Clean up listener
             }
         };
+    }, []);
 
-        requestAnimationFrame(animatePan);
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (mainNotesLayerRef.current) {
+            mainNotesLayerRef.current.handleKeyDown(e);
+        }
     };
+
+    const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        const stage = stageRef.current;
+        if (!isDragging || !dragStartPos) return;
+
+        const pointer = stage.getPointerPosition();
+        if (!pointer) return;
+
+        // Calculate delta movement adjusted by scale
+        const dx = (pointer.x - dragStartPos.x) / scale;
+        const dy = (pointer.y - dragStartPos.y) / scale;
+
+        // Update offset position
+        setOffsetPosition((prev) => ({
+            x: prev.x + dx * scale,
+            y: prev.y + dy * scale,
+        }));
+
+        // Update drag start position
+        setDragStartPos(pointer);
+
+        stage.batchDraw();
+    };
+
     const handleControlWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
         const stage = stageRef.current;
@@ -195,8 +144,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             x: pointer.x - (pointer.x - stage.x()) * scaleFactor,
             y: pointer.y - (pointer.y - stage.y()) * scaleFactor,
         };
-
-        // Apply new scale and position
 
         // Update state
         setScale(clampedScale);
@@ -244,6 +191,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
         stage.batchDraw();
     };
+
     useEffect(() => {
         const stage = stageRef.current;
         if (!stage) return;
@@ -253,6 +201,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         });
         updateVisibleArea();
     }, [offsetPosition]);
+
     useEffect(() => {
         const stage = stageRef.current;
         if (!stage) return;
@@ -280,6 +229,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             mainNotesLayerRef.current.handleMouseDown(e);
         }
     };
+
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
@@ -350,6 +300,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
             mainNotesLayerRef.current.handleMouseUp(e);
         }
     };
+
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleDoubleClick(e);

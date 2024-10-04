@@ -4,7 +4,7 @@ import { Document } from "mongoose";
 import {
     HighlightPointsSchema,
     HighlightPointsType,
-} from "./highlightPoints.schema";
+} from "./highlights/highlightPoints.schema";
 import { RectElementSchema } from "./elements/rectElement.schema";
 import { TextElementSchema } from "./elements/textElement.schema";
 
@@ -57,5 +57,3 @@ export type CanvaElementSkeletonDocument = CanvaElementSkeleton & Document;
 export const CanvaElementSkeletonSchema =
     SchemaFactory.createForClass(CanvaElementSkeleton);
 // Access the schema of the array items
-CanvaElementSkeletonSchema.discriminator("rect", RectElementSchema);
-CanvaElementSkeletonSchema.discriminator("text", TextElementSchema);

@@ -1,33 +1,49 @@
 // book.schema.ts
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Schema as MongooseSchema, Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
 import {
-    ProcessedElement,
     ProcessedElementSchema,
+    ProcessedElementType
 } from "./bookElements/processedElement.schema";
-import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton";
+import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton.schema";
 import {
-    RectElement,
-    RectElementSchema,
+    RectElementType
 } from "./canvaElements/elements/rectElement.schema";
 import {
-    TextElement,
-    TextElementSchema,
+    TextElementType
 } from "./canvaElements/elements/textElement.schema";
 import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
 import {
-    ArrowElement,
-    ArrowElementSchema,
+    ArrowElementType
 } from "./curveElements/elements/arrowElement.schema";
 import { HighlightSchema } from "./highlights/highlights.schema";
+import {
+    OffsetPositionSchema,
+    OffsetPositionType
+} from "./offsetPosition/offsetPosition.schema";
 
 export type BookDocument = Book & Document;
 
+type BookType = {
+    title: string;
+    userId: Types.ObjectId;
+    description: string;
+    author: string;
+    genre: string[];
+    imageUrl: string;
+    liked: boolean;
+    dateAdded: string;
+    bookElements: ProcessedElementType[];
+    highlights: HighlightType[];
+    canvaElements: (RectElementType | TextElementType)[];
+    curveElements: ArrowElementType[];
+    scale: number;
+    offsetPosition: OffsetPositionType;
+};
+
 @Schema()
-export class Book {
-
-
+export class Book implements BookType {
     @Prop({ type: String, required: true }) title: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })
@@ -49,26 +65,26 @@ export class Book {
         type: [ProcessedElementSchema],
         required: true,
     })
-    bookElements: ProcessedElement[];
+    bookElements: ProcessedElementType[];
 
-    @Prop({ type: [HighlightSchema], required: true }) highlights: Highlight[];
+    @Prop({ type: [HighlightSchema], required: true })
+    highlights: HighlightType[];
 
     @Prop({ type: [CanvaElementSkeletonSchema], required: true })
-    canvaElements: (RectElement | TextElement)[];
+    canvaElements: (RectElementType | TextElementType)[];
 
     @Prop({
         type: [CurveElementSkeletonSchema],
         required: true,
     })
-    curveElements: ArrowElement[];
+    curveElements: ArrowElementType[];
 
     @Prop({ type: Number, required: true }) scale: number;
 
     @Prop({
-        type: { x: Number, y: Number },
-        required: true,
+        type: { offsetPosition: OffsetPositionSchema },
     })
-    offsetPosition: { x: number; y: number };
+    offsetPosition: OffsetPositionType;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

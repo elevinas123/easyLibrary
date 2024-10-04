@@ -8,7 +8,7 @@ export type HighlightPointsType = {
 }; // Example structure for HighlightPoints
 
 @Schema({ _id: false })
-export class HighlightPoints {
+export class HighlightPoints implements HighlightPointsType {
     @Prop({ required: true }) x: number;
 
     @Prop({ required: true }) y: number;

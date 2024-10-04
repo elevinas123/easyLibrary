@@ -19,14 +19,14 @@ export interface CreateUserDto {
   bookshelves: string[];
 }
 
-export interface ProcessedElement {
+export interface ProcessedElementType {
   text: string;
   lineX: number;
   lineWidth: number;
   lineY: number;
 }
 
-export interface Highlight {
+export interface HighlightType {
   id: string;
   startingX: number;
   startingY: number;
@@ -39,7 +39,7 @@ export interface HighlightPointsType {
   y: number;
 }
 
-export interface CanvaElementSkeleton {
+export interface CanvaElementSkeletonType {
   fill: string;
   x: number;
   y: number;
@@ -52,10 +52,10 @@ export interface CanvaElementSkeleton {
   strokeColor: string;
   strokeWidth: number;
   opacity: number;
-  rotation: number;
 }
 
-export interface RectElement extends CanvaElementSkeleton {
+export interface RectElementType extends CanvaElementSkeletonType {
+  type: "rect";
   fillStyle: string;
   roughness: number;
   seed: number;
@@ -63,23 +63,46 @@ export interface RectElement extends CanvaElementSkeleton {
   hachureAngle: number;
 }
 
-export interface TextElement extends CanvaElementSkeleton {
+export interface TextElementType extends CanvaElementSkeletonType {
+  type: "text";
   text: string;
   fontFamily: string;
   fontSize: number;
 }
 
-export type StartType = "bookText" | "text";
+export interface CurveElementSkeletonType {
+  points: number[];
+  id: string;
+  fill: string;
+  text: string;
+  roughness: number;
+  bowing: number;
+  seed: number;
+  strokeWidth: number;
+  strokeStyle: "solid" | "dashed" | "dotted";
+  stroke: string;
+  fillStyle: "solid" | "dashed" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "zigzag-line";
+  fillWeight: number;
+  hachureAngle: number;
+  hachureGap: number;
+}
 
-export interface ArrowElement {
+export type StartType = "text" | "bookText";
+
+export interface ArrowElementType extends CurveElementSkeletonType {
+  type: "arrow";
   startId: string;
   endId: string;
   startType: StartType;
   endType: StartType;
 }
 
+export interface OffsetPositionType {
+  x: number;
+  y: number;
+}
+
 export interface Book {
-  _id: string;
   title: string;
   userId: string;
   description: string;
@@ -88,12 +111,12 @@ export interface Book {
   imageUrl: string;
   liked: boolean;
   dateAdded: string;
-  bookElements: ProcessedElement[];
-  highlights: Highlight[];
-  canvaElements: (RectElement | TextElement)[];
-  curveElements: ArrowElement[];
+  bookElements: ProcessedElementType[];
+  highlights: HighlightType[];
+  canvaElements: (RectElementType | TextElementType)[];
+  curveElements: ArrowElementType[];
   scale: number;
-  offsetPosition: { x: number; y: number; };
+  offsetPosition: OffsetPositionType;
 }
 
 export interface ProcessedElementDto {
@@ -124,13 +147,6 @@ export interface CanvaElementSkeletonDto {
   rotation: number;
 }
 
-export interface TextElementDto extends CanvaElementSkeletonDto {
-  type: "text";
-  text: string;
-  fontFamily: string;
-  fontSize: number;
-}
-
 export interface RectElementDto extends CanvaElementSkeletonDto {
   type: "rect";
   roughness: number;
@@ -138,6 +154,13 @@ export interface RectElementDto extends CanvaElementSkeletonDto {
   fillStyle: string;
   hachureGap: number;
   hachureAngle: number;
+}
+
+export interface TextElementDto extends CanvaElementSkeletonDto {
+  type: "text";
+  text: string;
+  fontFamily: string;
+  fontSize: number;
 }
 
 export interface CurveElementSkeletonDto {
@@ -175,7 +198,7 @@ export interface HighlightDto {
 
 export interface UpdateBookDto extends Partial<CreateBookDto> {
   bookElements?: ProcessedElementDto[];
-  canvaElements?: (TextElementDto | RectElementDto)[];
+  canvaElements?: (RectElementDto | TextElementDto)[];
   curveElements?: ArrowElementDto[];
   highlights?: HighlightDto[];
   liked?: boolean;
@@ -198,7 +221,7 @@ export interface CreateBookDto {
   liked: boolean;
   dateAdded: string;
   bookElements: ProcessedElementDto[];
-  canvaElements: (TextElementDto | RectElementDto)[];
+  canvaElements: (RectElementDto | TextElementDto)[];
   scale: number;
   curveElements: ArrowElementDto[];
   offsetPosition: OffsetPositionDto;

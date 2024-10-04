@@ -15,9 +15,9 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "./Konva/konvaAtoms";
-import { Book } from "../LibraryPage/LibraryPage";
 import debounce from "lodash/debounce";
 import { isEqual } from "lodash";
+import { Book } from "../../endPointTypes/types";
 
 export type HighlightRange = {
     startElementId: string;

@@ -29,7 +29,7 @@ export interface CurveElementSkeletonType {
 
 @Schema({ discriminatorKey: "type", _id: false })
 // No separate _id for subDocuments
-export class CurveElementSkeleton {
+export class CurveElementSkeleton implements CurveElementSkeletonType {
     @Prop({ type: String, required: true }) id: string;
 
     @Prop({ type: String, required: true }) fill: string;
@@ -46,11 +46,32 @@ export class CurveElementSkeleton {
 
     @Prop({ type: Number, required: true }) strokeWidth: number;
 
-    @Prop({ type: String, enum: ["solid", "dashed", "dotted"], required: true }) strokeStyle: "solid" | "dashed" | "dotted";
+    @Prop({ type: String, enum: ["solid", "dashed", "dotted"], required: true })
+    strokeStyle: "solid" | "dashed" | "dotted";
 
     @Prop({ type: String, required: true }) stroke: string;
 
-    @Prop({ type: String, enum: ["solid", "hachure", "cross-hatch", "zigzag", "dots", "dashed", "zigzag-line"], required: true }) fillStyle: "solid" | "hachure" | "cross-hatch" | "zigzag" | "dots" | "dashed" | "zigzag-line";
+    @Prop({
+        type: String,
+        enum: [
+            "solid",
+            "hachure",
+            "cross-hatch",
+            "zigzag",
+            "dots",
+            "dashed",
+            "zigzag-line",
+        ],
+        required: true,
+    })
+    fillStyle:
+        | "solid"
+        | "hachure"
+        | "cross-hatch"
+        | "zigzag"
+        | "dots"
+        | "dashed"
+        | "zigzag-line";
 
     @Prop({ type: Number, required: true }) fillWeight: number;
 
@@ -62,4 +83,3 @@ export class CurveElementSkeleton {
 export type CurveElementSkeletonDocument = CurveElementSkeleton & Document;
 export const CurveElementSkeletonSchema =
     SchemaFactory.createForClass(CurveElementSkeleton);
-CurveElementSkeletonSchema.discriminator('arrow', ArrowElementSchema);

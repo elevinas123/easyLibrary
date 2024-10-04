@@ -91,9 +91,9 @@
     ],
     "extends": []
   },
-  "ProcessedElement": {
+  "ProcessedElementType": {
     "isType": false,
-    "name": "ProcessedElement",
+    "name": "ProcessedElementType",
     "properties": [
       {
         "name": "text",
@@ -119,12 +119,11 @@
         "fullType": "lineY: number",
         "optional": false
       }
-    ],
-    "extends": []
+    ]
   },
-  "Highlight": {
+  "HighlightType": {
     "isType": false,
-    "name": "Highlight",
+    "name": "HighlightType",
     "properties": [
       {
         "name": "id",
@@ -156,8 +155,7 @@
         "fullType": "endY: number",
         "optional": false
       }
-    ],
-    "extends": []
+    ]
   },
   "HighlightPointsType": {
     "isType": false,
@@ -177,9 +175,9 @@
       }
     ]
   },
-  "CanvaElementSkeleton": {
+  "CanvaElementSkeletonType": {
     "isType": false,
-    "name": "CanvaElementSkeleton",
+    "name": "CanvaElementSkeletonType",
     "properties": [
       {
         "name": "fill",
@@ -252,20 +250,19 @@
         "type": "number",
         "fullType": "opacity: number",
         "optional": false
-      },
-      {
-        "name": "rotation",
-        "type": "number",
-        "fullType": "rotation: number",
-        "optional": false
       }
-    ],
-    "extends": []
+    ]
   },
-  "RectElement": {
+  "RectElementType": {
     "isType": false,
-    "name": "RectElement",
+    "name": "RectElementType",
     "properties": [
+      {
+        "name": "type",
+        "type": "\"rect\"",
+        "fullType": "type: \"rect\"",
+        "optional": false
+      },
       {
         "name": "fillStyle",
         "type": "string",
@@ -298,13 +295,19 @@
       }
     ],
     "extends": [
-      "CanvaElementSkeleton"
+      "CanvaElementSkeletonType"
     ]
   },
-  "TextElement": {
+  "TextElementType": {
     "isType": false,
-    "name": "TextElement",
+    "name": "TextElementType",
     "properties": [
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "fullType": "type: \"text\"",
+        "optional": false
+      },
       {
         "name": "text",
         "type": "string",
@@ -325,18 +328,115 @@
       }
     ],
     "extends": [
-      "CanvaElementSkeleton"
+      "CanvaElementSkeletonType"
     ]
+  },
+  "CurveElementSkeletonType": {
+    "isType": false,
+    "name": "CurveElementSkeletonType",
+    "properties": [
+      {
+        "name": "points",
+        "type": "number[]",
+        "fullType": "points: number[]",
+        "optional": false
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "fullType": "id: string",
+        "optional": false
+      },
+      {
+        "name": "fill",
+        "type": "string",
+        "fullType": "fill: string",
+        "optional": false
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "fullType": "text: string",
+        "optional": false
+      },
+      {
+        "name": "roughness",
+        "type": "number",
+        "fullType": "roughness: number",
+        "optional": false
+      },
+      {
+        "name": "bowing",
+        "type": "number",
+        "fullType": "bowing: number",
+        "optional": false
+      },
+      {
+        "name": "seed",
+        "type": "number",
+        "fullType": "seed: number",
+        "optional": false
+      },
+      {
+        "name": "strokeWidth",
+        "type": "number",
+        "fullType": "strokeWidth: number",
+        "optional": false
+      },
+      {
+        "name": "strokeStyle",
+        "type": "\"solid\" | \"dashed\" | \"dotted\"",
+        "fullType": "strokeStyle: \"solid\" | \"dashed\" | \"dotted\"",
+        "optional": false
+      },
+      {
+        "name": "stroke",
+        "type": "string",
+        "fullType": "stroke: string",
+        "optional": false
+      },
+      {
+        "name": "fillStyle",
+        "type": "\"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "fullType": "fillStyle: \"solid\" | \"dashed\" | \"hachure\" | \"cross-hatch\" | \"zigzag\" | \"dots\" | \"zigzag-line\"",
+        "optional": false
+      },
+      {
+        "name": "fillWeight",
+        "type": "number",
+        "fullType": "fillWeight: number",
+        "optional": false
+      },
+      {
+        "name": "hachureAngle",
+        "type": "number",
+        "fullType": "hachureAngle: number",
+        "optional": false
+      },
+      {
+        "name": "hachureGap",
+        "type": "number",
+        "fullType": "hachureGap: number",
+        "optional": false
+      }
+    ],
+    "extends": []
   },
   "StartType": {
     "isType": true,
     "name": "StartType",
-    "type": "\"bookText\" | \"text\""
+    "type": "\"text\" | \"bookText\""
   },
-  "ArrowElement": {
+  "ArrowElementType": {
     "isType": false,
-    "name": "ArrowElement",
+    "name": "ArrowElementType",
     "properties": [
+      {
+        "name": "type",
+        "type": "\"arrow\"",
+        "fullType": "type: \"arrow\"",
+        "optional": false
+      },
       {
         "name": "startId",
         "type": "string",
@@ -362,18 +462,32 @@
         "optional": false
       }
     ],
-    "extends": []
+    "extends": [
+      "CurveElementSkeletonType"
+    ]
+  },
+  "OffsetPositionType": {
+    "isType": false,
+    "name": "OffsetPositionType",
+    "properties": [
+      {
+        "name": "x",
+        "type": "number",
+        "fullType": "x: number",
+        "optional": false
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "fullType": "y: number",
+        "optional": false
+      }
+    ]
   },
   "Book": {
     "isType": false,
     "name": "Book",
     "properties": [
-      {
-        "name": "_id",
-        "type": "string",
-        "fullType": "_id: ObjectId",
-        "optional": false
-      },
       {
         "name": "title",
         "type": "string",
@@ -424,26 +538,26 @@
       },
       {
         "name": "bookElements",
-        "type": "ProcessedElement[]",
-        "fullType": "bookElements: ProcessedElement[]",
+        "type": "ProcessedElementType[]",
+        "fullType": "bookElements: ProcessedElementType[]",
         "optional": false
       },
       {
         "name": "highlights",
-        "type": "Highlight[]",
-        "fullType": "highlights: Highlight[]",
+        "type": "HighlightType[]",
+        "fullType": "highlights: HighlightType[]",
         "optional": false
       },
       {
         "name": "canvaElements",
-        "type": "(RectElement | TextElement)[]",
-        "fullType": "canvaElements: RectElement | TextElement[]",
+        "type": "(RectElementType | TextElementType)[]",
+        "fullType": "canvaElements: RectElementType | TextElementType[]",
         "optional": false
       },
       {
         "name": "curveElements",
-        "type": "ArrowElement[]",
-        "fullType": "curveElements: ArrowElement[]",
+        "type": "ArrowElementType[]",
+        "fullType": "curveElements: ArrowElementType[]",
         "optional": false
       },
       {
@@ -454,8 +568,8 @@
       },
       {
         "name": "offsetPosition",
-        "type": "{ x: number; y: number; }",
-        "fullType": "offsetPosition: { x: number; y: number; }",
+        "type": "OffsetPositionType",
+        "fullType": "offsetPosition: OffsetPositionType",
         "optional": false
       }
     ],
@@ -596,39 +710,6 @@
     ],
     "extends": []
   },
-  "TextElementDto": {
-    "isType": false,
-    "name": "TextElementDto",
-    "properties": [
-      {
-        "name": "type",
-        "type": "\"text\"",
-        "fullType": "type: \"text\"",
-        "optional": false
-      },
-      {
-        "name": "text",
-        "type": "string",
-        "fullType": "text: string",
-        "optional": false
-      },
-      {
-        "name": "fontFamily",
-        "type": "string",
-        "fullType": "fontFamily: string",
-        "optional": false
-      },
-      {
-        "name": "fontSize",
-        "type": "number",
-        "fullType": "fontSize: number",
-        "optional": false
-      }
-    ],
-    "extends": [
-      "CanvaElementSkeletonDto"
-    ]
-  },
   "RectElementDto": {
     "isType": false,
     "name": "RectElementDto",
@@ -667,6 +748,39 @@
         "name": "hachureAngle",
         "type": "number",
         "fullType": "hachureAngle: number",
+        "optional": false
+      }
+    ],
+    "extends": [
+      "CanvaElementSkeletonDto"
+    ]
+  },
+  "TextElementDto": {
+    "isType": false,
+    "name": "TextElementDto",
+    "properties": [
+      {
+        "name": "type",
+        "type": "\"text\"",
+        "fullType": "type: \"text\"",
+        "optional": false
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "fullType": "text: string",
+        "optional": false
+      },
+      {
+        "name": "fontFamily",
+        "type": "string",
+        "fullType": "fontFamily: string",
+        "optional": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "fullType": "fontSize: number",
         "optional": false
       }
     ],
@@ -853,8 +967,8 @@
       },
       {
         "name": "canvaElements",
-        "type": "(TextElementDto | RectElementDto)[]",
-        "fullType": "canvaElements: TextElementDto | RectElementDto[]",
+        "type": "(RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
         "optional": true
       },
       {
@@ -971,8 +1085,8 @@
       },
       {
         "name": "canvaElements",
-        "type": "(TextElementDto | RectElementDto)[]",
-        "fullType": "canvaElements: TextElementDto | RectElementDto[]",
+        "type": "(RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
         "optional": false
       },
       {
