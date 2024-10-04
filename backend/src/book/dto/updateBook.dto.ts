@@ -1,9 +1,9 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { CanvaElementType } from "../schema/book.schema";
 import { ProcessedElementDto } from "./bookElementsDto/processedElement.dto";
 import { CreateBookDto } from "./createBookDto";
 import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 import { HighlightDto } from "./highlightsDto/highlights.dto";
+import { CanvaElementType } from "../schema/canvaElements/canvaElementSkeleton.schema";
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
     bookElements?: ProcessedElementDto[];

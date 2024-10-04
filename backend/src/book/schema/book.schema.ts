@@ -6,13 +6,13 @@ import {
     ProcessedElementSchema,
     ProcessedElementType,
 } from "./bookElements/processedElement.schema";
-import { CanvaElementSkeletonSchema } from "./canvaElements/canvaElementSkeleton.schema";
-import { RectElementType } from "./canvaElements/elements/rectElement.schema";
-import { TextElementType } from "./canvaElements/elements/textElement.schema";
+import {
+    CanvaElementSkeletonSchema,
+    CanvaElementType,
+} from "./canvaElements/canvaElementSkeleton.schema";
 import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
 import { ArrowElementType } from "./curveElements/elements/arrowElement.schema";
 import { HighlightSchema, HighlightType } from "./highlights/highlights.schema";
-import { BookTextElementType } from "./canvaElements/elements/bookTextElement.schema";
 import {
     OffsetPositionSchema,
     OffsetPositionType,
@@ -20,10 +20,6 @@ import {
 
 export type BookDocument = Book & Document;
 
-export type CanvaElementType =
-    | RectElementType
-    | TextElementType
-    | BookTextElementType;
 export type BookType = {
     _id: Types.ObjectId;
     title: string;

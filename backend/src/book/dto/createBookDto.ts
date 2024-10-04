@@ -15,10 +15,11 @@ import { RectElementDto } from "./canvaElementsDto/elements/rectElement.dto";
 import { TextElementDto } from "./canvaElementsDto/elements/textElement.dto";
 import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 import { OffsetPositionDto } from "./offsetPosition.dto";
-import { BookType, CanvaElementType } from "../schema/book.schema";
+import { BookType } from "../schema/book.schema";
 import { Types } from "mongoose";
 import { HighlightDto } from "./highlightsDto/highlights.dto";
 import { BookTextElementDto } from "./canvaElementsDto/elements/bookTextElement.dto";
+import { CanvaElementType } from "../schema/canvaElements/canvaElementSkeleton.schema";
 
 export class CreateBookDto implements Omit<BookType, "_id"> {
     @IsString() @IsNotEmpty() title: string;

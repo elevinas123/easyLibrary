@@ -5,8 +5,9 @@ import {
     HighlightPointsSchema,
     HighlightPointsType,
 } from "./highlights/highlightPoints.schema";
-import { RectElementSchema } from "./elements/rectElement.schema";
-import { TextElementSchema } from "./elements/textElement.schema";
+import { RectElementType } from "./elements/rectElement.schema";
+import { TextElementType } from "./elements/textElement.schema";
+import { BookTextElementType } from "./elements/bookTextElement.schema";
 
 export type CanvaElementSkeletonType = {
     fill: string;
@@ -22,7 +23,10 @@ export type CanvaElementSkeletonType = {
     strokeWidth: number;
     opacity: number;
 };
-
+export type CanvaElementType =
+    | RectElementType
+    | TextElementType
+    | BookTextElementType;
 @Schema({ discriminatorKey: "type", _id: false })
 export class CanvaElementSkeleton implements CanvaElementSkeletonType {
     @Prop({ required: true }) fill: string;
