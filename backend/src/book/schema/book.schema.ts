@@ -12,6 +12,7 @@ import { TextElementType } from "./canvaElements/elements/textElement.schema";
 import { CurveElementSkeletonSchema } from "./curveElements/curveElementSkeleton";
 import { ArrowElementType } from "./curveElements/elements/arrowElement.schema";
 import { HighlightSchema, HighlightType } from "./highlights/highlights.schema";
+import { BookTextElementType } from "./canvaElements/elements/bookTextElement.schema";
 import {
     OffsetPositionSchema,
     OffsetPositionType,
@@ -19,6 +20,10 @@ import {
 
 export type BookDocument = Book & Document;
 
+export type CanvaElementType =
+    | RectElementType
+    | TextElementType
+    | BookTextElementType;
 export type BookType = {
     _id: Types.ObjectId;
     title: string;
@@ -31,12 +36,11 @@ export type BookType = {
     dateAdded: string;
     bookElements: ProcessedElementType[];
     highlights: HighlightType[];
-    canvaElements: (RectElementType | TextElementType)[];
+    canvaElements: CanvaElementType[];
     curveElements: ArrowElementType[];
     scale: number;
     offsetPosition: OffsetPositionType;
 };
-
 @Schema()
 export class Book implements BookType {
     @Prop({ type: Types.ObjectId, required: true, auto: true })
@@ -69,7 +73,7 @@ export class Book implements BookType {
     highlights: HighlightType[];
 
     @Prop({ type: [CanvaElementSkeletonSchema], required: true })
-    canvaElements: (RectElementType | TextElementType)[];
+    canvaElements: CanvaElementType[];
 
     @Prop({
         type: [CurveElementSkeletonSchema],

@@ -15,9 +15,10 @@ import { RectElementDto } from "./canvaElementsDto/elements/rectElement.dto";
 import { TextElementDto } from "./canvaElementsDto/elements/textElement.dto";
 import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
 import { OffsetPositionDto } from "./offsetPosition.dto";
-import { BookType } from "../schema/book.schema";
+import { BookType, CanvaElementType } from "../schema/book.schema";
 import { Types } from "mongoose";
 import { HighlightDto } from "./highlightsDto/highlights.dto";
+import { BookTextElementDto } from "./canvaElementsDto/elements/bookTextElement.dto";
 
 export class CreateBookDto implements Omit<BookType, "_id"> {
     @IsString() @IsNotEmpty() title: string;
@@ -47,12 +48,13 @@ export class CreateBookDto implements Omit<BookType, "_id"> {
     @ValidateNested({ each: true })
     @Type(() => HighlightDto) // First type
     highlights: HighlightDto[];
-    
+
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => TextElementDto) // First type
     @Type(() => RectElementDto) // Second type
-    canvaElements: (TextElementDto | RectElementDto)[];
+    @Type(() => BookTextElementDto) // Second type
+    canvaElements: CanvaElementType[];
     @IsNumber() scale: number;
 
     @IsArray()

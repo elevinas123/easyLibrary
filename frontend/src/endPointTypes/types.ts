@@ -34,41 +34,7 @@ export interface HighlightType {
   endY: number;
 }
 
-export interface HighlightPointsType {
-  x: number;
-  y: number;
-}
-
-export interface CanvaElementSkeletonType {
-  fill: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  id: string;
-  outgoingArrowIds: string[];
-  incomingArrowIds: string[];
-  points: HighlightPointsType[];
-  strokeColor: string;
-  strokeWidth: number;
-  opacity: number;
-}
-
-export interface RectElementType extends CanvaElementSkeletonType {
-  type: "rect";
-  fillStyle: string;
-  roughness: number;
-  seed: number;
-  hachureGap: number;
-  hachureAngle: number;
-}
-
-export interface TextElementType extends CanvaElementSkeletonType {
-  type: "text";
-  text: string;
-  fontFamily: string;
-  fontSize: number;
-}
+export type CanvaElementType = RectElementType | TextElementType | BookTextElementType;
 
 export interface CurveElementSkeletonType {
   points: number[];
@@ -114,7 +80,7 @@ export interface Book {
   dateAdded: string;
   bookElements: ProcessedElementType[];
   highlights: HighlightType[];
-  canvaElements: (RectElementType | TextElementType)[];
+  canvaElements: CanvaElementType[];
   curveElements: ArrowElementType[];
   scale: number;
   offsetPosition: OffsetPositionType;
@@ -122,7 +88,7 @@ export interface Book {
 
 export interface UpdateBookDto extends Partial<CreateBookDto> {
   bookElements?: undefined | ProcessedElementDto[];
-  canvaElements?: undefined | (RectElementDto | TextElementDto)[];
+  canvaElements?: undefined | CanvaElementType[];
   curveElements?: undefined | ArrowElementDto[];
   highlights?: undefined | HighlightDto[];
   liked?: undefined | false | true;
@@ -143,43 +109,6 @@ export interface HighlightDto {
   startingY: number;
   endX: number;
   endY: number;
-}
-
-export interface HighlightPointsDto {
-  x: number;
-  y: number;
-}
-
-export interface CanvaElementSkeletonDto {
-  fill: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  id: string;
-  outgoingArrowIds: string[];
-  incomingArrowIds: string[];
-  points: HighlightPointsDto[];
-  strokeColor: string;
-  strokeWidth: number;
-  opacity: number;
-  rotation: number;
-}
-
-export interface RectElementDto extends CanvaElementSkeletonDto {
-  type: "rect";
-  roughness: number;
-  seed: number;
-  fillStyle: string;
-  hachureGap: number;
-  hachureAngle: number;
-}
-
-export interface TextElementDto extends CanvaElementSkeletonDto {
-  type: "text";
-  text: string;
-  fontFamily: string;
-  fontSize: number;
 }
 
 export interface CurveElementSkeletonDto {
@@ -223,7 +152,7 @@ export interface CreateBookDto {
   dateAdded: string;
   bookElements: ProcessedElementDto[];
   highlights: HighlightDto[];
-  canvaElements: (RectElementDto | TextElementDto)[];
+  canvaElements: CanvaElementType[];
   scale: number;
   curveElements: ArrowElementDto[];
   offsetPosition: OffsetPositionDto;

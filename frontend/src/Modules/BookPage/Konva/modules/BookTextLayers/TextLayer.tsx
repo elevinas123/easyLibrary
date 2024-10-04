@@ -14,6 +14,7 @@ import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookEleme
 import { VisibleArea } from "../../KonvaStage";
 import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
+import { BookTextElementType } from "../../../../../endPointTypes/types";
 import {
     activeToolAtom,
     currentHighlightIdAtom,
@@ -22,12 +23,6 @@ import {
     scaleAtom,
 } from "../../konvaAtoms";
 
-export interface BookTextElement extends CanvaElementSkeleton {
-    type: "bookText";
-    text: string;
-    fontSize: number;
-    fontFamily: string;
-}
 type TextLayerProps = {
     visibleArea: VisibleArea;
     fontSize: number;
@@ -46,7 +41,7 @@ function TextLayer(
     { visibleArea, fontSize, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
-    const [textElements, setTextElements] = useState<BookTextElement[]>([]);
+    const [textElements, setTextElements] = useState<BookTextElementType[]>([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [_, setHighlights] = useAtom(highlightsAtom);
@@ -185,7 +180,7 @@ function TextLayer(
                 ))
         );
     }, [visibleArea, textElements, offsetPosition, scale]);
-    const createTextElements = (): BookTextElement[] => {
+    const createTextElements = (): BookTextElementType[] => {
         // Process the text elements from the book
 
         // Render the text elements with highlights

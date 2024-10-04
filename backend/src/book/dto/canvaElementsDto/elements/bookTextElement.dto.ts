@@ -5,7 +5,7 @@ import { IsEnum, IsNumber, IsString } from "class-validator";
 import { BookTextElementType } from "src/book/schema/canvaElements/elements/bookTextElement.schema";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
 
-export class RectElementDto
+export class BookTextElementDto
     extends CanvaElementSkeletonDto
     implements BookTextElementType
 {
