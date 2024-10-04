@@ -8,10 +8,12 @@ import {
 import { Text } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 
-import { CanvaElementSkeleton, VisibleArea } from "../../KonvaStage";
-import { measureTextWidth } from "../../functions/measureTextWidth";
-import { KonvaEventObject } from "konva/lib/Node";
 import { useAtom } from "jotai";
+import { KonvaEventObject } from "konva/lib/Node";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
+import { VisibleArea } from "../../KonvaStage";
+import { getPos } from "../../functions/getPos";
+import { measureTextWidth } from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
     currentHighlightIdAtom,
@@ -19,8 +21,6 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
-import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
-import { getPos } from "../../functions/getPos";
 
 export interface BookTextElement extends CanvaElementSkeleton {
     type: "bookText";

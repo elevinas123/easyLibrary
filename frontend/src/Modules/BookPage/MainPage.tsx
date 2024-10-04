@@ -82,7 +82,7 @@ function MainPage() {
         data: book,
         error,
         isLoading,
-    } = useQuery<Book, Error>({
+    } = useQuery({
         queryFn: () => fetchBook(bookId!, accessToken!),
         queryKey: ["book", bookId],
         enabled: !!accessToken && !!user && !!bookId,

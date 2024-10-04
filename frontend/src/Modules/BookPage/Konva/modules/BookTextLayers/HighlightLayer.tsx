@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { KonvaEventObject } from "konva/lib/Node";
 import {
     ForwardedRef,
     forwardRef,
@@ -7,9 +9,10 @@ import {
 } from "react";
 import { Rect } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
+import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
-import { useAtom } from "jotai";
 import {
     activeToolAtom,
     HighlightPoints,
@@ -18,9 +21,6 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
-import { KonvaEventObject } from "konva/lib/Node";
-import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
-import { getPos } from "../../functions/getPos";
 
 export type FullHighlight = {
     rects: HighlightRect[];

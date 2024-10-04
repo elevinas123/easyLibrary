@@ -2,6 +2,7 @@ import { atom } from "jotai";
 
 import {
     ArrowElementType,
+    HighlightType,
     RectElementType,
     TextElementType,
 } from "../../../endPointTypes/types";
