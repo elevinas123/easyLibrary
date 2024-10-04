@@ -355,8 +355,8 @@
       },
       {
         "name": "text",
-        "type": "string",
-        "fullType": "text: string",
+        "type": "string | null",
+        "fullType": "text: string | null",
         "optional": false
       },
       {
@@ -425,7 +425,7 @@
   "StartType": {
     "isType": true,
     "name": "StartType",
-    "type": "\"text\" | \"bookText\""
+    "type": "null | \"text\" | \"bookText\""
   },
   "ArrowElementType": {
     "isType": false,
@@ -439,14 +439,14 @@
       },
       {
         "name": "startId",
-        "type": "string",
-        "fullType": "startId: string",
+        "type": "string | null",
+        "fullType": "startId: string | null",
         "optional": false
       },
       {
         "name": "endId",
-        "type": "string",
-        "fullType": "endId: string",
+        "type": "string | null",
+        "fullType": "endId: string | null",
         "optional": false
       },
       {
@@ -526,8 +526,8 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
+        "type": "false | true",
+        "fullType": "liked: false | true",
         "optional": false
       },
       {
@@ -574,6 +574,57 @@
       }
     ],
     "extends": []
+  },
+  "UpdateBookDto": {
+    "isType": false,
+    "name": "UpdateBookDto",
+    "properties": [
+      {
+        "name": "bookElements",
+        "type": "undefined | ProcessedElementDto[]",
+        "fullType": "bookElements: undefined | ProcessedElementDto[]",
+        "optional": true
+      },
+      {
+        "name": "canvaElements",
+        "type": "undefined | (RectElementDto | TextElementDto)[]",
+        "fullType": "canvaElements: undefined | (RectElementDto | TextElementDto)[]",
+        "optional": true
+      },
+      {
+        "name": "curveElements",
+        "type": "undefined | ArrowElementDto[]",
+        "fullType": "curveElements: undefined | ArrowElementDto[]",
+        "optional": true
+      },
+      {
+        "name": "highlights",
+        "type": "undefined | HighlightDto[]",
+        "fullType": "highlights: undefined | HighlightDto[]",
+        "optional": true
+      },
+      {
+        "name": "liked",
+        "type": "undefined | false | true",
+        "fullType": "liked: undefined | false | true",
+        "optional": true
+      },
+      {
+        "name": "scale",
+        "type": "undefined | number",
+        "fullType": "scale: undefined | number",
+        "optional": true
+      },
+      {
+        "name": "offsetPosition",
+        "type": "undefined | { x: number; y: number; }",
+        "fullType": "offsetPosition: undefined | { x: number; y: number; }",
+        "optional": true
+      }
+    ],
+    "extends": [
+      "Partial<CreateBookDto>"
+    ]
   },
   "ProcessedElementDto": {
     "isType": false,
@@ -812,8 +863,8 @@
       },
       {
         "name": "text",
-        "type": "string",
-        "fullType": "text: string",
+        "type": "null | string",
+        "fullType": "text: null | string",
         "optional": false
       },
       {
@@ -891,119 +942,31 @@
       },
       {
         "name": "startId",
-        "type": "string",
-        "fullType": "startId: string",
+        "type": "null | string",
+        "fullType": "startId: null | string",
         "optional": false
       },
       {
         "name": "endId",
-        "type": "string",
-        "fullType": "endId: string",
+        "type": "null | string",
+        "fullType": "endId: null | string",
         "optional": false
       },
       {
         "name": "startType",
-        "type": "StartType",
-        "fullType": "startType: StartType",
+        "type": "null | \"text\" | \"bookText\"",
+        "fullType": "startType: null | \"text\" | \"bookText\"",
         "optional": false
       },
       {
         "name": "endType",
-        "type": "StartType",
-        "fullType": "endType: StartType",
+        "type": "null | \"text\" | \"bookText\"",
+        "fullType": "endType: null | \"text\" | \"bookText\"",
         "optional": false
       }
     ],
     "extends": [
       "CurveElementSkeletonDto"
-    ]
-  },
-  "HighlightDto": {
-    "isType": false,
-    "name": "HighlightDto",
-    "properties": [
-      {
-        "name": "id",
-        "type": "string",
-        "fullType": "id: string",
-        "optional": false
-      },
-      {
-        "name": "startingX",
-        "type": "number",
-        "fullType": "startingX: number",
-        "optional": false
-      },
-      {
-        "name": "startingY",
-        "type": "number",
-        "fullType": "startingY: number",
-        "optional": false
-      },
-      {
-        "name": "endX",
-        "type": "number",
-        "fullType": "endX: number",
-        "optional": false
-      },
-      {
-        "name": "endY",
-        "type": "number",
-        "fullType": "endY: number",
-        "optional": false
-      }
-    ],
-    "extends": []
-  },
-  "UpdateBookDto": {
-    "isType": false,
-    "name": "UpdateBookDto",
-    "properties": [
-      {
-        "name": "bookElements",
-        "type": "ProcessedElementDto[]",
-        "fullType": "bookElements: ProcessedElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "canvaElements",
-        "type": "(RectElementDto | TextElementDto)[]",
-        "fullType": "canvaElements: RectElementDto | TextElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "curveElements",
-        "type": "ArrowElementDto[]",
-        "fullType": "curveElements: ArrowElementDto[]",
-        "optional": true
-      },
-      {
-        "name": "highlights",
-        "type": "HighlightDto[]",
-        "fullType": "highlights: HighlightDto[]",
-        "optional": true
-      },
-      {
-        "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
-        "optional": true
-      },
-      {
-        "name": "scale",
-        "type": "number",
-        "fullType": "scale: number",
-        "optional": true
-      },
-      {
-        "name": "offsetPosition",
-        "type": "{ x: number; y: number; }",
-        "fullType": "offsetPosition: { x: number; y: number; }",
-        "optional": true
-      }
-    ],
-    "extends": [
-      "Partial<CreateBookDto>"
     ]
   },
   "OffsetPositionDto": {
@@ -1067,8 +1030,8 @@
       },
       {
         "name": "liked",
-        "type": "boolean",
-        "fullType": "liked: boolean",
+        "type": "false | true",
+        "fullType": "liked: false | true",
         "optional": false
       },
       {

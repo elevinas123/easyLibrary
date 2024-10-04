@@ -1,4 +1,11 @@
 {
+  "POST /user": "User",
+  "GET /user": "User[]",
+  "GET /user/findOneByJwtPayload": "User",
+  "GET /user/:id": "User",
+  "GET /user/:username": "User",
+  "PUT /user/:id": "User",
+  "DELETE /user/:id": "User",
   "POST /auth/login": "{ access_token: string; user: any; }",
   "POST /auth/register": "User",
   "GET /book": "Book[]",
@@ -10,12 +17,5 @@
   "GET /bookshelve": "Bookshelve[]",
   "POST /bookshelve": "Bookshelve",
   "PUT /bookshelve/:id": "Bookshelve",
-  "DELETE /bookshelve/:id": "Bookshelve",
-  "POST /user": "User",
-  "GET /user": "User[]",
-  "GET /user/findOneByJwtPayload": "User",
-  "GET /user/:id": "User",
-  "GET /user/:username": "User",
-  "PUT /user/:id": "User",
-  "DELETE /user/:id": "User"
+  "DELETE /bookshelve/:id": "Bookshelve"
 }
