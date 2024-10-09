@@ -29,7 +29,6 @@ export type HeadingObject = {
 export type HtmlElementObject = {
     type: string; // The tag name of the element (e.g., 'p', 'h1', 'div', etc.)
     id: string;
-    tocId: string;
     text: string; // Store the full text of the element
     highlights: HighlightRange[]; // Store highlighted ranges within the text
     style?: React.CSSProperties;
@@ -139,34 +138,25 @@ async function parseOpfFile(zip: JSZip, opfFilePath: string) {
     }
     return { content: spineItems, metaData: metaData, coverImage };
 }
-
 export function preprocessEpub(epub: string[]): HtmlObject[] {
     return epub.map((html, index) => {
         const $ = load(html);
 
         const elements = $("body")
-            .children()
+            .find("*") // Use find to traverse all elements within the body
             .map((i, elem) => {
                 const textContent = $(elem).text();
-                const id = `${elem.tagName}-${index}-${i}`;
+                // Preserve existing id or generate a new one
+                const id =
+                    $(elem).attr("id") || `${elem.tagName}-${index}-${i}`;
 
-                $(elem).attr("id", id); // Assign the id back to the element
-
-                let tocId = "";
-                if (
-                    elem.children.length > 1 &&
-                    elem.children[0]?.name === "a" &&
-                    elem.children[0]?.attribs.id
-                ) {
-                    tocId = elem.children[0].attribs.id;
-                }
+                // No need to set the id back to the element unless required
 
                 return {
                     type: elem.tagName,
                     id,
                     tagName: elem.tagName,
                     text: textContent,
-                    tocId: tocId,
                     highlights: [],
                 } as HtmlElementObject;
             })

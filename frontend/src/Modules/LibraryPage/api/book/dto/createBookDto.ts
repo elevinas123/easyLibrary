@@ -20,6 +20,7 @@ import { Types } from "mongoose";
 import { HighlightDto } from "./highlightsDto/highlights.dto";
 import { BookTextElementDto } from "./canvaElementsDto/elements/bookTextElement.dto";
 import { CanvaElementType } from "../schema/canvaElements/canvaElementSkeleton.schema";
+import { ChaptersDataDto } from "./chaptersData/chaptersData.dto";
 
 export class CreateBookDto implements Omit<BookType, "_id"> {
     @IsString() @IsNotEmpty() title!: string;
@@ -66,4 +67,9 @@ export class CreateBookDto implements Omit<BookType, "_id"> {
     @ValidateNested()
     @Type(() => OffsetPositionDto)
     offsetPosition!: OffsetPositionDto;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ChaptersDataDto) // Second type
+    chaptersData!: ChaptersDataDto[];
 }

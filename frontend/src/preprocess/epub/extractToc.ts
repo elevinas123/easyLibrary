@@ -109,20 +109,19 @@ async function parseEpub3Nav(zip: JSZip, navFilePath: string): Promise<Toc[]> {
     });
     return toc;
 }
-
 function parseNavChildren($: CheerioAPI, listItem: Element): Toc[] {
     const children: Toc[] = [];
     $(listItem)
         .find("ol > li")
         .each((_, child) => {
             const href = $(child).find("a").attr("href");
-            const id = href?.split("#")[1] || "";
+            const fragment = href?.split("#")[1] || "";
             const title = $(child).find("a").text();
 
             children.push({
                 title,
                 href,
-                id,
+                id: fragment,
                 children: parseNavChildren($, child),
             });
         });

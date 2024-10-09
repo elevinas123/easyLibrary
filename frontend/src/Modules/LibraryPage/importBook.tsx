@@ -15,6 +15,7 @@ import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
+import { ChaptersDataType } from "./api/book/schema/chaptersData/chaptersData.schema";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -26,6 +27,7 @@ const importBook = async ({
     userId,
     accessToken,
     coverImage,
+    chaptersData,
     setBooksLoading,
 }: {
     bookElements: ProcessedElement[];
@@ -33,12 +35,7 @@ const importBook = async ({
     userId: string;
     accessToken: string | null;
     coverImage: Blob | null;
-    chaptersData: {
-        id: string;
-        title: string;
-        href: string | undefined;
-        indentLevel: number | null;
-    }[];
+    chaptersData: ChaptersDataType[];
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
     if (!accessToken) {
@@ -62,6 +59,7 @@ const importBook = async ({
         url = data.secure_url;
         console.log("data", data);
     }
+
     const dataSending = {
         userId: userId,
         title: metaData["dc:title"] || "No Title",
@@ -76,6 +74,7 @@ const importBook = async ({
         curveElements: [],
         highlights: [],
         offsetPosition: { x: 0, y: 0 },
+        chaptersData: chaptersData,
         scale: 1,
     };
     const data = await apiFetch(
@@ -148,12 +147,18 @@ export default function ImportBook({
             24,
             800
         );
+        const chapterData = elements.chaptersData.map((chapter) => ({
+            ...chapter,
+            id:
+                processedElements.find((element) => element.id === chapter.id)
+                    ?.lineY + "" || "someId",
+        }));
         mutation.mutate({
             bookElements: processedElements,
             metaData: elements.metaData,
             userId: user._id,
             accessToken: accessToken,
-            chaptersData: elements.chaptersData,
+            chaptersData: chapterData,
             coverImage: elements.coverImage,
             setBooksLoading,
         });
@@ -162,7 +167,10 @@ export default function ImportBook({
     const handleEpubChange = async (file: File) => {
         try {
             const { paragraphs, metaData, coverImage } = await readEpub(file);
+            console.log("epubElements", paragraphs);
             const epubElements = preprocessEpub(paragraphs);
+            console.log("epubElements", epubElements);
+
             // Extract ToC using preprocessed content
             const zip = await JSZip.loadAsync(file);
             const opfFilePath = await findOpfFilePath(zip);
@@ -174,11 +182,12 @@ export default function ImportBook({
 
             // Convert ToC to chapters data
             const chaptersData = toc.map((item) => ({
-                id: item.id, // This is now the correct ID of the element
+                id: item.id || "someId", // Use the fragment identifier as the id
                 title: item.title,
-                href: item.href,
+                href: item.href || null,
                 indentLevel: calculateIndentLevel(item.href),
             }));
+
             return { epubElements, metaData, coverImage, chaptersData };
         } catch (error) {
             console.error("Failed to load EPUB", error);

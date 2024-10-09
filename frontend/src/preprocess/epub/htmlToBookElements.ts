@@ -40,7 +40,8 @@ const processBookElement = (
             element,
             currentIndex,
             fontSize,
-            width
+            width,
+            element.id
         );
         currentIndex += lines.length;
         return lines;
@@ -53,8 +54,12 @@ const processTextIntoLines = (
     element: HtmlElementObject,
     indexStart: number,
     fontSize: number,
-    width: number
+    width: number,
+    id: string
 ) => {
+    if (id.split("-").length === 1) {
+        element.text = "Chapter " + id + " " + element.text;
+    }
     let textLines: string[][] = [[]];
     let currentLineWidth = 0;
     for (let i = 0, j = 0; i < element.text.length; i++) {
@@ -79,5 +84,6 @@ const processTextIntoLines = (
             lineX: 0,
             lineWidth: line.length * fontSize,
             lineY: lineIndex + indexStart,
+            id: id,
         }));
 };

@@ -17,6 +17,7 @@ import {
     OffsetPositionSchema,
     OffsetPositionType,
 } from "./offsetPosition/offsetPosition.schema";
+import { ChaptersDataSchema, ChaptersDataType } from "./chaptersData/chaptersData.schema";
 
 export type BookDocument = Book & Document;
 
@@ -80,6 +81,12 @@ export class Book implements Omit<BookType, "_id"> {
         type: { offsetPosition: OffsetPositionSchema },
     })
     offsetPosition!: OffsetPositionType;
+
+    @Prop({
+        type: [ChaptersDataSchema],
+        required: true,
+    })
+    chaptersData!: ChaptersDataType[];
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);
