@@ -16,6 +16,7 @@ import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
 import { BookType } from "./api/book/schema/book.schema";
 import BookCard from "./BookCard";
+import BookCardSkeleton from "./BookCardSkeleton";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -160,7 +161,7 @@ export default function LibraryPage() {
                         />
                     ))}
                     {booksLoading.map((bookId) => (
-                        <div>Loading...</div>
+                        <BookCardSkeleton key={bookId} />
                     ))}
                 </div>
             </main>
