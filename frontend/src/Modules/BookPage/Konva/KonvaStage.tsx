@@ -171,6 +171,10 @@ export default function KonvaStage({
         }
     };
 
+    const offsetPositionRef = useRef({ x: 0, y: 0 });
+    useEffect(() => {
+        offsetPositionRef.current = offsetPosition;
+    }, [offsetPosition]);
     const handleMouseMoveForPan = () => {
         const stage = stageRef.current;
         if (!stage || !isDragging) return;
@@ -329,10 +333,13 @@ export default function KonvaStage({
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
 
-    const smoothScroll = (targetX: number, targetY: number) => {
-        const duration = 500; // Duration of the scroll animation in milliseconds
+    const smoothScroll = (
+        targetX: number,
+        targetY: number,
+        duration: number
+    ) => {
         const start = performance.now();
-        const initialOffset = { ...offsetPosition };
+        const initialOffset = { ...offsetPositionRef.current };
         const deltaX = targetX - initialOffset.x;
         const deltaY = targetY - initialOffset.y;
 
@@ -357,9 +364,8 @@ export default function KonvaStage({
         if (chapterId === "someId") return;
         console.log("chapterId", chapterId);
         const targetY = -parseInt(chapterId) * fontSize;
-        smoothScroll(0, targetY);
+        smoothScroll(0, targetY, 500);
     };
-    
 
     return (
         <>
