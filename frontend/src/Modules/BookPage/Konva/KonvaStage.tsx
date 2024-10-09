@@ -49,13 +49,10 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     const [canvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
+    const dragPosRef = useRef({ x: 0, y: 0 });
+
     useEffect(() => {}, [canvaElements]);
 
-    // Ref to track the current animation frame
-    const [dragStartPos, setDragStartPos] = useState<{
-        x: number;
-        y: number;
-    } | null>(null);
     const [visibleArea, setVisibleArea] = useState<VisibleArea>({
         x: 0,
         y: 0,
@@ -159,35 +156,34 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         }
     };
 
-    // Pan Handlers
     const handleMouseDownForPan = () => {
         const stage = stageRef.current;
         setIsDragging(true);
         const pos = stage.getPointerPosition();
         if (pos) {
-            setDragStartPos(pos); // Store the initial position
+            dragPosRef.current = pos;
         }
     };
 
     const handleMouseMoveForPan = () => {
         const stage = stageRef.current;
-        if (!isDragging || !dragStartPos) return;
+        if (!stage || !isDragging) return;
 
         const pointer = stage.getPointerPosition();
-        if (!pointer) return;
+        if (!pointer || !dragPosRef.current) return;
 
-        // Calculate delta movement adjusted by scale
-        const dx = (pointer.x - dragStartPos.x) / scale;
-        const dy = (pointer.y - dragStartPos.y) / scale;
-
-        // Update offset position
+        // Calculate deltas by comparing pointer position with the stage's current position
+        const dx = (pointer.x - dragPosRef.current.x) / scale;
+        const dy = (pointer.y - dragPosRef.current.y) / scale;
+        dragPosRef.current = {
+            x: dragPosRef.current.x + dx * scale,
+            y: dragPosRef.current.y + dy * scale,
+        };
+        // Update offset position based on deltas
         setOffsetPosition((prev) => ({
             x: prev.x + dx * scale,
             y: prev.y + dy * scale,
         }));
-
-        // Update drag start position
-        setDragStartPos(pointer);
 
         stage.batchDraw();
     };
