@@ -114,12 +114,12 @@ function HighlightLayer(
                 }
             },
         }),
-        [highlightElements, hoveredItems, activeTool, scale, offsetPosition]
+        [highlightElements, hoveredItems, activeTool, scale, offsetPosition, fontSize]
     );
 
     useEffect(() => {
         setHighlightElements(createHighlightElements());
-    }, [highlights]);
+    }, [highlights, fontSize]);
     useEffect(() => {
         setVirtualizedHighlights(
             highlightElements.flatMap((highlightElement) =>
@@ -144,16 +144,17 @@ function HighlightLayer(
                     ))
             )
         );
-    }, [visibleArea, highlightElements]);
+    }, [visibleArea, highlightElements, fontSize]);
 
     const createHighlightElements = (): FullHighlight[] => {
+        console.log("creating highlights", fontSize);
         return highlights.map((highlight) => {
             const points: HighlightPoints[] = [];
             const range = highlight.endY - highlight.startingY;
             if (range === 0) {
                 const letterWidth =
                     measureTextWidth(
-                        processedElements[highlight.startingY].text
+                        processedElements[highlight.startingY].text, fontSize
                     ) / processedElements[highlight.startingY].text.length;
                 let currentX = highlight.startingX * letterWidth;
                 let lineWidth =
@@ -198,7 +199,7 @@ function HighlightLayer(
                 points.push({ x: 0, y: 0 });
                 const letterWidth =
                     measureTextWidth(
-                        processedElements[highlight.startingY].text
+                        processedElements[highlight.startingY].text, fontSize
                     ) / processedElements[highlight.startingY].text.length;
                 let currentX = 0;
                 if (i === 0) {

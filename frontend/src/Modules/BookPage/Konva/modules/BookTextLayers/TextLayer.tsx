@@ -21,6 +21,7 @@ import {
     highlightsAtom,
     offsetPositionAtom,
     scaleAtom,
+    settingsAtom,
 } from "../../konvaAtoms";
 
 type TextLayerProps = {
@@ -50,7 +51,7 @@ function TextLayer(
     );
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
-
+    const [settings] = useAtom(settingsAtom);
     useImperativeHandle(
         ref,
         () => ({
@@ -133,6 +134,7 @@ function TextLayer(
             activeTool,
             scale,
             offsetPosition,
+            settings,
         ]
     );
 
@@ -152,7 +154,7 @@ function TextLayer(
 
     useEffect(() => {
         setTextElements(createTextElements());
-    }, [processedElements]);
+    }, [processedElements, settings]);
 
     useEffect(() => {
         console.log("virtualizing", visibleArea);
@@ -179,7 +181,7 @@ function TextLayer(
                     />
                 ))
         );
-    }, [visibleArea, textElements, offsetPosition, scale]);
+    }, [visibleArea, textElements, offsetPosition, scale, settings]);
     const createTextElements = (): BookTextElementType[] => {
         // Process the text elements from the book
 
@@ -193,11 +195,11 @@ function TextLayer(
                 x: textElement.lineX + 600,
                 y: textElement.lineY * fontSize + 200,
                 width: textElement.lineWidth,
-                height: fontSize,
+                height: fontSize * settings.lineHeight,
                 text: textElement.text,
                 fontSize: fontSize,
-                fill: "white",
-                fontFamily: "Courier New",
+                fill: settings.textColor,
+                fontFamily: settings.fontFamily,
                 strokeColor: "black",
                 strokeWidth: 1,
                 opacity: 1,

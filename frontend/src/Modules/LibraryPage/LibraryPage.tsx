@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Heart, Moon, Sun, Trash2 } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "../../components/ui/card";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { useToast } from "../../hooks/use-toast";
 import { useAuth } from "../../hooks/userAuth";
-import BookInfoPage from "./BookInfoPage";
-import Sidebar from "./Sidebar";
 import { BookType } from "./api/book/schema/book.schema";
 import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
+import BookInfoPage from "./BookInfoPage";
+import Sidebar from "./Sidebar";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {

@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import {
     ArrowElementType,
     CanvaElementType,
-    HighlightType
+    HighlightType,
 } from "../../../endPointTypes/types";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
@@ -38,3 +38,12 @@ export const canvaElementsAtom = atom<CanvaElementType[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);
 export const selectedItemsIdsAtom = atom<string[]>([]);
 export const scaleAtom = atom(1);
+
+export const settingsAtom = atom({
+    fontSize: 16,
+    fontFamily: "Arial",
+    lineHeight: 3,
+    backgroundColor: "#111111",
+    textColor: "#ffffff",
+    darkMode: false,
+});

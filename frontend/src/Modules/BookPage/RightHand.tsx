@@ -1,43 +1,45 @@
+// RightHand.tsx
+
 import { useState } from "react";
 import Notes from "./Notes";
 import Settings from "./Settings";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "../../components/ui/tabs";
 
-type RightHandProps = {};
-
-export default function RightHand({}: RightHandProps) {
+export default function RightHand() {
     const [selected, setSelected] = useState<"notes" | "settings">("notes");
 
-    const allItems = {
-        notes: Notes,
-        settings: Settings,
-    };
-    const SelectedItem = allItems[selected];
-
     return (
-        <div className="flex flex-col w-96 bg-zinc-900 text-gray-300">
-            <div className="border-b border-gray-700 flex flex-row h-12 w-full items-center">
-                <button
-                    className={`p-4 ${
-                        selected === "notes" ? "text-gray-300" : "text-gray-500"
-                    }`}
-                    onClick={() => setSelected("notes")}
+        <div className="flex flex-col w-96 bg-white border-l border-gray-200 h-screen">
+            <Tabs
+                value={selected}
+                onValueChange={(value) =>
+                    setSelected(value as "notes" | "settings")
+                }
+                className="flex flex-col h-full"
+            >
+                <TabsList className="flex-shrink-0">
+                    <TabsTrigger value="notes" className="flex-1">
+                        Notes
+                    </TabsTrigger>
+                    <TabsTrigger value="settings" className="flex-1">
+                        Settings
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value="notes" className="flex-grow overflow-auto">
+                    <Notes />
+                </TabsContent>
+                <TabsContent
+                    value="settings"
+                    className="flex-grow overflow-auto p-4"
                 >
-                    Notes
-                </button>
-                <button
-                    className={`p-4 ${
-                        selected === "settings"
-                            ? "text-gray-300"
-                            : "text-gray-500"
-                    }`}
-                    onClick={() => setSelected("settings")}
-                >
-                    Settings
-                </button>
-            </div>
-            <div className="p-4">
-                <SelectedItem  />
-            </div>
+                    <Settings />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

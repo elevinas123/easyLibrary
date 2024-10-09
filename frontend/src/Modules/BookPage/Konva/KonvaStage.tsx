@@ -14,6 +14,7 @@ import {
     offsetPositionAtom,
     scaleAtom,
     selectedItemsIdsAtom,
+    settingsAtom,
 } from "./konvaAtoms";
 import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
@@ -41,7 +42,7 @@ export default function KonvaStage({
     bookElements,
     chaptersData,
 }: KonvaStageProps) {
-    const fontSize = 24;
+    const [settings, setSettings] = useAtom(settingsAtom);
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
     const stageRef = useRef<any>(null);
@@ -56,7 +57,6 @@ export default function KonvaStage({
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
-
     useEffect(() => {}, [canvaElements]);
 
     const [visibleArea, setVisibleArea] = useState<VisibleArea>({
@@ -363,8 +363,8 @@ export default function KonvaStage({
     const handleChapterClick = (chapterId: string) => {
         if (chapterId === "someId") return;
         console.log("chapterId", chapterId);
-        const targetY = -parseInt(chapterId) * fontSize;
-        smoothScroll(0, targetY, 500);
+        const targetY = -parseInt(chapterId) * settings.fontSize;
+        smoothScroll(0, targetY * scale, 500);
     };
 
     return (
@@ -380,6 +380,7 @@ export default function KonvaStage({
 
                     <Stage
                         width={window.innerWidth}
+                        style={{ backgroundColor: settings.backgroundColor,  }}
                         height={window.innerHeight}
                         ref={stageRef}
                         scaleX={scale}
@@ -393,7 +394,7 @@ export default function KonvaStage({
                         <MainLayer
                             visibleArea={visibleArea}
                             bookElements={bookElements}
-                            fontSize={fontSize}
+                            fontSize={settings.fontSize}
                             width={width}
                             ref={mainLayerRef}
                         />

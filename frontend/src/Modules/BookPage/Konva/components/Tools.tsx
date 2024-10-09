@@ -1,20 +1,27 @@
-import { BiRectangle } from "react-icons/bi";
-import {
-    FaArrowRight,
-    FaCircle,
-    FaEraser,
-    FaFont,
-    FaHandPaper,
-    FaImage,
-    FaPalette,
-    FaSlash
-} from "react-icons/fa";
-import { FiMousePointer } from "react-icons/fi";
-
 import { useAtom } from "jotai";
-import { CgShapeRhombus } from "react-icons/cg";
-import { Button } from "../../../../components/ui/button";
 import { activeToolAtom } from "../konvaAtoms";
+
+import {
+    Hand,
+    MousePointer,
+    Square,
+    Diamond,
+    Circle,
+    ArrowRight,
+    Minus,
+    Pipette,
+    Type,
+    Image,
+    Eraser,
+} from "lucide-react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@radix-ui/react-tooltip";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { Button } from "../../../../components/ui/button";
 
 export type DrawingToolNames =
     | "Pan"
@@ -29,53 +36,69 @@ export type DrawingToolNames =
     | "Image"
     | "Eraser";
 
-type DrawingTools = {
+type DrawingTool = {
     name: DrawingToolNames;
     icon: JSX.Element;
 };
 
 export default function Tools() {
-    // Define the active tool state
     const [activeTool, setActiveTool] = useAtom(activeToolAtom);
 
-    // Define functions to handle tool activation
     const activateTool = (tool: DrawingToolNames) => {
         setActiveTool(tool);
         console.log(`${tool} tool activated`);
     };
 
-    const tools: DrawingTools[] = [
-        { name: "Pan", icon: <FaHandPaper /> },
-        { name: "Select", icon: <FiMousePointer /> },
-        { name: "Rectangle", icon: <BiRectangle /> },
-        { name: "Rhombus", icon: <CgShapeRhombus /> },
-        { name: "Circle", icon: <FaCircle /> },
-        { name: "Arrow", icon: <FaArrowRight /> },
-        { name: "Line", icon: <FaSlash /> },
-        { name: "Color Picker", icon: <FaPalette /> },
-        { name: "Text", icon: <FaFont /> },
-        { name: "Image", icon: <FaImage /> },
-        { name: "Eraser", icon: <FaEraser /> },
+    const tools: DrawingTool[] = [
+        { name: "Pan", icon: <Hand size={20} /> },
+        { name: "Select", icon: <MousePointer size={20} /> },
+        { name: "Rectangle", icon: <Square size={20} /> },
+        { name: "Rhombus", icon: <Diamond size={20} /> },
+        { name: "Circle", icon: <Circle size={20} /> },
+        { name: "Arrow", icon: <ArrowRight size={20} /> },
+        { name: "Line", icon: <Minus size={20} /> },
+        { name: "Color Picker", icon: <Pipette size={20} /> },
+        { name: "Text", icon: <Type size={20} /> },
+        { name: "Image", icon: <Image size={20} /> },
+        { name: "Eraser", icon: <Eraser size={20} /> },
     ];
 
     return (
-        <div className=" z-50 absolute top-10 left-1/2 transform bg-zinc-900 -translate-x-1/2 flex flex-row  items-center  p-2 rounded-lg shadow-lg space-x-2">
-            {tools.map((tool) => (
-                <Button
-                    size="icon"
-                    key={tool.name}
-                    className={`hover:cursor-pointer flex justify-center items-center w-10 h-10  rounded-lg  bg-gray-900  text-white hover:bg-zinc-800
-                        ${
-                            activeTool === tool.name &&
-                            "bg-cyan-600 hover:bg-cyan-800"
-                        }
-                    `}
-                    onClick={() => activateTool(tool.name)}
-                    title={tool.name}
-                >
-                    {tool.icon}
-                </Button>
-            ))}
-        </div>
+        <TooltipProvider>
+            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+                <div className="bg-card text-card-foreground rounded-lg shadow-lg p-2">
+                    <ScrollArea className="w-full whitespace-nowrap">
+                        <div className="flex space-x-1">
+                            {tools.map((tool) => (
+                                <Tooltip key={tool.name}>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant={
+                                                activeTool === tool.name
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            size="icon"
+                                            onClick={() =>
+                                                activateTool(tool.name)
+                                            }
+                                            className="w-10 h-10"
+                                        >
+                                            {tool.icon}
+                                            <span className="sr-only">
+                                                {tool.name}
+                                            </span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom" >
+                                        <p className="text-gray-300 mt-2">{tool.name}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </div>
+        </TooltipProvider>
     );
 }

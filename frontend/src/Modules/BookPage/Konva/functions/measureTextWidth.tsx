@@ -3,8 +3,8 @@ import Konva from "konva";
 // Function to measure the width of a given text using Konva's Text API
 export const measureTextWidth = (
     text: string,
-    fontFamily = "Courier New",
-    fontSize = 24
+    fontSize = 24,
+    fontFamily = "Courier New"
 ) => {
     const tempText = new Konva.Text({
         text: text,
