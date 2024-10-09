@@ -28,10 +28,11 @@ export default function BookCard({
     selectBook,
 }: BookCardProps) {
     const [isLiked, setIsLiked] = useState(false);
-    const navigate = useNavigate(); // For navigation
     const [hovered, setHovered] = useState(false);
-    const handleGoToBook = () => {
-        // Navigate to the book's detail page
+    const navigate = useNavigate();
+
+    const handleGoToBook = (e: React.MouseEvent) => {
+        e.stopPropagation();
         navigate(`/book?id=${book._id}`);
     };
 
@@ -40,23 +41,26 @@ export default function BookCard({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onClick={() => selectBook(book._id)}
-            className="bg-zinc-700 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-transform duration-300 m-4 w-80"
+            className="bg-zinc-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
         >
-            <div className="relative">
+            <div className="relative aspect-[2/3]">
                 <img
                     src={book.imageUrl}
                     alt={book.title}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2 flex flex-row">
+                <div className="absolute top-2 right-2 flex space-x-2">
                     <DeleteDialog
                         hovered={hovered}
                         book={book}
                         deleteBook={deleteBook}
                     />
                     <button
-                        className=" text-gray-100 text-2xl hover:text-red-500 transition-colors"
-                        onClick={() => setIsLiked((liked) => !liked)}
+                        className="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition-colors"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsLiked((liked) => !liked);
+                        }}
                         aria-label={isLiked ? "Unlike" : "Like"}
                     >
                         {isLiked ? (
@@ -68,9 +72,7 @@ export default function BookCard({
                 </div>
             </div>
             <div className="p-4">
-                <h2 className="text-xl font-semibold text-gray-100 truncate">
-                    {book.title}
-                </h2>
+                <h2 className="text-xl font-semibold truncate">{book.title}</h2>
                 <p className="text-sm text-gray-400 mt-1">by {book.author}</p>
                 <p className="text-sm text-gray-400 mt-1">
                     Genres: {book.genre.join(", ")}
@@ -78,8 +80,6 @@ export default function BookCard({
                 <p className="text-sm text-gray-400 mt-1">
                     Added on: {new Date(book.dateAdded).toLocaleDateString()}
                 </p>
-
-                {/* Go to Book Button */}
                 <button
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                     onClick={handleGoToBook}

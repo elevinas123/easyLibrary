@@ -15,34 +15,31 @@ export default function BookCards({
     deleteBook,
     selectBook,
 }: BookCardsProps) {
-    // Generate actual book cards if bookData is available
-    const bookCards = bookData?.map((book, index) => (
+    const bookCards = bookData?.map((book) => (
         <BookCard
             book={book}
-            key={index}
+            key={book._id}
             deleteBook={deleteBook}
             selectBook={selectBook}
         />
     ));
 
-    // Generate skeletons for loading state
     const bookSkeletons = booksLoading.map((_, index) => (
         <BookCardSkeleton key={`skeleton-${index}`} />
     ));
 
     return (
-        <div className="bg-zinc-800 min-h-screen p-8">
-            <h1 className="text-3xl font-bold text-gray-100 mb-8">Library</h1>
-            <div className="flex flex-wrap justify-center">
-                {/* Render skeletons first if loading */}
-
-                {/* Render book cards if available */}
-                {bookCards && bookCards.length > 0
-                    ? bookCards
-                    : booksLoading.length === 0 && (
-                          <p className="text-gray-400">No books available.</p>
-                      )}
+        <div>
+            <h1 className="text-4xl font-bold mb-8">Your Library</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {bookCards}
                 {bookSkeletons}
+                {bookData?.length === 0 && booksLoading.length === 0 && (
+                    <p className="col-span-full text-center text-gray-400 text-lg">
+                        No books available. Start by adding some books to your
+                        library!
+                    </p>
+                )}
             </div>
         </div>
     );

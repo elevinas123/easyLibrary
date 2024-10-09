@@ -1,16 +1,37 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { apiFetch } from "../../endPointTypes/apiClient";
-import { Book } from "../../endPointTypes/types";
-import { useToast } from "../../hooks/use-toast";
-import { useAuth } from "../../hooks/userAuth";
-import BookCards from "./BookCards";
+
+import { BookOpen, Heart, Moon, Sun, Trash2 } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "../../components/ui/card";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
+import { BookType } from "./api/book/schema/book.schema";
+import { apiFetch } from "../../endPointTypes/apiClient";
+import { useToast } from "../../hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../../hooks/userAuth";
 
-type LibraryPageProps = {
-    // Define your prop types here
+type SidebarButtonProps = {
+    icon: React.ElementType;
+    label: string;
+    isCollapsed: boolean;
 };
+
+const SidebarButton = ({
+    icon: Icon,
+    label,
+    isCollapsed,
+}: SidebarButtonProps) => (
+    <button className="flex items-center w-full p-4 hover:bg-primary/10 transition-colors">
+        <Icon size={24} />
+        {!isCollapsed && <span className="ml-4">{label}</span>}
+    </button>
+);
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -35,19 +56,18 @@ const fetchBooks = async (userId: string | undefined) => {
     );
     return data.data;
 };
-
-export default function LibraryPage({}: LibraryPageProps) {
+export default function LibraryPage() {
     const { accessToken, user } = useAuth();
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [infoOpen, setInfoOpen] = useState(true);
+    const [selectedBook, setSelectedBook] = useState<null | BookType>(null);
+    const [mounted, setMounted] = useState(false);
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
     const [booksLoading, setBooksLoading] = useState<string[]>([]);
-    // Fetch books only if the user is logged in
-    const queryClient = useQueryClient();
-    const [bookSelected, setBookSelected] = useState<string | null>(null);
+
     const { toast } = useToast();
-    const {
-        data: bookData,
-        isLoading,
-        error,
-    } = useQuery({
+    const { data: bookData } = useQuery({
         queryKey: ["book"],
         queryFn: () => fetchBooks(user?._id),
 
@@ -56,90 +76,98 @@ export default function LibraryPage({}: LibraryPageProps) {
     useEffect(() => {
         setBooksLoading((prev) => prev.slice(0, prev.length - 1));
     }, [bookData]);
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-    const deleteBook = async (bookId: string) => {
-        try {
-            const bookDeleted = await apiFetch(
-                "DELETE /book/:id",
-                { params: { id: bookId } },
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            if (bookDeleted.status === 200) {
-                queryClient.invalidateQueries({ queryKey: ["book"] });
-                toast({
-                    title: "Book Deleted successfully",
-                    duration: 5000,
-                });
-            } else {
-                toast({
-                    title: "Failed to delete book",
-                    duration: 5000,
-                });
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    const selectBook = (bookId: string) => {
-        setBookSelected(bookId);
-    };
-    if (error) {
-        return <div>An error occurred: {error.message}</div>;
-    }
-    const updateBook = async (updatedBook: Book) => {
-        try {
-            const bookUpdated = await apiFetch(
-                "PATCH /book/:id",
-                { params: { id: updatedBook._id }, body: updatedBook },
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            if (bookUpdated.status === 200) {
-                queryClient.invalidateQueries({ queryKey: ["book"] });
-                toast({
-                    title: "Book Updated successfully",
-                    duration: 5000,
-                });
-            } else {
-                toast({
-                    title: "Failed to update book",
-                    duration: 5000,
-                });
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    const book = bookData?.filter((book) => book._id === bookSelected);
+    useEffect(() => setMounted(true), []);
+    if (!mounted) return null;
+
+    const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+    if (!bookData) return null;
     return (
-        <div className="bg-zinc-800 flex flex-row h-screen">
-            <Sidebar setBooksLoading={setBooksLoading} />
-            <div className="flex flex-row flex-1">
-                <div className="flex-1 overflow-y-auto">
-                    <BookCards
-                        bookData={bookData}
-                        booksLoading={booksLoading}
-                        deleteBook={deleteBook}
-                        selectBook={selectBook}
-                    />
+        <div className="flex h-screen bg-background">
+            <Sidebar
+                toggleCollapse={toggleCollapse}
+                isCollapsed={isCollapsed}
+            />
+            {/* Main Content */}
+            <main
+                className={`flex-1 p-6 overflow-auto transition-all duration-300 ease-in-out `}
+            >
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">My Library</h1>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                            setTheme(theme === "dark" ? "light" : "dark")
+                        }
+                    >
+                        {theme === "dark" ? (
+                            <Sun className="h-[1.2rem] w-[1.2rem]" />
+                        ) : (
+                            <Moon className="h-[1.2rem] w-[1.2rem]" />
+                        )}
+                        <span className="sr-only">Toggle theme</span>
+                    </Button>
                 </div>
-                {book && book.length > 0 && (
-                    <BookInfoPage
-                        book={book[0]}
-                        deleteBook={deleteBook}
-                        updateBook={updateBook}
-                    />
-                )}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {bookData.map((book) => (
+                        <Card key={book._id} className="flex flex-col">
+                            <CardHeader className="relative p-0">
+                                <img
+                                    src={book.imageUrl}
+                                    alt={book.title}
+                                    className="w-full h-96 object-cover rounded-t-lg"
+                                />
+                                <div className="absolute top-2 right-2 flex space-x-2">
+                                    <Button
+                                        variant="secondary"
+                                        size="icon"
+                                        className="rounded-full"
+                                    >
+                                        <Heart className="h-4 w-4" />
+                                        <span className="sr-only">Like</span>
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        className="rounded-full"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sr-only">Delete</span>
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="flex-1 p-4">
+                                <h3 className="text-lg font-semibold">
+                                    {book.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {book.author}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Added: {book.dateAdded}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Genre: {book.genre}
+                                </p>
+                            </CardContent>
+                            <CardFooter className="p-4">
+                                <Button
+                                    className="w-full"
+                                    onClick={() => setSelectedBook(book)}
+                                >
+                                    <BookOpen className="mr-2 h-4 w-4" /> Read
+                                    Book
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            </main>
+            <BookInfoPage
+                infoOpen={infoOpen}
+                selectedBook={selectedBook}
+                setInfoOpen={setInfoOpen}
+            />
         </div>
     );
 }

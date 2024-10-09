@@ -1,78 +1,102 @@
-// src/components/Sidebar.jsx
-import { useState } from "react";
+import React from "react";
 import {
-    FiBook,
-    FiHome,
-    FiMenu,
-    FiSettings,
-    FiSliders,
-    FiStar,
-    FiUser,
-} from "react-icons/fi";
-import { twMerge } from "tailwind-merge"; // Optional: for conditional classNames
-import ImportBook from "./importBook";
+    Home,
+    Library,
+    Star,
+    Settings,
+    Sliders,
+    User,
+    Plus,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { Button } from "../../components/ui/button";
 
 type SidebarProps = {
-    setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
+    isCollapsed: boolean;
+    toggleCollapse: () => void;
 };
-export default function Sidebar({setBooksLoading}: SidebarProps) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const toggleCollapse = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-    
+const SidebarButton = ({
+    icon: Icon,
+    label,
+    isCollapsed,
+}: {
+    icon: React.ElementType;
+    label: string;
+    isCollapsed: boolean;
+}) => (
+    <Button variant="ghost" size="sm" className="w-full justify-start">
+        <Icon size={20} />
+        {!isCollapsed && <span className="ml-2">{label}</span>}
+    </Button>
+);
 
+export default function Sidebar({ isCollapsed, toggleCollapse }: SidebarProps) {
     return (
-        <div
-            className={twMerge(
-                "sticky top-0 h-screen bg-zinc-700 text-gray-200 flex flex-col justify-between transition-width duration-300 ",
-                isCollapsed ? "w-20" : "w-64"
-            )}
+        <aside
+            className={`h-screen bg-background border-r flex flex-col transition-all duration-300 ${
+                isCollapsed ? "w-16" : "w-64"
+            }`}
         >
-            {/* Top Section */}
-            <div className="flex flex-col">
-                <button
+            <div className="p-2">
+                <Button
+                    variant="ghost"
                     onClick={toggleCollapse}
-                    className="flex items-center justify-center p-4 hover:bg-gray-700 transition-colors"
+                    className="w-full justify-start p-2"
                 >
-                    <FiMenu size={24} />
+                    {isCollapsed ? (
+                        <ChevronRight size={20} />
+                    ) : (
+                        <ChevronLeft size={20} />
+                    )}
                     {!isCollapsed && <span className="ml-2">Collapse</span>}
-                </button>
-                <ImportBook isCollapsed={isCollapsed} setBooksLoading={setBooksLoading} />
+                </Button>
             </div>
 
-            {/* Middle Section */}
-            <div className="flex flex-col">
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiHome size={24} />
-                    {!isCollapsed && <span className="ml-2">Home</span>}
-                </button>
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiBook size={24} />
-                    {!isCollapsed && <span className="ml-2">Library</span>}
-                </button>
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiStar size={24} />
-                    {!isCollapsed && <span className="ml-2">Pinned</span>}
-                </button>
-            </div>
+            <ScrollArea className="flex-grow">
+                <div className="space-y-2 p-2">
+                    <SidebarButton
+                        icon={Plus}
+                        label="Import Book"
+                        isCollapsed={isCollapsed}
+                    />
+                    <SidebarButton
+                        icon={Home}
+                        label="Home"
+                        isCollapsed={isCollapsed}
+                    />
+                    <SidebarButton
+                        icon={Library}
+                        label="Library"
+                        isCollapsed={isCollapsed}
+                    />
+                    <SidebarButton
+                        icon={Star}
+                        label="Pinned"
+                        isCollapsed={isCollapsed}
+                    />
+                </div>
+            </ScrollArea>
 
-            {/* Bottom Section */}
-            <div className="flex flex-col">
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiSliders size={24} />
-                    {!isCollapsed && <span className="ml-2">Preferences</span>}
-                </button>
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiSettings size={24} />
-                    {!isCollapsed && <span className="ml-2">Settings</span>}
-                </button>
-                <button className="flex items-center p-4 hover:bg-gray-700 transition-colors">
-                    <FiUser size={24} />
-                    {!isCollapsed && <span className="ml-2">User</span>}
-                </button>
+            <div className="p-2 border-t">
+                <SidebarButton
+                    icon={Sliders}
+                    label="Preferences"
+                    isCollapsed={isCollapsed}
+                />
+                <SidebarButton
+                    icon={Settings}
+                    label="Settings"
+                    isCollapsed={isCollapsed}
+                />
+                <SidebarButton
+                    icon={User}
+                    label="User"
+                    isCollapsed={isCollapsed}
+                />
             </div>
-        </div>
+        </aside>
     );
 }
