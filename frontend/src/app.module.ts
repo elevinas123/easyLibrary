@@ -3,13 +3,12 @@ import {ConfigModule, ConfigService} from '@nestjs/config';
 import {JwtModule} from '@nestjs/jwt';
 import {MongooseModule} from '@nestjs/mongoose';
 
-import {AuthModule} from './Modules/Auth/apiAuth/auth.module';
-import {BookModule} from './Modules/LibraryPage/api/book/book.module';
-
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
+import {AuthModule} from './Modules/Auth/api/auth/auth.module';
+import {UserModule} from './Modules/Auth/api/user/user.module';
+import {BookModule} from './Modules/LibraryPage/api/book/book.module';
 import {BookshelveModule} from './Modules/LibraryPage/api/bookshelve/bookshelve.module';
-import {UserModule} from './Modules/Auth/apiAuth/user/user.module';
 
 @Module({
   imports: [

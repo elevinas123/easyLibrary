@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards,} from '@nestjs/common';
 
-import {JwtAuthGuard} from '../../../Auth/apiAuth/jwt-auth.guard';
+import {JwtAuthGuard} from '../../../Auth/api/auth/jwt-auth.guard';
 
 import {BookService} from './book.service';
 import {CreateBookDto} from './dto/createBookDto';
