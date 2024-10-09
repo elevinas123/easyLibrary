@@ -4,7 +4,7 @@ import { IsNumber } from "class-validator";
 import { HighlightPointsType } from "./highlightPoints.schema";
 
 export class HighlightPointsDto implements HighlightPointsType {
-    @IsNumber() x: number;
+    @IsNumber() x!: number;
 
-    @IsNumber() y: number;
+    @IsNumber() y!: number;
 }

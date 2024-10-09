@@ -2,21 +2,21 @@
 
 import { IsEnum, IsNumber, IsString } from "class-validator";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
-import { RectElementType } from "src/book/schema/canvaElements/elements/rectElement.schema";
+import { RectElementType } from "../../../schema/canvaElements/elements/rectElement.schema";
 
 export class RectElementDto
     extends CanvaElementSkeletonDto
     implements RectElementType
 {
-    @IsString() @IsEnum(["rect"]) type: "rect";
+    @IsString() @IsEnum(["rect"]) type!: "rect";
 
-    @IsNumber() roughness: number;
+    @IsNumber() roughness!: number;
 
-    @IsNumber() seed: number;
+    @IsNumber() seed!: number;
 
-    @IsString() fillStyle: string;
+    @IsString() fillStyle!: string;
 
-    @IsNumber() hachureGap: number;
+    @IsNumber() hachureGap!: number;
 
-    @IsNumber() hachureAngle: number;
+    @IsNumber() hachureAngle!: number;
 }

@@ -2,17 +2,16 @@
 
 import { IsEnum, IsNumber, IsString } from "class-validator";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
-import { TextElementType } from "src/book/schema/canvaElements/elements/textElement.schema";
-
+import { TextElementType } from "../../../schema/canvaElements/elements/textElement.schema";
 export class TextElementDto
     extends CanvaElementSkeletonDto
     implements TextElementType
 {
-    @IsString() @IsEnum(["text"]) type: "text";
+    @IsString() @IsEnum(["text"]) type!: "text";
 
-    @IsString() text: string;
+    @IsString() text!: string;
 
-    @IsString() fontFamily: string;
+    @IsString() fontFamily!: string;
 
-    @IsNumber() fontSize: number;
+    @IsNumber() fontSize!: number;
 }

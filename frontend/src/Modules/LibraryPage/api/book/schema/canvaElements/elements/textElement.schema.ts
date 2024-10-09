@@ -19,11 +19,11 @@ export class TextElement
     extends CanvaElementSkeleton
     implements TextElementType
 {
-    @Prop({ required: true }) text: string;
+    @Prop({ required: true }) text!: string;
 
-    @Prop({ required: true }) fontFamily: string;
+    @Prop({ required: true }) fontFamily!: string;
 
-    @Prop({ required: true }) fontSize: number;
+    @Prop({ required: true }) fontSize!: number;
     get type(): "text" {
         return "text";
     }

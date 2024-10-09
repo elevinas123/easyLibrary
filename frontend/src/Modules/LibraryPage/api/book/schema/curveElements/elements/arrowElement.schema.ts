@@ -21,15 +21,15 @@ export class ArrowElement
     extends CurveElementSkeleton
     implements ArrowElementType
 {
-    @Prop({ type: String, default: null }) startId: string | null;
+    @Prop({ type: String, default: null }) startId!: string | null;
 
-    @Prop({ type: String, default: null }) endId: string | null;
-
-    @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    startType: StartType;
+    @Prop({ type: String, default: null }) endId!: string | null;
 
     @Prop({ type: String, enum: ["bookText", "text", null], default: null })
-    endType: StartType;
+    startType!: StartType;
+
+    @Prop({ type: String, enum: ["bookText", "text", null], default: null })
+    endType!: StartType;
 
     get type(): "arrow" {
         return "arrow";

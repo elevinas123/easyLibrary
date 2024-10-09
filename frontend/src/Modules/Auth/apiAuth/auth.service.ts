@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto } from "src/user/dto/create-user.dto";
-import { UserService } from "src/user/user.service";
-
-import { User } from "src/user/schemas/user.schema";
+import { UserService } from "./user/user.service";
+import { CreateUserDto } from "./user/dto/create-user.dto";
+import { User } from "./user/schemas/user.schema";
 
 @Injectable()
 export class AuthService {
@@ -22,11 +21,11 @@ export class AuthService {
     }
 
     // Login generates the JWT token for a validated user
-    async login(user: any){
+    async login(user: any) {
         const payload = { username: user.username, sub: user.userId };
         return {
             access_token: this.jwtService.sign(payload),
-            user: user
+            user: user,
         };
     }
 

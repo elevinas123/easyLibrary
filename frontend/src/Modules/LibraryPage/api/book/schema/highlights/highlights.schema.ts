@@ -12,15 +12,15 @@ export type HighlightDocument = Highlight & Document;
 
 @Schema({ _id: false })
 export class Highlight implements HighlightType {
-    @Prop({ required: true }) id: string;
+    @Prop({ required: true }) id!: string;
 
-    @Prop({ required: true }) startingX: number;
+    @Prop({ required: true }) startingX!: number;
 
-    @Prop({ required: true }) startingY: number;
+    @Prop({ required: true }) startingY!: number;
 
-    @Prop({ required: true }) endX: number;
+    @Prop({ required: true }) endX!: number;
 
-    @Prop({ required: true }) endY: number;
+    @Prop({ required: true }) endY!: number;
 }
 
 export const HighlightSchema = SchemaFactory.createForClass(Highlight);

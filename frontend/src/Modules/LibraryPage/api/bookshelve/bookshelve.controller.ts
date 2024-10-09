@@ -8,10 +8,10 @@ import {
     Put,
     UseGuards,
 } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 import { BookshelveService } from "./bookshelve.service";
 import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";
+import { JwtAuthGuard } from "../../../Auth/apiAuth/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("bookshelve")

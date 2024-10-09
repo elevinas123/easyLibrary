@@ -3,7 +3,7 @@ import { BookshelveController } from "./bookshelve.controller";
 import { BookshelveService } from "./bookshelve.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BookshelveSchema } from "./schema/bookshelve-schema";
-import { BookModule } from "src/book/book.module";
+import { BookModule } from "../book/book.module";
 
 @Module({
     controllers: [BookshelveController],

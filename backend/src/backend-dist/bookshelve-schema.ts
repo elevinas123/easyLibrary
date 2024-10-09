@@ -12,11 +12,11 @@ export type BookshelveType = {
 @Schema()
 export class Bookshelve implements BookshelveType {
     @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id: Types.ObjectId;
+    _id!: Types.ObjectId;
 
-    @Prop({ required: true }) name: string;
+    @Prop({ required: true }) name!: string;
 
-    @Prop({ required: true, default: Date.now }) createdAt: Date;
+    @Prop({ required: true, default: Date.now }) createdAt!: Date;
 
     // Reference to Book collection
     @Prop({
@@ -24,7 +24,7 @@ export class Bookshelve implements BookshelveType {
         type: [{ type: Types.ObjectId, ref: "Book" }],
         default: [],
     })
-    books: Types.ObjectId[];
+    books!: Types.ObjectId[];
 }
 
 export const BookshelveSchema = SchemaFactory.createForClass(Bookshelve);

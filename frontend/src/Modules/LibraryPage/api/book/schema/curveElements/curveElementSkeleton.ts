@@ -29,26 +29,26 @@ export interface CurveElementSkeletonType {
 @Schema({ discriminatorKey: "type", _id: false })
 // No separate _id for subDocuments
 export class CurveElementSkeleton implements CurveElementSkeletonType {
-    @Prop({ type: String, required: true }) id: string;
+    @Prop({ type: String, required: true }) id!: string;
 
-    @Prop({ type: String, required: true }) fill: string;
+    @Prop({ type: String, required: true }) fill!: string;
 
-    @Prop({ type: [Number], required: true }) points: number[];
+    @Prop({ type: [Number], required: true }) points!: number[];
 
-    @Prop({ type: String, default: null }) text: string | null;
+    @Prop({ type: String, default: null }) text!: string | null;
 
-    @Prop({ type: Number, required: true }) roughness: number;
+    @Prop({ type: Number, required: true }) roughness!: number;
 
-    @Prop({ type: Number, required: true }) bowing: number;
+    @Prop({ type: Number, required: true }) bowing!: number;
 
-    @Prop({ type: Number, required: true }) seed: number;
+    @Prop({ type: Number, required: true }) seed!: number;
 
-    @Prop({ type: Number, required: true }) strokeWidth: number;
+    @Prop({ type: Number, required: true }) strokeWidth!: number;
 
     @Prop({ type: String, enum: ["solid", "dashed", "dotted"], required: true })
-    strokeStyle: "solid" | "dashed" | "dotted";
+    strokeStyle!: "solid" | "dashed" | "dotted";
 
-    @Prop({ type: String, required: true }) stroke: string;
+    @Prop({ type: String, required: true }) stroke!: string;
 
     @Prop({
         type: String,
@@ -63,7 +63,7 @@ export class CurveElementSkeleton implements CurveElementSkeletonType {
         ],
         required: true,
     })
-    fillStyle:
+    fillStyle!:
         | "solid"
         | "hachure"
         | "cross-hatch"
@@ -72,11 +72,11 @@ export class CurveElementSkeleton implements CurveElementSkeletonType {
         | "dashed"
         | "zigzag-line";
 
-    @Prop({ type: Number, required: true }) fillWeight: number;
+    @Prop({ type: Number, required: true }) fillWeight!: number;
 
-    @Prop({ type: Number, required: true }) hachureAngle: number;
+    @Prop({ type: Number, required: true }) hachureAngle!: number;
 
-    @Prop({ type: Number, required: true }) hachureGap: number;
+    @Prop({ type: Number, required: true }) hachureGap!: number;
 }
 
 export type CurveElementSkeletonDocument = CurveElementSkeleton & Document;

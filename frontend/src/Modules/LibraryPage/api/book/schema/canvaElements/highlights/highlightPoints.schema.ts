@@ -9,9 +9,9 @@ export type HighlightPointsType = {
 
 @Schema({ _id: false })
 export class HighlightPoints implements HighlightPointsType {
-    @Prop({ required: true }) x: number;
+    @Prop({ required: true }) x!: number;
 
-    @Prop({ required: true }) y: number;
+    @Prop({ required: true }) y!: number;
 }
 
 export type HighlightPointsDocument = HighlightPoints & Document;

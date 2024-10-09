@@ -9,11 +9,11 @@ import {
     Query,
     UseGuards
 } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dto/createBookDto";
 import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
+import { JwtAuthGuard } from "../../../Auth/apiAuth/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("book")

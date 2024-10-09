@@ -21,15 +21,15 @@ export class RectElement
     extends CanvaElementSkeleton
     implements RectElementType
 {
-    @Prop({ required: true }) fillStyle: string;
+    @Prop({ required: true }) fillStyle!: string;
 
-    @Prop({ required: true }) roughness: number;
+    @Prop({ required: true }) roughness!: number;
 
-    @Prop({ required: true }) seed: number;
+    @Prop({ required: true }) seed!: number;
 
-    @Prop({ required: true }) hachureGap: number;
+    @Prop({ required: true }) hachureGap!: number;
 
-    @Prop({ required: true }) hachureAngle: number;
+    @Prop({ required: true }) hachureAngle!: number;
 
     get type(): "rect" {
         return "rect";

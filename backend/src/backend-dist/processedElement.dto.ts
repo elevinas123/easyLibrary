@@ -3,11 +3,11 @@ import { IsNumber, IsString } from "class-validator";
 import { ProcessedElementType } from "./processedElement.schema";
 
 export class ProcessedElementDto implements ProcessedElementType {
-    @IsString() text: string;
+    @IsString() text!: string;
 
-    @IsNumber() lineX: number;
+    @IsNumber() lineX!: number;
 
-    @IsNumber() lineWidth: number;
+    @IsNumber() lineWidth!: number;
 
-    @IsNumber() lineY: number;
+    @IsNumber() lineY!: number;
 }

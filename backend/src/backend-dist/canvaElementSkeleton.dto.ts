@@ -1,10 +1,8 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
-import {
-    CanvaElementSkeletonType
-} from "./canvaElementSkeleton.schema";
 
 import { HighlightPointsDto } from "./highlightPoints.dto";
+import { CanvaElementSkeletonType } from "./canvaElementSkeleton.schema";
 
 // DTO Class with Typegoose for MongoDB schema
 export class CanvaElementSkeletonDto implements CanvaElementSkeletonType {

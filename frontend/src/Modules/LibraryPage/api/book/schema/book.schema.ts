@@ -40,49 +40,49 @@ export type BookType = {
 @Schema()
 export class Book implements BookType {
     @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id: Types.ObjectId;
+    _id!: Types.ObjectId;
 
-    @Prop({ type: String, required: true }) title: string;
+    @Prop({ type: String, required: true }) title!: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })
-    userId: Types.ObjectId;
+    userId!: Types.ObjectId;
 
-    @Prop({ type: String, required: true }) description: string;
+    @Prop({ type: String, required: true }) description!: string;
 
-    @Prop({ type: String, required: true }) author: string;
+    @Prop({ type: String, required: true }) author!: string;
 
-    @Prop({ type: [String], required: true }) genre: string[];
+    @Prop({ type: [String], required: true }) genre!: string[];
 
-    @Prop({ type: String, required: true }) imageUrl: string;
+    @Prop({ type: String, required: true }) imageUrl!: string;
 
-    @Prop({ type: Boolean, required: true }) liked: boolean;
+    @Prop({ type: Boolean, required: true }) liked!: boolean;
 
-    @Prop({ type: String, required: true }) dateAdded: string;
+    @Prop({ type: String, required: true }) dateAdded!: string;
 
     @Prop({
         type: [ProcessedElementSchema],
         required: true,
     })
-    bookElements: ProcessedElementType[];
+    bookElements!: ProcessedElementType[];
 
     @Prop({ type: [HighlightSchema], required: true })
-    highlights: HighlightType[];
+    highlights!: HighlightType[];
 
     @Prop({ type: [CanvaElementSkeletonSchema], required: true })
-    canvaElements: CanvaElementType[];
+    canvaElements!: CanvaElementType[];
 
     @Prop({
         type: [CurveElementSkeletonSchema],
         required: true,
     })
-    curveElements: ArrowElementType[];
+    curveElements!: ArrowElementType[];
 
-    @Prop({ type: Number, required: true }) scale: number;
+    @Prop({ type: Number, required: true }) scale!: number;
 
     @Prop({
         type: { offsetPosition: OffsetPositionSchema },
     })
-    offsetPosition: OffsetPositionType;
+    offsetPosition!: OffsetPositionType;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

@@ -4,28 +4,28 @@ import { IsArray, IsNumber, IsOptional, IsString, IsIn } from "class-validator";
 import { CurveElementSkeletonType } from "./curveElementSkeleton";
 
 export class CurveElementSkeletonDto implements CurveElementSkeletonType {
-    @IsArray() @IsNumber({}, { each: true }) points: number[];
+    @IsArray() @IsNumber({}, { each: true }) points!: number[];
 
-    @IsString() id: string;
+    @IsString() id!: string;
 
-    @IsString() fill: string;
+    @IsString() fill!: string;
 
-    @IsOptional() @IsString() text: string | null;
+    @IsOptional() @IsString() text!: string | null;
 
-    @IsNumber() roughness: number;
+    @IsNumber() roughness!: number;
 
-    @IsNumber() bowing: number;
+    @IsNumber() bowing!: number;
 
-    @IsNumber() seed: number;
+    @IsNumber() seed!: number;
 
-    @IsNumber() strokeWidth: number;
+    @IsNumber() strokeWidth!: number;
 
-    @IsIn(["solid", "dashed", "dotted"]) strokeStyle:
+    @IsIn(["solid", "dashed", "dotted"]) strokeStyle!:
         | "solid"
         | "dashed"
         | "dotted";
 
-    @IsString() stroke: string;
+    @IsString() stroke!: string;
 
     @IsIn([
         "solid",
@@ -36,7 +36,7 @@ export class CurveElementSkeletonDto implements CurveElementSkeletonType {
         "dashed",
         "zigzag-line",
     ])
-    fillStyle:
+    fillStyle!:
         | "solid"
         | "hachure"
         | "cross-hatch"
@@ -45,9 +45,9 @@ export class CurveElementSkeletonDto implements CurveElementSkeletonType {
         | "dashed"
         | "zigzag-line";
 
-    @IsNumber() fillWeight: number;
+    @IsNumber() fillWeight!: number;
 
-    @IsNumber() hachureAngle: number;
+    @IsNumber() hachureAngle!: number;
 
-    @IsNumber() hachureGap: number;
+    @IsNumber() hachureGap!: number;
 }

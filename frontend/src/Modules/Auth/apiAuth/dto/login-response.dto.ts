@@ -1,3 +1,3 @@
 export class LoginResponseDto {
-  readonly access_token: string;
+  readonly access_token!: string;
 }

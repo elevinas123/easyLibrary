@@ -18,11 +18,11 @@ export class BookTextElement
     extends CanvaElementSkeleton
     implements BookTextElementType
 {
-    @Prop({ required: true }) text: string;
+    @Prop({ required: true }) text!: string;
 
-    @Prop({ required: true }) fontSize: number;
+    @Prop({ required: true }) fontSize!: number;
 
-    @Prop({ required: true }) fontFamily: string;
+    @Prop({ required: true }) fontFamily!: string;
 
     get type(): "bookText" {
         return "bookText";

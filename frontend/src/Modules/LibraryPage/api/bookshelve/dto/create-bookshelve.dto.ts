@@ -5,13 +5,13 @@ import { BookshelveType } from "../schema/bookshelve-schema";
 
 export class CreateBookshelveDto implements Omit<BookshelveType, "_id"> {
     @IsString()
-    readonly name: string;
+    readonly name!: string;
 
     @IsDate()
     @Type(() => Date)
-    readonly createdAt: Date;
+    readonly createdAt!: Date;
 
     @IsArray()
     @Type(() => String)
-    readonly books: Types.ObjectId[];
+    readonly books!: Types.ObjectId[];
 }

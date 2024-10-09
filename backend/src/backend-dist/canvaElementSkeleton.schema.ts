@@ -29,32 +29,32 @@ export type CanvaElementType =
     | BookTextElementType;
 @Schema({ discriminatorKey: "type", _id: false })
 export class CanvaElementSkeleton implements CanvaElementSkeletonType {
-    @Prop({ required: true }) fill: string;
+    @Prop({ required: true }) fill!: string;
 
-    @Prop({ required: true }) x: number;
+    @Prop({ required: true }) x!: number;
 
-    @Prop({ required: true }) y: number;
+    @Prop({ required: true }) y!: number;
 
-    @Prop({ required: true }) width: number;
+    @Prop({ required: true }) width!: number;
 
-    @Prop({ required: true }) height: number;
+    @Prop({ required: true }) height!: number;
 
-    @Prop({ required: true }) id: string;
+    @Prop({ required: true }) id!: string;
 
-    @Prop({ type: [String], required: true }) outgoingArrowIds: string[];
+    @Prop({ type: [String], required: true }) outgoingArrowIds!: string[];
 
-    @Prop({ type: [String], required: true }) incomingArrowIds: string[];
+    @Prop({ type: [String], required: true }) incomingArrowIds!: string[];
 
     @Prop({ type: [HighlightPointsSchema], required: true })
-    points: HighlightPointsType[];
+    points!: HighlightPointsType[];
 
-    @Prop({ required: true }) strokeColor: string;
+    @Prop({ required: true }) strokeColor!: string;
 
-    @Prop({ required: true }) strokeWidth: number;
+    @Prop({ required: true }) strokeWidth!: number;
 
-    @Prop({ required: true }) opacity: number;
+    @Prop({ required: true }) opacity!: number;
 
-    @Prop({ required: true }) rotation: number;
+    @Prop({ required: true }) rotation!: number;
 }
 
 export type CanvaElementSkeletonDocument = CanvaElementSkeleton & Document;

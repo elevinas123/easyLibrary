@@ -2,18 +2,18 @@
 
 import { IsEnum, IsNumber, IsString } from "class-validator";
 
-import { BookTextElementType } from "src/book/schema/canvaElements/elements/bookTextElement.schema";
 import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
+import { BookTextElementType } from "../../../schema/canvaElements/elements/bookTextElement.schema";
 
 export class BookTextElementDto
     extends CanvaElementSkeletonDto
     implements BookTextElementType
 {
-    @IsString() @IsEnum(["bookText"]) type: "bookText";
+    @IsString() @IsEnum(["bookText"]) type!: "bookText";
 
-    @IsString() text: string;
+    @IsString() text!: string;
 
-    @IsNumber() fontSize: number;
+    @IsNumber() fontSize!: number;
 
-    @IsString() fontFamily: string;
+    @IsString() fontFamily!: string;
 }
