@@ -1,13 +1,12 @@
 // src/pages/MainPage.tsx
-import { useEffect, useState, useCallback } from "react";
-import Chapters from "./Chapters";
-import KonvaStage from "./Konva/KonvaStage";
-import RightHand from "./RightHand";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
-import { useAtom } from "jotai";
+import { BookType } from "../LibraryPage/api/book/schema/book.schema";
+import Chapters from "./Chapters";
 import {
     arrowsAtom,
     canvaElementsAtom,
@@ -15,9 +14,9 @@ import {
     offsetPositionAtom,
     scaleAtom,
 } from "./Konva/konvaAtoms";
-import debounce from "lodash/debounce";
-import { isEqual } from "lodash";
-import { Book } from "../../endPointTypes/types";
+import KonvaStage from "./Konva/KonvaStage";
+import RightHand from "./RightHand";
+import { ChaptersDataType } from "../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
 
 export type HighlightRange = {
     startElementId: string;
@@ -29,15 +28,11 @@ export type HighlightRange = {
     highlightId: string;
 };
 
-export type Chapter = {
-    id: string;
-    title: string;
-    href: string | undefined;
-    indentLevel: number | null;
-};
-
 // Fetch book function
-const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
+const fetchBook = async (
+    id: string,
+    accessToken: string
+): Promise<BookType> => {
     const { data } = await axios.get(`/api/book/${id}`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -48,10 +43,10 @@ const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
 
 // Unified update function using PATCH
 const patchBook = async (
-    updateData: Partial<Book>,
+    updateData: Partial<BookType>,
     id: string,
     accessToken: string
-): Promise<Book> => {
+): Promise<BookType> => {
     const { data } = await axios.patch(`/api/book/${id}`, updateData, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -74,7 +69,7 @@ function MainPage() {
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const [updated, setUpdated] = useState(false);
     // Initialize chapters (assuming this will be populated elsewhere)
-    const [chapters] = useState<Chapter[]>([]);
+    const [chapters] = useState<ChaptersDataType[]>([]);
     const queryClient = useQueryClient();
 
     // React Query: Fetch book data
@@ -176,17 +171,18 @@ function MainPage() {
     if (error) {
         return <div>Error loading book: {error.message}</div>;
     }
-
+    if (!book) {
+        return <div>No book found</div>;
+    }
     // Extract book elements from the fetched book data
-    const bookElements = book?.bookElements ?? [];
+    const bookElements = book.bookElements;
 
     return (
         <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
-            <Chapters chapters={chapters} />
-
-            <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
-                <KonvaStage bookElements={bookElements} />
-            </div>
+            <KonvaStage
+                chaptersData={book.chaptersData}
+                bookElements={bookElements}
+            />
             <RightHand />
         </div>
     );

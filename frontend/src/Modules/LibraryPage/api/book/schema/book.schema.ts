@@ -17,7 +17,10 @@ import {
     OffsetPositionSchema,
     OffsetPositionType,
 } from "./offsetPosition/offsetPosition.schema";
-import { ChaptersDataSchema, ChaptersDataType } from "./chaptersData/chaptersData.schema";
+import {
+    ChaptersDataSchema,
+    ChaptersDataType,
+} from "./chaptersData/chaptersData.schema";
 
 export type BookDocument = Book & Document;
 
@@ -35,11 +38,14 @@ export type BookType = {
     highlights: HighlightType[];
     canvaElements: CanvaElementType[];
     curveElements: ArrowElementType[];
+    chaptersData: ChaptersDataType[];
     scale: number;
     offsetPosition: OffsetPositionType;
 };
 @Schema()
-export class Book implements Omit<BookType, "_id"> {
+export class Book
+    implements Omit<BookType, "_id" | "canvaElements" | "curveElements">
+{
     @Prop({ type: String, required: true }) title!: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })

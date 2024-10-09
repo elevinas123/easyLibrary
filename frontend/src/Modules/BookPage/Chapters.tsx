@@ -1,22 +1,20 @@
 import { Button } from "../../components/ui/button";
-import { Chapter } from "./MainPage";
+import { ChaptersDataType } from "../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
 
 type ChaptersProps = {
-    chapters: Chapter[];
+    chapters: ChaptersDataType[];
+    handleChapterClick: (chapterId: string) => void;
 };
 
-export default function Chapters({ chapters }: ChaptersProps) {
-    const handleChapterClick = (chapterId: string) => {
-        console.log("chapterId  ", chapterId);
-    };
-
+export default function Chapters({
+    chapters,
+    handleChapterClick,
+}: ChaptersProps) {
     return (
         <div className="flex flex-col w-96 bg-zinc-900 border-l border-gray-700 h-screen ">
             <div className="border-b border-gray-700 flex flex-row h-12 w-full items-center justify-between px-4">
                 <Button className="hover:text-gray-400">Back</Button>
-                <Button className="hover:text-gray-400">
-                    Close
-                </Button>
+                <Button className="hover:text-gray-400">Close</Button>
             </div>
             <div className="p-4  overflow-y-scroll custom-scrollbar">
                 <div className="text-lg font-semibold mb-2">

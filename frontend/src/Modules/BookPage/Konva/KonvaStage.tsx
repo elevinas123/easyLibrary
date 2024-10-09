@@ -21,6 +21,8 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
+import Chapters from "../Chapters";
+import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
 
 export type VisibleArea = {
     x: number;
@@ -32,9 +34,13 @@ export type VisibleArea = {
 
 type KonvaStageProps = {
     bookElements: ProcessedElement[];
+    chaptersData: ChaptersDataType[];
 };
 
-export default function KonvaStage({ bookElements }: KonvaStageProps) {
+export default function KonvaStage({
+    bookElements,
+    chaptersData,
+}: KonvaStageProps) {
     const fontSize = 24;
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
@@ -208,7 +214,6 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handleMouseUpForPan = () => {
         setIsDragging(false);
-        setDragStartPos(null);
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -316,35 +321,82 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
         };
         setVisibleArea(visibleArea);
     };
+    useEffect(() => {
+        console.log("offsetPosition", offsetPosition);
+    }, [offsetPosition]);
+
+    const easeInOutCubic = (t: number) => {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    const smoothScroll = (targetX: number, targetY: number) => {
+        const duration = 500; // Duration of the scroll animation in milliseconds
+        const start = performance.now();
+        const initialOffset = { ...offsetPosition };
+        const deltaX = targetX - initialOffset.x;
+        const deltaY = targetY - initialOffset.y;
+
+        const animateScroll = (currentTime: number) => {
+            const elapsed = currentTime - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeProgress = easeInOutCubic(progress);
+
+            setOffsetPosition({
+                x: initialOffset.x + deltaX * easeProgress,
+                y: initialOffset.y + deltaY * easeProgress,
+            });
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        };
+
+        requestAnimationFrame(animateScroll);
+    };
+    const handleChapterClick = (chapterId: string) => {
+        if (chapterId === "someId") return;
+        console.log("chapterId", chapterId);
+        const targetY = -parseInt(chapterId) * fontSize;
+        smoothScroll(0, targetY);
+    };
+    
 
     return (
-        <div className="h-screen w-full relative">
-            <Tools />
-            <ToolBar selectedItemsIds={selectedItemsIds} />
+        <>
+            <Chapters
+                chapters={chaptersData}
+                handleChapterClick={handleChapterClick}
+            />
+            <div className="w-full flex flex-col items-center relative h-screen overflow-y-scroll custom-scrollbar">
+                <div className="h-screen w-full relative">
+                    <Tools />
+                    <ToolBar selectedItemsIds={selectedItemsIds} />
 
-            <Stage
-                width={window.innerWidth}
-                height={window.innerHeight}
-                ref={stageRef}
-                scaleX={scale}
-                scaleY={scale}
-                draggable={false} // Prevent Konva's built-in drag
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onDblClick={handleDoubleClick}
-            >
-                <MainLayer
-                    visibleArea={visibleArea}
-                    bookElements={bookElements}
-                    fontSize={fontSize}
-                    width={width}
-                    ref={mainLayerRef}
-                />
-                <HoverHighlightLayer />
+                    <Stage
+                        width={window.innerWidth}
+                        height={window.innerHeight}
+                        ref={stageRef}
+                        scaleX={scale}
+                        scaleY={scale}
+                        draggable={false} // Prevent Konva's built-in drag
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onDblClick={handleDoubleClick}
+                    >
+                        <MainLayer
+                            visibleArea={visibleArea}
+                            bookElements={bookElements}
+                            fontSize={fontSize}
+                            width={width}
+                            ref={mainLayerRef}
+                        />
+                        <HoverHighlightLayer />
 
-                <MainNotesLayer ref={mainNotesLayerRef} />
-            </Stage>
-        </div>
+                        <MainNotesLayer ref={mainNotesLayerRef} />
+                    </Stage>
+                </div>
+            </div>
+        </>
     );
 }
