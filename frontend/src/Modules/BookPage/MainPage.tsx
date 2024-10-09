@@ -87,7 +87,7 @@ function MainPage() {
         queryKey: ["book", bookId],
         enabled: !!accessToken && !!user && !!bookId,
     });
-
+    /*
     // React Query: Mutation for updating the book
     const mutation = useMutation<Book, Error, Partial<Book>, unknown>({
         mutationFn: (updateData) =>
@@ -167,7 +167,7 @@ function MainPage() {
         bookId,
         accessToken,
     ]);
-
+*/
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;

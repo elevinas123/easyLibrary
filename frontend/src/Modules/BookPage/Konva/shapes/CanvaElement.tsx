@@ -102,6 +102,7 @@ function CanvasElement(
                 return;
             }
         }
+        console.log("mouseDown")
         // Check if the click is on the transformer or its children
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
@@ -151,6 +152,7 @@ function CanvasElement(
             width: 0,
             height: 0,
         });
+        console.log("newRect", newRect);
         setCanvaElements((prevItems) => [...prevItems, newRect]);
         setSelectedItemsIds([id]);
         setIsCreating(true);
