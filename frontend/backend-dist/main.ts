@@ -1,8 +1,8 @@
+"use server"
 import "reflect-metadata";
-
 import { NestFactory } from "@nestjs/core";
 import * as bodyParser from "body-parser";
-import { AppModule } from "./backend-dist/app.module";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
