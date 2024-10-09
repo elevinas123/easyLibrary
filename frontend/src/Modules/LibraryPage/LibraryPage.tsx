@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Heart, Moon, Sun, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -8,30 +9,14 @@ import {
     CardFooter,
     CardHeader,
 } from "../../components/ui/card";
+import { apiFetch } from "../../endPointTypes/apiClient";
+import { useToast } from "../../hooks/use-toast";
+import { useAuth } from "../../hooks/userAuth";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
 import { BookType } from "./api/book/schema/book.schema";
-import { apiFetch } from "../../endPointTypes/apiClient";
-import { useToast } from "../../hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "../../hooks/userAuth";
 
-type SidebarButtonProps = {
-    icon: React.ElementType;
-    label: string;
-    isCollapsed: boolean;
-};
 
-const SidebarButton = ({
-    icon: Icon,
-    label,
-    isCollapsed,
-}: SidebarButtonProps) => (
-    <button className="flex items-center w-full p-4 hover:bg-primary/10 transition-colors">
-        <Icon size={24} />
-        {!isCollapsed && <span className="ml-4">{label}</span>}
-    </button>
-);
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -86,6 +71,7 @@ export default function LibraryPage() {
             <Sidebar
                 toggleCollapse={toggleCollapse}
                 isCollapsed={isCollapsed}
+                setBooksLoading={setBooksLoading}
             />
             {/* Main Content */}
             <main

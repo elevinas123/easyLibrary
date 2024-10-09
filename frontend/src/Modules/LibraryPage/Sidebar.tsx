@@ -1,21 +1,22 @@
-import React from "react";
 import {
-    Home,
-    Library,
-    Star,
-    Settings,
-    Sliders,
-    User,
-    Plus,
     ChevronLeft,
     ChevronRight,
+    Home,
+    Library,
+    Settings,
+    Sliders,
+    Star,
+    User
 } from "lucide-react";
-import { ScrollArea } from "../../components/ui/scroll-area";
+import React from "react";
 import { Button } from "../../components/ui/button";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import ImportBook from "./importBook";
 
 type SidebarProps = {
     isCollapsed: boolean;
     toggleCollapse: () => void;
+    setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const SidebarButton = ({
@@ -33,7 +34,11 @@ const SidebarButton = ({
     </Button>
 );
 
-export default function Sidebar({ isCollapsed, toggleCollapse }: SidebarProps) {
+export default function Sidebar({
+    isCollapsed,
+    toggleCollapse,
+    setBooksLoading,
+}: SidebarProps) {
     return (
         <aside
             className={`h-screen bg-background border-r flex flex-col transition-all duration-300 ${
@@ -57,10 +62,9 @@ export default function Sidebar({ isCollapsed, toggleCollapse }: SidebarProps) {
 
             <ScrollArea className="flex-grow">
                 <div className="space-y-2 p-2">
-                    <SidebarButton
-                        icon={Plus}
-                        label="Import Book"
+                    <ImportBook
                         isCollapsed={isCollapsed}
+                        setBooksLoading={setBooksLoading}
                     />
                     <SidebarButton
                         icon={Home}

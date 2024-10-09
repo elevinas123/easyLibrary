@@ -4,7 +4,6 @@ import { load } from "cheerio";
 import { useAtom } from "jotai";
 import JSZip from "jszip";
 import { useRef, useState } from "react";
-import { FiPlus } from "react-icons/fi";
 import { accessTokenAtom, userAtom } from "../../atoms";
 import { useToast } from "../../hooks/use-toast";
 import { extractToc } from "../../preprocess/epub/extractToc";
@@ -14,6 +13,8 @@ import {
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { apiFetch } from "../../endPointTypes/apiClient";
+import { Plus } from "lucide-react";
+import { Button } from "../../components/ui/button";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -204,12 +205,14 @@ export default function ImportBook({
         return null;
     }
     return (
-        <button
-            className="flex items-center p-4 hover:bg-gray-700 transition-colors"
+        <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
             onClick={handleButtonClick}
         >
-            <FiPlus size={24} />
-            {!isCollapsed && <span className="ml-2">Add Document</span>}
+            <Plus size={20} />
+            {!isCollapsed && <span className="ml-2">Add Book</span>}
             <input
                 ref={fileInputRef}
                 className="hidden"
@@ -217,6 +220,6 @@ export default function ImportBook({
                 accept=".epub"
                 onChange={processBookElements}
             />
-        </button>
+        </Button>
     );
 }
