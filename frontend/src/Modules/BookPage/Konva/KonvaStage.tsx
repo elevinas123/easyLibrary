@@ -13,7 +13,7 @@ import {
     newArrowAtom,
     offsetPositionAtom,
     scaleAtom,
-    selectedItemsIdsAtom
+    selectedItemsIdsAtom,
 } from "./konvaAtoms";
 import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
@@ -75,6 +75,7 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
     useEffect(() => {
         const stage = stageRef.current;
         if (stage) {
+            console.log("stageRef.current", stageRef.current);
             stage.on("wheel", handleWheel); // Attach wheel handler
         }
 
@@ -93,23 +94,23 @@ export default function KonvaStage({ bookElements }: KonvaStageProps) {
 
     const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         const stage = stageRef.current;
-        if (!isDragging || !dragStartPos) return;
+        if (!stage) return;
 
+        // Prevent default scrolling behavior
+        e.evt.preventDefault();
+
+        // Get the pointer position (optional, depends on how you want to calculate movement)
         const pointer = stage.getPointerPosition();
         if (!pointer) return;
 
-        // Calculate delta movement adjusted by scale
-        const dx = (pointer.x - dragStartPos.x) / scale;
-        const dy = (pointer.y - dragStartPos.y) / scale;
+        // Calculate vertical movement based on the wheel delta
+        const dy = e.evt.deltaY;
 
-        // Update offset position
+        // Update the offset position to pan vertically
         setOffsetPosition((prev) => ({
-            x: prev.x + dx * scale,
-            y: prev.y + dy * scale,
+            x: prev.x, // No horizontal movement
+            y: prev.y - dy, // Move vertically based on the wheel delta
         }));
-
-        // Update drag start position
-        setDragStartPos(pointer);
 
         stage.batchDraw();
     };
