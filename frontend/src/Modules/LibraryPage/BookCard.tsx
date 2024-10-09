@@ -3,11 +3,17 @@ import {
     DialogDescription,
     DialogTitle,
 } from "@radix-ui/react-dialog";
+import { BookOpen, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { useNavigate } from "react-router-dom"; // If you're using React Router v6
 import { Button } from "../../components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "../../components/ui/card";
 import {
     Dialog,
     DialogContent,
@@ -28,7 +34,6 @@ export default function BookCard({
     selectBook,
 }: BookCardProps) {
     const [isLiked, setIsLiked] = useState(false);
-    const [hovered, setHovered] = useState(false);
     const navigate = useNavigate();
 
     const handleGoToBook = (e: React.MouseEvent) => {
@@ -37,57 +42,52 @@ export default function BookCard({
     };
 
     return (
-        <div
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onClick={() => selectBook(book._id)}
-            className="bg-zinc-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
-        >
-            <div className="relative aspect-[2/3]">
+        <Card key={book._id} className="flex flex-col">
+            <CardHeader className="relative p-0">
                 <img
                     src={book.imageUrl}
                     alt={book.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-96 object-cover rounded-t-lg"
                 />
                 <div className="absolute top-2 right-2 flex space-x-2">
-                    <DeleteDialog
-                        hovered={hovered}
-                        book={book}
-                        deleteBook={deleteBook}
-                    />
-                    <button
-                        className="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition-colors"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIsLiked((liked) => !liked);
-                        }}
-                        aria-label={isLiked ? "Unlike" : "Like"}
+                    <Button
+                        variant="secondary"
+                        size="icon"
+                        className={`rounded-full ${
+                            isLiked ? "hover:bg-red-300 bg-red-400" : ""
+                        }`}
+                        onClick={() => setIsLiked((liked) => !liked)}
                     >
-                        {isLiked ? (
-                            <FaHeart className="text-red-500" />
-                        ) : (
-                            <FaRegHeart />
-                        )}
-                    </button>
+                        <Heart className={`h-4 w-4`} />
+                        <span className="sr-only">Like</span>
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => deleteBook(book._id)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                    </Button>
                 </div>
-            </div>
-            <div className="p-4">
-                <h2 className="text-xl font-semibold truncate">{book.title}</h2>
-                <p className="text-sm text-gray-400 mt-1">by {book.author}</p>
-                <p className="text-sm text-gray-400 mt-1">
-                    Genres: {book.genre.join(", ")}
+            </CardHeader>
+            <CardContent className="flex-1 p-4">
+                <h3 className="text-lg font-semibold">{book.title}</h3>
+                <p className="text-sm text-muted-foreground">{book.author}</p>
+                <p className="text-sm text-muted-foreground">
+                    Added: {book.dateAdded}
                 </p>
-                <p className="text-sm text-gray-400 mt-1">
-                    Added on: {new Date(book.dateAdded).toLocaleDateString()}
+                <p className="text-sm text-muted-foreground">
+                    Genre: {book.genre}
                 </p>
-                <button
-                    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                    onClick={handleGoToBook}
-                >
-                    Read Book
-                </button>
-            </div>
-        </div>
+            </CardContent>
+            <CardFooter className="p-4">
+                <Button className="w-full" onClick={() => selectBook(book._id)}>
+                    <BookOpen className="mr-2 h-4 w-4" /> Read Book
+                </Button>
+            </CardFooter>
+        </Card>
     );
 }
 type DeleteDialogProps = {

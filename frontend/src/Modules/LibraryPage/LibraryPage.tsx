@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Heart, Moon, Sun, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -15,8 +15,7 @@ import { useAuth } from "../../hooks/userAuth";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
 import { BookType } from "./api/book/schema/book.schema";
-
-
+import BookCard from "./BookCard";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -46,11 +45,11 @@ export default function LibraryPage() {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [infoOpen, setInfoOpen] = useState(true);
-    const [selectedBook, setSelectedBook] = useState<null | BookType>(null);
+    const [selectedBook, setSelectedBook] = useState<null | string>(null);
     const [mounted, setMounted] = useState(false);
     const [theme, setTheme] = useState<"dark" | "light">("dark");
     const [booksLoading, setBooksLoading] = useState<string[]>([]);
-
+    const queryClient = useQueryClient();
     const { toast } = useToast();
     const { data: bookData } = useQuery({
         queryKey: ["book"],
@@ -63,7 +62,65 @@ export default function LibraryPage() {
     }, [bookData]);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
+    const deleteBook = async (bookId: string) => {
+        try {
+            const bookDeleted = await apiFetch(
+                "DELETE /book/:id",
+                { params: { id: bookId } },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            if (bookDeleted.status === 200) {
+                queryClient.invalidateQueries({ queryKey: ["book"] });
+                toast({
+                    title: "Book Deleted successfully",
+                    duration: 5000,
+                });
+            } else {
+                toast({
+                    title: "Failed to delete book",
+                    duration: 5000,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const selectBook = (bookId: string) => {
+        setSelectedBook(bookId);
+    };
 
+    const updateBook = async (updatedBook: BookType) => {
+        try {
+            const bookUpdated = await apiFetch(
+                "PATCH /book/:id",
+                { params: { id: updatedBook._id }, body: updatedBook },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            if (bookUpdated.status === 200) {
+                queryClient.invalidateQueries({ queryKey: ["book"] });
+                toast({
+                    title: "Book Updated successfully",
+                    duration: 5000,
+                });
+            } else {
+                toast({
+                    title: "Failed to update book",
+                    duration: 5000,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const book = bookData?.filter((book) => book._id === selectedBook)[0];
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
     if (!bookData) return null;
     return (
@@ -94,64 +151,22 @@ export default function LibraryPage() {
                         <span className="sr-only">Toggle theme</span>
                     </Button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                     {bookData.map((book) => (
-                        <Card key={book._id} className="flex flex-col">
-                            <CardHeader className="relative p-0">
-                                <img
-                                    src={book.imageUrl}
-                                    alt={book.title}
-                                    className="w-full h-96 object-cover rounded-t-lg"
-                                />
-                                <div className="absolute top-2 right-2 flex space-x-2">
-                                    <Button
-                                        variant="secondary"
-                                        size="icon"
-                                        className="rounded-full"
-                                    >
-                                        <Heart className="h-4 w-4" />
-                                        <span className="sr-only">Like</span>
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="icon"
-                                        className="rounded-full"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                        <span className="sr-only">Delete</span>
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="flex-1 p-4">
-                                <h3 className="text-lg font-semibold">
-                                    {book.title}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    {book.author}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    Added: {book.dateAdded}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    Genre: {book.genre}
-                                </p>
-                            </CardContent>
-                            <CardFooter className="p-4">
-                                <Button
-                                    className="w-full"
-                                    onClick={() => setSelectedBook(book)}
-                                >
-                                    <BookOpen className="mr-2 h-4 w-4" /> Read
-                                    Book
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                        <BookCard
+                            deleteBook={deleteBook}
+                            book={book}
+                            selectBook={selectBook}
+                        />
+                    ))}
+                    {booksLoading.map((bookId) => (
+                        <div>Loading...</div>
                     ))}
                 </div>
             </main>
             <BookInfoPage
                 infoOpen={infoOpen}
-                selectedBook={selectedBook}
+                selectedBook={book}
                 setInfoOpen={setInfoOpen}
             />
         </div>
