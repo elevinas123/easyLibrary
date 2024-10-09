@@ -1,36 +1,36 @@
-import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { UserService } from "./user.service";
-import { CreateUserDto } from "./create-user.dto";
-import { User } from "./user.schema";
+import {Injectable} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+
+import {CreateUserDto} from './create-user.dto';
+import {User} from './user.schema';
+import {UserService} from './user.service';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly jwtService: JwtService,
-        private readonly userModel: UserService
-    ) {}
+  constructor(
+      private readonly jwtService: JwtService,
+      private readonly userModel: UserService) {}
 
-    // Validate user credentials by comparing with stored data
-    async validateUser(username: string, pass: string): Promise<any> {
-        const user = await this.userModel.findOneByUsername(username);
-        if (user && user.password === pass) {
-            return user;
-        }
-        return null;
+  // Validate user credentials by comparing with stored data
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.userModel.findOneByUsername(username);
+    if (user && user.password === pass) {
+      return user;
     }
+    return null;
+  }
 
-    // Login generates the JWT token for a validated user
-    async login(user: any) {
-        const payload = { username: user.username, sub: user.userId };
-        return {
-            access_token: this.jwtService.sign(payload),
-            user: user,
-        };
-    }
+  // Login generates the JWT token for a validated user
+  async login(user: any) {
+    const payload = {username: user.username, sub: user.userId};
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: user,
+    };
+  }
 
-    // Register a new user using CreateUserDto
-    async register(createUserDto: CreateUserDto): Promise<User> {
-        return this.userModel.create(createUserDto);
-    }
+  // Register a new user using CreateUserDto
+  async register(createUserDto: CreateUserDto): Promise<User> {
+    return this.userModel.create(createUserDto);
+  }
 }

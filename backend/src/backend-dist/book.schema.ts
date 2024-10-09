@@ -38,10 +38,7 @@ export type BookType = {
     offsetPosition: OffsetPositionType;
 };
 @Schema()
-export class Book implements BookType {
-    @Prop({ type: Types.ObjectId, required: true, auto: true })
-    _id!: Types.ObjectId;
-
+export class Book implements Omit<BookType, "_id"> {
     @Prop({ type: String, required: true }) title!: string;
 
     @Prop({ type: Types.ObjectId, ref: "User", required: true })

@@ -29,7 +29,9 @@ export class BookService {
 
     async getBookById(id: string): Promise<Book> {
         const book = await this.bookModel.findById(id).exec();
+        console.log("bookGot", book)
         if (!book) {
+            console.log("throwing");
             throw new NotFoundException(`Book with ID ${id} not found`);
         }
         return book;
