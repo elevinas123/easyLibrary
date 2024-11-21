@@ -1,8 +1,3 @@
-import {
-    DialogClose,
-    DialogDescription,
-    DialogTitle,
-} from "@radix-ui/react-dialog";
 import { BookOpen, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
@@ -15,6 +10,9 @@ import {
     CardHeader,
 } from "../../components/ui/card";
 import {
+    DialogClose,
+    DialogDescription,
+    DialogTitle,
     Dialog,
     DialogContent,
     DialogFooter,
@@ -61,15 +59,12 @@ export default function BookCard({
                         <Heart className={`h-4 w-4`} />
                         <span className="sr-only">Like</span>
                     </Button>
-                    <Button
-                        variant="destructive"
-                        size="icon"
-                        className="rounded-full"
-                        onClick={() => deleteBook(book._id)}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                    </Button>
+
+                    <DeleteDialog
+                        hovered={true}
+                        book={book}
+                        deleteBook={deleteBook}
+                    />
                 </div>
             </CardHeader>
             <CardContent className="flex-1 p-4">
@@ -83,9 +78,10 @@ export default function BookCard({
                 </p>
             </CardContent>
             <CardFooter className="p-4">
-                <Button className="w-full" onClick={() => selectBook(book._id)}>
+                <Button className="w-full" onClick={(e) => handleGoToBook(e)}>
                     <BookOpen className="mr-2 h-4 w-4" /> Read Book
                 </Button>
+                <Button className="bg-blue-500 ml-2" onClick={() => selectBook(book._id)}>Info</Button>
             </CardFooter>
         </Card>
     );
