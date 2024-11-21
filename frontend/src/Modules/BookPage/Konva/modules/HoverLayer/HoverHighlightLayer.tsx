@@ -37,8 +37,7 @@ export default function HoverHighlightLayer({}: HoverHighlightLayerProps) {
                         // Translate the context to the center
                         context.translate(centerX, centerY);
 
-                        // Scale the context
-                        context.scale(scaleY, scaleX);
+                        
 
                         // Translate back from the center
                         context.translate(-centerX, -centerY);
@@ -60,7 +59,7 @@ export default function HoverHighlightLayer({}: HoverHighlightLayerProps) {
                     fill="red"
                     stroke="black"
                     strokeWidth={2}
-                    opacity={0.75}
+                    opacity={0.5}
                 />
             ))
         );
