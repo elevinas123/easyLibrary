@@ -238,7 +238,7 @@ export default function KonvaStage({
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
-
+        console.log("removing")
         const isPointInPolygon = (
             point: { x: number; y: number },
             polygon: { x: number; y: number }[]
@@ -277,6 +277,7 @@ export default function KonvaStage({
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        console.log("moving inside")
         removeHoversNotUnderMouse(e);
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseMoveForPan();
@@ -286,7 +287,6 @@ export default function KonvaStage({
         if (mainLayerRef.current) {
             mainLayerRef.current.handleMouseMove(e);
         }
-        console.log("handleMouseMove");
         if (mainNotesLayerRef.current) {
             mainNotesLayerRef.current.handleMouseMove(e);
         }

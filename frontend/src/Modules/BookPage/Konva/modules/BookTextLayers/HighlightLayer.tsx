@@ -68,7 +68,8 @@ function HighlightLayer(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                if (activeTool !== "Arrow") return;
+                if (activeTool !== "Arrow" && activeTool !== "Select") return;
+                console.log("moving")
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 const highlightsUnderMouse = highlightElements.filter(

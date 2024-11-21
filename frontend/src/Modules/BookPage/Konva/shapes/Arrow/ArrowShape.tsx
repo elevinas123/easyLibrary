@@ -285,7 +285,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         }
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (activeTool !== "Arrow") return;
+        if (activeTool !== "Arrow" && activeTool !== "Select") return;
         const pos = getPos(offsetPosition, scale, e);
 
         if (!pos) return;
@@ -327,7 +327,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         arrowId: string,
         e: KonvaEventObject<MouseEvent>
     ) => {
-        e.cancelBubble = true;
+        e.cancelBubble = false;
         const pos = getPos(offsetPosition, scale, e);
 
         if (!pos) return;
@@ -346,7 +346,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         arrowId: string,
         e: KonvaEventObject<MouseEvent>
     ) => {
-        e.cancelBubble = true;
+        e.cancelBubble = false;
         const pos = getPos(offsetPosition, scale, e);
 
         if (!pos) return;
@@ -366,7 +366,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         e: KonvaEventObject<MouseEvent>,
         which: "end" | "start"
     ) => {
-        e.cancelBubble = true;
+        e.cancelBubble = false;
         const arrow = arrows.find((arrow) => arrow.id === arrowId);
         const pos = getPos(offsetPosition, scale, e);
 
@@ -418,6 +418,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 arrow.endType = null;
             }
         }
+
         setArrows((prevArrows) => {
             return prevArrows.map((prevArrow) => {
                 if (prevArrow.id === arrow.id) {
