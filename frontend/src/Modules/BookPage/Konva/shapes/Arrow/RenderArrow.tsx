@@ -88,8 +88,6 @@ export default function RenderArrow({
             id={element.id}
             x={x1}
             y={y1}
-            draggable={draggable}
-            onDragMove={handleDragMove}
             sceneFunc={(context, shape) => {
                 const roughCanvas = rough.canvas(context.canvas);
 

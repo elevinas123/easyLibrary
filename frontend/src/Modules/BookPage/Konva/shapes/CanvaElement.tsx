@@ -364,7 +364,7 @@ function CanvasElement(
                 )
             )}
             <CustomTransformer
-                selectedIds={selectedItemsIds}
+                selectedIds={selectedItemsIds.filter((id) => !arrows.some((arrow) => arrow.id === id) )}
                 updateElementInState={updateElementInState}
             />
         </>
