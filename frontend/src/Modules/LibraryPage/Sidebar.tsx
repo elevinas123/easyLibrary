@@ -6,12 +6,14 @@ import {
     Settings,
     Sliders,
     Star,
-    User
+    User,
 } from "lucide-react";
 import React from "react";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import ImportBook from "./importBook";
+import { DashIcon } from "@radix-ui/react-icons";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 type SidebarProps = {
     isCollapsed: boolean;
@@ -23,12 +25,21 @@ const SidebarButton = ({
     icon: Icon,
     label,
     isCollapsed,
+    navigate,
+    route,
 }: {
     icon: React.ElementType;
     label: string;
     isCollapsed: boolean;
+    navigate: NavigateFunction;
+    route: string;
 }) => (
-    <Button variant="ghost" size="sm" className="w-full justify-start">
+    <Button
+        variant="ghost"
+        size="sm"
+        className="w-full justify-start"
+        onClick={() => navigate(route)}
+    >
         <Icon size={20} />
         {!isCollapsed && <span className="ml-2">{label}</span>}
     </Button>
@@ -39,6 +50,8 @@ export default function Sidebar({
     toggleCollapse,
     setBooksLoading,
 }: SidebarProps) {
+    const navigate = useNavigate();
+
     return (
         <aside
             className={`h-screen bg-background border-r flex flex-col transition-all duration-300 ${
@@ -70,16 +83,29 @@ export default function Sidebar({
                         icon={Home}
                         label="Home"
                         isCollapsed={isCollapsed}
+                        navigate={navigate}
+                        route="/"
                     />
                     <SidebarButton
                         icon={Library}
                         label="Library"
                         isCollapsed={isCollapsed}
+                        navigate={navigate}
+                        route="/"
                     />
                     <SidebarButton
                         icon={Star}
                         label="Pinned"
                         isCollapsed={isCollapsed}
+                        navigate={navigate}
+                        route="/"
+                    />
+                    <SidebarButton
+                        icon={DashIcon}
+                        label="Dashboard"
+                        isCollapsed={isCollapsed}
+                        navigate={navigate}
+                        route="dashboard"
                     />
                 </div>
             </ScrollArea>

@@ -11,6 +11,7 @@ import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
+import { useSidebar } from "../../hooks/useSidebar";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -37,13 +38,10 @@ const fetchBooks = async (userId: string | undefined) => {
 };
 export default function LibraryPage() {
     const { accessToken, user } = useAuth();
-
-    const [isCollapsed, setIsCollapsed] = useState(false);
     const [infoOpen, setInfoOpen] = useState(true);
     const [selectedBook, setSelectedBook] = useState<null | string>(null);
     const [mounted, setMounted] = useState(false);
     const [theme, setTheme] = useState<"dark" | "light">("dark");
-    const [booksLoading, setBooksLoading] = useState<string[]>([]);
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const { data: bookData } = useQuery({
@@ -52,9 +50,9 @@ export default function LibraryPage() {
 
         enabled: !!accessToken && !!user,
     });
-    useEffect(() => {
-        setBooksLoading((prev) => prev.slice(0, prev.length - 1));
-    }, [bookData]);
+    const { booksLoading, setBooksLoading, isCollapsed, toggleCollapse } =
+        useSidebar(bookData);
+
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
     const deleteBook = async (bookId: string) => {
@@ -116,7 +114,6 @@ export default function LibraryPage() {
         }
     };
     const book = bookData?.filter((book) => book._id === selectedBook)[0];
-    const toggleCollapse = () => setIsCollapsed(!isCollapsed);
     if (!bookData) return null;
     return (
         <div className="flex h-screen bg-background">

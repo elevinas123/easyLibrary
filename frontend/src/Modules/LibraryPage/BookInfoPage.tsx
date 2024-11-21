@@ -1,11 +1,11 @@
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { BookType } from "./api/book/schema/book.schema";
 import { useNavigate } from "react-router-dom";
+import { Book } from "../../endPointTypes/types";
 
 type BookInfoPageProps = {
     infoOpen: boolean;
-    selectedBook: BookType | null | undefined;
+    selectedBook: Book | null | undefined;
     setInfoOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
