@@ -114,7 +114,14 @@ function HighlightLayer(
                 }
             },
         }),
-        [highlightElements, hoveredItems, activeTool, scale, offsetPosition, fontSize]
+        [
+            highlightElements,
+            hoveredItems,
+            activeTool,
+            scale,
+            offsetPosition,
+            fontSize,
+        ]
     );
 
     useEffect(() => {
@@ -145,89 +152,98 @@ function HighlightLayer(
             )
         );
     }, [visibleArea, highlightElements, fontSize]);
-
     const createHighlightElements = (): FullHighlight[] => {
-        console.log("creating highlights", fontSize);
         return highlights.map((highlight) => {
-            const points: HighlightPoints[] = [];
-            const range = highlight.endY - highlight.startingY;
-            if (range === 0) {
-                const letterWidth =
-                    measureTextWidth(
-                        processedElements[highlight.startingY].text, fontSize
-                    ) / processedElements[highlight.startingY].text.length;
-                let currentX = highlight.startingX * letterWidth;
-                let lineWidth =
-                    (highlight.endX - highlight.startingX) * letterWidth +
-                    letterWidth;
-                points.push({
-                    x: currentX + 600,
-                    y: highlight.startingY * fontSize + 200,
-                });
-                points.push({
-                    x: currentX + lineWidth + 600,
-                    y: highlight.startingY * fontSize + 200,
-                });
-                points.push({
-                    x: currentX + lineWidth + 600,
-                    y: highlight.startingY * fontSize + 200 + fontSize,
-                });
-                points.push({
-                    x: currentX + 600,
-                    y: highlight.startingY * fontSize + 200 + fontSize,
-                });
-                const rects = [];
-                rects.push({
-                    y: highlight.startingY * fontSize + 200,
-                    x: currentX + 600,
-                    width: lineWidth,
-                    height: fontSize,
-                    fill: "yellow",
-                    opacity: 0.5,
-                    points: points,
-                });
-                return {
-                    id: uuidv4(),
-                    points: points,
-                    rects: rects,
-                    type: "bookText",
-                };
-            }
             const rects: HighlightRect[] = [];
 
+            // Determine the actual start and end positions
+            const startY = Math.min(highlight.startingY, highlight.endY);
+            const endY = Math.max(highlight.startingY, highlight.endY);
+
+            let startX, endX;
+
+            // Adjust startingX and endX based on the direction
+            if (highlight.startingY < highlight.endY) {
+                startX = highlight.startingX;
+                endX = highlight.endX;
+            } else if (highlight.startingY > highlight.endY) {
+                startX = highlight.endX;
+                endX = highlight.startingX;
+            } else {
+                // Same line, adjust startX and endX
+                startX = Math.min(highlight.startingX, highlight.endX);
+                endX = Math.max(highlight.startingX, highlight.endX);
+            }
+
+            const range = endY - startY;
+
+            const leftPoints = [];
+            const rightPoints = [];
+
+            // Collect points and rects in one loop
             for (let i = 0; i <= range; i++) {
-                points.push({ x: 0, y: 0 });
+                const currentLineIndex = startY + i;
+                const text = processedElements[currentLineIndex].text;
                 const letterWidth =
-                    measureTextWidth(
-                        processedElements[highlight.startingY].text, fontSize
-                    ) / processedElements[highlight.startingY].text.length;
+                    measureTextWidth(text, fontSize) / text.length;
+
                 let currentX = 0;
+                let lineWidth = text.length * letterWidth;
+
                 if (i === 0) {
-                    currentX = highlight.startingX * letterWidth;
-                }
-                let lineWidth =
-                    processedElements[highlight.startingY + i].text.length *
-                    letterWidth;
-                if (i === 0) {
-                    lineWidth -= currentX;
-                }
-                if (i === range) {
-                    lineWidth = highlight.endX * letterWidth + letterWidth;
+                    // First line
+                    currentX = startX * letterWidth;
+                    if (range === 0) {
+                        // Single-line highlight
+                        lineWidth = (endX - startX + 1) * letterWidth;
+                    } else {
+                        lineWidth = text.length * letterWidth - currentX;
+                    }
+                } else if (i === range) {
+                    // Last line
+                    currentX = 0;
+                    lineWidth = (endX + 1) * letterWidth;
+                } else {
+                    // Middle lines (full line)
+                    currentX = 0;
+                    lineWidth = text.length * letterWidth;
                 }
 
+                const x = currentX + 600;
+                const y = currentLineIndex * fontSize + 200;
+                const height = fontSize;
+
+                // Add rectangle to rects array
                 rects.push({
-                    y: (highlight.startingY + i) * fontSize + 200,
-                    x: currentX + 600,
+                    y: y,
+                    x: x,
                     width: lineWidth,
-                    height: fontSize,
+                    height: height,
                     fill: "yellow",
                     opacity: 0.5,
                 });
+
+                // Collect the left and right points
+                leftPoints.push({ x: x, y: y }); // Top-left corner
+                leftPoints.push({ x: x, y: y + height }); // Bottom-left corner
+                rightPoints.push({ x: x + lineWidth, y: y }); // Top-right corner
+                rightPoints.push({ x: x + lineWidth, y: y + height }); // Bottom-right corner
+
+                // Collect the bottom points
             }
+            leftPoints.reverse();
+            // Reverse the leftPoints to maintain clockwise order
+            // Combine the points
+            const polygonPoints = [
+                leftPoints[leftPoints.length - 1],
+                ...rightPoints,
+                ...leftPoints.slice(0, leftPoints.length - 1),
+            ];
+            console.log("points", polygonPoints);
 
             return {
                 id: uuidv4(),
-                points: points,
+                points: polygonPoints,
                 rects: rects,
                 type: "bookText",
             };
@@ -236,5 +252,4 @@ function HighlightLayer(
 
     return <>{virtualizedHighlights}</>;
 }
-
 export default forwardRef(HighlightLayer);
