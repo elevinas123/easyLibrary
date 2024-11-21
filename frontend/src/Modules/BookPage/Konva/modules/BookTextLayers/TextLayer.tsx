@@ -71,7 +71,8 @@ function TextLayer(
                         startingX: calculateXPositionInText(
                             e.target.attrs.text,
                             e.target.attrs.x,
-                            pos.x
+                            pos.x,
+                            scale
                         ),
                         startingY: Math.floor(
                             (e.target.attrs.y - 200) / fontSize
@@ -79,7 +80,8 @@ function TextLayer(
                         endX: calculateXPositionInText(
                             e.target.attrs.text,
                             e.target.attrs.x,
-                            pos.x
+                            pos.x,
+                            scale
                         ),
                         endY: Math.floor((e.target.attrs.y - 200) / fontSize),
                     },
@@ -100,11 +102,12 @@ function TextLayer(
                     );
 
                     if (!highlight) return highlights;
-
+                    console.log("scale", scale)
                     const xPos = calculateXPositionInText(
                         e.target.attrs.text,
                         e.target.attrs.x,
-                        pos.x
+                        pos.x,
+                        scale,
                     );
 
                     const yPos = Math.floor(
@@ -141,14 +144,18 @@ function TextLayer(
     const calculateXPositionInText = (
         text: string,
         textStartingX: number,
-        mouseStartingX: number
+        mouseStartingX: number,
+        scale: number
     ) => {
-        console.log("text", text);
         const textWidth = measureTextWidth(text) / text.length;
-
+        
         const posInText = Math.floor(
             (mouseStartingX - textStartingX) / textWidth
         );
+        console.log("textSplit", text.split(""))
+        console.log("text", posInText, text[posInText], mouseStartingX);
+        console.log("textStart", textStartingX);
+        console.log("textWidth", textWidth, text.length);
         return posInText;
     };
 
