@@ -178,14 +178,14 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             endType: null,
             type: "arrow",
             text: null,
-            fill: "black",
+            fill: "white",
             seed: Math.floor(Math.random() * 100000),
             roughness: 1,
             strokeWidth: 2,
             bowing: 0,
             fillStyle: "hachure",
             strokeStyle: "solid",
-            stroke: "black",
+            stroke: "white",
             hachureAngle: -41,
             hachureGap: 8,
             fillWeight: 1,
@@ -455,6 +455,12 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             stroke="white" // White stroke around the circle for better visibility
                             strokeWidth={2} // Thickness of the stroke
                             draggable
+                            dragBoundFunc={(pos) => {
+                                return {
+                                    x: selectedArrow.points[2],
+                                    y: selectedArrow.points[3],
+                                };
+                            }}
                             onDragEnd={(e) => handleDragEnd(id, e, "start")}
                             onDragMove={(e) => handleDragStartPoint(id, e)}
                         />
@@ -469,6 +475,12 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             stroke="white" // White stroke around the circle for better visibility
                             strokeWidth={2} // Thickness of the stroke
                             draggable
+                            dragBoundFunc={(pos) => {
+                                return {
+                                    x: selectedArrow.points[0],
+                                    y: selectedArrow.points[1],
+                                };
+                            }}
                             onDragEnd={(e) => handleDragEnd(id, e, "end")}
                             onDragMove={(e) => handleDragEndPoint(id, e)}
                         />
