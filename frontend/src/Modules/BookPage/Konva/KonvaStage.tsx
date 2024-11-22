@@ -364,7 +364,8 @@ export default function KonvaStage({
         if (chapterId === "someId") return;
         console.log("chapterId", chapterId);
         const targetY = -parseInt(chapterId) * settings.fontSize;
-        smoothScroll(0, targetY * scale, 500);
+        console.log("targetY", targetY);
+        smoothScroll(offsetPosition.x, targetY * scale, 500);
     };
 
     return (

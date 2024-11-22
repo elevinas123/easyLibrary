@@ -71,13 +71,13 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
     };
 
     return (
-        <Card className="absolute left-4 top-4 z-50 w-64 bg-card text-card-foreground">
+        <Card className="absolute left-4 top-4 z-50 w-48 bg-card text-card-foreground">
             <CardHeader className="p-4">
-                <CardTitle className="text-lg font-semibold">
+                <CardTitle className="text-md font-semibold">
                     Element Properties
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="p-0 text-">
                 <ScrollArea className="h-[calc(100vh-12rem)]">
                     {controls.map((controlGroup) => (
                         <Collapsible

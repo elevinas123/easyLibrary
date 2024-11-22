@@ -68,7 +68,7 @@ function HighlightLayer(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                if (activeTool !== "Arrow" && activeTool !== "Select") return;
+                if (activeTool !== "Arrow") return;
                 console.log("moving")
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;

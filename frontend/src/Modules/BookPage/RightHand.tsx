@@ -14,7 +14,7 @@ export default function RightHand() {
     const [selected, setSelected] = useState<"notes" | "settings">("notes");
 
     return (
-        <div className="flex flex-col w-96 bg-white border-l border-gray-200 h-screen">
+        <div className="flex flex-col w-64 bg-white border-l border-gray-200 h-screen">
             <Tabs
                 value={selected}
                 onValueChange={(value) =>

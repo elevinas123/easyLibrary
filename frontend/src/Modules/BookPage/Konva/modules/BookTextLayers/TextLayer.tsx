@@ -23,6 +23,7 @@ import {
     scaleAtom,
     settingsAtom,
 } from "../../konvaAtoms";
+import { lineLength } from "roughjs/bin/geometry";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;
@@ -102,12 +103,12 @@ function TextLayer(
                     );
 
                     if (!highlight) return highlights;
-                    console.log("scale", scale)
+                    console.log("scale", scale);
                     const xPos = calculateXPositionInText(
                         e.target.attrs.text,
                         e.target.attrs.x,
                         pos.x,
-                        scale,
+                        scale
                     );
 
                     const yPos = Math.floor(
@@ -147,15 +148,12 @@ function TextLayer(
         mouseStartingX: number,
         scale: number
     ) => {
-        const textWidth = measureTextWidth(text) / text.length;
-        
+        const textWidth =
+            measureTextWidth(text, fontSize, settings.fontFamily) / text.length;
+
         const posInText = Math.floor(
             (mouseStartingX - textStartingX) / textWidth
         );
-        console.log("textSplit", text.split(""))
-        console.log("text", posInText, text[posInText], mouseStartingX);
-        console.log("textStart", textStartingX);
-        console.log("textWidth", textWidth, text.length);
         return posInText;
     };
 

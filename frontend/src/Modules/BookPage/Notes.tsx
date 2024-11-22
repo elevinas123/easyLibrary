@@ -38,6 +38,7 @@ export default function Notes() {
         const validArrows = arrows.filter(
             (arrow) => arrow.startId !== null && arrow.endId !== null
         );
+        console.log("validArrpws", validArrows);
         const mappedNotes = validArrows.map((arrow) => {
             let startText: string = "";
             let endText: string = "";
@@ -112,7 +113,7 @@ export default function Notes() {
 
     return (
         <div className="p-4">
-            <h2 className="text-lg font-semibold mb-4">Notes</h2>
+            <h2 className="text-md font-semibold mb-4">Notes</h2>
             {notes.length > 0 ? (
                 <ScrollArea className="h-[calc(100vh-200px)]">
                     <div className="space-y-4">
@@ -144,7 +145,7 @@ export default function Notes() {
                     <ScrollBar orientation="vertical" />
                 </ScrollArea>
             ) : (
-                <div className="text-gray-500">No notes available.</div>
+                <div className="text-sm text-gray-500">No notes available.</div>
             )}
         </div>
     );
