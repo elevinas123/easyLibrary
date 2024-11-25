@@ -23,6 +23,7 @@ import {
     scaleAtom,
     settingsAtom,
 } from "../../konvaAtoms";
+import { getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;
@@ -55,9 +56,9 @@ function TextLayer(
         ref,
         () => ({
             handleMouseDown(e: KonvaEventObject<MouseEvent>) {
-                if (activeTool !== "Select") return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
+                if (activeTool !== "Select") return;
                 if (!e.target.attrs.text) return;
                 const currentId = uuidv4() as string;
                 console.log("e.target.attrs.text", e.target),

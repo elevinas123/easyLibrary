@@ -69,7 +69,8 @@ function HighlightLayer(
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [highlightOptions, setHighlightOptions] =
         useAtom(highlightOptionsAtom);
-    const [currentHighlight] = useAtom(currentHighlightAtom);
+    const [currentHighlight, setCurrentHighlight] =
+        useAtom(currentHighlightAtom);
     useImperativeHandle(
         ref,
         () => ({
@@ -130,6 +131,12 @@ function HighlightLayer(
                         highlightId: null,
                         mousePosition: { x: 0, y: 0 },
                     });
+                    setCurrentHighlight({
+                        id: null,
+                        editing: false,
+                        creating: false,
+                    });
+                    setHoveredItems([]);
                     return;
                 }
                 const mousePosInViewport = {
@@ -143,6 +150,12 @@ function HighlightLayer(
                     highlightId: highlightsUnderMouse[0].id,
                     mousePosition: mousePosInViewport,
                 });
+                setCurrentHighlight({
+                    id: highlightsUnderMouse[0].id,
+                    editing: true,
+                    creating: false,
+                })
+                
             },
         }),
         [
