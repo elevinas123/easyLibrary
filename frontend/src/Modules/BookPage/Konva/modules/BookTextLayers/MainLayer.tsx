@@ -32,19 +32,17 @@ function MainLayer(
         handleMouseUp,
     }));
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (textComponentRef.current) {
-            textComponentRef.current.handleMouseDown(e);
-        }
         if (highlightComponentRef.current) {
             highlightComponentRef.current.handleMouseDown(e);
         }
+        if (textComponentRef.current) {
+            textComponentRef.current.handleMouseDown(e);
+        }
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("moving primas", e.evt.x)
         if (textComponentRef.current) {
             textComponentRef.current.handleMouseMove(e);
         }
-        console.log("moving toliau")
         if (highlightComponentRef.current) {
             highlightComponentRef.current.handleMouseMove(e);
         }

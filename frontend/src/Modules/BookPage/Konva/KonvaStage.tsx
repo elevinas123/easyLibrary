@@ -10,6 +10,7 @@ import {
     activeToolAtom,
     canvaElementsAtom,
     highlightOptionsAtom,
+    highlightsAtom,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
@@ -26,7 +27,10 @@ import ToolBar from "./modules/ToolBar/ToolBar";
 import Chapters from "../Chapters";
 import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
 import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
-import { getHighlightUnderMouse, isPointInPolygon } from "./functions/getElementsUnderMouse";
+import {
+    getHighlightUnderMouse,
+    isPointInPolygon,
+} from "./functions/getElementsUnderMouse";
 
 export type VisibleArea = {
     x: number;
@@ -60,6 +64,8 @@ export default function KonvaStage({
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
     const [highlightOptions, setHighlightOptions] =
         useAtom(highlightOptionsAtom);
+    const [highlights] = useAtom(highlightsAtom);
+
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
     useEffect(() => {}, [canvaElements]);
@@ -83,7 +89,6 @@ export default function KonvaStage({
     useEffect(() => {
         const stage = stageRef.current;
         if (stage) {
-            console.log("stageRef.current", stageRef.current);
             stage.on("wheel", handleWheel); // Attach wheel handler
         }
 
@@ -162,7 +167,6 @@ export default function KonvaStage({
         if (e.evt.ctrlKey) {
             handleControlWheel(e);
         } else {
-            console.log("handlePanWheel");
             handlePanWheel(e);
         }
     };
@@ -226,7 +230,6 @@ export default function KonvaStage({
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseDownForPan();
             e.evt.preventDefault();
@@ -244,8 +247,7 @@ export default function KonvaStage({
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
-        console.log("removing");
-        
+
         setHoveredItems((prevItems) => {
             return prevItems.filter((item) => {
                 const isInPolygon = isPointInPolygon(pos, item.points);
@@ -261,9 +263,9 @@ export default function KonvaStage({
             });
         });
     };
+    
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("moving inside");
         removeHoversNotUnderMouse(e);
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseMoveForPan();
@@ -311,9 +313,6 @@ export default function KonvaStage({
         };
         setVisibleArea(visibleArea);
     };
-    useEffect(() => {
-        console.log("offsetPosition", offsetPosition);
-    }, [offsetPosition]);
 
     const easeInOutCubic = (t: number) => {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -348,9 +347,7 @@ export default function KonvaStage({
     };
     const handleChapterClick = (chapterId: string) => {
         if (chapterId === "someId") return;
-        console.log("chapterId", chapterId);
         const targetY = -parseInt(chapterId) * settings.fontSize;
-        console.log("targetY", targetY);
         smoothScroll(offsetPosition.x, targetY * scale, 500);
     };
 

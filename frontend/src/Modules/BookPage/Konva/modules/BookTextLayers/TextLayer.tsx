@@ -17,13 +17,12 @@ import { measureTextWidth } from "../../functions/measureTextWidth";
 import { BookTextElementType } from "../../../../../endPointTypes/types";
 import {
     activeToolAtom,
-    currentHighlightIdAtom,
+    currentHighlightAtom,
     highlightsAtom,
     offsetPositionAtom,
     scaleAtom,
     settingsAtom,
 } from "../../konvaAtoms";
-import { lineLength } from "roughjs/bin/geometry";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;
@@ -47,9 +46,8 @@ function TextLayer(
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [_, setHighlights] = useAtom(highlightsAtom);
-    const [currentHighlightId, setCurrentHighlightId] = useAtom(
-        currentHighlightIdAtom
-    );
+    const [currentHighlight, setCurrentHighlight] =
+        useAtom(currentHighlightAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
     const [settings] = useAtom(settingsAtom);
@@ -61,10 +59,14 @@ function TextLayer(
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 if (!e.target.attrs.text) return;
-                const currentId = uuidv4();
+                const currentId = uuidv4() as string;
                 console.log("e.target.attrs.text", e.target),
                     console.log("e.target.attrs.y", e.target.attrs.y),
-                    setCurrentHighlightId(currentId);
+                    setCurrentHighlight({
+                        id: currentId,
+                        editing: false,
+                        creating: true,
+                    });
                 setHighlights((oldHighlights) => [
                     ...oldHighlights,
                     {
@@ -89,9 +91,9 @@ function TextLayer(
                 ]);
             },
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                if (!currentHighlightId) {
-                    return;
-                }
+                if (!currentHighlight.creating) return;
+                const currentHighlightId = currentHighlight.id;
+
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 if (!e.target.attrs.text) return;
@@ -103,7 +105,6 @@ function TextLayer(
                     );
 
                     if (!highlight) return highlights;
-                    console.log("scale", scale);
                     const xPos = calculateXPositionInText(
                         e.target.attrs.text,
                         e.target.attrs.x,
@@ -128,13 +129,17 @@ function TextLayer(
                 });
             },
             handleMouseUp() {
-                setCurrentHighlightId(null);
+                setCurrentHighlight((currentHighlight) => ({
+                    id: currentHighlight.id,
+                    editing: true,
+                    creating: false,
+                }));
             },
         }),
         [
-            setCurrentHighlightId,
+            setCurrentHighlight,
             setHighlights,
-            currentHighlightId,
+            currentHighlight,
             activeTool,
             scale,
             offsetPosition,
@@ -146,7 +151,7 @@ function TextLayer(
         text: string,
         textStartingX: number,
         mouseStartingX: number,
-        scale: number
+        _: number
     ) => {
         const textWidth =
             measureTextWidth(text, fontSize, settings.fontFamily) / text.length;
@@ -162,7 +167,6 @@ function TextLayer(
     }, [processedElements, settings]);
 
     useEffect(() => {
-        console.log("virtualizing", visibleArea);
         setVirtualizedText(
             textElements
                 .filter(

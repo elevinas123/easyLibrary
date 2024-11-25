@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { Layer, Shape } from "react-konva";
-import { hoveredItemsAtom } from "../../konvaAtoms";
+import { highlightsAtom, hoveredItemsAtom } from "../../konvaAtoms";
 
 type HoverHighlightLayerProps = {
     // Define your prop types here

@@ -32,9 +32,18 @@ export const offsetPositionAtom = atom({
     x: 0,
     y: 0,
 });
+export type CurrentHighlight = {
+    id: string | null;
+    editing: boolean;
+    creating: boolean
+}
 
 export const highlightsAtom = atom<HighlightType[]>([]);
-export const currentHighlightIdAtom = atom<string | null>(null);
+export const currentHighlightAtom = atom<CurrentHighlight>({
+    id: null,
+    editing: false,
+    creating: false
+});
 export const arrowsAtom = atom<ArrowElementType[]>([]);
 export const hoveredItemsAtom = atom<ArrowHover[]>([]);
 export const newArrowAtom = atom<ArrowElementType | null>(null);

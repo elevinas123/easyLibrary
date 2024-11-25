@@ -15,6 +15,7 @@ import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
+    currentHighlightAtom,
     highlightOptionsAtom,
     HighlightPoints,
     highlightsAtom,
@@ -68,12 +69,12 @@ function HighlightLayer(
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [highlightOptions, setHighlightOptions] =
         useAtom(highlightOptionsAtom);
+    const [currentHighlight] = useAtom(currentHighlightAtom);
     useImperativeHandle(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
                 if (activeTool !== "Arrow" && activeTool !== "Select") return;
-                console.log("moving");
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 const highlightsUnderMouse = getHighlightUnderMouse(
@@ -113,13 +114,17 @@ function HighlightLayer(
             },
             handleMouseDown(e: KonvaEventObject<MouseEvent>) {
                 //#endregion
+                if (currentHighlight.creating) return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 const highlightsUnderMouse = getHighlightUnderMouse(
                     highlightElements,
                     pos
                 );
-                if (highlightsUnderMouse.length === 0 || activeTool !== "Select") {
+                if (
+                    highlightsUnderMouse.length === 0 ||
+                    activeTool !== "Select"
+                ) {
                     setHighlightOptions({
                         active: false,
                         highlightId: null,
@@ -127,16 +132,22 @@ function HighlightLayer(
                     });
                     return;
                 }
-                console.log("highlightsUnderMouse", highlightsUnderMouse);
+                const mousePosInViewport = {
+                    x: e.evt.offsetX,
+                    y: e.evt.offsetY,
+                };
+                console.log("highlightElements", highlightElements);
+                console.log("highlights", highlights);
                 setHighlightOptions({
                     active: true,
                     highlightId: highlightsUnderMouse[0].id,
-                    mousePosition: { x: pos.x, y: pos.y },
+                    mousePosition: mousePosInViewport,
                 });
             },
         }),
         [
             highlightElements,
+            currentHighlight,
             hoveredItems,
             activeTool,
             scale,
@@ -260,10 +271,9 @@ function HighlightLayer(
                 ...rightPoints,
                 ...leftPoints.slice(0, leftPoints.length - 1),
             ];
-            console.log("points", polygonPoints);
 
             return {
-                id: uuidv4(),
+                id: highlight.id,
                 points: polygonPoints,
                 rects: rects,
                 type: "bookText",

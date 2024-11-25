@@ -29,7 +29,6 @@ export default function CustomTransformer({
             .map((id) => stage.findOne<Konva.Node>(`#${id}`))
             .filter((node) => node !== null)
             .filter((node) => node !== undefined);
-        console.log(selectedNodes);
         // Attach the transformer to the selected nodes
 
         transformer.nodes(selectedNodes);
