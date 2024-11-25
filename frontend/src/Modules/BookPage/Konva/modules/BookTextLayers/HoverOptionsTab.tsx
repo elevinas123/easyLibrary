@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAtom } from "jotai";
 import {
     currentHighlightAtom,
@@ -7,10 +7,11 @@ import {
     hoveredItemsAtom,
 } from "../../konvaAtoms";
 import { Button } from "../../../../../components/ui/button";
+import { FiEdit, FiTrash2, FiMessageCircle, FiSave, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
+import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
+import { Card } from "../../../../../components/ui/card"; // Import Card for styling
 
-type HoverOptionsTabProps = {
-    // Define your prop types here
-};
+type HoverOptionsTabProps = {};
 
 export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const [highlightOptions, setHighlightOptions] = useAtom(highlightOptionsAtom);
@@ -18,45 +19,131 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const [highlights, setHighlights] = useAtom(highlightsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
 
-    const deleteHiglight = () => {
-        console.log("Delete Highlight", highlightOptions);
-        console.log("highlights", highlights);
-        console.log("currentHighlight", currentHighlight);
+    const [isAddingNote, setIsAddingNote] = useState(false);
+    const [noteText, setNoteText] = useState("");
 
-        setHighlights((highlights) => {
-            return [
-                ...highlights.filter(
-                    (highlight) => highlight.id !== highlightOptions.highlightId
-                ),
-            ];
-        });
+    const deleteHighlight = () => {
+        setHighlights((highlights) =>
+            highlights.filter(
+                (highlight) => highlight.id !== highlightOptions.highlightId
+            )
+        );
         setHoveredItems([]);
         setHighlightOptions({
-             active: false,
-    highlightId: null,
-    mousePosition: { x: 0, y: 0 },
-        })
+            active: false,
+            highlightId: null,
+            mousePosition: { x: 0, y: 0 },
+        });
         setCurrentHighlight({
             id: null,
-    editing: false,
-    creating: false
-        })
+            editing: false,
+            creating: false,
+        });
     };
+
+    const editHighlight = () => {
+        console.log("Edit Highlight");
+        // Add edit logic here
+    };
+
+    const addComment = () => {
+        setIsAddingNote(true);
+    };
+
+    const handleSaveNote = () => {
+        if (noteText.trim() === "") {
+            // Optionally, you can add validation or error handling here
+            return;
+        }
+
+        // Update the highlight with the new note
+        setHighlights((highlights) =>
+            highlights.map((highlight) =>
+                highlight.id === highlightOptions.highlightId
+                    ? { ...highlight, note: noteText }
+                    : highlight
+            )
+        );
+
+        // Reset the state
+        setNoteText("");
+        setIsAddingNote(false);
+        setHighlightOptions({
+            ...highlightOptions,
+            active: false,
+        });
+    };
+
+    const handleCancelNote = () => {
+        setNoteText("");
+        setIsAddingNote(false);
+    };
+
     return (
         <div className="absolute z-50">
             {highlightOptions.active && !currentHighlight.creating ? (
-                <div
+                <Card
                     style={{
                         position: "absolute",
                         top: highlightOptions.mousePosition.y,
                         left: highlightOptions.mousePosition.x,
                     }}
-                    className="bg-white rounded-lg shadow-lg"
+                    className="w-64"
                 >
-                    <div className="p-2">Highlight</div>
-                    <Button onClick={deleteHiglight}>Delete</Button>
-                    <div className="p-2">Comment</div>
-                </div>
+                    <div className="divide-y divide-gray-200">
+                        <div
+                            className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"
+                            onClick={editHighlight}
+                        >
+                            <FiEdit className="text-gray-500" />
+                            <span>Edit Highlight</span>
+                        </div>
+                        {!isAddingNote && (
+                            <div
+                                className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"
+                                onClick={addComment}
+                            >
+                                <FiMessageCircle className="text-gray-500" />
+                                <span>Add Note</span>
+                            </div>
+                        )}
+                        {isAddingNote && (
+                            <div className="p-3">
+                                <Textarea
+                                    value={noteText}
+                                    onChange={(e) => setNoteText(e.target.value)}
+                                    placeholder="Enter your note..."
+                                    className="mb-2"
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={handleCancelNote}
+                                        className="flex items-center gap-1"
+                                    >
+                                        <FiX /> Cancel
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        size="sm"
+                                        onClick={handleSaveNote}
+                                        className="flex items-center gap-1"
+                                    >
+                                        <FiSave /> Save
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                        <div
+                            className="flex items-center gap-2 p-3 rounded-lg hover:bg-red-100 cursor-pointer text-red-600"
+                            onClick={deleteHighlight}
+                        >
+                            <FiTrash2 className="text-red-600" />
+                            <span>Delete</span>
+                        </div>
+                    </div>
+                </Card>
             ) : null}
         </div>
     );

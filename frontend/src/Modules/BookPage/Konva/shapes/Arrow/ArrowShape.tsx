@@ -21,6 +21,8 @@ import {
     StartType,
 } from "../../../../../endPointTypes/types";
 import { Circle } from "react-konva";
+import createArrow from "./CreateArrow";
+import { getArrowHighlightsUnderMouse } from "../../functions/getElementsUnderMouse";
 
 type ArrowShapeProps = {
     // Define your prop types here
@@ -151,25 +153,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         if (!pos) return;
         const id = uuidv4();
 
-        const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            if (highlight.rects) {
-                return highlight.rects.some((rect) => {
-                    return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
-                    );
-                });
-            } else {
-                return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
-                );
-            }
-        });
+        const highlightsUnderMouse = getArrowHighlightsUnderMouse(
+            hoveredItems,
+            pos
+        );
         let startId: null | string = null;
         let type: StartType = null;
         console.log("highlightsUnderMouse", highlightsUnderMouse);
@@ -181,27 +168,12 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 type = "text";
             }
         }
-        const arrow: ArrowElementType = {
-            id: id,
-            startId: startId,
-            endId: null,
-            points: [pos.x, pos.y],
+        const arrow = createArrow({
+            points: [pos.x, pos.y, pos.x, pos.y],
+            startId,
             startType: type,
-            endType: null,
-            type: "arrow",
-            text: null,
-            fill: "white",
-            seed: Math.floor(Math.random() * 100000),
-            roughness: 1,
-            strokeWidth: 2,
-            bowing: 0,
-            fillStyle: "hachure",
-            strokeStyle: "solid",
-            stroke: "white",
-            hachureAngle: -41,
-            hachureGap: 8,
-            fillWeight: 1,
-        };
+            id,
+        });
         setNewArrow(arrow);
     };
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
@@ -210,25 +182,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
         if (!pos) return;
         let arrow = newArrow;
-        const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            if (highlight.rects) {
-                return highlight.rects.some((rect) => {
-                    return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
-                    );
-                });
-            } else {
-                return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
-                );
-            }
-        });
+        const highlightsUnderMouse = getArrowHighlightsUnderMouse(
+            hoveredItems,
+            pos
+        );
         if (
             highlightsUnderMouse.length > 0 &&
             highlightsUnderMouse[0].id !== arrow.startId
@@ -468,7 +425,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             stroke="white" // White stroke around the circle for better visibility
                             strokeWidth={2} // Thickness of the stroke
                             draggable
-                            dragBoundFunc={(pos) => {
+                            dragBoundFunc={() => {
                                 return {
                                     x: selectedArrow.points[2],
                                     y: selectedArrow.points[3],
@@ -488,7 +445,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             stroke="white" // White stroke around the circle for better visibility
                             strokeWidth={2} // Thickness of the stroke
                             draggable
-                            dragBoundFunc={(pos) => {
+                            dragBoundFunc={() => {
                                 return {
                                     x: selectedArrow.points[0],
                                     y: selectedArrow.points[1],

@@ -97,8 +97,7 @@ function TextLayer(
 
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
-                if (!e.target.attrs.text) return;
-
+                console.log("cia")
                 setHighlights((highlights) => {
                     const newHighlights = [...highlights];
                     const highlight = newHighlights.find(
@@ -117,15 +116,12 @@ function TextLayer(
                         (e.target.attrs.y - 200) / fontSize
                     );
 
-                    // Check if the position has actually changed
-                    if (highlight.endX === xPos && highlight.endY === yPos) {
-                        return highlights; // No change, return the current state
-                    }
+                   
 
                     // Update only if the positions are different
                     highlight.endX = xPos;
                     highlight.endY = yPos;
-
+                    console.log("highlight", highlight);
                     return newHighlights;
                 });
             },
