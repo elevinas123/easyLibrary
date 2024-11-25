@@ -94,7 +94,7 @@ function TextLayer(
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
                 if (!currentHighlight.creating) return;
                 const currentHighlightId = currentHighlight.id;
-
+                if (!e.target.attrs.text) return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 console.log("cia")

@@ -56,14 +56,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
             return;
         }
 
-        // Update the highlight with the new note
-        setHighlights((highlights) =>
-            highlights.map((highlight) =>
-                highlight.id === highlightOptions.highlightId
-                    ? { ...highlight, note: noteText }
-                    : highlight
-            )
-        );
+        console.log("Save Note", noteText);
 
         // Reset the state
         setNoteText("");
