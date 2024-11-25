@@ -9,6 +9,7 @@ import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
     canvaElementsAtom,
+    currentHighlightAtom,
     highlightOptionsAtom,
     highlightsAtom,
     hoveredItemsAtom,
@@ -65,7 +66,7 @@ export default function KonvaStage({
     const [highlightOptions, setHighlightOptions] =
         useAtom(highlightOptionsAtom);
     const [highlights] = useAtom(highlightsAtom);
-
+    const [currentHighlight] = useAtom(currentHighlightAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
     useEffect(() => {}, [canvaElements]);
@@ -257,13 +258,14 @@ export default function KonvaStage({
                     (item.id === newArrow.startId ||
                         item.id === newArrow.endId);
                 return (
-                    (activeTool === "Arrow" || activeTool === "Select") &&
-                    (isInPolygon || isArrowRelated)
+                    ((activeTool === "Arrow" || activeTool === "Select") &&
+                        (isInPolygon || isArrowRelated)) ||
+                    (item.id === currentHighlight.id &&
+                        (currentHighlight.editing || currentHighlight.creating))
                 );
             });
         });
     };
-    
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         removeHoversNotUnderMouse(e);
