@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAtom } from "jotai";
 import {
+    arrowsAtom,
+    canvaElementsAtom,
     currentHighlightAtom,
     highlightOptionsAtom,
     highlightsAtom,
@@ -10,15 +12,20 @@ import { Button } from "../../../../../components/ui/button";
 import { FiEdit, FiTrash2, FiMessageCircle, FiSave, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
 import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
 import { Card } from "../../../../../components/ui/card"; // Import Card for styling
+import CreateText from "../../shapes/Text/CreateText";
+import createArrow from "../../shapes/Arrow/CreateArrow";
 
 type HoverOptionsTabProps = {};
 
 export default function HoverOptionsTab({}: HoverOptionsTabProps) {
-    const [highlightOptions, setHighlightOptions] = useAtom(highlightOptionsAtom);
-    const [currentHighlight, setCurrentHighlight] = useAtom(currentHighlightAtom);
+    const [highlightOptions, setHighlightOptions] =
+        useAtom(highlightOptionsAtom);
+    const [currentHighlight, setCurrentHighlight] =
+        useAtom(currentHighlightAtom);
     const [highlights, setHighlights] = useAtom(highlightsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
-
+    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [arrowElements, setArrowElements] = useAtom(arrowsAtom);
     const [isAddingNote, setIsAddingNote] = useState(false);
     const [noteText, setNoteText] = useState("");
 
@@ -57,7 +64,29 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         }
 
         console.log("Save Note", noteText);
-
+        const textX = highlightOptions.mousePosition.x + 200;
+        const textY = highlightOptions.mousePosition.y + 10;
+        const newNoteText = CreateText({
+            x: textX,
+            y: textY,
+            text: noteText,
+            fill: "white",
+            strokeColor: "white",
+        });
+        const newNoteArrow = createArrow({
+            points: [
+                highlightOptions.mousePosition.x,
+                highlightOptions.mousePosition.y,
+                textX,
+                textY,
+            ],
+            startId: highlightOptions.highlightId,
+            endId: newNoteText.id,
+            startType: "bookText",
+            endType: "text",
+        });
+        setCanvaElements([...canvaElements, newNoteText]);
+        setArrowElements([...arrowElements, newNoteArrow]);
         // Reset the state
         setNoteText("");
         setIsAddingNote(false);
@@ -104,7 +133,9 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
                             <div className="p-3">
                                 <Textarea
                                     value={noteText}
-                                    onChange={(e) => setNoteText(e.target.value)}
+                                    onChange={(e) =>
+                                        setNoteText(e.target.value)
+                                    }
                                     placeholder="Enter your note..."
                                     className="mb-2"
                                 />

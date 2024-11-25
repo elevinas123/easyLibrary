@@ -10,11 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { useAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
+import { BookTextElementType } from "../../../../../endPointTypes/types";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
 import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
-import { BookTextElementType } from "../../../../../endPointTypes/types";
 import {
     activeToolAtom,
     currentHighlightAtom,
@@ -23,7 +23,6 @@ import {
     scaleAtom,
     settingsAtom,
 } from "../../konvaAtoms";
-import { getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;
