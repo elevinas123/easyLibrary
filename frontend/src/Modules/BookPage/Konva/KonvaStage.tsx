@@ -9,6 +9,7 @@ import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
     canvaElementsAtom,
+    highlightOptionsAtom,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
@@ -17,13 +18,15 @@ import {
     settingsAtom,
 } from "./konvaAtoms";
 import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
-import HoverHighlightLayer from "./modules/HoverLayer/HoverHighlightLayer";
+import HoverHighlightLayer from "./modules/BookTextLayers/HoverHighlightLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
 import Chapters from "../Chapters";
 import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
+import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
+import { getHighlightUnderMouse, isPointInPolygon } from "./functions/getElementsUnderMouse";
 
 export type VisibleArea = {
     x: number;
@@ -51,10 +54,12 @@ export default function KonvaStage({
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const viewportBuffer = 200;
     const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
-    const [_, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
+    const [highlightOptions, setHighlightOptions] =
+        useAtom(highlightOptionsAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
     useEffect(() => {}, [canvaElements]);
@@ -221,6 +226,7 @@ export default function KonvaStage({
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseDownForPan();
             e.evt.preventDefault();
@@ -238,46 +244,26 @@ export default function KonvaStage({
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
-        console.log("removing")
-        const isPointInPolygon = (
-            point: { x: number; y: number },
-            polygon: { x: number; y: number }[]
-        ) => {
-            let isInside = false;
-            for (
-                let i = 0, j = polygon.length - 1;
-                i < polygon.length;
-                j = i++
-            ) {
-                const xi = polygon[i].x,
-                    yi = polygon[i].y;
-                const xj = polygon[j].x,
-                    yj = polygon[j].y;
-
-                const intersect =
-                    yi > point.y !== yj > point.y &&
-                    point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
-                if (intersect) isInside = !isInside;
-            }
-            return isInside;
-        };
-
+        console.log("removing");
+        
         setHoveredItems((prevItems) => {
             return prevItems.filter((item) => {
                 const isInPolygon = isPointInPolygon(pos, item.points);
+
                 const isArrowRelated =
                     newArrow &&
                     (item.id === newArrow.startId ||
                         item.id === newArrow.endId);
                 return (
-                    activeTool === "Arrow" && (isInPolygon || isArrowRelated)
+                    (activeTool === "Arrow" || activeTool === "Select") &&
+                    (isInPolygon || isArrowRelated)
                 );
             });
         });
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        console.log("moving inside")
+        console.log("moving inside");
         removeHoversNotUnderMouse(e);
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseMoveForPan();
@@ -378,10 +364,10 @@ export default function KonvaStage({
                 <div className="h-screen w-full relative">
                     <Tools />
                     <ToolBar selectedItemsIds={selectedItemsIds} />
-
+                    <HoverOptionsTab />
                     <Stage
                         width={window.innerWidth}
-                        style={{ backgroundColor: settings.backgroundColor,  }}
+                        style={{ backgroundColor: settings.backgroundColor }}
                         height={window.innerHeight}
                         ref={stageRef}
                         scaleX={scale}

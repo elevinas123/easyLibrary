@@ -35,6 +35,9 @@ function MainLayer(
         if (textComponentRef.current) {
             textComponentRef.current.handleMouseDown(e);
         }
+        if (highlightComponentRef.current) {
+            highlightComponentRef.current.handleMouseDown(e);
+        }
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         console.log("moving primas", e.evt.x)

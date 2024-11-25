@@ -15,12 +15,14 @@ import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
+    highlightOptionsAtom,
     HighlightPoints,
     highlightsAtom,
     hoveredItemsAtom,
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
+import { getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 
 export type FullHighlight = {
     rects: HighlightRect[];
@@ -45,6 +47,7 @@ type HighlightLayerProps = {
 
 export type HighlightLayerRef = {
     handleMouseMove(e: KonvaEventObject<MouseEvent>): void;
+    handleMouseDown(e: KonvaEventObject<MouseEvent>): void;
 };
 
 function HighlightLayer(
@@ -63,25 +66,19 @@ function HighlightLayer(
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-
+    const [highlightOptions, setHighlightOptions] =
+        useAtom(highlightOptionsAtom);
     useImperativeHandle(
         ref,
         () => ({
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
-                if (activeTool !== "Arrow") return;
-                console.log("moving")
+                if (activeTool !== "Arrow" && activeTool !== "Select") return;
+                console.log("moving");
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
-                const highlightsUnderMouse = highlightElements.filter(
-                    (highlight) =>
-                        highlight.rects.some((rect) => {
-                            return (
-                                pos.x >= rect.x - 10 &&
-                                pos.x <= rect.x + rect.width + 10 &&
-                                pos.y >= rect.y - 10 &&
-                                pos.y <= rect.y + rect.height + 10
-                            );
-                        })
+                const highlightsUnderMouse = getHighlightUnderMouse(
+                    highlightElements,
+                    pos
                 );
                 if (highlightsUnderMouse.length > 0) {
                     const firstHighlight = highlightsUnderMouse[0];
@@ -113,6 +110,29 @@ function HighlightLayer(
                         return;
                     }
                 }
+            },
+            handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+                //#endregion
+                const pos = getPos(offsetPosition, scale, e);
+                if (!pos) return;
+                const highlightsUnderMouse = getHighlightUnderMouse(
+                    highlightElements,
+                    pos
+                );
+                if (highlightsUnderMouse.length === 0 || activeTool !== "Select") {
+                    setHighlightOptions({
+                        active: false,
+                        highlightId: null,
+                        mousePosition: { x: 0, y: 0 },
+                    });
+                    return;
+                }
+                console.log("highlightsUnderMouse", highlightsUnderMouse);
+                setHighlightOptions({
+                    active: true,
+                    highlightId: highlightsUnderMouse[0].id,
+                    mousePosition: { x: pos.x, y: pos.y },
+                });
             },
         }),
         [
