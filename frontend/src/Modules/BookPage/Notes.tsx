@@ -1,8 +1,5 @@
-// Notes.tsx
-
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { StartType } from "../../endPointTypes/types";
 import {
     arrowsAtom,
     canvaElementsAtom,
@@ -22,10 +19,6 @@ type Note = {
     startText: string;
     points: number[];
     arrowId: string;
-    startId: string | null;
-    endId: string | null;
-    startType: StartType;
-    endType: StartType;
 };
 
 export default function Notes() {
@@ -38,39 +31,55 @@ export default function Notes() {
         const validArrows = arrows.filter(
             (arrow) => arrow.startId !== null && arrow.endId !== null
         );
-        console.log("validArrpws", validArrows);
+
+        const getElementContent = (element: any, type: string) => {
+            if (!element) return "Unknown Element";
+
+            // If type is "text" but there's no text, treat it as "element"
+            if (type === "text" && !element.text) {
+                type = "element";
+            }
+
+            switch (type) {
+                case "bookText":
+                    // Always display book text
+                    return element.text || "Book Text";
+                case "text":
+                    return element.text;
+                case "element":
+                default:
+                    return element.name || "Element";
+            }
+        };
+
         const mappedNotes = validArrows.map((arrow) => {
-            let startText: string = "";
-            let endText: string = "";
-            let elements = canvasElements.filter(
-                (element) => element.type === "text"
+            const startElement = canvasElements.find(
+                (element) => element.id === arrow.startId
             );
-            if (arrow.startType === "text") {
-                startText =
-                    elements.find((element) => element.id === arrow.startId)
-                        ?.text || "";
-            }
-            if (arrow.endType === "text") {
-                endText =
-                    elements.find((element) => element.id === arrow.endId)
-                        ?.text || "";
-            }
+            const endElement = canvasElements.find(
+                (element) => element.id === arrow.endId
+            );
+
+            const startText = getElementContent(startElement, arrow.startType);
+            const endText = getElementContent(endElement, arrow.endType);
+
             return {
-                endText,
                 startText,
+                endText,
                 points: arrow.points,
                 arrowId: arrow.id,
-                startId: arrow.startId,
-                endId: arrow.endId,
-                startType: arrow.startType,
-                endType: arrow.endType,
             };
         });
+
         setNotes(mappedNotes);
     }, [arrows, canvasElements]);
+
     const easeInOutCubic = (t: number) => {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
+
     const smoothScroll = (
         targetX: number,
         targetY: number,
@@ -98,44 +107,41 @@ export default function Notes() {
 
         requestAnimationFrame(animateScroll);
     };
+
     const handleNoteClick = (note: Note) => {
-        // Implement navigation to the note's position
         if (note.points && note.points.length >= 2) {
-            const targetY = -note.points[1]; // Assuming Y coordinate is at index 1
+            const targetY = -note.points[1];
             smoothScroll(-note.points[0] + 500, targetY + 300, 500);
         }
     };
 
-    const handleDeleteNote = (noteId: string) => {
-        // Implement note deletion logic
-        // You might need to update the arrowsAtom to remove the arrow
-    };
-
     return (
         <div className="p-4">
-            <h2 className="text-md font-semibold mb-4">Notes</h2>
+            <h2 className="text-lg font-semibold mb-4">Notes</h2>
             {notes.length > 0 ? (
                 <ScrollArea className="h-[calc(100vh-200px)]">
                     <div className="space-y-4">
                         {notes.map((note) => (
                             <Card
                                 key={note.arrowId}
-                                className="cursor-pointer"
+                                className="cursor-pointer hover:shadow-md transition-shadow"
                                 onClick={() => handleNoteClick(note)}
                             >
-                                <CardHeader className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-sm text-gray-500">
-                                            Reference:{" "}
-                                            <span className="italic text-gray-700">
-                                                {note.startText}
-                                            </span>
-                                        </CardTitle>
-                                    </div>
-                                    
+                                <CardHeader className="flex items-center space-x-2">
+                                    {/* Start Type Icon */}
+                                    <span className="bg-blue-500 text-white rounded-full h-6 w-6 flex items-center justify-center">
+                                        {note.startText === "Book Text" ? "B" : "S"}
+                                    </span>
+                                    <CardTitle className="text-md font-medium text-gray-800">
+                                        {note.startText}
+                                    </CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-gray-800">
+                                <CardContent className="flex items-center space-x-2">
+                                    {/* End Type Icon */}
+                                    <span className="bg-green-500 text-white rounded-full h-6 w-6 flex items-center justify-center">
+                                        {note.endText === "Book Text" ? "B" : "E"}
+                                    </span>
+                                    <p className="text-gray-600">
                                         {note.endText}
                                     </p>
                                 </CardContent>

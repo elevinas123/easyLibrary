@@ -152,15 +152,27 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         const id = uuidv4();
 
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {
-            return (
-                pos.x >= highlight.points[0].x - 10 &&
-                pos.x <= highlight.points[1].x &&
-                pos.y >= highlight.points[0].y - 10 &&
-                pos.y <= highlight.points[2].y + 10
-            );
+            if (highlight.rects) {
+                return highlight.rects.some((rect) => {
+                    return (
+                        pos.x >= rect.x - 10 &&
+                        pos.x <= rect.x + rect.width + 10 &&
+                        pos.y >= rect.y - 10 &&
+                        pos.y <= rect.y + rect.height + 10
+                    );
+                });
+            } else {
+                return (
+                    pos.x >= highlight.points[0].x - 10 &&
+                    pos.x <= highlight.points[1].x &&
+                    pos.y >= highlight.points[0].y - 10 &&
+                    pos.y <= highlight.points[2].y + 10
+                );
+            }
         });
         let startId: null | string = null;
         let type: StartType = null;
+        console.log("highlightsUnderMouse", highlightsUnderMouse);
         if (highlightsUnderMouse.length > 0) {
             startId = highlightsUnderMouse[0].id;
             if (highlightsUnderMouse[0].points) {
