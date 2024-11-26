@@ -32,6 +32,8 @@ export default function CreateCircle({
         type: "circle",
         fill,
         radius,
+        width: radius * 2,
+        height: radius * 2,
         id,
         x,
         y,

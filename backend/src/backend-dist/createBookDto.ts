@@ -21,6 +21,7 @@ import { HighlightDto } from "./highlights.dto";
 import { BookTextElementDto } from "./bookTextElement.dto";
 import { CanvaElementType } from "./canvaElementSkeleton.schema";
 import { ChaptersDataDto } from "./chaptersData.dto";
+import { CircleElementDto } from "./circleElement.dto";
 
 export class CreateBookDto implements Omit<BookType, "_id"> {
     @IsString() @IsNotEmpty() title!: string;
@@ -56,6 +57,7 @@ export class CreateBookDto implements Omit<BookType, "_id"> {
     @Type(() => TextElementDto) // First type
     @Type(() => RectElementDto) // Second type
     @Type(() => BookTextElementDto) // Second type
+    @Type(() => CircleElementDto) // Second type
     canvaElements!: CanvaElementType[];
     @IsNumber() scale!: number;
 

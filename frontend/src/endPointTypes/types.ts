@@ -77,7 +77,17 @@ export interface BookTextElementType extends CanvaElementSkeletonType {
   fontFamily: string;
 }
 
-export type CanvaElementType = RectElementType | TextElementType | BookTextElementType;
+export interface CircleElementType extends CanvaElementSkeletonType {
+  type: "circle";
+  fillStyle: string;
+  roughness: number;
+  seed: number;
+  hachureGap: number;
+  hachureAngle: number;
+  radius: number;
+}
+
+export type CanvaElementType = RectElementType | TextElementType | BookTextElementType | CircleElementType;
 
 export interface CurveElementSkeletonType {
   points: number[];
@@ -111,8 +121,14 @@ export interface OffsetPositionType {
   y: number;
 }
 
+export interface ChaptersDataType {
+  id: string;
+  title: string;
+  href: (string | null);
+  indentLevel: (number | null);
+}
+
 export interface Book {
-  _id: string;
   title: string;
   userId: string;
   description: string;
@@ -127,6 +143,7 @@ export interface Book {
   curveElements: ArrowElementType[];
   scale: number;
   offsetPosition: OffsetPositionType;
+  chaptersData: ChaptersDataType[];
 }
 
 export interface ProcessedElementDto {
@@ -169,6 +186,13 @@ export interface HighlightDto {
   endY: number;
 }
 
+export interface ChaptersDataDto {
+  id: string;
+  title: string;
+  href: string;
+  indentLevel: (null | number);
+}
+
 export interface UpdateBookDto extends Partial<CreateBookDto> {
   bookElements?: undefined | ProcessedElementDto[];
   canvaElements?: undefined | CanvaElementType[];
@@ -177,6 +201,7 @@ export interface UpdateBookDto extends Partial<CreateBookDto> {
   liked?: (undefined | false | true);
   scale?: (undefined | number);
   offsetPosition?: (undefined | { x: number; y: number; });
+  chaptersData?: undefined | ChaptersDataDto[];
 }
 
 export interface OffsetPositionDto {
@@ -199,6 +224,7 @@ export interface CreateBookDto {
   scale: number;
   curveElements: ArrowElementDto[];
   offsetPosition: OffsetPositionDto;
+  chaptersData: ChaptersDataDto[];
 }
 
 export interface Bookshelve {

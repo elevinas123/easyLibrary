@@ -8,6 +8,7 @@ import {
 import { RectElementType } from "./elements/rectElement.schema";
 import { TextElementType } from "./elements/textElement.schema";
 import { BookTextElementType } from "./elements/bookTextElement.schema";
+import { CircleElementType } from "./elements/circleElement.schema";
 
 export type CanvaElementSkeletonType = {
     fill: string;
@@ -26,7 +27,8 @@ export type CanvaElementSkeletonType = {
 export type CanvaElementType =
     | RectElementType
     | TextElementType
-    | BookTextElementType;
+    | BookTextElementType
+    | CircleElementType;
 @Schema({ discriminatorKey: "type", _id: false })
 export class CanvaElementSkeleton implements CanvaElementSkeletonType {
     @Prop({ required: true }) fill!: string;

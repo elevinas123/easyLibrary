@@ -112,7 +112,7 @@ function CanvasElement(
                 return;
             }
         }
-        console.log("mouseDown");
+        console.log("mouseDown", activeTool);
         // Check if the click is on the transformer or its children
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
@@ -130,6 +130,9 @@ function CanvasElement(
                 break;
             case "Select":
                 handleSelectToolMouseDown(e);
+                break;
+            case "Circle":
+                circleRef.current?.handleMouseDown(e);
                 break;
             default:
                 setIsEditing(false);
@@ -169,14 +172,16 @@ function CanvasElement(
     };
 
     const getItemsAtPosition = (pos: { x: number; y: number }) => {
+        console.log("canvaElemenets", canvaElements);
         const items = [
-            ...canvaElements.filter(
-                (item) =>
+            ...canvaElements.filter((item) => {
+                return (
                     pos.x >= item.x &&
                     pos.x <= item.x + item.width &&
                     pos.y >= item.y &&
                     pos.y <= item.y + item.height
-            ),
+                );
+            }),
             ...arrows.filter((item) => {
                 const [x1, y1, x2, y2] = item.points;
 
@@ -212,11 +217,17 @@ function CanvasElement(
         if (rectangleRef.current?.handleMouseMove) {
             rectangleRef.current.handleMouseMove(e);
         }
+        if (circleRef.current?.handleMouseMove) {
+            circleRef.current.handleMouseMove(e);
+        }
     };
 
     const handleMouseUp = () => {
         if (rectangleRef.current?.handleMouseUp) {
             rectangleRef.current.handleMouseUp();
+        }
+        if (circleRef.current?.handleMouseUp) {
+            circleRef.current.handleMouseUp();
         }
     };
 
@@ -230,17 +241,38 @@ function CanvasElement(
             );
         }
 
-        const newAttrs = {
-            x: node.x(),
-            y: node.y(),
-            points: [
-                { x: node.x(), y: node.y() },
-                { x: node.x() + node.width(), y: node.y() },
-                { x: node.x() + node.width(), y: node.y() + node.height() },
-                { x: node.x(), y: node.y() + node.height() },
-            ],
-        };
-        console.log("id, newAttrs", id, newAttrs);
+        const element = canvaElements.find((el) => el.id === id);
+        if (!element) return;
+
+        let newAttrs: Partial<CanvaElementType> = {};
+
+        if (element.type === "rect") {
+            newAttrs = {
+                x: node.x(),
+                y: node.y(),
+                points: [
+                    { x: node.x(), y: node.y() },
+                    { x: node.x() + element.width, y: node.y() },
+                    {
+                        x: node.x() + element.width,
+                        y: node.y() + element.height,
+                    },
+                    { x: node.x(), y: node.y() + element.height },
+                ],
+            };
+        } else if (element.type === "circle") {
+            const newX = node.x();
+            const newY = node.y();
+            newAttrs = {
+                x: newX,
+                y: newY,
+            };
+        } else if (element.type === "text") {
+            newAttrs = {
+                x: node.x(),
+                y: node.y(),
+            };
+        }
 
         updateElementInState(id, newAttrs);
     };
@@ -291,7 +323,7 @@ function CanvasElement(
     };
 
     const updateElementInState = (
-        id: string,Canva
+        id: string,
         newAttrs: Partial<CanvaElementType>
     ) => {
         setCanvaElements((elements) =>

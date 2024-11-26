@@ -2,8 +2,8 @@
 
 import { IsEnum, IsNumber, IsString } from "class-validator";
 
-import { CircleElementType } from "../../../schema/canvaElements/elements/circleElement.schema";
-import { CanvaElementSkeletonDto } from "../canvaElementSkeleton.dto";
+import { CircleElementType } from "./circleElement.schema";
+import { CanvaElementSkeletonDto } from "./canvaElementSkeleton.dto";
 
 export class CircleElementDto
     extends CanvaElementSkeletonDto

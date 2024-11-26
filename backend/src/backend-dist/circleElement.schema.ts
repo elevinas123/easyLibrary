@@ -6,7 +6,7 @@ import {
     CanvaElementSkeleton,
     CanvaElementSkeletonSchema,
     CanvaElementSkeletonType,
-} from "../canvaElementSkeleton.schema";
+} from "./canvaElementSkeleton.schema";
 
 export interface CircleElementType extends CanvaElementSkeletonType {
     type: "circle";

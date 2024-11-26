@@ -55,6 +55,8 @@ function Circle(
         return {
             ...element,
             radius,
+            height: radius * 2,
+            width: radius * 2,
         };
     };
 
@@ -64,6 +66,7 @@ function Circle(
         if (!currentItem) return;
         const updatedCircle = updateCircleElement(currentItem, pos);
         updateElement(updatedCircle);
+        console.log(updatedCircle);
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -77,6 +80,7 @@ function Circle(
             id,
             radius: 0,
         });
+        console.log("newCircle", newCircle);
         setCurrentItem(newCircle);
         createElement(newCircle);
     };
