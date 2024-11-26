@@ -1,25 +1,22 @@
-import React, { useState } from "react";
 import { useAtom } from "jotai";
+import { useState } from "react";
+import { FiEdit, FiMessageCircle, FiSave, FiTrash2, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
+import { Button } from "../../../../../components/ui/button";
+import { Card } from "../../../../../components/ui/card"; // Import Card for styling
+import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
 import {
     arrowsAtom,
     canvaElementsAtom,
     currentHighlightAtom,
-    highlightOptionsAtom,
     highlightsAtom,
     hoveredItemsAtom,
 } from "../../konvaAtoms";
-import { Button } from "../../../../../components/ui/button";
-import { FiEdit, FiTrash2, FiMessageCircle, FiSave, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
-import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
-import { Card } from "../../../../../components/ui/card"; // Import Card for styling
-import CreateText from "../../shapes/Text/CreateText";
 import createArrow from "../../shapes/Arrow/CreateArrow";
+import CreateText from "../../shapes/Text/CreateText";
 
 type HoverOptionsTabProps = {};
 
 export default function HoverOptionsTab({}: HoverOptionsTabProps) {
-    const [highlightOptions, setHighlightOptions] =
-        useAtom(highlightOptionsAtom);
     const [currentHighlight, setCurrentHighlight] =
         useAtom(currentHighlightAtom);
     const [highlights, setHighlights] = useAtom(highlightsAtom);
@@ -32,19 +29,17 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const deleteHighlight = () => {
         setHighlights((highlights) =>
             highlights.filter(
-                (highlight) => highlight.id !== highlightOptions.highlightId
+                (highlight) => highlight.id !== currentHighlight.id
             )
         );
         setHoveredItems([]);
-        setHighlightOptions({
-            active: false,
-            highlightId: null,
-            mousePosition: { x: 0, y: 0 },
-        });
+
         setCurrentHighlight({
             id: null,
             editing: false,
             creating: false,
+            mousePosition: { x: 0, y: 0 },
+            offsetPosition: { x: 0, y: 0 },
         });
     };
 
@@ -64,8 +59,8 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         }
 
         console.log("Save Note", noteText);
-        const textX = highlightOptions.mousePosition.x + 200;
-        const textY = highlightOptions.mousePosition.y + 10;
+        const textX = currentHighlight.mousePosition.x + 200;
+        const textY = currentHighlight.mousePosition.y + 10;
         const newNoteText = CreateText({
             x: textX,
             y: textY,
@@ -75,12 +70,12 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         });
         const newNoteArrow = createArrow({
             points: [
-                highlightOptions.mousePosition.x,
-                highlightOptions.mousePosition.y,
+                currentHighlight.mousePosition.x,
+                currentHighlight.mousePosition.y,
                 textX,
                 textY,
             ],
-            startId: highlightOptions.highlightId,
+            startId: currentHighlight.id,
             endId: newNoteText.id,
             startType: "bookText",
             endType: "text",
@@ -90,9 +85,9 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         // Reset the state
         setNoteText("");
         setIsAddingNote(false);
-        setHighlightOptions({
-            ...highlightOptions,
-            active: false,
+        setCurrentHighlight({
+            ...currentHighlight,
+            editing: false,
         });
     };
 
@@ -103,12 +98,12 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
 
     return (
         <div className="absolute z-50">
-            {highlightOptions.active && !currentHighlight.creating ? (
+            {!currentHighlight.creating && currentHighlight.editing ? (
                 <Card
                     style={{
                         position: "absolute",
-                        top: highlightOptions.mousePosition.y,
-                        left: highlightOptions.mousePosition.x,
+                        top: currentHighlight.offsetPosition.y,
+                        left: currentHighlight.offsetPosition.x,
                     }}
                     className="w-64"
                 >
@@ -149,7 +144,6 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
                                         <FiX /> Cancel
                                     </Button>
                                     <Button
-                                        variant="primary"
                                         size="sm"
                                         onClick={handleSaveNote}
                                         className="flex items-center gap-1"

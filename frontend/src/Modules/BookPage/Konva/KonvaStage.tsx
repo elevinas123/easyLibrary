@@ -4,13 +4,17 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
+import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
+import Chapters from "../Chapters";
 import Tools from "./components/Tools";
+import {
+    isPointInPolygon
+} from "./functions/getElementsUnderMouse";
 import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
     canvaElementsAtom,
     currentHighlightAtom,
-    highlightOptionsAtom,
     highlightsAtom,
     hoveredItemsAtom,
     newArrowAtom,
@@ -19,19 +23,13 @@ import {
     selectedItemsIdsAtom,
     settingsAtom,
 } from "./konvaAtoms";
-import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import HoverHighlightLayer from "./modules/BookTextLayers/HoverHighlightLayer";
+import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
+import MainLayer, { MainLayerRef } from "./modules/BookTextLayers/MainLayer";
 import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
-import Chapters from "../Chapters";
-import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
-import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
-import {
-    getHighlightUnderMouse,
-    isPointInPolygon,
-} from "./functions/getElementsUnderMouse";
 
 export type VisibleArea = {
     x: number;
@@ -63,8 +61,6 @@ export default function KonvaStage({
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
-    const [highlightOptions, setHighlightOptions] =
-        useAtom(highlightOptionsAtom);
     const [highlights] = useAtom(highlightsAtom);
     const [currentHighlight] = useAtom(currentHighlightAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);

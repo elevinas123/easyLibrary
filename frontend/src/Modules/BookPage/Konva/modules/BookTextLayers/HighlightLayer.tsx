@@ -8,22 +8,20 @@ import {
     useState,
 } from "react";
 import { Rect } from "react-konva";
-import { v4 as uuidv4 } from "uuid";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
+import { getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 import { getPos } from "../../functions/getPos";
 import { measureTextWidth } from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
     currentHighlightAtom,
-    highlightOptionsAtom,
     HighlightPoints,
     highlightsAtom,
     hoveredItemsAtom,
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
-import { getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 
 export type FullHighlight = {
     rects: HighlightRect[];
@@ -67,8 +65,7 @@ function HighlightLayer(
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-    const [highlightOptions, setHighlightOptions] =
-        useAtom(highlightOptionsAtom);
+
     const [currentHighlight, setCurrentHighlight] =
         useAtom(currentHighlightAtom);
     useImperativeHandle(
@@ -126,15 +123,13 @@ function HighlightLayer(
                     highlightsUnderMouse.length === 0 ||
                     activeTool !== "Select"
                 ) {
-                    setHighlightOptions({
-                        active: false,
-                        highlightId: null,
-                        mousePosition: { x: 0, y: 0 },
-                    });
                     setCurrentHighlight({
                         id: null,
                         editing: false,
                         creating: false,
+                        mousePosition: { x: 0, y: 0 },
+                        offsetPosition: { x: 0, y: 0 },
+                        
                     });
                     setHoveredItems([]);
                     return;
@@ -145,17 +140,14 @@ function HighlightLayer(
                 };
                 console.log("highlightElements", highlightElements);
                 console.log("highlights", highlights);
-                setHighlightOptions({
-                    active: true,
-                    highlightId: highlightsUnderMouse[0].id,
-                    mousePosition: mousePosInViewport,
-                });
+
                 setCurrentHighlight({
                     id: highlightsUnderMouse[0].id,
                     editing: true,
                     creating: false,
-                })
-                
+                    mousePosition: pos,
+                    offsetPosition: mousePosInViewport,
+                });
             },
         }),
         [

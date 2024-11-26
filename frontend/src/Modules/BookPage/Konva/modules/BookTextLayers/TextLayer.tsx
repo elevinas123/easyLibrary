@@ -60,13 +60,26 @@ function TextLayer(
                 if (activeTool !== "Select") return;
                 if (!e.target.attrs.text) return;
                 const currentId = uuidv4() as string;
-                console.log("e.target.attrs.text", e.target),
-                    console.log("e.target.attrs.y", e.target.attrs.y),
-                    setCurrentHighlight({
-                        id: currentId,
-                        editing: false,
-                        creating: true,
-                    });
+                console.log("textElements", textElements);
+                console.log("e.target.attrs.text", e.target);
+                console.log("e.target.attrs.y", e.target.attrs.y);
+                const element = Math.floor((pos.y - 200) / 16);
+                const textElement = textElements[element];
+                const textElementCords = [
+                    textElement.x,
+                    textElement.x +
+                        measureTextWidth(textElement.text, settings.fontSize),
+                ];
+                if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
+                    return;
+                console.log("element", pos.x, textElementCords);
+                setCurrentHighlight({
+                    id: currentId,
+                    editing: false,
+                    creating: true,
+                    mousePosition: { x: pos.x, y: pos.y },
+                    offsetPosition: { x: e.evt.offsetX, y: e.evt.offsetY },
+                });
                 setHighlights((oldHighlights) => [
                     ...oldHighlights,
                     {
@@ -96,7 +109,16 @@ function TextLayer(
                 if (!e.target.attrs.text) return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
-                console.log("cia")
+                console.log("cia");
+                const element = Math.floor((pos.y - 200) / 16);
+                const textElement = textElements[element];
+                const textElementCords = [
+                    textElement.x,
+                    textElement.x +
+                        measureTextWidth(textElement.text, settings.fontSize),
+                ];
+                if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
+                    return;
                 setHighlights((highlights) => {
                     const newHighlights = [...highlights];
                     const highlight = newHighlights.find(
@@ -115,8 +137,6 @@ function TextLayer(
                         (e.target.attrs.y - 200) / fontSize
                     );
 
-                   
-
                     // Update only if the positions are different
                     highlight.endX = xPos;
                     highlight.endY = yPos;
@@ -125,11 +145,23 @@ function TextLayer(
                 });
             },
             handleMouseUp() {
-                setCurrentHighlight((currentHighlight) => ({
-                    id: currentHighlight.id,
-                    editing: true,
-                    creating: false,
-                }));
+                setCurrentHighlight((currentHighlight) =>
+                    currentHighlight.creating || currentHighlight.editing
+                        ? {
+                              id: currentHighlight.id,
+                              editing: true,
+                              creating: false,
+                              mousePosition: currentHighlight.mousePosition,
+                              offsetPosition: currentHighlight.offsetPosition,
+                          }
+                        : {
+                              id: null,
+                              editing: false,
+                              creating: false,
+                              mousePosition: { x: 0, y: 0 },
+                              offsetPosition: { x: 0, y: 0 },
+                          }
+                );
             },
         }),
         [

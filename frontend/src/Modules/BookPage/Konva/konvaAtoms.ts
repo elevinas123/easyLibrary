@@ -18,11 +18,7 @@ export type HighlightPoints = {
     x: number;
     y: number;
 };
-export type HighlightOptionsType = {
-    active: boolean;
-    highlightId: string | null;
-    mousePosition: { x: number; y: number };
-};
+
 export const activeToolAtom = atom<DrawingToolNames>("Select");
 export const stageStateAtom = atom({
     isDrawing: false,
@@ -36,13 +32,17 @@ export type CurrentHighlight = {
     id: string | null;
     editing: boolean;
     creating: boolean
+    mousePosition: { x: number, y: number };
+    offsetPosition: { x: number, y: number };
 }
 
 export const highlightsAtom = atom<HighlightType[]>([]);
 export const currentHighlightAtom = atom<CurrentHighlight>({
     id: null,
     editing: false,
-    creating: false
+    creating: false,
+    mousePosition: { x: 0, y: 0 },
+    offsetPosition: { x: 0, y: 0 }
 });
 export const arrowsAtom = atom<ArrowElementType[]>([]);
 export const hoveredItemsAtom = atom<ArrowHover[]>([]);
@@ -51,11 +51,7 @@ export const canvaElementsAtom = atom<CanvaElementType[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);
 export const selectedItemsIdsAtom = atom<string[]>([]);
 export const scaleAtom = atom(1);
-export const highlightOptionsAtom = atom<HighlightOptionsType>({
-    active: false,
-    highlightId: null,
-    mousePosition: { x: 0, y: 0 },
-});
+
 
 export const settingsAtom = atom({
     fontSize: 16,
