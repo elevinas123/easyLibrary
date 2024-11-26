@@ -7,6 +7,7 @@ import {
     MutableRefObject,
     useEffect,
     useImperativeHandle,
+    useRef,
     useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -29,6 +30,8 @@ import {
     TextElementType,
 } from "../../../../endPointTypes/types";
 import CreateText from "./Text/CreateText";
+import Rectangle, { RectangleRef } from "./Rectangle/Rectangle";
+import Circle, { CircleRef } from "./Circle/Circle";
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -58,7 +61,8 @@ function CanvasElement(
     const [isCreating, setIsCreating] = useState<boolean>(false);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
-
+    const rectangleRef = useRef<RectangleRef | null>(null);
+    const circleRef = useRef<CircleRef | null>(null);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleDoubleClick,
@@ -90,6 +94,12 @@ function CanvasElement(
         handleInputBlur();
     }, [isEditing, selectedItemsIds, canvaElements]);
 
+    const createElement = (element: CanvaElementType) => {
+        setCanvaElements((prevItems) => [...prevItems, element]);
+        setSelectedItemsIds([element.id]);
+        setIsCreating(true);
+    };
+
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         const stage = e.target.getStage();
         const transformer = stage?.findOne<Konva.Transformer>("Transformer");
@@ -102,7 +112,7 @@ function CanvasElement(
                 return;
             }
         }
-        console.log("mouseDown")
+        console.log("mouseDown");
         // Check if the click is on the transformer or its children
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
@@ -116,7 +126,7 @@ function CanvasElement(
                 }
                 break;
             case "Rectangle":
-                handleRectangleToolMouseDown(pos);
+                rectangleRef.current?.handleMouseDown(e);
                 break;
             case "Select":
                 handleSelectToolMouseDown(e);
@@ -139,21 +149,6 @@ function CanvasElement(
             height: 24 + 10,
         });
         setCanvaElements((prevItems) => [...prevItems, newText]);
-        setSelectedItemsIds([id]);
-        setIsCreating(true);
-    };
-
-    const handleRectangleToolMouseDown = (pos: { x: number; y: number }) => {
-        const id = uuidv4();
-        const newRect = CreateRectangle({
-            x: pos.x,
-            y: pos.y,
-            id,
-            width: 0,
-            height: 0,
-        });
-        console.log("newRect", newRect);
-        setCanvaElements((prevItems) => [...prevItems, newRect]);
         setSelectedItemsIds([id]);
         setIsCreating(true);
     };
@@ -204,65 +199,24 @@ function CanvasElement(
         return items;
     };
 
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        if (!isCreating) return;
-        const pos = getPos(offsetPosition, scale, e);
-
-        if (!pos) return;
-
-        setCanvaElements((prevElements) => {
-            if (prevElements.length === 0) return prevElements;
-            const updatedElements = [...prevElements];
-            const lastElement = updatedElements[updatedElements.length - 1];
-            if (lastElement.id === selectedItemsIds[0]) {
-                if (lastElement.type === "rect") {
-                    const updatedElement = updateRectangleElement(
-                        lastElement as RectElementType,
-                        pos
-                    );
-                    updatedElements[updatedElements.length - 1] =
-                        updatedElement;
-                }
-                // Add cases for other types if needed
-            }
-            return updatedElements;
-        });
+    const updateElement = (element: CanvaElementType) => {
+        setCanvaElements((prevItems) => [
+            ...prevItems.map((item) =>
+                item.id === element.id ? element : item
+            ),
+        ]);
     };
 
-    const updateRectangleElement = (
-        element: RectElementType,
-        pos: { x: number; y: number }
-    ): RectElementType => {
-        const { x: startX, y: startY } = element;
-        const newWidth = Math.abs(pos.x - startX);
-        const newHeight = Math.abs(pos.y - startY);
-        const newX = pos.x < startX ? pos.x : startX;
-        const newY = pos.y < startY ? pos.y : startY;
-        console.log(
-            "newX, newY, newWidth, newHeight",
-            newX,
-            newY,
-            newWidth,
-            newHeight
-        );
-        return {
-            ...element,
-            x: newX,
-            y: newY,
-            width: newWidth,
-            height: newHeight,
-            points: [
-                { x: newX, y: newY },
-                { x: newX + newWidth, y: newY },
-                { x: newX + newWidth, y: newY + newHeight },
-                { x: newX, y: newY + newHeight },
-            ],
-        };
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        console.log("hi");
+        if (rectangleRef.current?.handleMouseMove) {
+            rectangleRef.current.handleMouseMove(e);
+        }
     };
 
     const handleMouseUp = () => {
-        if (isCreating) {
-            setIsCreating(false);
+        if (rectangleRef.current?.handleMouseUp) {
+            rectangleRef.current.handleMouseUp();
         }
     };
 
@@ -337,7 +291,7 @@ function CanvasElement(
     };
 
     const updateElementInState = (
-        id: string,
+        id: string,Canva
         newAttrs: Partial<CanvaElementType>
     ) => {
         setCanvaElements((elements) =>
@@ -363,8 +317,21 @@ function CanvasElement(
                     handleDragMove
                 )
             )}
+            <Rectangle
+                createElement={createElement}
+                updateElement={updateElement}
+                ref={rectangleRef}
+            />
+            <Circle
+                createElement={createElement}
+                updateElement={updateElement}
+                ref={circleRef}
+            />
+
             <CustomTransformer
-                selectedIds={selectedItemsIds.filter((id) => !arrows.some((arrow) => arrow.id === id) )}
+                selectedIds={selectedItemsIds.filter(
+                    (id) => !arrows.some((arrow) => arrow.id === id)
+                )}
                 updateElementInState={updateElementInState}
             />
         </>
