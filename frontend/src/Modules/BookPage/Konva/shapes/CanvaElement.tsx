@@ -5,12 +5,13 @@ import {
     ForwardedRef,
     forwardRef,
     MutableRefObject,
-    useEffect,
     useImperativeHandle,
     useRef,
-    useState,
+    useState
 } from "react";
-import { v4 as uuidv4 } from "uuid";
+import {
+    CanvaElementType
+} from "../../../../endPointTypes/types";
 import { getPos } from "../functions/getPos";
 import {
     activeToolAtom,
@@ -21,17 +22,10 @@ import {
     selectedItemsIdsAtom,
 } from "../konvaAtoms";
 import { ArrowShapeRef } from "./Arrow/ArrowShape";
-import CustomTransformer from "./CustomTransformer";
-import CreateRectangle from "./Rectangle/createRectangle";
-import { renderCanvaElement } from "./RenderCanvaElement";
-import {
-    CanvaElementType,
-    RectElementType,
-    TextElementType,
-} from "../../../../endPointTypes/types";
-import CreateText from "./Text/CreateText";
-import Rectangle, { RectangleRef } from "./Rectangle/Rectangle";
 import Circle, { CircleRef } from "./Circle/Circle";
+import CustomTransformer from "./CustomTransformer";
+import Rectangle, { RectangleRef } from "./Rectangle/Rectangle";
+import { renderCanvaElement } from "./RenderCanvaElement";
 import TextElement, { TextElementRef } from "./Text/TextElement";
 
 type CanvasElementProps = {
@@ -43,7 +37,9 @@ export type CanvaElementRef = {
     handleMouseDown(e: KonvaEventObject<MouseEvent>): void;
     handleDoubleClick(e: KonvaEventObject<MouseEvent>): void;
     handleKeyDown(e: KeyboardEvent): void;
-    handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+    handleInputChange:
+        | ((e: React.ChangeEvent<HTMLInputElement>) => void)
+        | undefined;
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
 };
@@ -59,7 +55,6 @@ function CanvasElement(
 
     const [activeTool] = useAtom(activeToolAtom);
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [isCreating, setIsCreating] = useState<boolean>(false);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const rectangleRef = useRef<RectangleRef | null>(null);
@@ -69,37 +64,14 @@ function CanvasElement(
         handleMouseDown,
         handleDoubleClick,
         handleKeyDown,
-        handleInputChange,
+        handleInputChange: textElementRef.current?.handleInputChange,
         handleMouseMove,
         handleMouseUp,
     }));
 
-    useEffect(() => {
-        if (inputRef.current && isEditing && selectedItemsIds.length > 0) {
-            const textItem = canvaElements.find(
-                (item) =>
-                    item.type === "text" && item.id === selectedItemsIds[0]
-            ) as TextElementType | undefined;
-
-            if (textItem) {
-                const input = inputRef.current;
-                input.style.left = `${textItem.x}px`;
-                input.style.top = `${textItem.y}px`;
-                input.style.fontSize = `${textItem.fontSize}px`;
-                input.style.display = "block";
-                input.value = textItem.text;
-                input.style.width = `${textItem.width}px`;
-                input.focus();
-                return;
-            }
-        }
-        handleInputBlur();
-    }, [isEditing, selectedItemsIds, canvaElements]);
-
     const createElement = (element: CanvaElementType) => {
         setCanvaElements((prevItems) => [...prevItems, element]);
         setSelectedItemsIds([element.id]);
-        setIsCreating(true);
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -152,8 +124,10 @@ function CanvasElement(
         const selectedItems = getItemsAtPosition(pos);
         setSelectedItemsIds(selectedItems.map((item) => item.id));
 
-        setIsEditing(false);
-        handleInputBlur();
+        //input blur
+        if (inputRef.current) {
+            inputRef.current.style.display = "none";
+        }
     };
 
     const getItemsAtPosition = (pos: { x: number; y: number }) => {
@@ -196,6 +170,12 @@ function CanvasElement(
             ),
         ]);
     };
+    const deleteElement = (id: string) => {
+        setCanvaElements((prevItems) =>
+            prevItems.filter((item) => item.id !== id)
+        );
+        setSelectedItemsIds([]);
+    };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         console.log("hi");
@@ -236,48 +216,11 @@ function CanvasElement(
     };
 
     const handleDoubleClick = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = getPos(offsetPosition, scale, e);
-
-        if (!pos) return;
-
-        const clickedItem = getItemsAtPosition(pos).find(
-            (item) => item.type === "text"
-        );
-
-        if (clickedItem) {
-            setIsEditing(true);
-            setSelectedItemsIds([clickedItem.id]);
-        }
+        textElementRef.current?.handleDoubleClick(e);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (isEditing) return;
-        if (e.key === "Delete" || e.key === "Backspace") {
-            if (selectedItemsIds.length > 0) {
-                setCanvaElements((prevItems) =>
-                    prevItems.filter(
-                        (item) => !selectedItemsIds.includes(item.id)
-                    )
-                );
-                setSelectedItemsIds([]);
-            }
-        }
-    };
-
-    const handleInputBlur = () => {
-        if (inputRef.current) {
-            inputRef.current.style.display = "none";
-        }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (selectedItemsIds.length === 0) return;
-        const newText = e.target.value;
-        const newWidth = newText.length * 24 + 20;
-        updateElementInState(selectedItemsIds[0], {
-            text: newText,
-            width: newWidth,
-        });
+        textElementRef.current?.handleKeyDown(e);
     };
 
     const updateElementInState = (
@@ -320,6 +263,8 @@ function CanvasElement(
             <TextElement
                 createElement={createElement}
                 updateElement={updateElement}
+                deleteElement={deleteElement}
+                inputRef={inputRef}
                 ref={textElementRef}
             />
 

@@ -38,7 +38,12 @@ function MainNotesLayer(
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        canvasElementRef.current?.handleInputChange(e);
+        if (
+            canvasElementRef.current &&
+            canvasElementRef.current.handleInputChange
+        ) {
+            canvasElementRef.current.handleInputChange(e);
+        }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,7 +55,6 @@ function MainNotesLayer(
             arrowShapeRef.current.handleMouseMove(e);
         }
         canvasElementRef.current?.handleMouseMove(e);
-
     };
 
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
