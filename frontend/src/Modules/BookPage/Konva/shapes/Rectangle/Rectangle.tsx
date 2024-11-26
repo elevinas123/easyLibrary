@@ -14,6 +14,8 @@ import { useAtom } from "jotai";
 import CreateRectangle from "./createRectangle";
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { getPos } from "../../functions/getPos";
+import { Stage } from "konva/lib/Stage";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
 
 type RectangleProps = {
     createElement: (element: CanvaElementType) => void;
@@ -23,6 +25,10 @@ export type RectangleRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
+    handleDragMove: (
+        element: CanvaElementType,
+        node: Shape<ShapeConfig> | Stage
+    ) => Partial<CanvaElementType>;
 };
 
 function Rectangle(
@@ -41,6 +47,7 @@ function Rectangle(
         handleMouseDown,
         handleMouseMove,
         handleMouseUp,
+        handleDragMove,
     }));
 
     const updateRectangleElement = (
@@ -80,7 +87,7 @@ function Rectangle(
         if (!currentItem) return;
         console.log(canvaElements);
         const updatedRectangele = updateRectangleElement(currentItem, pos);
-        updateElement(updatedRectangele)
+        updateElement(updatedRectangele);
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
@@ -101,8 +108,27 @@ function Rectangle(
     const handleMouseUp = () => {
         setCurrentItem(null);
     };
+    const handleDragMove = (
+        element: CanvaElementType,
+        node: Shape<ShapeConfig> | Stage
+    ): Partial<CanvaElementType> => {
+        const newAttrs = {
+            x: node.x(),
+            y: node.y(),
+            points: [
+                { x: node.x(), y: node.y() },
+                { x: node.x() + element.width, y: node.y() },
+                {
+                    x: node.x() + element.width,
+                    y: node.y() + element.height,
+                },
+                { x: node.x(), y: node.y() + element.height },
+            ],
+        };
+        return newAttrs;
+    };
 
-    return <></>;
+    return null
 }
 
 export default forwardRef(Rectangle);

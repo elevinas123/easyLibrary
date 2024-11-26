@@ -111,7 +111,8 @@ export default function CustomTransformer({
                         radius: newRadius,
                         width: newRadius * 2,
                         height: newRadius * 2,
-                        // x and y remain the same since we keep the top-left corner consistent
+                        x: node.x(),
+                        y: node.y(),
                     };
 
                     // Reset scale to avoid double-scaling

@@ -32,6 +32,7 @@ import {
 import CreateText from "./Text/CreateText";
 import Rectangle, { RectangleRef } from "./Rectangle/Rectangle";
 import Circle, { CircleRef } from "./Circle/Circle";
+import TextElement, { TextElementRef } from "./Text/TextElement";
 
 type CanvasElementProps = {
     arrowShapeRef: MutableRefObject<ArrowShapeRef | null>;
@@ -63,6 +64,7 @@ function CanvasElement(
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const rectangleRef = useRef<RectangleRef | null>(null);
     const circleRef = useRef<CircleRef | null>(null);
+    const textElementRef = useRef<TextElementRef | null>(null);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleDoubleClick,
@@ -118,12 +120,10 @@ function CanvasElement(
         if (!pos) return;
         switch (activeTool) {
             case "Text":
-                handleTextToolMouseDown(pos);
+                textElementRef.current?.handleMouseDown(e);
                 break;
             case "Arrow":
-                if (arrowShapeRef.current) {
-                    arrowShapeRef.current.handleMouseDown(e);
-                }
+                arrowShapeRef.current?.handleMouseDown(e);
                 break;
             case "Rectangle":
                 rectangleRef.current?.handleMouseDown(e);
@@ -139,21 +139,6 @@ function CanvasElement(
                 setSelectedItemsIds([]);
                 break;
         }
-    };
-
-    const handleTextToolMouseDown = (pos: { x: number; y: number }) => {
-        const id = uuidv4();
-        const newText = CreateText({
-            x: pos.x,
-            y: pos.y,
-            id,
-            text: "Sample Text",
-            width: 24 * 8 + 10,
-            height: 24 + 10,
-        });
-        setCanvaElements((prevItems) => [...prevItems, newText]);
-        setSelectedItemsIds([id]);
-        setIsCreating(true);
     };
 
     const handleSelectToolMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -214,21 +199,14 @@ function CanvasElement(
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         console.log("hi");
-        if (rectangleRef.current?.handleMouseMove) {
-            rectangleRef.current.handleMouseMove(e);
-        }
-        if (circleRef.current?.handleMouseMove) {
-            circleRef.current.handleMouseMove(e);
-        }
+        rectangleRef.current?.handleMouseMove(e);
+        circleRef.current?.handleMouseMove(e);
     };
 
     const handleMouseUp = () => {
-        if (rectangleRef.current?.handleMouseUp) {
-            rectangleRef.current.handleMouseUp();
-        }
-        if (circleRef.current?.handleMouseUp) {
-            circleRef.current.handleMouseUp();
-        }
+        rectangleRef.current?.handleMouseUp();
+        circleRef.current?.handleMouseUp();
+        textElementRef.current?.handleMouseUp();
     };
 
     const handleDragMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -244,36 +222,16 @@ function CanvasElement(
         const element = canvaElements.find((el) => el.id === id);
         if (!element) return;
 
-        let newAttrs: Partial<CanvaElementType> = {};
+        let newAttrs: Partial<CanvaElementType> | undefined = {};
 
         if (element.type === "rect") {
-            newAttrs = {
-                x: node.x(),
-                y: node.y(),
-                points: [
-                    { x: node.x(), y: node.y() },
-                    { x: node.x() + element.width, y: node.y() },
-                    {
-                        x: node.x() + element.width,
-                        y: node.y() + element.height,
-                    },
-                    { x: node.x(), y: node.y() + element.height },
-                ],
-            };
+            newAttrs = rectangleRef.current?.handleDragMove(element, node);
         } else if (element.type === "circle") {
-            const newX = node.x();
-            const newY = node.y();
-            newAttrs = {
-                x: newX,
-                y: newY,
-            };
+            newAttrs = circleRef.current?.handleDragMove(element, node);
         } else if (element.type === "text") {
-            newAttrs = {
-                x: node.x(),
-                y: node.y(),
-            };
+            newAttrs = textElementRef.current?.handleDragMove(element, node);
         }
-
+        if (!newAttrs) return;
         updateElementInState(id, newAttrs);
     };
 
@@ -358,6 +316,11 @@ function CanvasElement(
                 createElement={createElement}
                 updateElement={updateElement}
                 ref={circleRef}
+            />
+            <TextElement
+                createElement={createElement}
+                updateElement={updateElement}
+                ref={textElementRef}
             />
 
             <CustomTransformer

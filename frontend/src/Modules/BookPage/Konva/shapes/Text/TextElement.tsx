@@ -1,10 +1,9 @@
-// src/components/CanvasElements/Circle/Circle.tsx
-
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
 import {
     CanvaElementType,
-    CircleElementType,
+    RectElementType,
+    TextElementType,
 } from "../../../../../endPointTypes/types";
 import {
     activeToolAtom,
@@ -13,20 +12,18 @@ import {
     scaleAtom,
 } from "../../konvaAtoms";
 import { useAtom } from "jotai";
-import CreateCircle from "./createCircle";
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { getPos } from "../../functions/getPos";
-import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage } from "konva/lib/Stage";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
+import CreateText from "./CreateText";
 
-type CircleProps = {
+type TextElementProps = {
     createElement: (element: CanvaElementType) => void;
     updateElement: (element: CanvaElementType) => void;
 };
-
-export type CircleRef = {
+export type TextElementRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
-    handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
         element: CanvaElementType,
@@ -34,64 +31,41 @@ export type CircleRef = {
     ) => Partial<CanvaElementType>;
 };
 
-function Circle(
-    { createElement, updateElement }: CircleProps,
-    ref: ForwardedRef<CircleRef>
+function TextElement(
+    { createElement, updateElement }: TextElementProps,
+    ref: ForwardedRef<TextElementRef>
 ) {
     const [activeTool] = useAtom(activeToolAtom);
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-    const [scale] = useAtom(scaleAtom);
-    const [currentItem, setCurrentItem] = useState<CircleElementType | null>(
+    const [scale] = useAtom(scaleAtom); // State to handle scale
+    const [isCreating, setIsCreating] = useState<boolean>(false);
+    const [currentItem, setCurrentItem] = useState<TextElementType | null>(
         null
     );
-
     useImperativeHandle(ref, () => ({
         handleMouseDown,
-        handleMouseMove,
         handleMouseUp,
         handleDragMove,
     }));
 
-    const updateCircleElement = (
-        element: CircleElementType,
-        pos: { x: number; y: number }
-    ): CircleElementType => {
-        const { x: centerX, y: centerY } = element;
-        const radius = Math.hypot(pos.x - centerX, pos.y - centerY);
-        return {
-            ...element,
-            radius,
-            height: radius * 2,
-            width: radius * 2,
-        };
-    };
-
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        const pos = getPos(offsetPosition, scale, e);
-        if (!pos) return;
-        if (!currentItem) return;
-        const updatedCircle = updateCircleElement(currentItem, pos);
-        updateElement(updatedCircle);
-        console.log(updatedCircle);
-    };
-
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
-        if (activeTool !== "Circle") return;
+        if (activeTool !== "Text") return;
         const id = uuidv4();
-        const newCircle = CreateCircle({
+        const newText = CreateText({
             x: pos.x,
             y: pos.y,
             id,
-            radius: 0,
+            text: "Sample Text",
+            width: 24 * 8 + 10,
+            height: 24 + 10,
         });
-        console.log("newCircle", newCircle);
-        setCurrentItem(newCircle);
-        createElement(newCircle);
+        console.log("newText", newText);
+        setCurrentItem(newText);
+        createElement(newText);
     };
-
     const handleMouseUp = () => {
         setCurrentItem(null);
     };
@@ -109,4 +83,4 @@ function Circle(
     return null;
 }
 
-export default forwardRef(Circle);
+export default forwardRef(TextElement);
