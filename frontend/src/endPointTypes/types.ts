@@ -54,6 +54,16 @@ export interface CanvaElementSkeletonType {
   opacity: number;
 }
 
+export interface CircleElementType extends CanvaElementSkeletonType {
+  type: "circle";
+  fillStyle: string;
+  roughness: number;
+  seed: number;
+  hachureGap: number;
+  hachureAngle: number;
+  radius: number;
+}
+
 export interface RectElementType extends CanvaElementSkeletonType {
   type: "rect";
   fillStyle: string;
@@ -77,17 +87,7 @@ export interface BookTextElementType extends CanvaElementSkeletonType {
   fontFamily: string;
 }
 
-export interface CircleElementType extends CanvaElementSkeletonType {
-  type: "circle";
-  fillStyle: string;
-  roughness: number;
-  seed: number;
-  hachureGap: number;
-  hachureAngle: number;
-  radius: number;
-}
-
-export type CanvaElementType = RectElementType | TextElementType | BookTextElementType | CircleElementType;
+export type CanvaElementType = CircleElementType | RectElementType | TextElementType | BookTextElementType;
 
 export interface CurveElementSkeletonType {
   points: number[];
@@ -146,13 +146,6 @@ export interface Book {
   chaptersData: ChaptersDataType[];
 }
 
-export interface ProcessedElementDto {
-  text: string;
-  lineX: number;
-  lineWidth: number;
-  lineY: number;
-}
-
 export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
@@ -176,14 +169,6 @@ export interface ArrowElementDto extends CurveElementSkeletonDto {
   endId: (null | string);
   startType: (null | "text" | "bookText");
   endType: (null | "text" | "bookText");
-}
-
-export interface HighlightDto {
-  id: string;
-  startingX: number;
-  startingY: number;
-  endX: number;
-  endY: number;
 }
 
 export interface ChaptersDataDto {

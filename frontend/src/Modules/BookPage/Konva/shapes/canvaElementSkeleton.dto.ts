@@ -1,7 +1,7 @@
 import {Type} from 'class-transformer';
 import {IsArray, IsNumber, IsString, ValidateNested} from 'class-validator';
 
-import {HighlightPointsDto} from './highlightPoints.dto';
+import {HighlightPointsDto} from '../modules/BookTextLayers/highlightPoints.dto';
 
 import {CanvaElementSkeletonType} from './canvaElementSkeleton.schema';
 

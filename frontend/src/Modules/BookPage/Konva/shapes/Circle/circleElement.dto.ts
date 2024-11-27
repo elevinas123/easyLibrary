@@ -2,7 +2,7 @@
 
 import {IsEnum, IsNumber, IsString} from 'class-validator';
 
-import {CanvaElementSkeletonDto} from './canvaElementSkeleton.dto';
+import {CanvaElementSkeletonDto} from '../../../../LibraryPage/api/book/dto/canvaElementsDto/canvaElementSkeleton.dto';
 
 import {CircleElementType} from './circleElement.schema';
 

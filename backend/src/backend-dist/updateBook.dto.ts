@@ -1,18 +1,21 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { ProcessedElementDto } from "./processedElement.dto";
-import { CreateBookDto } from "./createBookDto";
-import { ArrowElementDto } from "./arrowElement.dto";
-import { HighlightDto } from "./highlights.dto";
-import { CanvaElementType } from "./canvaElementSkeleton.schema";
-import { ChaptersDataDto } from "./chaptersData.dto";
+import {PartialType} from '@nestjs/mapped-types';
 
-export class UpdateBookDto extends PartialType(CreateBookDto) {
-    bookElements?: ProcessedElementDto[];
-    canvaElements?: CanvaElementType[];
-    curveElements?: ArrowElementDto[];
-    highlights?: HighlightDto[];
-    liked?: boolean;
-    scale?: number;
-    offsetPosition?: { x: number; y: number };
-    chaptersData?: ChaptersDataDto[];
+import {ArrowElementDto} from './arrowElement.dto';
+import {CanvaElementType} from './canvaElementSkeleton.schema';
+
+import {ChaptersDataDto} from './chaptersData.dto';
+import {CreateBookDto} from './createBookDto';
+import { ProcessedElementDto } from './processedElement.dto';
+import { HighlightDto } from './highlights.dto';
+
+export class UpdateBookDto extends PartialType
+(CreateBookDto) {
+  bookElements?: ProcessedElementDto[];
+  canvaElements?: CanvaElementType[];
+  curveElements?: ArrowElementDto[];
+  highlights?: HighlightDto[];
+  liked?: boolean;
+  scale?: number;
+  offsetPosition?: {x: number; y: number};
+  chaptersData?: ChaptersDataDto[];
 }

@@ -1,18 +1,21 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { ProcessedElementDto } from "./bookElementsDto/processedElement.dto";
-import { CreateBookDto } from "./createBookDto";
-import { ArrowElementDto } from "./curveElementsDto/elements/arrowElement.dto";
-import { HighlightDto } from "./highlightsDto/highlights.dto";
-import { CanvaElementType } from "../schema/canvaElements/canvaElementSkeleton.schema";
-import { ChaptersDataDto } from "./chaptersData/chaptersData.dto";
+import {PartialType} from '@nestjs/mapped-types';
 
-export class UpdateBookDto extends PartialType(CreateBookDto) {
-    bookElements?: ProcessedElementDto[];
-    canvaElements?: CanvaElementType[];
-    curveElements?: ArrowElementDto[];
-    highlights?: HighlightDto[];
-    liked?: boolean;
-    scale?: number;
-    offsetPosition?: { x: number; y: number };
-    chaptersData?: ChaptersDataDto[];
+import {ArrowElementDto} from '../../../../BookPage/Konva/shapes/Arrow/arrowElement.dto';
+import {CanvaElementType} from '../../../../BookPage/Konva/shapes/canvaElementSkeleton.schema';
+
+import {ChaptersDataDto} from './chaptersData/chaptersData.dto';
+import {CreateBookDto} from './createBookDto';
+import { ProcessedElementDto } from '../../../../BookPage/Konva/modules/BookTextLayers/processedElement.dto';
+import { HighlightDto } from '../../../../BookPage/Konva/modules/BookTextLayers/highlights.dto';
+
+export class UpdateBookDto extends PartialType
+(CreateBookDto) {
+  bookElements?: ProcessedElementDto[];
+  canvaElements?: CanvaElementType[];
+  curveElements?: ArrowElementDto[];
+  highlights?: HighlightDto[];
+  liked?: boolean;
+  scale?: number;
+  offsetPosition?: {x: number; y: number};
+  chaptersData?: ChaptersDataDto[];
 }

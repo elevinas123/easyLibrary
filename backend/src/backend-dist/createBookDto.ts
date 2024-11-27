@@ -1,77 +1,71 @@
 // src/books/dto/create-book.dto.ts
 
-import { Type } from "class-transformer";
-import {
-    IsArray,
-    IsBoolean,
-    IsDateString,
-    IsNotEmpty,
-    IsNumber,
-    IsString,
-    ValidateNested,
-} from "class-validator";
-import { ProcessedElementDto } from "./processedElement.dto";
-import { RectElementDto } from "./rectElement.dto";
-import { TextElementDto } from "./textElement.dto";
-import { ArrowElementDto } from "./arrowElement.dto";
-import { OffsetPositionDto } from "./offsetPosition.dto";
-import { BookType } from "./book.schema";
-import { Types } from "mongoose";
-import { HighlightDto } from "./highlights.dto";
-import { BookTextElementDto } from "./bookTextElement.dto";
-import { CanvaElementType } from "./canvaElementSkeleton.schema";
-import { ChaptersDataDto } from "./chaptersData.dto";
-import { CircleElementDto } from "./circleElement.dto";
+import {Type} from 'class-transformer';
+import {IsArray, IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString, ValidateNested,} from 'class-validator';
+import {Types} from 'mongoose';
 
-export class CreateBookDto implements Omit<BookType, "_id"> {
-    @IsString() @IsNotEmpty() title!: string;
+import {BookTextElementDto} from './bookTextElement.dto';
+import {OffsetPositionDto} from './offsetPosition.dto';
+import {ArrowElementDto} from './arrowElement.dto';
+import {CanvaElementType} from './canvaElementSkeleton.schema';
+import {CircleElementDto} from './circleElement.dto';
+import {TextElementDto} from './textElement.dto';
+import {BookType} from './book.schema';
 
-    @IsString()
-    @IsNotEmpty()
-    userId!: Types.ObjectId; // Will be converted to ObjectId in the service
+import {ChaptersDataDto} from './chaptersData.dto';
+import { ProcessedElementDto } from './processedElement.dto';
+import { HighlightDto } from './highlights.dto';
+import { RectElementDto } from './rectElement.dto';
 
-    @IsString() @IsNotEmpty() description!: string;
+export class CreateBookDto implements Omit<BookType, '_id'> {
+  @IsString() @IsNotEmpty() title!: string;
 
-    @IsString() @IsNotEmpty() author!: string;
+  @IsString()
+  @IsNotEmpty()
+  userId!: Types.ObjectId;  // Will be converted to ObjectId in the service
 
-    @IsArray() @IsString({ each: true }) genre!: string[];
+  @IsString() @IsNotEmpty() description!: string;
 
-    @IsString() @IsNotEmpty() imageUrl!: string;
+  @IsString() @IsNotEmpty() author!: string;
 
-    @IsBoolean() liked!: boolean;
+  @IsArray() @IsString({each: true}) genre!: string[];
 
-    @IsDateString() dateAdded!: string;
+  @IsString() @IsNotEmpty() imageUrl!: string;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => ProcessedElementDto)
-    bookElements!: ProcessedElementDto[];
+  @IsBoolean() liked!: boolean;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => HighlightDto) // First type
-    highlights!: HighlightDto[];
+  @IsDateString() dateAdded!: string;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => TextElementDto) // First type
-    @Type(() => RectElementDto) // Second type
-    @Type(() => BookTextElementDto) // Second type
-    @Type(() => CircleElementDto) // Second type
-    canvaElements!: CanvaElementType[];
-    @IsNumber() scale!: number;
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => ProcessedElementDto)
+  bookElements!: ProcessedElementDto[];
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => ArrowElementDto) // Currently only ArrowElement
-    curveElements!: ArrowElementDto[];
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => HighlightDto)  // First type
+  highlights!: HighlightDto[];
 
-    @ValidateNested()
-    @Type(() => OffsetPositionDto)
-    offsetPosition!: OffsetPositionDto;
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => TextElementDto)      // First type
+  @Type(() => RectElementDto)      // Second type
+  @Type(() => BookTextElementDto)  // Second type
+  @Type(() => CircleElementDto)    // Second type
+  canvaElements!: CanvaElementType[];
+  @IsNumber() scale!: number;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => ChaptersDataDto) // Second type
-    chaptersData!: ChaptersDataDto[];
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => ArrowElementDto)  // Currently only ArrowElement
+  curveElements!: ArrowElementDto[];
+
+  @ValidateNested()
+  @Type(() => OffsetPositionDto)
+  offsetPosition!: OffsetPositionDto;
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => ChaptersDataDto)  // Second type
+  chaptersData!: ChaptersDataDto[];
 }

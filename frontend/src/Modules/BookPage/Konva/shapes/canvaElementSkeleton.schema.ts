@@ -2,12 +2,12 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document} from 'mongoose';
 
-import {HighlightPointsSchema, HighlightPointsType,} from './highlightPoints.schema';
-import {BookTextElementType} from './bookTextElement.schema';
+import {HighlightPointsSchema, HighlightPointsType,} from '../modules/BookTextLayers/highlightPoints.schema';
+import {BookTextElementType} from '../modules/BookTextLayers/bookTextElement.schema';
 
-import {CircleElementType} from './circleElement.schema';
-import {RectElementType} from './rectElement.schema';
-import {TextElementType} from './textElement.schema';
+import {CircleElementType} from './Circle/circleElement.schema';
+import {RectElementType} from './Rectangle/rectElement.schema';
+import {TextElementType} from './Text/textElement.schema';
 
 export type CanvaElementSkeletonType = {
   fill: string; x: number; y: number; width: number; height: number; id: string;

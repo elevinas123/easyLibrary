@@ -1,5 +1,5 @@
 import { IsNumber, IsString } from "class-validator";
-import { HighlightType } from "../../schema/highlights/highlights.schema";
+import { HighlightType } from "./highlights.schema";
 
 export class HighlightDto implements HighlightType {
     @IsString() id!: string;

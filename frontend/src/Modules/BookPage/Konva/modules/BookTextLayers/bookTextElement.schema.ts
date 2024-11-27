@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document} from 'mongoose';
 
-import {CanvaElementSkeleton, CanvaElementSkeletonSchema, CanvaElementSkeletonType,} from './canvaElementSkeleton.schema';
+import {CanvaElementSkeleton, CanvaElementSkeletonSchema, CanvaElementSkeletonType,} from '../../shapes/canvaElementSkeleton.schema';
 
 export interface BookTextElementType extends CanvaElementSkeletonType {
   type: 'bookText';
