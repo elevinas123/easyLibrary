@@ -7,9 +7,7 @@ import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
 import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
 import Chapters from "../Chapters";
 import Tools from "./components/Tools";
-import {
-    isPointInPolygon
-} from "./functions/getElementsUnderMouse";
+import { isPointInPolygon } from "./functions/getElementsUnderMouse";
 import { getPos } from "./functions/getPos";
 import {
     activeToolAtom,
@@ -30,6 +28,7 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
+import { useSettings } from "../../../hooks/useSettings";
 
 export type VisibleArea = {
     x: number;
@@ -48,7 +47,7 @@ export default function KonvaStage({
     bookElements,
     chaptersData,
 }: KonvaStageProps) {
-    const [settings, setSettings] = useAtom(settingsAtom);
+    const { settings } = useSettings();
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
     const stageRef = useRef<any>(null);

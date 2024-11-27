@@ -1,6 +1,3 @@
-// Konva/konvaAtoms.ts
-
-// Settings.tsx
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
@@ -22,11 +19,12 @@ import {
 } from "../../components/ui/select";
 import { Slider } from "../../components/ui/slider";
 import { Switch } from "../../components/ui/switch";
-import { settingsAtom } from "./Konva/konvaAtoms";
+import { useSettings } from "../../hooks/useSettings";
+import { SettingsType } from "../../Modules/Settings/settings.schema";
 
 export default function Settings() {
     const [isOpen, setIsOpen] = useState(false);
-    const [settings, setSettings] = useAtom(settingsAtom);
+    const { settings, updateSettings } = useSettings();
 
     const backgroundOptions = [
         { label: "White", value: "#FFFFFF" },
@@ -56,11 +54,11 @@ export default function Settings() {
     ];
     const lineHeightOptions = [1, 1.25, 1.5, 1.75, 2];
 
-    const handleSettingChange = (key: any, value: any) => {
-        setSettings((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+    const handleSettingChange = <K extends keyof SettingsType>(
+        key: K,
+        value: SettingsType[K]
+    ) => {
+        updateSettings({ [key]: value });
     };
 
     return (
@@ -198,7 +196,7 @@ export default function Settings() {
                             <Button
                                 variant="ghost"
                                 onClick={() => {
-                                    setSettings({
+                                    updateSettings({
                                         fontSize: 16,
                                         fontFamily: "Arial",
                                         lineHeight: 1.5,

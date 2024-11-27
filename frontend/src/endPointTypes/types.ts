@@ -146,6 +146,13 @@ export interface Book {
   chaptersData: ChaptersDataType[];
 }
 
+export interface ProcessedElementDto {
+  text: string;
+  lineX: number;
+  lineWidth: number;
+  lineY: number;
+}
+
 export interface CurveElementSkeletonDto {
   points: number[];
   id: string;
@@ -169,6 +176,14 @@ export interface ArrowElementDto extends CurveElementSkeletonDto {
   endId: (null | string);
   startType: (null | "text" | "bookText");
   endType: (null | "text" | "bookText");
+}
+
+export interface HighlightDto {
+  id: string;
+  startingX: number;
+  startingY: number;
+  endX: number;
+  endY: number;
 }
 
 export interface ChaptersDataDto {
@@ -223,6 +238,36 @@ export interface CreateBookshelveDto {
   name: string;
   createdAt: Date;
   books: ObjectId[];
+}
+
+export interface SettingsType {
+  _id: string;
+  userId: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  backgroundColor: string;
+  textColor: string;
+  darkMode: boolean;
+}
+
+export interface UpdateSettingsDto extends Partial<CreateSettingsDto> {
+  fontSize?: (undefined | number);
+  fontFamily?: (undefined | string);
+  lineHeight?: (undefined | number);
+  backgroundColor?: (undefined | string);
+  textColor?: (undefined | string);
+  darkMode?: (undefined | false | true);
+}
+
+export interface CreateSettingsDto {
+  userId: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  backgroundColor: string;
+  textColor: string;
+  darkMode: (false | true);
 }
 
 export type ObjectId = string;

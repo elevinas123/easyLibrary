@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Notes from "./Notes";
-import Settings from "./Settings";
+import Settings from "../Settings/Settings";
 import {
     Tabs,
     TabsContent,

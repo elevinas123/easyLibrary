@@ -1,6 +1,6 @@
 // This file is auto-generated from endpointMap.json. Do not modify manually.
 
-import { User, Book, Bookshelve } from './types';
+import { User, Book, Bookshelve, SettingsType } from './types';
 
 export const endpointMap = {
   "POST /user": "User",
@@ -22,6 +22,12 @@ export const endpointMap = {
   "POST /bookshelve": "Bookshelve",
   "PUT /bookshelve/:id": "Bookshelve",
   "DELETE /bookshelve/:id": "Bookshelve",
+  "GET /settings": "SettingsType[]",
+  "GET /settings/user/:userId": "SettingsType",
+  "GET /settings/:id": "SettingsType",
+  "PATCH /settings/:id": "SettingsType",
+  "PATCH /settings/user/:userId": "SettingsType",
+  "POST /settings": "SettingsType",
 } as const;
 
 export type Endpoint = keyof typeof endpointMap;
@@ -46,4 +52,10 @@ export type ApiResponseTypes = {
   "POST /bookshelve": Bookshelve;
   "PUT /bookshelve/:id": Bookshelve;
   "DELETE /bookshelve/:id": Bookshelve;
+  "GET /settings": SettingsType[];
+  "GET /settings/user/:userId": SettingsType;
+  "GET /settings/:id": SettingsType;
+  "PATCH /settings/:id": SettingsType;
+  "PATCH /settings/user/:userId": SettingsType;
+  "POST /settings": SettingsType;
 };

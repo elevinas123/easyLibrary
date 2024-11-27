@@ -21,8 +21,8 @@ import {
     highlightsAtom,
     offsetPositionAtom,
     scaleAtom,
-    settingsAtom,
 } from "../../konvaAtoms";
+import { useSettings } from "../../../../../hooks/useSettings";
 
 type TextLayerProps = {
     visibleArea: VisibleArea;
@@ -50,7 +50,7 @@ function TextLayer(
         useAtom(currentHighlightAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
-    const [settings] = useAtom(settingsAtom);
+    const { settings } = useSettings();
     useImperativeHandle(
         ref,
         () => ({

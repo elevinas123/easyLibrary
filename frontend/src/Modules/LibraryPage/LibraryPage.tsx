@@ -12,6 +12,7 @@ import BookCardSkeleton from "./BookCardSkeleton";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
 import { useSidebar } from "../../hooks/useSidebar";
+import { useSettings } from "../../hooks/useSettings";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -43,6 +44,10 @@ export default function LibraryPage() {
     const [mounted, setMounted] = useState(false);
     const [theme, setTheme] = useState<"dark" | "light">("dark");
     const queryClient = useQueryClient();
+    const { settings } = useSettings();
+    useEffect(() => {
+        console.log("settings", settings);
+    }, []);
     const { toast } = useToast();
     const { data: bookData } = useQuery({
         queryKey: ["book"],
