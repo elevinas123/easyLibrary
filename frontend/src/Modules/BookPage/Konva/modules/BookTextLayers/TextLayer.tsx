@@ -50,6 +50,7 @@ function TextLayer(
         useAtom(currentHighlightAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
+    const [initialOffset, setInitialOffset] = useState({ x: 600, y: 200 });
     const { settings } = useSettings();
     useImperativeHandle(
         ref,
@@ -60,10 +61,9 @@ function TextLayer(
                 if (activeTool !== "Select") return;
                 if (!e.target.attrs.text) return;
                 const currentId = uuidv4() as string;
-                console.log("textElements", textElements);
-                console.log("e.target.attrs.text", e.target);
-                console.log("e.target.attrs.y", e.target.attrs.y);
-                const element = Math.floor((pos.y - 200) / 16);
+                const element = Math.floor(
+                    (pos.y - initialOffset.y) / fontSize
+                );
                 const textElement = textElements[element];
                 const textElementCords = [
                     textElement.x,
@@ -72,7 +72,6 @@ function TextLayer(
                 ];
                 if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
                     return;
-                console.log("element", pos.x, textElementCords);
                 setCurrentHighlight({
                     id: currentId,
                     editing: false,
@@ -91,7 +90,7 @@ function TextLayer(
                             scale
                         ),
                         startingY: Math.floor(
-                            (e.target.attrs.y - 200) / fontSize
+                            (e.target.attrs.y - initialOffset.y) / fontSize
                         ),
                         endX: calculateXPositionInText(
                             e.target.attrs.text,
@@ -99,7 +98,9 @@ function TextLayer(
                             pos.x,
                             scale
                         ),
-                        endY: Math.floor((e.target.attrs.y - 200) / fontSize),
+                        endY: Math.floor(
+                            (e.target.attrs.y - initialOffset.y) / fontSize
+                        ),
                     },
                 ]);
             },
@@ -109,8 +110,9 @@ function TextLayer(
                 if (!e.target.attrs.text) return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
-                console.log("cia");
-                const element = Math.floor((pos.y - 200) / 16);
+                const element = Math.floor(
+                    (pos.y - initialOffset.y) / fontSize
+                );
                 const textElement = textElements[element];
                 const textElementCords = [
                     textElement.x,
@@ -134,7 +136,7 @@ function TextLayer(
                     );
 
                     const yPos = Math.floor(
-                        (e.target.attrs.y - 200) / fontSize
+                        (e.target.attrs.y - initialOffset.y) / fontSize
                     );
 
                     // Update only if the positions are different
@@ -229,8 +231,8 @@ function TextLayer(
             return {
                 id: uuidv4(),
                 type: "bookText",
-                x: textElement.lineX + 600,
-                y: textElement.lineY * fontSize + 200,
+                x: textElement.lineX + initialOffset.x,
+                y: textElement.lineY * fontSize + initialOffset.y,
                 width: textElement.lineWidth,
                 height: fontSize * settings.lineHeight,
                 text: textElement.text,
@@ -244,20 +246,36 @@ function TextLayer(
                 incomingArrowIds: [],
                 points: [
                     {
-                        x: textElement.lineX + 600,
-                        y: textElement.lineY * fontSize + 200,
+                        x: textElement.lineX + initialOffset.x,
+                        y:
+                            textElement.lineY * fontSize * settings.lineHeight +
+                            initialOffset.y,
                     },
                     {
-                        x: textElement.lineX + textElement.lineWidth + 600,
-                        y: textElement.lineY * fontSize + 200,
+                        x:
+                            textElement.lineX +
+                            textElement.lineWidth +
+                            initialOffset.x,
+                        y:
+                            textElement.lineY * fontSize * settings.lineHeight +
+                            initialOffset.y,
                     },
                     {
-                        x: textElement.lineX + textElement.lineWidth + 600,
-                        y: textElement.lineY * fontSize + 200 + fontSize,
+                        x:
+                            textElement.lineX +
+                            textElement.lineWidth +
+                            initialOffset.x,
+                        y:
+                            textElement.lineY * fontSize * settings.lineHeight +
+                            initialOffset.y +
+                            fontSize * settings.lineHeight,
                     },
                     {
-                        x: textElement.lineX + 600,
-                        y: textElement.lineY * fontSize + 200 + fontSize,
+                        x: textElement.lineX + initialOffset.x,
+                        y:
+                            textElement.lineY * fontSize * settings.lineHeight +
+                            initialOffset.y +
+                            fontSize * settings.lineHeight,
                     },
                 ],
             };

@@ -11,14 +11,17 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from "../../components/ui/card";
-import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area";
+import { ScrollArea } from "../../components/ui/scroll-area";
 
 type Note = {
     endText: string;
     startText: string;
     points: number[];
     arrowId: string;
+    startType: string;
+    endType: string;
 };
 
 export default function Notes() {
@@ -32,26 +35,6 @@ export default function Notes() {
             (arrow) => arrow.startId !== null && arrow.endId !== null
         );
 
-        const getElementContent = (element: any, type: string) => {
-            if (!element) return "Unknown Element";
-
-            // If type is "text" but there's no text, treat it as "element"
-            if (type === "text" && !element.text) {
-                type = "element";
-            }
-
-            switch (type) {
-                case "bookText":
-                    // Always display book text
-                    return element.text || "Book Text";
-                case "text":
-                    return element.text;
-                case "element":
-                default:
-                    return element.name || "Element";
-            }
-        };
-
         const mappedNotes = validArrows.map((arrow) => {
             const startElement = canvasElements.find(
                 (element) => element.id === arrow.startId
@@ -59,7 +42,8 @@ export default function Notes() {
             const endElement = canvasElements.find(
                 (element) => element.id === arrow.endId
             );
-
+            console.log("startElement", startElement);
+            console.log("endElement", endElement);
             const startText = getElementContent(startElement, arrow.startType);
             const endText = getElementContent(endElement, arrow.endType);
 
@@ -68,6 +52,8 @@ export default function Notes() {
                 endText,
                 points: arrow.points,
                 arrowId: arrow.id,
+                startType: arrow.startType,
+                endType: arrow.endType,
             };
         });
 
@@ -75,9 +61,7 @@ export default function Notes() {
     }, [arrows, canvasElements]);
 
     const easeInOutCubic = (t: number) => {
-        return t < 0.5
-            ? 4 * t * t * t
-            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
 
     const smoothScroll = (
@@ -115,6 +99,19 @@ export default function Notes() {
         }
     };
 
+    // Helper function to get content from elements
+    function getElementContent(element: any, type: string): string {
+        if (!element) return "Unknown";
+        if (type === "BookText") {
+            return element.text || "Book Text";
+        } else if (type === "StickyNote") {
+            return element.content || "Sticky Note";
+        } else if (type === "Image") {
+            return "Image";
+        }
+        return "Unknown";
+    }
+
     return (
         <div className="p-4">
             <h2 className="text-lg font-semibold mb-4">Notes</h2>
@@ -127,28 +124,33 @@ export default function Notes() {
                                 className="cursor-pointer hover:shadow-md transition-shadow"
                                 onClick={() => handleNoteClick(note)}
                             >
-                                <CardHeader className="flex items-center space-x-2">
-                                    {/* Start Type Icon */}
-                                    <span className="bg-blue-500 text-white rounded-full h-6 w-6 flex items-center justify-center">
-                                        {note.startText === "Book Text" ? "B" : "S"}
-                                    </span>
+                                <CardHeader>
                                     <CardTitle className="text-md font-medium text-gray-800">
-                                        {note.startText}
+                                        {note.startType} → {note.endType}
                                     </CardTitle>
+                                    <CardDescription>
+                                        Click to navigate to the note
+                                    </CardDescription>
                                 </CardHeader>
-                                <CardContent className="flex items-center space-x-2">
-                                    {/* End Type Icon */}
-                                    <span className="bg-green-500 text-white rounded-full h-6 w-6 flex items-center justify-center">
-                                        {note.endText === "Book Text" ? "B" : "E"}
-                                    </span>
-                                    <p className="text-gray-600">
-                                        {note.endText}
-                                    </p>
+                                <CardContent>
+                                    <div className="flex flex-col space-y-2">
+                                        <div>
+                                            <span className="font-semibold">
+                                                From:
+                                            </span>{" "}
+                                            {note.startText}
+                                        </div>
+                                        <div>
+                                            <span className="font-semibold">
+                                                To:
+                                            </span>{" "}
+                                            {note.endText}
+                                        </div>
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
-                    <ScrollBar orientation="vertical" />
                 </ScrollArea>
             ) : (
                 <div className="text-sm text-gray-500">No notes available.</div>
