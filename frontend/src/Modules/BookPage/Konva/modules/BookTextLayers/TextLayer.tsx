@@ -14,7 +14,10 @@ import { BookTextElementType } from "../../../../../endPointTypes/types";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
 import { getPos } from "../../functions/getPos";
-import { measureTextWidth } from "../../functions/measureTextWidth";
+import {
+    measureCharacterWidths,
+    measureTextWidth,
+} from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
     currentHighlightAtom,
@@ -39,7 +42,7 @@ export type TextLayerRef = {
 };
 
 function TextLayer(
-    { visibleArea, fontSize, processedElements }: TextLayerProps,
+    { visibleArea, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
     const [textElements, setTextElements] = useState<BookTextElementType[]>([]);
@@ -52,6 +55,7 @@ function TextLayer(
     const [scale] = useAtom(scaleAtom);
     const [initialOffset, setInitialOffset] = useState({ x: 600, y: 200 });
     const { settings } = useSettings();
+    const fontSize = settings.fontSize;
     useImperativeHandle(
         ref,
         () => ({
@@ -181,14 +185,26 @@ function TextLayer(
         text: string,
         textStartingX: number,
         mouseStartingX: number,
-        _: number
+        scale: number
     ) => {
-        const textWidth =
-            measureTextWidth(text, fontSize, settings.fontFamily) / text.length;
-
-        const posInText = Math.floor(
-            (mouseStartingX - textStartingX) / textWidth
+        const characterWidths = measureCharacterWidths(
+            text,
+            fontSize,
+            settings.fontFamily
         );
+        const textWidth = measureTextWidth(text, fontSize, settings.fontFamily);
+        const mouseRelativeX = mouseStartingX - textStartingX;
+        // Find the character corresponding to the mouse position
+        let posInText = 0;
+
+        for (let i = 0; i < characterWidths.length; i++) {
+            const { cumulativeWidth } = characterWidths[i];
+            if (mouseRelativeX < cumulativeWidth) {
+                posInText = i;
+                break;
+            }
+        }
+
         return posInText;
     };
 
