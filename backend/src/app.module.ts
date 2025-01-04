@@ -10,7 +10,7 @@ import { BookshelveModule } from "./bookshelve/bookshelve.module";
 import { SettingsModule } from "./settings/settings.module";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
     imports: [
