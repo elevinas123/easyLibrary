@@ -10,11 +10,10 @@ import {
     UseGuards,
 } from "@nestjs/common";
 
-import { JwtAuthGuard } from "../../../Auth/api/auth/jwt-auth.guard";
-
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dto/createBookDto";
 import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("book")

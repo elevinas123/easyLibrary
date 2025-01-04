@@ -1,21 +1,20 @@
-import {Body, Controller, Post, Request, UseGuards} from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
 
-import {CreateUserDto} from '../user/dto/create-user.dto';
+import { AuthService, PrismaUserCreation } from "./auth.service";
+import { LocalAuthGuard } from "./localAuthGuard";
 
-import {AuthService} from './auth.service';
-import {LocalAuthGuard} from './localAuthGuard';
-
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Request() req: any) {
-    return this.authService.login(req.user);
-  }
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
-  }
+    @UseGuards(LocalAuthGuard)
+    @Post("login")
+    async login(@Request() req: any) {
+        return this.authService.login(req.user);
+    }
+
+    @Post("register")
+    async register(@Body() data: PrismaUserCreation) {
+        return this.authService.register(data);
+    }
 }

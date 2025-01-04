@@ -1,36 +1,44 @@
-import {Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Prisma } from "@prisma/client";
+import * as bcrypt from "bcrypt"; // Import bcrypt for password hashing
 
-import {CreateUserDto} from '../user/dto/create-user.dto';
-import {User} from '../user/schemas/user.schema';
-import {UserService} from '../user/user.service';
+import { PrismaService } from "../prisma/prisma.service";
+
+export type PrismaUserCreation = Prisma.UserCreateInput;
 
 @Injectable()
 export class AuthService {
-  constructor(
-      private readonly jwtService: JwtService,
-      private readonly userModel: UserService) {}
+    constructor(
+        private readonly jwtService: JwtService,
+        private readonly prisma: PrismaService
+    ) {}
 
-  // Validate user credentials by comparing with stored data
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userModel.findOneByUsername(username);
-    if (user && user.password === pass) {
-      return user;
+    async validateUser(username: string, password: string): Promise<any> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+        });
+        if (user && (await bcrypt.compare(password, user.password))) {
+            return user;
+        }
+        return null;
     }
-    return null;
-  }
 
-  // Login generates the JWT token for a validated user
-  async login(user: any) {
-    const payload = {username: user.username, sub: user.userId};
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: user,
-    };
-  }
+    async login(user: any) {
+        const payload = { username: user.username, sub: user.id };
+        return {
+            access_token: this.jwtService.sign(payload),
+            user,
+        };
+    }
 
-  // Register a new user using CreateUserDto
-  async register(createUserDto: CreateUserDto): Promise<User> {
-    return this.userModel.create(createUserDto);
-  }
+    async register(data: PrismaUserCreation) {
+        const hashedPassword = await bcrypt.hash(data.password, 10); // Hash the password
+        return this.prisma.user.create({
+            data: {
+                ...data,
+                password: hashedPassword, // Store hashed password
+            },
+        });
+    }
 }

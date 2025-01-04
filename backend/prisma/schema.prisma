@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+// User model
+model User {
+  id          String       @id @default(cuid())
+  username    String       @unique
+  age         Int
+  password    String
+  comment     String?
+  books       Book[]
+  bookshelves Bookshelve[]
+}
+
+model Genre {
+  id    String      @id @default(cuid())
+  name  String      @unique // Ensure genre names are unique
+  books BookGenre[]
+}
+
+model BookGenre {
+  bookId  String
+  genreId String
+  book    Book   @relation(fields: [bookId], references: [id])
+  genre   Genre  @relation(fields: [genreId], references: [id])
+
+  @@id([bookId, genreId]) // Composite key to avoid duplicate relations
+}
+
+// Book model
+model Book {
+  id             String                 @id @default(cuid())
+  title          String
+  description    String
+  author         String
+  genres         BookGenre[]
+  bookshelves    Bookshelve[]
+  imageUrl       String
+  liked          Boolean
+  dateAdded      DateTime
+  scale          Float
+  offsetPosition OffsetPosition?
+  userId         String
+  user           User                   @relation(fields: [userId], references: [id])
+  bookElements   ProcessedElement[]
+  highlights     Highlight[]
+  canvaElements  CanvaElementSkeleton[]
+  curveElements  CurveElementSkeleton[]
+  chaptersData   ChaptersData[]
+}
+
+// Bookshelve model
+model Bookshelve {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  books     Book[]
+}
+
+// ProcessedElement model
+model ProcessedElement {
+  id        String @id @default(cuid())
+  text      String
+  lineX     Float
+  lineWidth Float
+  lineY     Float
+  bookId    String
+  book      Book   @relation(fields: [bookId], references: [id])
+}
+
+// Highlight model
+model Highlight {
+  id        String @id @default(cuid())
+  startingX Float
+  startingY Float
+  endX      Float
+  endY      Float
+  bookId    String
+  book      Book   @relation(fields: [bookId], references: [id])
+}
+
+// OffsetPosition model
+model OffsetPosition {
+  id     String @id @default(cuid())
+  x      Float
+  y      Float
+  bookId String @unique // Ensures one-to-one relation
+  book   Book   @relation(fields: [bookId], references: [id])
+}
+
+// ChaptersData model
+model ChaptersData {
+  id          String  @id @default(cuid())
+  title       String
+  href        String?
+  indentLevel Int?
+  bookId      String
+  book        Book    @relation(fields: [bookId], references: [id])
+}
+
+model Point {
+  id      String                @id @default(cuid())
+  x       Float
+  y       Float
+  curveId String?
+  canvaId String?
+  curve   CurveElementSkeleton? @relation(fields: [curveId], references: [id])
+  canva   CanvaElementSkeleton? @relation(fields: [canvaId], references: [id])
+
+  @@index([curveId])
+  @@index([canvaId])
+}
+
+model CanvaElementSkeleton {
+  id             String          @id @default(cuid())
+  fill           String
+  x              Float
+  y              Float
+  width          Float
+  height         Float
+  strokeColor    String
+  strokeWidth    Float
+  opacity        Float
+  rotation       Float
+  points         Point[] // We'll discuss points later
+  outgoingArrows ArrowElement[]  @relation("OutgoingArrows")
+  incomingArrows ArrowElement[]  @relation("IncomingArrows")
+  bookId         String
+  book           Book            @relation(fields: [bookId], references: [id])
+  circleElements CircleElement[]
+  rectElements   RectElement[]
+  textElements   TextElement[]
+}
+
+// CurveElementSkeleton model
+model CurveElementSkeleton {
+  id            String         @id @default(cuid())
+  points        Point[]
+  fill          String
+  text          String?
+  roughness     Float
+  bowing        Float
+  seed          Float
+  strokeWidth   Float
+  strokeStyle   String
+  stroke        String
+  fillStyle     String
+  fillWeight    Float
+  hachureAngle  Float
+  hachureGap    Float
+  type          String
+  bookId        String
+  book          Book           @relation(fields: [bookId], references: [id])
+  arrowElements ArrowElement[]
+}
+
+model ArrowElement {
+  id        String                @id @default(cuid())
+  startId   String? // Optional start element
+  endId     String? // Optional end element
+  type      String
+  startType String?
+  endType   String?
+  from      CanvaElementSkeleton  @relation("OutgoingArrows", fields: [fromId], references: [id])
+  to        CanvaElementSkeleton  @relation("IncomingArrows", fields: [toId], references: [id])
+  fromId    String
+  toId      String
+  curveId   String?
+  curve     CurveElementSkeleton? @relation(fields: [curveId], references: [id])
+}
+
+// CircleElement model
+model CircleElement {
+  id           String               @id @default(cuid())
+  fillStyle    String
+  roughness    Float
+  seed         Float
+  hachureGap   Float
+  hachureAngle Float
+  radius       Float
+  type         String
+  canvaId      String
+  canva        CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
+}
+
+// RectElement model
+model RectElement {
+  id           String               @id @default(cuid())
+  fillStyle    String
+  roughness    Float
+  seed         Float
+  hachureGap   Float
+  hachureAngle Float
+  type         String
+  canvaId      String
+  canva        CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
+}
+
+// TextElement model
+model TextElement {
+  id         String               @id @default(cuid())
+  text       String
+  fontFamily String
+  fontSize   Float
+  type       String
+  canvaId    String
+  canva      CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
+}
