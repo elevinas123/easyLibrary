@@ -15,7 +15,7 @@ import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { ChaptersDataType } from "./api/book/schema/chaptersData/chaptersData.schema";
+import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 
 type ImportBookProps = {
     isCollapsed: boolean;

@@ -1,13 +1,14 @@
 // processedElement.dto.ts
-import { IsNumber, IsString } from "class-validator";
-import { ProcessedElementType } from "../../../../LibraryPage/api/book/schema/bookElements/processedElement.schema";
+import {IsNumber, IsString} from 'class-validator';
+
+import {ProcessedElementType} from '../../../../../../../backend/src/book/schema/bookElements/processedElement.schema';
 
 export class ProcessedElementDto implements ProcessedElementType {
-    @IsString() text!: string;
+  @IsString() text!: string;
 
-    @IsNumber() lineX!: number;
+  @IsNumber() lineX!: number;
 
-    @IsNumber() lineWidth!: number;
+  @IsNumber() lineWidth!: number;
 
-    @IsNumber() lineY!: number;
+  @IsNumber() lineY!: number;
 }

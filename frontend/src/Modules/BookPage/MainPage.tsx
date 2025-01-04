@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
-import { BookType } from "../LibraryPage/api/book/schema/book.schema";
+import { BookType } from "../../../../backend/src/book/schema/book.schema";
 import Chapters from "./Chapters";
 import {
     arrowsAtom,
@@ -16,7 +16,7 @@ import {
 } from "./Konva/konvaAtoms";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
-import { ChaptersDataType } from "../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
+import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 
 export type HighlightRange = {
     startElementId: string;

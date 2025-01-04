@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/button";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { useToast } from "../../hooks/use-toast";
 import { useAuth } from "../../hooks/userAuth";
-import { BookType } from "./api/book/schema/book.schema";
+import { BookType } from "../../../../backend/src/book/schema/book.schema";
 import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
 import BookInfoPage from "./BookInfoPage";

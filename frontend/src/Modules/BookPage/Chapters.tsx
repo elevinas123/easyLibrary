@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/button";
-import { ChaptersDataType } from "../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
+import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 
 type ChaptersProps = {
     chapters: ChaptersDataType[];

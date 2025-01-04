@@ -4,7 +4,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
-import { ChaptersDataType } from "../../LibraryPage/api/book/schema/chaptersData/chaptersData.schema";
+import { ChaptersDataType } from "../../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 import Chapters from "../Chapters";
 import Tools from "./components/Tools";
 import { isPointInPolygon } from "./functions/getElementsUnderMouse";
