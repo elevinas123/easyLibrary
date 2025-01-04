@@ -38,9 +38,9 @@ export type TextElementRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: CanvaElementSkeleton,
+        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
-    ) => Partial<CanvaElementSkeleton>;
+    ) => Partial<SpecificTextElement>;
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
     handleKeyDown: (e: KeyboardEvent) => void;
     handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -111,9 +111,9 @@ function TextElement(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: CanvaElementSkeleton,
+        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
-    ): Partial<CanvaElementSkeleton> => {
+    ): Partial<SpecificTextElement> => {
         const newAttrs = {
             x: node.x(),
             y: node.y(),

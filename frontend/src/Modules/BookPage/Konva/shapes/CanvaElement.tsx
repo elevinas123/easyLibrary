@@ -9,7 +9,12 @@ import {
     useRef,
     useState,
 } from "react";
-import { CanvaElementSkeleton } from "../../../../endPointTypes/types";
+import {
+    isSpecificCircleElement,
+    isSpecificRectElement,
+    isSpecificTextElement,
+} from "../../../../endPointTypes/typeGuards";
+import { CanvaElementSkeleton, Point } from "../../../../endPointTypes/types";
 import { getPos } from "../functions/getPos";
 import {
     activeToolAtom,
@@ -128,7 +133,7 @@ function CanvasElement(
         }
     };
 
-    const getItemsAtPosition = (pos: { x: number; y: number }) => {
+    const getItemsAtPosition = (pos: Point) => {
         console.log("canvaElemenets", canvaElements);
         const items = [
             ...canvaElements.filter((item) => {
@@ -140,8 +145,8 @@ function CanvasElement(
                 );
             }),
             ...arrows.filter((item) => {
-                const [x1, y1, x2, y2] = item.points;
-
+                const { x: x1, y: y1 } = item.points[0];
+                const { x: x2, y: y2 } = item.points[1];
                 // Calculate the minimum and maximum x and y values
                 const minX = Math.min(x1, x2);
                 const maxX = Math.max(x1, x2);
@@ -202,11 +207,11 @@ function CanvasElement(
 
         let newAttrs: Partial<CanvaElementSkeleton> | undefined = {};
 
-        if (element.type === "rect") {
+        if (isSpecificRectElement(element)) {
             newAttrs = rectangleRef.current?.handleDragMove(element, node);
-        } else if (element.type === "circle") {
+        } else if (isSpecificCircleElement(element)) {
             newAttrs = circleRef.current?.handleDragMove(element, node);
-        } else if (element.type === "text") {
+        } else if (isSpecificTextElement(element)) {
             newAttrs = textElementRef.current?.handleDragMove(element, node);
         }
         if (!newAttrs) return;

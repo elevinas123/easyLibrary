@@ -31,7 +31,7 @@ export type CircleRef = {
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: CanvaElementSkeleton,
+        element: SpecificCircleElement,
         node: Shape<ShapeConfig> | Stage
     ) => Partial<CanvaElementSkeleton>;
 };
@@ -102,9 +102,9 @@ function Circle(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: CanvaElementSkeleton,
+        element: SpecificCircleElement,
         node: Shape<ShapeConfig> | Stage
-    ): Partial<CanvaElementSkeleton> => {
+    ): Partial<SpecificCircleElement> => {
         const newAttrs = {
             x: node.x(),
             y: node.y(),

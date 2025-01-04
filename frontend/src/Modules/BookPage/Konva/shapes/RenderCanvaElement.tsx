@@ -3,13 +3,18 @@ import RenderRectangle from "./Rectangle/RenderRectangle";
 import RenderText from "./Text/RenderText";
 import RenderCircle from "./Circle/RenderCircle";
 import { CanvaElementSkeleton } from "../../../../endPointTypes/types";
+import {
+    isSpecificCircleElement,
+    isSpecificRectElement,
+    isSpecificTextElement,
+} from "../../../../endPointTypes/typeGuards";
 
 export const renderCanvaElement = (
     element: CanvaElementSkeleton,
     draggable: boolean,
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined
 ) => {
-    if (element.type === "text") {
+    if (isSpecificTextElement(element)) {
         return (
             <RenderText
                 element={element}
@@ -18,7 +23,7 @@ export const renderCanvaElement = (
                 key={element.id}
             />
         );
-    } else if (element.type === "rect") {
+    } else if (isSpecificRectElement(element)) {
         return (
             <RenderRectangle
                 draggable={draggable}
@@ -27,7 +32,7 @@ export const renderCanvaElement = (
                 key={element.id}
             />
         );
-    } else if (element.type === "circle") {
+    } else if (isSpecificCircleElement(element)) {
         return (
             <RenderCircle
                 draggable={draggable}
