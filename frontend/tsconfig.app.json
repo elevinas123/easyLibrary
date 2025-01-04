@@ -26,5 +26,6 @@
     "paths": {
         "@/*": ["./src/*"]
     },
-    "include": ["src", "../backend/src/book", "../backend/src/bookshelve", "../backend/src/app.controller.ts", "../backend/src/app.module.ts", "../backend/src/app.service.ts", "../backend/src/settings/settings.dto.ts", "../backend/src/settings/settings.module.ts", "../backend/src/settings/settings.schema.ts", "../backend/src/settings/settings.service.ts", "../backend/src/settings/settings.controller.ts"]
+    "exclude": ["/node_modules", "/dist"],
+    "include": ["src"]
 }
