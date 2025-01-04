@@ -90,25 +90,34 @@ export default function CustomTransformer({
                         height: node.height() * node.scaleY(),
                     };
                 } else if (type === "text") {
+                    // Get existing textElement properties
+                    const existingTextElement = node.getAttr("textElement");
+
                     newAttrs = {
                         x: node.x(),
                         y: node.y(),
                         width: node.width() * node.scaleX(),
                         height: node.height() * node.scaleY(),
-                        text: (node as Konva.Text).text(),
-                        fontSize:
-                            (node as Konva.Text).fontSize() * node.scaleY(),
+                        textElement: {
+                            ...existingTextElement, // Retain existing properties
+                            text: (node as Konva.Text).text(),
+                            fontSize:
+                                (node as Konva.Text).fontSize() * node.scaleY(), // Ensure fontSize is included
+                        },
                     };
-                } // CustomTransformer.tsx
-
-                if (type === "circle") {
+                } else if (type === "circle") {
                     const scaleX = node.scaleX();
                     const scaleY = node.scaleY();
                     const oldRadius = node.getAttr("radius");
+                    const existingCircleElement = node.getAttr("circleElement");
+
                     const newRadius = (oldRadius * (scaleX + scaleY)) / 2;
 
                     newAttrs = {
-                        radius: newRadius,
+                        circleElement: {
+                            ...existingCircleElement, // Retain existing properties
+                            radius: newRadius,
+                        },
                         width: newRadius * 2,
                         height: newRadius * 2,
                         x: node.x(),

@@ -236,8 +236,29 @@ function CanvasElement(
                     return {
                         ...el,
                         ...newAttrs,
+                        textElement: el.textElement
+                            ? {
+                                  ...el.textElement,
+                                  ...newAttrs.textElement,
+                              }
+                            : undefined,
+                        circleElement: el.circleElement
+                            ? {
+                                  ...el.circleElement,
+                                  ...newAttrs.circleElement,
+                                  fillStyle:
+                                      newAttrs.circleElement?.fillStyle ??
+                                      el.circleElement.fillStyle,
+                              }
+                            : undefined,
+                        rectElement: el.rectElement
+                            ? {
+                                  ...el.rectElement,
+                                  ...newAttrs.rectElement,
+                              }
+                            : undefined,
                         type: el.type, // Ensure the type remains the same
-                    } as CanvaElementSkeleton;
+                    };
                 }
                 return el;
             })
