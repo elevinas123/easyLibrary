@@ -6,9 +6,91 @@ import { PrismaService } from "../prisma/prisma.service"; // Import PrismaServic
 @Injectable()
 export class BookService {
     constructor(private readonly prisma: PrismaService) {}
+    async addBook(data: any) {
+        const {
+            userId,
+            genres, // Array of genre names
+            bookshelves,
+            bookElements,
+            canvaElements,
+            curveElements,
+            highlights,
+            offsetPosition,
+            chaptersData,
+            id,
+            ...rest
+        } = data;
 
-    async addBook(data: Prisma.BookCreateInput) {
-        return this.prisma.book.create({ data });
+        console.log("data", data)
+        return this.prisma.book.create({
+            data: {
+                ...rest,
+                user: {
+                    connect: { id: userId },
+                },
+                genres: {
+                    create: genres.map((genreName: string) => ({
+                        genre: {
+                            connectOrCreate: {
+                                where: { name: genreName },
+                                create: { name: genreName },
+                            },
+                        },
+                    })),
+                },
+                bookshelves: {
+                    connect: bookshelves.map((shelfId: string) => ({
+                        id: shelfId,
+                    })),
+                },
+                bookElements: {
+                    create: bookElements || [],
+                },
+                canvaElements: {
+                    create: canvaElements?.map((canvaElement) => ({
+                        ...canvaElement,
+                        points: {
+                            create: canvaElement.points || [],
+                        },
+                        outgoingArrows: {
+                            create: canvaElement.outgoingArrows || [],
+                        },
+                        incomingArrows: {
+                            create: canvaElement.incomingArrows || [],
+                        },
+                        circleElements: {
+                            create: canvaElement.circleElements || [],
+                        },
+                        rectElements: {
+                            create: canvaElement.rectElements || [],
+                        },
+                        textElements: {
+                            create: canvaElement.textElements || [],
+                        },
+                    })),
+                },
+                curveElements: {
+                    create: curveElements?.map((curveElement) => ({
+                        ...curveElement,
+                        points: {
+                            create: curveElement.points || [],
+                        },
+                        arrowElements: {
+                            create: curveElement.arrowElements || [],
+                        },
+                    })),
+                },
+                highlights: {
+                    create: highlights || [],
+                },
+                offsetPosition: offsetPosition
+                    ? { create: offsetPosition }
+                    : undefined,
+                chaptersData: {
+                    create: chaptersData || [],
+                },
+            },
+        });
     }
 
     async getAllBooks() {

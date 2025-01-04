@@ -16,7 +16,7 @@ export default function BookInfoPage({
 }: BookInfoPageProps) {
     const navigate = useNavigate();
     const startReading = () => {
-        navigate(`/book?id=${selectedBook?._id}`);
+        navigate(`/book?id=${selectedBook?.id}`);
     };
 
     return (
@@ -53,10 +53,12 @@ export default function BookInfoPage({
                                 <strong>Author:</strong> {selectedBook.author}
                             </p>
                             <p className="mb-2">
-                                <strong>Genre:</strong> {selectedBook.genre}
+                                <strong>Genre:</strong>{" "}
+                                {selectedBook.genres?.join(", ")}
                             </p>
                             <p className="mb-4">
-                                <strong>Added:</strong> {selectedBook.dateAdded}
+                                <strong>Added:</strong>{" "}
+                                {selectedBook.dateAdded.toDateString()}
                             </p>
                             <Button
                                 className="w-full mt-auto"

@@ -6,13 +6,13 @@ import { Button } from "../../components/ui/button";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { useToast } from "../../hooks/use-toast";
 import { useAuth } from "../../hooks/userAuth";
-import { BookType } from "../../../../backend/src/book/schema/book.schema";
+import { useSettings } from "../../hooks/useSettings";
+import { useSidebar } from "../../hooks/useSidebar";
 import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
-import { useSidebar } from "../../hooks/useSidebar";
-import { useSettings } from "../../hooks/useSettings";
+import { Book } from "../../endPointTypes/types";
 
 const fetchBooks = async (userId: string | undefined) => {
     if (!userId) {
@@ -49,9 +49,9 @@ export default function LibraryPage() {
         console.log("settings", settings);
     }, []);
     const { toast } = useToast();
-    const { data: bookData } = useQuery({
+    const { data: bookData } = useQuery<Book[]>({
         queryKey: ["book"],
-        queryFn: () => fetchBooks(user?._id),
+        queryFn: () => fetchBooks(user?.id) as Promise<Book[]>,
 
         enabled: !!accessToken && !!user,
     });
@@ -91,11 +91,11 @@ export default function LibraryPage() {
         setSelectedBook(bookId);
     };
 
-    const updateBook = async (updatedBook: BookType) => {
+    const updateBook = async (updatedBook: Book) => {
         try {
             const bookUpdated = await apiFetch(
                 "PATCH /book/:id",
-                { params: { id: updatedBook._id }, body: updatedBook },
+                { params: { id: updatedBook.id }, body: updatedBook },
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -118,7 +118,7 @@ export default function LibraryPage() {
             console.error(error);
         }
     };
-    const book = bookData?.filter((book) => book._id === selectedBook)[0];
+    const book = bookData?.filter((book) => book.id === selectedBook)[0];
     if (!bookData) return null;
     return (
         <div className="flex h-screen bg-background">

@@ -1,4 +1,4 @@
-import { BookOpen, Heart, Trash2 } from "lucide-react";
+import { BookOpen, Heart } from "lucide-react";
 import { useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useNavigate } from "react-router-dom"; // If you're using React Router v6
@@ -10,13 +10,13 @@ import {
     CardHeader,
 } from "../../components/ui/card";
 import {
-    DialogClose,
-    DialogDescription,
-    DialogTitle,
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
+    DialogTitle,
     DialogTrigger,
 } from "../../components/ui/dialog";
 import { Book } from "../../endPointTypes/types";
@@ -36,11 +36,11 @@ export default function BookCard({
 
     const handleGoToBook = (e: React.MouseEvent) => {
         e.stopPropagation();
-        navigate(`/book?id=${book._id}`);
+        navigate(`/book?id=${book.id}`);
     };
 
     return (
-        <Card key={book._id} className="flex flex-col">
+        <Card key={book.id} className="flex flex-col">
             <CardHeader className="relative p-0">
                 <img
                     src={book.imageUrl}
@@ -74,7 +74,7 @@ export default function BookCard({
                     Added: {book.dateAdded}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                    Genre: {book.genre}
+                    Genre: {book.genres?.join(", ")}
                 </p>
             </CardContent>
             <CardFooter className="p-4">
@@ -95,7 +95,7 @@ type DeleteDialogProps = {
 export function DeleteDialog({ hovered, book, deleteBook }: DeleteDialogProps) {
     const closeRefButton = useRef(null);
     const handleBookDelete = () => {
-        deleteBook(book._id);
+        deleteBook(book.id);
         if (closeRefButton.current) {
             closeRefButton.current?.click();
         }

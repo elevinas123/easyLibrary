@@ -78,6 +78,7 @@ model Bookshelve {
 // ProcessedElement model
 model ProcessedElement {
   id        String @id @default(cuid())
+  elementId String
   text      String
   lineX     Float
   lineWidth Float
@@ -109,6 +110,7 @@ model OffsetPosition {
 // ChaptersData model
 model ChaptersData {
   id          String  @id @default(cuid())
+  elementId   String
   title       String
   href        String?
   indentLevel Int?

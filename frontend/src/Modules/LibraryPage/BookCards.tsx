@@ -18,7 +18,7 @@ export default function BookCards({
     const bookCards = bookData?.map((book) => (
         <BookCard
             book={book}
-            key={book._id}
+            key={book.id}
             deleteBook={deleteBook}
             selectBook={selectBook}
         />

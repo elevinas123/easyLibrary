@@ -1,5 +1,5 @@
-import { useAtom } from "jotai";
 import { useState } from "react";
+import { SettingsType } from "../../../../backend/src/settings/settings.schema";
 import { Button } from "../../components/ui/button";
 import {
     Dialog,
@@ -20,7 +20,6 @@ import {
 import { Slider } from "../../components/ui/slider";
 import { Switch } from "../../components/ui/switch";
 import { useSettings } from "../../hooks/useSettings";
-import { SettingsType } from "../../../../backend/src/settings/settings.schema";
 
 export default function Settings() {
     const [isOpen, setIsOpen] = useState(false);

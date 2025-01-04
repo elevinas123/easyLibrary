@@ -10,6 +10,7 @@ export const processElements = (
     bookElements: (HtmlObject | null)[],
     fontSize: number,
     width: number
+    
 ) => {
     let indexStart = 0;
 
@@ -41,7 +42,7 @@ const processBookElement = (
             currentIndex,
             fontSize,
             width,
-            element.id
+            element.elementTocId
         );
         currentIndex += lines.length;
         return lines;
@@ -84,6 +85,6 @@ const processTextIntoLines = (
             lineX: 0,
             lineWidth: line.length * fontSize,
             lineY: lineIndex + indexStart,
-            id: id,
+            elementId: id,
         }));
 };

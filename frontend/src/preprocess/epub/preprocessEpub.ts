@@ -27,6 +27,7 @@ export type HeadingObject = {
     style?: React.CSSProperties;
 };
 export type HtmlElementObject = {
+    elementTocId: string;
     type: string; // The tag name of the element (e.g., 'p', 'h1', 'div', etc.)
     id: string;
     text: string; // Store the full text of the element
@@ -153,12 +154,13 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
                 // No need to set the id back to the element unless required
 
                 return {
+                    elementTocId: id,
                     type: elem.tagName,
                     id,
                     tagName: elem.tagName,
                     text: textContent,
                     highlights: [],
-                } as HtmlElementObject;
+                };
             })
             .get()
             .filter(Boolean);

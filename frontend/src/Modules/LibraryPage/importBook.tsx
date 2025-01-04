@@ -16,6 +16,8 @@ import { apiFetch } from "../../endPointTypes/apiClient";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
+import { Book } from "../../endPointTypes/types";
+import { useAuth } from "../../hooks/userAuth";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -43,9 +45,6 @@ const importBook = async ({
     }
     setBooksLoading((prev) => [...prev, "hi"]);
 
-    console.log(bookElements);
-    console.log("metaHere", metaData);
-    console.log("access_token", accessToken);
     let url: string = "https://example.com/image.jpg";
     if (coverImage) {
         const formData = new FormData();
@@ -61,21 +60,20 @@ const importBook = async ({
     }
 
     const dataSending = {
-        userId: userId,
+        userId: userId, // Send userId as a reference
         title: metaData["dc:title"] || "No Title",
         description: metaData.description || "No Description",
         author: metaData.author || metaData["dc:creator"] || "No Author",
-        genre: ["Classic", "Fiction"],
+        genres: ["Classic", "Fiction"], // Send genres as plain strings
+        bookshelves: [],
         imageUrl: url,
         liked: true,
-        bookElements: bookElements,
-        dateAdded: new Date().toISOString(),
-        canvaElements: [],
-        curveElements: [],
-        highlights: [],
-        offsetPosition: { x: 0, y: 0 },
-        chaptersData: chaptersData,
-        scale: 1,
+        bookElements, // Pass raw book elements as received
+        dateAdded: new Date(),
+        highlights: [], // Same as above
+        offsetPosition: { x: 0, y: 0 }, // Raw data for offset position
+        chaptersData, // Pass raw chaptersData
+        scale: 1, // Include the scale as raw data
     };
     const data = await apiFetch(
         "POST /book",
@@ -95,8 +93,7 @@ export default function ImportBook({
     setBooksLoading,
 }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
-    const [user] = useAtom(userAtom);
-    const [accessToken] = useAtom(accessTokenAtom);
+    const { accessToken, user } = useAuth();
     const { toast } = useToast();
     // Use the mutation with the correct types
     const queryClient = useQueryClient();
@@ -149,14 +146,15 @@ export default function ImportBook({
         );
         const chapterData = elements.chaptersData.map((chapter) => ({
             ...chapter,
-            id:
-                processedElements.find((element) => element.id === chapter.id)
-                    ?.lineY + "" || "someId",
+            elementId:
+                processedElements.find(
+                    (element) => element.elementId === chapter.elementId
+                )?.lineY + "" || "someId",
         }));
         mutation.mutate({
             bookElements: processedElements,
             metaData: elements.metaData,
-            userId: user._id,
+            userId: user.id,
             accessToken: accessToken,
             chaptersData: chapterData,
             coverImage: elements.coverImage,
@@ -182,11 +180,12 @@ export default function ImportBook({
 
             // Convert ToC to chapters data
             const chaptersData = toc.map((item) => ({
-                id: item.id || "someId", // Use the fragment identifier as the id
+                elementId: item.id || "someId",
                 title: item.title,
                 href: item.href || null,
                 indentLevel: calculateIndentLevel(item.href),
             }));
+            console.log("chaptersData", chaptersData);
 
             return { epubElements, metaData, coverImage, chaptersData };
         } catch (error) {
