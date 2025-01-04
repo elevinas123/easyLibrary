@@ -1,14 +1,20 @@
 import { v4 as uuidv4 } from "uuid";
-import { RectElementType } from "../../../../../endPointTypes/types";
+import {
+    RectElement,
+    SpecificRectElement
+} from "../../../../../endPointTypes/types";
 
 type CreateRectangleProps = {
     x: number;
     y: number;
-} & Partial<Omit<RectElementType, "type" | "x" | "y">>;
+    bookId: string;
+} & Partial<Omit<SpecificRectElement, "type" | "x" | "y">> &
+    Partial<RectElement>;
 
 export default function CreateRectangle({
     x,
     y,
+    bookId,
     fill = "green",
     width = 10,
     height = 10,
@@ -25,9 +31,10 @@ export default function CreateRectangle({
     hachureAngle = 60,
     seed = Math.floor(Math.random() * 1000000),
     ...overrides
-}: CreateRectangleProps): RectElementType {
+}: CreateRectangleProps): SpecificRectElement {
     return {
         type: "rect",
+        bookId,
         fill,
         width,
         height,
@@ -36,6 +43,17 @@ export default function CreateRectangle({
         y,
         outgoingArrowIds,
         incomingArrowIds,
+        opacity,
+        rectElement: {
+            canvaId: id,
+            type: "rect",
+            roughness,
+            hachureGap,
+            hachureAngle,
+
+            fillStyle,
+            seed,
+        },
         points: points || [
             { x, y },
             { x: x + width, y },
@@ -44,12 +62,7 @@ export default function CreateRectangle({
         ],
         strokeColor,
         strokeWidth,
-        opacity,
-        roughness,
-        fillStyle,
-        hachureGap,
-        hachureAngle,
-        seed,
+        rotation: 0,
         ...overrides, // This allows any additional properties to override the defaults
     };
 }

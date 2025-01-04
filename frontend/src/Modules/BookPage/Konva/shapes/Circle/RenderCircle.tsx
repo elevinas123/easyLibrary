@@ -3,11 +3,11 @@
 import { Shape } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
-import { CircleElementType } from "../../../../../endPointTypes/types";
+import { SpecificCircleElement } from "../../../../../endPointTypes/types";
 
 type RenderCircleProps = {
     draggable: boolean;
-    element: CircleElementType;
+    element: SpecificCircleElement;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 
@@ -26,23 +26,29 @@ export default function RenderCircle({
             height={element.height}
             opacity={element.opacity}
             draggable={draggable}
-            attrs={{ elementType: "circle", radius: element.radius }}
+            attrs={{
+                elementType: "circle",
+                radius: element.circleElement.radius,
+            }}
             onDragMove={handleDragMove}
             sceneFunc={(context, shape) => {
                 const roughCanvas = rough.canvas(context.canvas);
                 context.save();
                 // Move to the center of the bounding box
-                context.translate(element.radius, element.radius);
+                context.translate(
+                    element.circleElement.radius,
+                    element.circleElement.radius
+                );
                 // Draw the circle at (0, 0) with the correct radius
-                roughCanvas.circle(0, 0, element.radius * 2, {
+                roughCanvas.circle(0, 0, element.circleElement.radius * 2, {
                     fill: element.fill,
                     stroke: element.strokeColor,
                     strokeWidth: element.strokeWidth,
-                    roughness: element.roughness,
-                    fillStyle: element.fillStyle,
-                    hachureGap: element.hachureGap,
-                    hachureAngle: element.hachureAngle,
-                    seed: element.seed,
+                    roughness: element.circleElement.roughness,
+                    fillStyle: element.circleElement.fillStyle,
+                    hachureGap: element.circleElement.hachureGap,
+                    hachureAngle: element.circleElement.hachureAngle,
+                    seed: element.circleElement.seed,
                 });
                 context.restore();
                 // No need to call fillStrokeShape here since rough.js handles the drawing
@@ -51,9 +57,9 @@ export default function RenderCircle({
                 context.beginPath();
                 // Define the hit area at the center of the bounding box
                 context.arc(
-                    element.radius,
-                    element.radius,
-                    element.radius,
+                    element.circleElement.radius,
+                    element.circleElement.radius,
+                    element.circleElement.radius,
                     0,
                     Math.PI * 2,
                     false

@@ -4,15 +4,19 @@ import { Vector2d } from "konva/lib/types";
 import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
 import { Circle } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
+
 import {
-    CanvaElementType,
-    StartType
+    CanvaElementSkeleton,
+    Point,
+    SpecificArrowElement,
+    StartType,
 } from "../../../../../endPointTypes/types";
 import { getArrowHighlightsUnderMouse } from "../../functions/getElementsUnderMouse";
 import { getPos } from "../../functions/getPos";
 import {
     activeToolAtom,
     arrowsAtom,
+    bookIdAtom,
     canvaElementsAtom,
     hoveredItemsAtom,
     newArrowAtom,
@@ -33,7 +37,7 @@ export type ArrowShapeRef = {
     handleMouseUp(e: KonvaEventObject<MouseEvent>): void;
     handleElementAttachedToArrowMove(selectedTextId: string[]): void;
     handleArrowSelect(e: KonvaEventObject<MouseEvent>): void;
-    handleSelectedArrowMove(id: string, newPoints: number[]): void;
+    handleSelectedArrowMove(id: string, newPoints: Point[]): void;
 };
 
 function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
@@ -44,7 +48,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [canvasElements] = useAtom(canvaElementsAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
-
+    const [bookId] = useAtom(bookIdAtom);
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
 
@@ -57,21 +61,15 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         handleSelectedArrowMove,
     }));
     const calculateClosestPointOnShape = (
-        element: CanvaElementType,
-        points: number[]
+        element: CanvaElementSkeleton,
+        points: Point[]
     ) => {
-        const referenceX = points[0];
-        const referenceY = points[1];
+        if (!element.points) return { x: 0, y: 0 };
         let minDistance = Infinity;
         let minPoints = element.points[0];
         element.points.forEach((point) => {
-            if (
-                distance(point, { x: referenceX, y: referenceY }) < minDistance
-            ) {
-                minDistance = distance(point, {
-                    x: referenceX,
-                    y: referenceY,
-                });
+            if (distance(point, points[0]) < minDistance) {
+                minDistance = distance(point, points[0]);
                 minPoints = point;
                 console.log("minPoints", minPoints);
             }
@@ -79,10 +77,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         return minPoints;
     };
     // Utility function to calculate the distance between two points
-    const distance = (
-        point1: { x: number; y: number },
-        point2: { x: number; y: number }
-    ) => {
+    const distance = (point1: Point, point2: Point) => {
         return Math.sqrt(
             (point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2
         );
@@ -97,8 +92,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             const updatingArrows = arrows.filter((arrow) =>
                 elementsSelected.some(
                     (element) =>
-                        element.id === arrow.startId ||
-                        element.id === arrow.endId
+                        element.id === arrow.arrowElement.startId ||
+                        element.id === arrow.arrowElement.endId
                 )
             );
 
@@ -111,10 +106,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
                 // Find the position of the element for the startId and endId
                 const startElement = canvasElements.find(
-                    (el) => el.id === arrow.startId
+                    (el) => el.id === arrow.arrowElement.startId
                 );
                 const endElement = canvasElements.find(
-                    (el) => el.id === arrow.endId
+                    (el) => el.id === arrow.arrowElement.endId
                 );
 
                 // Update the start position based on the start element's points
@@ -124,8 +119,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                         arrow.points.slice(2, 4) // Relative to the shape
                     );
                     console.log("Start Point:", startPoint); // Debugging start point
-                    updatedPoints[0] = startPoint.x;
-                    updatedPoints[1] = startPoint.y;
+                    updatedPoints[0] = startPoint;
                 }
                 if (endElement && selectedTextId.includes(endElement.id)) {
                     const endPoint = calculateClosestPointOnShape(
@@ -134,8 +128,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                     );
                     console.log("endElement:", endElement); // Debugging end point
                     console.log("End Point:", endPoint); // Debugging end point
-                    updatedPoints[2] = endPoint.x;
-                    updatedPoints[3] = endPoint.y;
+                    updatedPoints[1] = endPoint;
                 }
 
                 return {
@@ -148,6 +141,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         });
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (!bookId) return;
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
         const id = uuidv4();
@@ -156,8 +150,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             hoveredItems,
             pos
         );
-        let startId: null | string = null;
-        let type: StartType = null;
+        let startId: string | undefined = undefined;
+        let type: StartType = undefined;
         console.log("highlightsUnderMouse", highlightsUnderMouse);
         if (highlightsUnderMouse.length > 0) {
             startId = highlightsUnderMouse[0].id;
@@ -168,7 +162,12 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             }
         }
         const arrow = createArrow({
-            points: [pos.x, pos.y, pos.x, pos.y],
+            points: [
+                { x: pos.x, y: pos.y },
+                { x: pos.x, y: pos.y },
+            ],
+            bookId: bookId,
+
             startId,
             startType: type,
             id,
@@ -187,13 +186,13 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         );
         if (
             highlightsUnderMouse.length > 0 &&
-            highlightsUnderMouse[0].id !== arrow.startId
+            highlightsUnderMouse[0].id !== arrow.arrowElement.startId
         ) {
-            arrow.endId = highlightsUnderMouse[0].id;
+            arrow.arrowElement.endId = highlightsUnderMouse[0].id;
             if (highlightsUnderMouse[0].rects) {
-                arrow.endType = "bookText";
+                arrow.arrowElement.endType = "bookText";
             } else {
-                arrow.endType = "text";
+                arrow.arrowElement.endType = "text";
             }
         }
 
@@ -261,9 +260,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         if (!newArrow) {
             return;
         }
-        const updatedArrow = {
+        const updatedArrow: SpecificArrowElement = {
             ...newArrow,
-            points: [newArrow.points[0], newArrow.points[1], pos.x, pos.y],
+            points: [newArrow.points[0], { x: pos.x, y: pos.y }],
         };
         setNewArrow(updatedArrow);
     };
@@ -274,14 +273,14 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         if (!pos) return;
         const arrowUnderMouse = arrows.filter(
             (arrow) =>
-                pos.x >= Math.min(arrow.points[0], arrow.points[2]) - 10 &&
-                pos.x <= Math.max(arrow.points[0], arrow.points[2]) + 10 &&
-                pos.y >= Math.min(arrow.points[1], arrow.points[3]) - 10 &&
-                pos.y <= Math.max(arrow.points[1], arrow.points[3]) + 10
+                pos.x >= Math.min(arrow.points[0].x, arrow.points[1].x) - 10 &&
+                pos.x <= Math.max(arrow.points[0].x, arrow.points[1].x) + 10 &&
+                pos.y >= Math.min(arrow.points[1].y, arrow.points[1].y) - 10 &&
+                pos.y <= Math.max(arrow.points[1].y, arrow.points[1].y) + 10
         );
         setSelectedArrowIds(arrowUnderMouse.map((arrow) => arrow.id));
     };
-    const handleSelectedArrowMove = (id: string, newPoints: number[]) => {
+    const handleSelectedArrowMove = (id: string, newPoints: Point[]) => {
         setArrows((arrows) => {
             return arrows.map((arrow) => {
                 if (arrow.id === id) {
@@ -303,10 +302,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         if (!foundArrow) return;
         hoverItems(pos);
         handleSelectedArrowMove(arrowId, [
-            pos.x,
-            pos.y,
-            foundArrow.points[2],
-            foundArrow.points[3],
+            { x: pos.x, y: pos.y },
+            foundArrow.points[1],
         ]);
     };
 
@@ -323,9 +320,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         hoverItems(pos);
         handleSelectedArrowMove(arrowId, [
             foundArrow.points[0],
-            foundArrow.points[1],
-            pos.x,
-            pos.y,
+            { x: pos.x, y: pos.y },
         ]);
     };
 
@@ -362,28 +357,28 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         console.log("highlightsUnderMouse", highlightsUnderMouse, which);
         if (which === "start") {
             if (highlightsUnderMouse.length > 0) {
-                arrow.startId = highlightsUnderMouse[0].id;
+                arrow.arrowElement.startId = highlightsUnderMouse[0].id;
                 if (highlightsUnderMouse[0].rects) {
-                    arrow.startType = "bookText";
+                    arrow.arrowElement.startType = "bookText";
                 } else {
-                    arrow.startType = "text";
+                    arrow.arrowElement.startType = "text";
                 }
             } else {
-                arrow.startId = null;
-                arrow.startType = null;
+                arrow.arrowElement.startId = undefined;
+                arrow.arrowElement.startType = undefined;
             }
         }
         if (which === "end") {
             if (highlightsUnderMouse.length > 0) {
-                arrow.endId = highlightsUnderMouse[0].id;
+                arrow.arrowElement.endId = highlightsUnderMouse[0].id;
                 if (highlightsUnderMouse[0].rects) {
-                    arrow.endType = "bookText";
+                    arrow.arrowElement.endType = "bookText";
                 } else {
-                    arrow.endType = "text";
+                    arrow.arrowElement.endType = "text";
                 }
             } else {
-                arrow.endId = null;
-                arrow.endType = null;
+                arrow.arrowElement.endId = undefined;
+                arrow.arrowElement.endType = undefined;
             }
         }
 
@@ -401,11 +396,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     return (
         <>
             {arrows.map((arrow) => (
-                <RenderArrow
-                    element={arrow}
-                    draggable={false}
-                    handleDragMove={undefined}
-                />
+                <RenderArrow element={arrow} />
             ))}
 
             {selectedArrowIds.map((id) => {
@@ -417,8 +408,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                         {/* Draggable Start Point - Circle */}
                         <Circle
                             key={`start-${id}`}
-                            x={selectedArrow.points[0]}
-                            y={selectedArrow.points[1]}
+                            x={selectedArrow.points[0].x}
+                            y={selectedArrow.points[0].y}
                             radius={8} // Adjust size to make it look like Excalidraw
                             fill="blue" // Color for the start point
                             stroke="white" // White stroke around the circle for better visibility
@@ -426,8 +417,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             draggable
                             dragBoundFunc={() => {
                                 return {
-                                    x: selectedArrow.points[2],
-                                    y: selectedArrow.points[3],
+                                    x: selectedArrow.points[1].x,
+                                    y: selectedArrow.points[1].y,
                                 };
                             }}
                             onDragEnd={(e) => handleDragEnd(id, e, "start")}
@@ -437,8 +428,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                         {/* Draggable End Point - Circle */}
                         <Circle
                             key={`end-${id}`}
-                            x={selectedArrow.points[2]}
-                            y={selectedArrow.points[3]}
+                            x={selectedArrow.points[1].x}
+                            y={selectedArrow.points[1].y}
                             radius={8} // Adjust size to make it look like Excalidraw
                             fill="red" // Color for the end point
                             stroke="white" // White stroke around the circle for better visibility
@@ -446,8 +437,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                             draggable
                             dragBoundFunc={() => {
                                 return {
-                                    x: selectedArrow.points[0],
-                                    y: selectedArrow.points[1],
+                                    x: selectedArrow.points[0].x,
+                                    y: selectedArrow.points[0].y,
                                 };
                             }}
                             onDragEnd={(e) => handleDragEnd(id, e, "end")}
@@ -457,13 +448,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 );
             })}
 
-            {newArrow && newArrow.points && (
-                <RenderArrow
-                    element={newArrow}
-                    draggable={false}
-                    handleDragMove={undefined}
-                />
-            )}
+            {newArrow && newArrow.points && <RenderArrow element={newArrow} />}
         </>
     );
 }

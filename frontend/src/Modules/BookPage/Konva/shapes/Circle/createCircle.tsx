@@ -1,13 +1,17 @@
 // src/components/CanvasElements/Circle/createCircle.ts
 
 import { v4 as uuidv4 } from "uuid";
-
-import { CircleElementType } from "../../../../../endPointTypes/types";
+import {
+    CircleElement,
+    SpecificCircleElement,
+} from "../../../../../endPointTypes/types";
 
 type CreateCircleProps = {
     x: number;
     y: number;
-} & Partial<Omit<CircleElementType, "type" | "x" | "y">>;
+    bookId: string;
+} & Partial<Omit<SpecificCircleElement, "type" | "x" | "y">> &
+    Partial<CircleElement>;
 
 export default function CreateCircle({
     x,
@@ -27,11 +31,20 @@ export default function CreateCircle({
     hachureAngle = 60,
     seed = Math.floor(Math.random() * 1000000),
     ...overrides
-}: CreateCircleProps): CircleElementType {
+}: CreateCircleProps): SpecificCircleElement {
     return {
         type: "circle",
         fill,
-        radius,
+        circleElement: {
+            radius,
+            canvaId: id,
+            type: "circle",
+            roughness,
+            hachureGap,
+            hachureAngle,
+            seed,
+            fillStyle,
+        },
         width: radius * 2,
         height: radius * 2,
         id,
@@ -43,11 +56,7 @@ export default function CreateCircle({
         strokeColor,
         strokeWidth,
         opacity,
-        roughness,
-        fillStyle,
-        hachureGap,
-        hachureAngle,
-        seed,
+        rotation: 0,
         ...overrides,
     };
 }

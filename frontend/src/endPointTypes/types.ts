@@ -1,7 +1,5 @@
 // Types for Prisma Models
 
-import { SpecificTextElement } from "../Modules/BookPage/Konva/shapes/Text/TextElement";
-
 export type Settings = {
     id: string;
     userId: string;
@@ -133,14 +131,14 @@ export type CanvaElementSkeleton = {
     incomingArrowIds?: string[]; // Optional reference array
     bookId: string;
     book?: Book; // Optional reference
-    circleElements?: CircleElement; // Optional reference array
+    circleElement?: CircleElement; // Optional reference array
     rectElement?: RectElement; // Optional reference array
     textElement?: TextElementType; // Optional reference array
 };
 
 export type CurveElementSkeleton = {
     id: string;
-    points?: Point[]; // Optional reference array
+    points: Point[]; // Optional reference array
     fill: string;
     text?: string;
     roughness: number;
@@ -153,48 +151,48 @@ export type CurveElementSkeleton = {
     fillWeight: number;
     hachureAngle: number;
     hachureGap: number;
-    type: string;
+    type: "arrow" | "other";
     bookId: string;
     book?: Book; // Optional reference
-    arrowElements?: ArrowElement[]; // Optional reference array
+    arrowElement?: ArrowElement; // Optional reference array
 };
 
 export type ArrowElement = {
-    id: string;
+    id?: string;
     startId?: string;
     endId?: string;
-    type: "Arrow";
+    type: "arrow";
     startType?: string;
     endType?: string;
     from?: CanvaElementSkeleton; // Optional reference
     to?: CanvaElementSkeleton; // Optional reference
-    fromId: string;
-    toId: string;
-    curveId?: string;
+    fromId?: string;
+    toId?: string;
+    curveId: string;
     curve?: CurveElementSkeleton; // Optional reference
 };
 
 export type CircleElement = {
-    id: string;
+    id?: string;
     fillStyle: string;
     roughness: number;
     seed: number;
     hachureGap: number;
     hachureAngle: number;
     radius: number;
-    type: "Circle";
+    type: "circle";
     canvaId: string;
     canva?: CanvaElementSkeleton; // Optional reference
 };
 
 export type RectElement = {
-    id: string;
+    id?: string;
     fillStyle: string;
     roughness: number;
     seed: number;
     hachureGap: number;
     hachureAngle: number;
-    type: "Rect";
+    type: "rect";
     canvaId: string;
     canva?: CanvaElementSkeleton; // Optional reference
 };
@@ -212,3 +210,17 @@ export type SpecificTextElement = CanvaElementSkeleton & {
     type: "text";
     textElement: TextElementType;
 };
+export type SpecificRectElement = CanvaElementSkeleton & {
+    type: "rect";
+    rectElement: RectElement;
+};
+export type SpecificCircleElement = CanvaElementSkeleton & {
+    type: "circle";
+    circleElement: CircleElement;
+};
+export type SpecificArrowElement = CurveElementSkeleton & {
+    type: "arrow";
+    arrowElement: ArrowElement;
+};
+
+export type StartType = "text" | "rect" | "circle" | "bookText" | undefined;

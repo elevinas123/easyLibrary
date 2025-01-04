@@ -1,15 +1,12 @@
 // RenderArrow.tsx
 
 import { Shape } from "react-konva";
-import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
-import { ArrowElementType } from "../../../../../endPointTypes/types";
+import { SpecificArrowElement } from "../../../../../endPointTypes/types";
 
 // Define the component's props
 type RenderArrowProps = {
-    element: ArrowElementType;
-    draggable: boolean;
-    handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
+    element: SpecificArrowElement;
 };
 
 // Helper function to draw arrowhead with styling
@@ -18,7 +15,7 @@ const drawArrowHead = (
     relativeX2: number,
     relativeY2: number,
     angle: number,
-    element: ArrowElementType
+    element: SpecificArrowElement
 ) => {
     const arrowLength = 10; // Length of the arrowhead lines
     const arrowAngle = Math.PI / 6; // 30 degrees
@@ -62,11 +59,7 @@ const drawArrowHead = (
 };
 
 // RenderArrow Component
-export default function RenderArrow({
-    element,
-    draggable,
-    handleDragMove,
-}: RenderArrowProps) {
+export default function RenderArrow({ element }: RenderArrowProps) {
     const points = element.points;
 
     // Ensure there are at least two points to form an arrow
@@ -76,7 +69,8 @@ export default function RenderArrow({
     }
 
     // Extract the first four points (x1, y1, x2, y2)
-    const [x1, y1, x2, y2] = points;
+    const { x: x1, y: y1 } = points[0];
+    const { x: x2, y: y2 } = points[1];
 
     // Calculate relative position for rendering within the Shape
     const relativeX2 = x2 - x1;

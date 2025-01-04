@@ -1,11 +1,9 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
-import {
-    CanvaElementType,
-    RectElementType,
-} from "../../../../../endPointTypes/types";
+
 import {
     activeToolAtom,
+    bookIdAtom,
     canvaElementsAtom,
     offsetPositionAtom,
     scaleAtom,
@@ -16,19 +14,23 @@ import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { getPos } from "../../functions/getPos";
 import { Stage } from "konva/lib/Stage";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
+import {
+    CanvaElementSkeleton,
+    SpecificRectElement,
+} from "../../../../../endPointTypes/types";
 
 type RectangleProps = {
-    createElement: (element: CanvaElementType) => void;
-    updateElement: (element: CanvaElementType) => void;
+    createElement: (element: CanvaElementSkeleton) => void;
+    updateElement: (element: CanvaElementSkeleton) => void;
 };
 export type RectangleRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: CanvaElementType,
+        element: SpecificRectElement,
         node: Shape<ShapeConfig> | Stage
-    ) => Partial<CanvaElementType>;
+    ) => Partial<SpecificRectElement>;
 };
 
 function Rectangle(
@@ -40,9 +42,10 @@ function Rectangle(
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const [isCreating, setIsCreating] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<RectElementType | null>(
+    const [currentItem, setCurrentItem] = useState<SpecificRectElement | null>(
         null
     );
+    const [bookId] = useAtom(bookIdAtom);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,
@@ -51,9 +54,9 @@ function Rectangle(
     }));
 
     const updateRectangleElement = (
-        element: RectElementType,
+        element: SpecificRectElement,
         pos: { x: number; y: number }
-    ): RectElementType => {
+    ): SpecificRectElement => {
         const { x: startX, y: startY } = element;
         const newWidth = Math.abs(pos.x - startX);
         const newHeight = Math.abs(pos.y - startY);
@@ -91,12 +94,14 @@ function Rectangle(
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
+        if (!bookId) return;
         if (!pos) return;
         if (activeTool !== "Rectangle") return;
         const id = uuidv4();
         const newRect = CreateRectangle({
             x: pos.x,
             y: pos.y,
+            bookId: bookId,
             id,
             width: 0,
             height: 0,
@@ -109,9 +114,9 @@ function Rectangle(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: CanvaElementType,
+        element: SpecificRectElement,
         node: Shape<ShapeConfig> | Stage
-    ): Partial<CanvaElementType> => {
+    ): Partial<SpecificRectElement> => {
         const newAttrs = {
             x: node.x(),
             y: node.y(),
@@ -128,7 +133,7 @@ function Rectangle(
         return newAttrs;
     };
 
-    return null
+    return null;
 }
 
 export default forwardRef(Rectangle);

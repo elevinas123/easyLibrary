@@ -5,6 +5,7 @@ import {
     CanvaElementSkeleton,
     Highlight,
     Settings,
+    SpecificArrowElement,
 } from "../../../endPointTypes/types";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
@@ -45,9 +46,9 @@ export const currentHighlightAtom = atom<CurrentHighlight>({
     mousePosition: { x: 0, y: 0 },
     offsetPosition: { x: 0, y: 0 },
 });
-export const arrowsAtom = atom<ArrowElement[]>([]);
+export const arrowsAtom = atom<SpecificArrowElement[]>([]);
 export const hoveredItemsAtom = atom<ArrowHover[]>([]);
-export const newArrowAtom = atom<ArrowElement | null>(null);
+export const newArrowAtom = atom<SpecificArrowElement | null>(null);
 export const canvaElementsAtom = atom<CanvaElementSkeleton[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);
 export const selectedItemsIdsAtom = atom<string[]>([]);

@@ -1,11 +1,11 @@
 import { Shape } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import rough from "roughjs/bin/rough";
-import { RectElementType } from "../../../../../endPointTypes/types";
+import { SpecificRectElement } from "../../../../../endPointTypes/types";
 
 type RenderRectangleProps = {
     draggable: boolean;
-    element: RectElementType;
+    element: SpecificRectElement;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 
@@ -40,11 +40,11 @@ export default function RenderRectangle({
                     fill: element.fill,
                     stroke: element.strokeColor,
                     strokeWidth: element.strokeWidth,
-                    roughness: element.roughness,
-                    fillStyle: element.fillStyle,
-                    hachureGap: element.hachureGap,
-                    hachureAngle: element.hachureAngle,
-                    seed: element.seed,
+                    roughness: element.rectElement.roughness,
+                    fillStyle: element.rectElement.fillStyle,
+                    hachureGap: element.rectElement.hachureGap,
+                    hachureAngle: element.rectElement.hachureAngle,
+                    seed: element.rectElement.seed,
                 });
 
                 // Restore the context state
