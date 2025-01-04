@@ -1,9 +1,10 @@
 import { atom } from "jotai";
 
 import {
-    ArrowElementType,
-    CanvaElementType,
-    HighlightType,
+    ArrowElement,
+    CanvaElementSkeleton,
+    Highlight,
+    Settings,
 } from "../../../endPointTypes/types";
 import { DrawingToolNames } from "./components/Tools";
 import { HighlightRect } from "./modules/BookTextLayers/HighlightLayer";
@@ -31,33 +32,25 @@ export const offsetPositionAtom = atom({
 export type CurrentHighlight = {
     id: string | null;
     editing: boolean;
-    creating: boolean
-    mousePosition: { x: number, y: number };
-    offsetPosition: { x: number, y: number };
-}
+    creating: boolean;
+    mousePosition: { x: number; y: number };
+    offsetPosition: { x: number; y: number };
+};
 
-export const highlightsAtom = atom<HighlightType[]>([]);
+export const highlightsAtom = atom<Highlight[]>([]);
 export const currentHighlightAtom = atom<CurrentHighlight>({
     id: null,
     editing: false,
     creating: false,
     mousePosition: { x: 0, y: 0 },
-    offsetPosition: { x: 0, y: 0 }
+    offsetPosition: { x: 0, y: 0 },
 });
-export const arrowsAtom = atom<ArrowElementType[]>([]);
+export const arrowsAtom = atom<ArrowElement[]>([]);
 export const hoveredItemsAtom = atom<ArrowHover[]>([]);
-export const newArrowAtom = atom<ArrowElementType | null>(null);
-export const canvaElementsAtom = atom<CanvaElementType[]>([]);
+export const newArrowAtom = atom<ArrowElement | null>(null);
+export const canvaElementsAtom = atom<CanvaElementSkeleton[]>([]);
 export const selectedArrowIdsAtom = atom<string[]>([]);
 export const selectedItemsIdsAtom = atom<string[]>([]);
 export const scaleAtom = atom(1);
-
-
-export const settingsAtom = atom({
-    fontSize: 16,
-    fontFamily: "Arial",
-    lineHeight: 3,
-    backgroundColor: "#111111",
-    textColor: "#ffffff",
-    darkMode: false,
-});
+export const bookIdAtom = atom<string | null>(null);
+export const settingsAtom = atom<Settings | undefined>(undefined);

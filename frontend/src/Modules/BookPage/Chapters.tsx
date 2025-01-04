@@ -1,8 +1,8 @@
 import { Button } from "../../components/ui/button";
-import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
+import { ChaptersData } from "../../endPointTypes/types";
 
 type ChaptersProps = {
-    chapters: ChaptersDataType[];
+    chapters: ChaptersData[] | undefined;
     handleChapterClick: (chapterId: string) => void;
 };
 
@@ -21,7 +21,7 @@ export default function Chapters({
                     Table of Contents
                 </div>
                 <ul className="space-y-2 text-gray-500">
-                    {chapters.map((chapter, index) => (
+                    {chapters?.map((chapter, index) => (
                         <li key={index}>
                             <div
                                 className={`hover:text-gray-300 transition-colors duration-100 cursor-pointer`}

@@ -4,9 +4,8 @@ import axios from "axios";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Book, ChaptersData } from "../../endPointTypes/types";
 import { useAuth } from "../../hooks/userAuth";
-import { BookType } from "../../../../backend/src/book/schema/book.schema";
-import Chapters from "./Chapters";
 import {
     arrowsAtom,
     canvaElementsAtom,
@@ -16,7 +15,6 @@ import {
 } from "./Konva/konvaAtoms";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
-import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 
 export type HighlightRange = {
     startElementId: string;
@@ -29,10 +27,7 @@ export type HighlightRange = {
 };
 
 // Fetch book function
-const fetchBook = async (
-    id: string,
-    accessToken: string
-): Promise<BookType> => {
+const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
     const { data } = await axios.get(`/api/book/${id}`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -43,10 +38,10 @@ const fetchBook = async (
 
 // Unified update function using PATCH
 const patchBook = async (
-    updateData: Partial<BookType>,
+    updateData: Partial<Book>,
     id: string,
     accessToken: string
-): Promise<BookType> => {
+): Promise<Book> => {
     const { data } = await axios.patch(`/api/book/${id}`, updateData, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -69,7 +64,7 @@ function MainPage() {
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const [updated, setUpdated] = useState(false);
     // Initialize chapters (assuming this will be populated elsewhere)
-    const [chapters] = useState<ChaptersDataType[]>([]);
+    const [chapters] = useState<ChaptersData[]>([]);
     const queryClient = useQueryClient();
 
     // React Query: Fetch book data
@@ -176,7 +171,9 @@ function MainPage() {
     }
     // Extract book elements from the fetched book data
     const bookElements = book.bookElements;
-
+    if (!bookElements) {
+        return <div>No book elements found</div>;
+    }
     return (
         <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
             <KonvaStage

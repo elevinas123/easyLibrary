@@ -21,7 +21,7 @@ export class BookService {
             ...rest
         } = data;
 
-        console.log("data", data)
+        console.log("data", data);
         return this.prisma.book.create({
             data: {
                 ...rest,
@@ -111,7 +111,19 @@ export class BookService {
     }
 
     async getBookById(id: string) {
-        const book = await this.prisma.book.findUnique({ where: { id } });
+        const book = await this.prisma.book.findUnique({
+            where: { id },
+            include: {
+                genres: true,
+                bookshelves: true,
+                bookElements: true,
+                canvaElements: true,
+                curveElements: true,
+                highlights: true,
+                offsetPosition: true,
+                chaptersData: true,
+            },
+        });
         if (!book) {
             throw new NotFoundException(`Book with ID ${id} not found`);
         }

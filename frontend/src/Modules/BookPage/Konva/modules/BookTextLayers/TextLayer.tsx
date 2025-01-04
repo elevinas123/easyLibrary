@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from "uuid";
 
 import { useAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
-import { BookTextElementType } from "../../../../../endPointTypes/types";
 import { ProcessedElement } from "../../../../../preprocess/epub/htmlToBookElements";
 import { VisibleArea } from "../../KonvaStage";
 import { getPos } from "../../functions/getPos";
@@ -20,6 +19,7 @@ import {
 } from "../../functions/measureTextWidth";
 import {
     activeToolAtom,
+    bookIdAtom,
     currentHighlightAtom,
     highlightsAtom,
     offsetPositionAtom,
@@ -41,11 +41,25 @@ export type TextLayerRef = {
     handleMouseUp: () => void;
 };
 
+type BookTextElement = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    text: string;
+    fontSize: number;
+    fill: string;
+    fontFamily: string;
+    strokeColor: string;
+    strokeWidth: number;
+    opacity: number;
+};
+
 function TextLayer(
     { visibleArea, processedElements }: TextLayerProps,
     ref: ForwardedRef<TextLayerRef>
 ) {
-    const [textElements, setTextElements] = useState<BookTextElementType[]>([]);
+    const [textElements, setTextElements] = useState<BookTextElement[]>([]);
     const [virtualizedText, setVirtualizedText] = useState<JSX.Element[]>([]);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [_, setHighlights] = useAtom(highlightsAtom);
@@ -53,13 +67,16 @@ function TextLayer(
         useAtom(currentHighlightAtom);
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
-    const [initialOffset, setInitialOffset] = useState({ x: 600, y: 200 });
+    const [initialOffset] = useState({ x: 600, y: 200 });
     const { settings } = useSettings();
-    const fontSize = settings.fontSize;
+    const [bookId] = useAtom(bookIdAtom);
+    const fontSize = settings?.fontSize;
     useImperativeHandle(
         ref,
         () => ({
             handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+                if (!bookId) return;
+                if (!fontSize) return;
                 const pos = getPos(offsetPosition, scale, e);
                 if (!pos) return;
                 if (activeTool !== "Select") return;
@@ -86,6 +103,7 @@ function TextLayer(
                 setHighlights((oldHighlights) => [
                     ...oldHighlights,
                     {
+                        bookId: bookId,
                         id: currentId,
                         startingX: calculateXPositionInText(
                             e.target.attrs.text,
@@ -109,6 +127,8 @@ function TextLayer(
                 ]);
             },
             handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+                if (!fontSize) return;
+
                 if (!currentHighlight.creating) return;
                 const currentHighlightId = currentHighlight.id;
                 if (!e.target.attrs.text) return;
@@ -126,6 +146,7 @@ function TextLayer(
                 if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
                     return;
                 setHighlights((highlights) => {
+                    if (!fontSize) return highlights;
                     const newHighlights = [...highlights];
                     const highlight = newHighlights.find(
                         (highlight) => currentHighlightId === highlight.id
@@ -178,6 +199,7 @@ function TextLayer(
             scale,
             offsetPosition,
             settings,
+            fontSize,
         ]
     );
 
@@ -187,12 +209,13 @@ function TextLayer(
         mouseStartingX: number,
         scale: number
     ) => {
+        if (!settings) return 0;
         const characterWidths = measureCharacterWidths(
             text,
             fontSize,
             settings.fontFamily
         );
-        const textWidth = measureTextWidth(text, fontSize, settings.fontFamily);
+        //const textWidth = measureTextWidth(text, fontSize, settings.fontFamily);
         const mouseRelativeX = mouseStartingX - textStartingX;
         // Find the character corresponding to the mouse position
         let posInText = 0;
@@ -237,7 +260,9 @@ function TextLayer(
                 ))
         );
     }, [visibleArea, textElements, offsetPosition, scale, settings]);
-    const createTextElements = (): BookTextElementType[] => {
+    const createTextElements = (): BookTextElement[] => {
+        if (!settings) return [];
+        if (!fontSize) return [];
         // Process the text elements from the book
 
         // Render the text elements with highlights

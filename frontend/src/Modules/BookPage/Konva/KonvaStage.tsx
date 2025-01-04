@@ -3,8 +3,9 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
+import { ChaptersData } from "../../../endPointTypes/types";
+import { useSettings } from "../../../hooks/useSettings";
 import { ProcessedElement } from "../../../preprocess/epub/htmlToBookElements";
-import { ChaptersDataType } from "../../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
 import Chapters from "../Chapters";
 import Tools from "./components/Tools";
 import { isPointInPolygon } from "./functions/getElementsUnderMouse";
@@ -19,7 +20,6 @@ import {
     offsetPositionAtom,
     scaleAtom,
     selectedItemsIdsAtom,
-    settingsAtom,
 } from "./konvaAtoms";
 import HoverHighlightLayer from "./modules/BookTextLayers/HoverHighlightLayer";
 import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
@@ -28,7 +28,6 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
-import { useSettings } from "../../../hooks/useSettings";
 
 export type VisibleArea = {
     x: number;
@@ -40,7 +39,7 @@ export type VisibleArea = {
 
 type KonvaStageProps = {
     bookElements: ProcessedElement[];
-    chaptersData: ChaptersDataType[];
+    chaptersData: ChaptersData[] | undefined;
 };
 
 export default function KonvaStage({
@@ -344,10 +343,11 @@ export default function KonvaStage({
     };
     const handleChapterClick = (chapterId: string) => {
         if (chapterId === "someId") return;
+        if (!settings) return;
         const targetY = -parseInt(chapterId) * settings.fontSize;
         smoothScroll(offsetPosition.x, targetY * scale, 500);
     };
-
+    if (!settings) return null;
     return (
         <>
             <Chapters
@@ -375,7 +375,7 @@ export default function KonvaStage({
                         <MainLayer
                             visibleArea={visibleArea}
                             bookElements={bookElements}
-                            fontSize={settings.fontSize}
+                            fontSize={settings?.fontSize}
                             width={width}
                             ref={mainLayerRef}
                         />

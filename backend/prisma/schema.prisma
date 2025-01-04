@@ -142,6 +142,7 @@ model CanvaElementSkeleton {
   strokeWidth    Float
   opacity        Float
   rotation       Float
+  type           String
   points         Point[] // We'll discuss points later
   outgoingArrows ArrowElement[]  @relation("OutgoingArrows")
   incomingArrows ArrowElement[]  @relation("IncomingArrows")

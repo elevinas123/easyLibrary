@@ -4,14 +4,11 @@ import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-    CreateSettingsDto,
-    UpdateSettingsDto,
-} from "../../../backend/src/settings/settings.dto";
 import { apiFetch } from "../endPointTypes/apiClient";
 import { settingsAtom } from "../Modules/BookPage/Konva/konvaAtoms";
 
 import { useAuth } from "./userAuth";
+import { Settings } from "../endPointTypes/types";
 
 export const useSettings = () => {
     const [settings, setSettings] = useAtom(settingsAtom);
@@ -44,8 +41,8 @@ export const useSettings = () => {
     const createSettings = useCallback(
         async (accessToken: string, userId: string) => {
             // Create default settings
-            const defaultSettings: CreateSettingsDto = {
-                userId,
+            const defaultSettings: any = {
+                user: { connect: { id: userId } },
                 fontSize: 16,
                 fontFamily: "Arial",
                 lineHeight: 1.5,
@@ -73,7 +70,7 @@ export const useSettings = () => {
         async (
             accessToken: string,
             userId: string,
-            updatedSettings: UpdateSettingsDto
+            updatedSettings: Partial<Settings>
         ) => {
             // Update user settings
             const updatedData = await apiFetch(
@@ -101,14 +98,14 @@ export const useSettings = () => {
             return;
         }
         try {
-            const fetchedSettings = await fetchSettings(accessToken, user._id);
+            const fetchedSettings = await fetchSettings(accessToken, user.id);
             if (JSON.stringify(fetchedSettings) !== JSON.stringify(settings)) {
                 setSettings(fetchedSettings);
             }
         } catch (error) {
             console.warn("Settings not found, creating new settings.");
             try {
-                const newSettings = await createSettings(accessToken, user._id);
+                const newSettings = await createSettings(accessToken, user.id);
                 setSettings(newSettings);
             } catch (creationError) {
                 console.error("Error creating new settings:", creationError);
@@ -123,27 +120,26 @@ export const useSettings = () => {
 
     // Optimistic update of settings
     const updateSettings = useCallback(
-        async (updatedSettings: UpdateSettingsDto) => {
+        async (updatedSettings: Partial<Settings>) => {
             if (!user || !accessToken) {
                 throw new Error("User or access token is missing");
             }
 
             // Keep a reference to the previous settings for potential rollback
-            const previousSettings = { ...settings };
+            const previousSettings = { ...settings } as Settings;
 
             // Optimistically update the local settings
-            setSettings((oldSettings) => ({
-                ...oldSettings,
-                ...updatedSettings,
-            }));
+            setSettings(
+                (oldSettings) =>
+                    oldSettings && {
+                        ...oldSettings,
+                        ...updatedSettings,
+                    }
+            );
 
             try {
                 // Make the API call in the background
-                await updateSettingsFunc(
-                    accessToken,
-                    user._id,
-                    updatedSettings
-                );
+                await updateSettingsFunc(accessToken, user.id, updatedSettings);
                 // Optionally, refresh settings from the server to ensure consistency
                 // const updatedFromServer = await fetchSettings(accessToken,
                 // user._id); setSettings(updatedFromServer);

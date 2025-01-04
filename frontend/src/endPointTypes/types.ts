@@ -122,6 +122,7 @@ export type CanvaElementSkeleton = {
     strokeColor: string;
     strokeWidth: number;
     opacity: number;
+    type: string;
     rotation: number;
     points?: Point[]; // Optional reference array
     outgoingArrows?: ArrowElement[]; // Optional reference array
