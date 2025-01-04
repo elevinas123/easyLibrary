@@ -1,20 +1,22 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DIRECT_URL")
 }
+
 model Settings {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  fontSize       Int      @default(16)
-  fontFamily     String   @default("Arial")
-  lineHeight     Int      @default(3)
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  fontSize        Int     @default(16)
+  fontFamily      String  @default("Arial")
+  lineHeight      Int     @default(3)
   backgroundColor String  @default("#111111")
-  textColor      String   @default("#ffffff")
-  darkMode       Boolean  @default(false)
-  user           User     @relation(fields: [userId], references: [id])
+  textColor       String  @default("#ffffff")
+  darkMode        Boolean @default(false)
+  user            User    @relation(fields: [userId], references: [id])
 }
 
 // User model
@@ -132,7 +134,7 @@ model Point {
 }
 
 model CanvaElementSkeleton {
-  id             String          @id @default(cuid())
+  id             String         @id @default(cuid())
   fill           String
   x              Float
   y              Float
@@ -144,13 +146,17 @@ model CanvaElementSkeleton {
   rotation       Float
   type           String
   points         Point[] // We'll discuss points later
-  outgoingArrows ArrowElement[]  @relation("OutgoingArrows")
-  incomingArrows ArrowElement[]  @relation("IncomingArrows")
-  bookId         String
-  book           Book            @relation(fields: [bookId], references: [id])
-  circleElements CircleElement[]
-  rectElements   RectElement[]
-  textElements   TextElement[]
+  outgoingArrows ArrowElement[] @relation("OutgoingArrows")
+  incomingArrows ArrowElement[] @relation("IncomingArrows")
+
+  outgoingArrowIds String[] // List of outgoing arrow IDs
+  incomingArrowIds String[] // List of incoming arrow IDs
+
+  bookId        String
+  book          Book           @relation(fields: [bookId], references: [id])
+  circleElement CircleElement?
+  rectElement   RectElement?
+  textElement   TextElement?
 }
 
 // CurveElementSkeleton model
@@ -200,7 +206,7 @@ model CircleElement {
   hachureAngle Float
   radius       Float
   type         String
-  canvaId      String
+  canvaId      String               @unique
   canva        CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
 }
 
@@ -213,7 +219,7 @@ model RectElement {
   hachureGap   Float
   hachureAngle Float
   type         String
-  canvaId      String
+  canvaId      String               @unique
   canva        CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
 }
 
@@ -224,6 +230,6 @@ model TextElement {
   fontFamily String
   fontSize   Float
   type       String
-  canvaId    String
+  canvaId    String               @unique
   canva      CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
 }

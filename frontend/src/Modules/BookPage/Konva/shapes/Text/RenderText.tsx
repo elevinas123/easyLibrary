@@ -1,10 +1,12 @@
-import { Text } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { TextElementType } from "../../../../../endPointTypes/types";
+import { Text } from "react-konva";
+import {
+    SpecificTextElement
+} from "../../../../../endPointTypes/types";
 
 export type RenderTextProps = {
     draggable: boolean;
-    element: TextElementType;
+    element: SpecificTextElement;
     handleDragMove: ((e: KonvaEventObject<MouseEvent>) => void) | undefined;
 };
 export default function RenderText({
@@ -15,7 +17,7 @@ export default function RenderText({
     return (
         <Text
             id={element.id}
-            text={element.text}
+            text={element.textElement.text}
             x={element.x}
             y={element.y}
             width={element.width}
@@ -24,8 +26,8 @@ export default function RenderText({
             stroke={element.strokeColor}
             strokeWidth={element.strokeWidth}
             opacity={element.opacity}
-            fontSize={element.fontSize}
-            fontFamily={element.fontFamily}
+            fontSize={element.textElement.fontSize}
+            fontFamily={element.textElement.fontFamily}
             draggable={draggable}
             onDragMove={handleDragMove}
         />

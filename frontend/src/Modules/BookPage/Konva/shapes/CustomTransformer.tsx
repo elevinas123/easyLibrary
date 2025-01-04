@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { Transformer } from "react-konva";
 import Konva from "konva";
-import { CanvaElementType } from "../../../../endPointTypes/types";
+import { CanvaElementSkeleton } from "../../../../endPointTypes/types";
 
 type CustomTransformerProps = {
     selectedIds: string[];
     updateElementInState: (
         id: string,
-        newAttrs: Partial<CanvaElementType>
+        newAttrs: Partial<CanvaElementSkeleton>
     ) => void;
 };
 
@@ -80,7 +80,7 @@ export default function CustomTransformer({
                 const id = node.id();
                 const type = node.getAttr("elementType"); // Retrieve the custom type
 
-                let newAttrs: Partial<CanvaElementType> = {};
+                let newAttrs: Partial<CanvaElementSkeleton> = {};
 
                 if (type === "rect") {
                     newAttrs = {

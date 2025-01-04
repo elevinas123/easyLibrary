@@ -1,5 +1,7 @@
 // Types for Prisma Models
 
+import { SpecificTextElement } from "../Modules/BookPage/Konva/shapes/Text/TextElement";
+
 export type Settings = {
     id: string;
     userId: string;
@@ -103,7 +105,7 @@ export type ChaptersData = {
 };
 
 export type Point = {
-    id: string;
+    id?: string;
     x: number;
     y: number;
     curveId?: string;
@@ -122,16 +124,18 @@ export type CanvaElementSkeleton = {
     strokeColor: string;
     strokeWidth: number;
     opacity: number;
-    type: string;
+    type: "text" | "rect" | "circle";
     rotation: number;
     points?: Point[]; // Optional reference array
     outgoingArrows?: ArrowElement[]; // Optional reference array
     incomingArrows?: ArrowElement[]; // Optional reference array
+    outgoingArrowIds?: string[]; // Optional reference array
+    incomingArrowIds?: string[]; // Optional reference array
     bookId: string;
     book?: Book; // Optional reference
-    circleElements?: CircleElement[]; // Optional reference array
-    rectElements?: RectElement[]; // Optional reference array
-    textElements?: TextElement[]; // Optional reference array
+    circleElements?: CircleElement; // Optional reference array
+    rectElement?: RectElement; // Optional reference array
+    textElement?: TextElementType; // Optional reference array
 };
 
 export type CurveElementSkeleton = {
@@ -159,7 +163,7 @@ export type ArrowElement = {
     id: string;
     startId?: string;
     endId?: string;
-    type: string;
+    type: "Arrow";
     startType?: string;
     endType?: string;
     from?: CanvaElementSkeleton; // Optional reference
@@ -178,7 +182,7 @@ export type CircleElement = {
     hachureGap: number;
     hachureAngle: number;
     radius: number;
-    type: string;
+    type: "Circle";
     canvaId: string;
     canva?: CanvaElementSkeleton; // Optional reference
 };
@@ -190,17 +194,21 @@ export type RectElement = {
     seed: number;
     hachureGap: number;
     hachureAngle: number;
-    type: string;
+    type: "Rect";
     canvaId: string;
     canva?: CanvaElementSkeleton; // Optional reference
 };
 
-export type TextElement = {
-    id: string;
+export type TextElementType = {
+    id?: string;
     text: string;
     fontFamily: string;
     fontSize: number;
-    type: string;
+    type: "text";
     canvaId: string;
     canva?: CanvaElementSkeleton; // Optional reference
+};
+export type SpecificTextElement = CanvaElementSkeleton & {
+    type: "text";
+    textElement: TextElementType;
 };

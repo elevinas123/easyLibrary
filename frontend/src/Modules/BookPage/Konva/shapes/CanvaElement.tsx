@@ -7,11 +7,9 @@ import {
     MutableRefObject,
     useImperativeHandle,
     useRef,
-    useState
+    useState,
 } from "react";
-import {
-    CanvaElementType
-} from "../../../../endPointTypes/types";
+import { CanvaElementSkeleton } from "../../../../endPointTypes/types";
 import { getPos } from "../functions/getPos";
 import {
     activeToolAtom,
@@ -69,7 +67,7 @@ function CanvasElement(
         handleMouseUp,
     }));
 
-    const createElement = (element: CanvaElementType) => {
+    const createElement = (element: CanvaElementSkeleton) => {
         setCanvaElements((prevItems) => [...prevItems, element]);
         setSelectedItemsIds([element.id]);
     };
@@ -163,7 +161,7 @@ function CanvasElement(
         return items;
     };
 
-    const updateElement = (element: CanvaElementType) => {
+    const updateElement = (element: CanvaElementSkeleton) => {
         setCanvaElements((prevItems) => [
             ...prevItems.map((item) =>
                 item.id === element.id ? element : item
@@ -202,7 +200,7 @@ function CanvasElement(
         const element = canvaElements.find((el) => el.id === id);
         if (!element) return;
 
-        let newAttrs: Partial<CanvaElementType> | undefined = {};
+        let newAttrs: Partial<CanvaElementSkeleton> | undefined = {};
 
         if (element.type === "rect") {
             newAttrs = rectangleRef.current?.handleDragMove(element, node);
@@ -225,7 +223,7 @@ function CanvasElement(
 
     const updateElementInState = (
         id: string,
-        newAttrs: Partial<CanvaElementType>
+        newAttrs: Partial<CanvaElementSkeleton>
     ) => {
         setCanvaElements((elements) =>
             elements.map((el) => {
@@ -234,7 +232,7 @@ function CanvasElement(
                         ...el,
                         ...newAttrs,
                         type: el.type, // Ensure the type remains the same
-                    } as CanvaElementType;
+                    } as CanvaElementSkeleton;
                 }
                 return el;
             })

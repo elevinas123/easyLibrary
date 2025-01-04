@@ -1,17 +1,9 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from "uuid";
-import {
-    CanvaElementType,
-    RectElementType,
-    TextElementType,
-} from "../../../../../endPointTypes/types";
-import {
-    activeToolAtom,
-    canvaElementsAtom,
-    offsetPositionAtom,
-    scaleAtom,
-} from "../../konvaAtoms";
+
 import { useAtom } from "jotai";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
+import { Stage } from "konva/lib/Stage";
 import {
     ForwardedRef,
     forwardRef,
@@ -20,15 +12,25 @@ import {
     useImperativeHandle,
     useState,
 } from "react";
+import {
+    CanvaElementSkeleton,
+    SpecificTextElement,
+} from "../../../../../endPointTypes/types";
 import { getPos } from "../../functions/getPos";
-import { Stage } from "konva/lib/Stage";
-import { Shape, ShapeConfig } from "konva/lib/Shape";
-import CreateText from "./CreateText";
 import { measureTextWidth } from "../../functions/measureTextWidth";
+import {
+    activeToolAtom,
+    bookIdAtom,
+    canvaElementsAtom,
+    offsetPositionAtom,
+    scaleAtom,
+} from "../../konvaAtoms";
+import CreateText from "./CreateText";
+import { isSpecificTextElement } from "../../../../../endPointTypes/typeGuards";
 
 type TextElementProps = {
-    createElement: (element: CanvaElementType) => void;
-    updateElement: (element: CanvaElementType) => void;
+    createElement: (element: CanvaElementSkeleton) => void;
+    updateElement: (element: CanvaElementSkeleton) => void;
     deleteElement: (id: string) => void;
     inputRef: MutableRefObject<HTMLInputElement | null>;
 };
@@ -36,9 +38,9 @@ export type TextElementRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: CanvaElementType,
+        element: CanvaElementSkeleton,
         node: Shape<ShapeConfig> | Stage
-    ) => Partial<CanvaElementType>;
+    ) => Partial<CanvaElementSkeleton>;
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
     handleKeyDown: (e: KeyboardEvent) => void;
     handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -53,9 +55,10 @@ function TextElement(
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<TextElementType | null>(
+    const [currentItem, setCurrentItem] = useState<SpecificTextElement | null>(
         null
     );
+    const [bookId] = useAtom(bookIdAtom);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseUp,
@@ -65,17 +68,19 @@ function TextElement(
         handleInputChange,
     }));
     useEffect(() => {
-        if (inputRef.current && isEditing && currentItem) {
-            const input = inputRef.current;
-            input.style.left = `${currentItem.x}px`;
-            input.style.top = `${currentItem.y}px`;
-            input.style.fontSize = `${currentItem.fontSize}px`;
-            input.style.display = "block";
-            input.value = currentItem.text;
-            input.style.width = `${currentItem.width}px`;
-            input.focus();
+        if (!inputRef.current || !isEditing || !currentItem) {
             return;
         }
+
+        const input = inputRef.current;
+        input.style.left = `${currentItem.x}px`;
+        input.style.top = `${currentItem.y}px`;
+        input.style.fontSize = `${currentItem.textElement.fontSize}px`;
+        input.style.display = "block";
+        input.value = currentItem.textElement.text;
+        input.style.width = `${currentItem.width}px`;
+        input.focus();
+
         handleInputBlur();
     }, [isEditing, currentItem]);
     const handleInputBlur = () => {
@@ -84,6 +89,7 @@ function TextElement(
         }
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if (!bookId) return;
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
         if (activeTool !== "Text") return;
@@ -91,6 +97,7 @@ function TextElement(
         const newText = CreateText({
             x: pos.x,
             y: pos.y,
+            bookId: bookId,
             id,
             text: "Sample Text",
             width: 24 * 8 + 10,
@@ -104,9 +111,9 @@ function TextElement(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: CanvaElementType,
+        element: CanvaElementSkeleton,
         node: Shape<ShapeConfig> | Stage
-    ): Partial<CanvaElementType> => {
+    ): Partial<CanvaElementSkeleton> => {
         const newAttrs = {
             x: node.x(),
             y: node.y(),
@@ -133,8 +140,8 @@ function TextElement(
 
         if (!pos) return;
 
-        const clickedItem = getItemsAtPosition(pos).find(
-            (item) => item.type === "text"
+        const clickedItem = getItemsAtPosition(pos).find((item) =>
+            isSpecificTextElement(item)
         );
 
         if (clickedItem) {
@@ -151,7 +158,10 @@ function TextElement(
     };
     const updateTextElement = (text: string) => {
         if (!currentItem) return;
-        const newWidth = measureTextWidth(text, currentItem.fontSize + 1);
+        const newWidth = measureTextWidth(
+            text,
+            currentItem.textElement.fontSize + 1
+        );
         setCurrentItem((oldItem) => {
             if (!oldItem) return null;
             return {
@@ -162,7 +172,7 @@ function TextElement(
         });
         updateElement({
             ...currentItem,
-            text,
+            textElement: { ...currentItem.textElement, text },
             width: newWidth,
         });
     };

@@ -1,15 +1,23 @@
 // CreateText.ts
 import { v4 as uuidv4 } from "uuid";
-import { TextElementType } from "../../../../../endPointTypes/types";
+import {
+    SpecificTextElement,
+    TextElementType,
+} from "../../../../../endPointTypes/types";
 
 type CreateTextProps = {
     x: number;
     y: number;
-} & Partial<Omit<TextElementType, "type" | "x" | "y">>;
+    bookId: string;
+} & Partial<
+    Omit<SpecificTextElement, "type" | "x" | "y" | "TextElement"> &
+        Partial<TextElementType>
+>;
 
 export default function CreateText({
     x,
     y,
+    bookId,
     text = "Sample Text",
     fontFamily = "Arial",
     fontSize = 14,
@@ -23,28 +31,35 @@ export default function CreateText({
     height = 24 + 10,
     opacity = 1,
     points,
+
     ...overrides
-}: CreateTextProps): TextElementType {
+}: CreateTextProps): SpecificTextElement {
     return {
         type: "text",
-        text,
-        fontFamily,
+        id: id,
+        bookId,
+        textElement: {
+            canvaId: id,
+            type: "text",
+            text,
+            fontFamily,
+            fontSize,
+        },
         strokeColor,
         strokeWidth,
-        fontSize,
         width,
         height,
         opacity,
         fill,
-        id,
         x,
         y,
-        outgoingArrowIds,
-        incomingArrowIds,
+        outgoingArrowIds: outgoingArrowIds ?? [], // Default to an empty array
+        incomingArrowIds: incomingArrowIds ?? [], // Default to an empty array
         points: points || [
             { x, y },
             { x, y: y + fontSize },
         ],
+        rotation: 0,
         ...overrides,
     };
 }
