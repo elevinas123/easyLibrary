@@ -90,6 +90,7 @@ export default function LibraryPage() {
     const selectBook = (bookId: string) => {
         setSelectedBook(bookId);
     };
+    /*
 
     const updateBook = async (updatedBook: Book) => {
         try {
@@ -118,6 +119,7 @@ export default function LibraryPage() {
             console.error(error);
         }
     };
+    */
     const book = bookData?.filter((book) => book.id === selectedBook)[0];
     if (!bookData) return null;
     return (

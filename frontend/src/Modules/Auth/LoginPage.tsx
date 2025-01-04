@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { accessTokenAtom, userAtom } from "../../atoms";
 
 const Login: React.FC = () => {
-    const [user, setUser] = useAtom(userAtom);
+    const [, setUser] = useAtom(userAtom);
     const [_, setAccessToken] = useAtom(accessTokenAtom);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

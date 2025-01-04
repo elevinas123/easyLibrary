@@ -44,7 +44,6 @@ const SidebarButton = ({
         {!isCollapsed && <span className="ml-2">{label}</span>}
     </Button>
 );
-
 export default function Sidebar({
     isCollapsed,
     toggleCollapse,
@@ -91,21 +90,21 @@ export default function Sidebar({
                         label="Library"
                         isCollapsed={isCollapsed}
                         navigate={navigate}
-                        route="/"
+                        route="/library"
                     />
                     <SidebarButton
                         icon={Star}
                         label="Pinned"
                         isCollapsed={isCollapsed}
                         navigate={navigate}
-                        route="/"
+                        route="/pinned"
                     />
                     <SidebarButton
                         icon={DashIcon}
                         label="Dashboard"
                         isCollapsed={isCollapsed}
                         navigate={navigate}
-                        route="dashboard"
+                        route="/dashboard"
                     />
                 </div>
             </ScrollArea>
@@ -115,16 +114,22 @@ export default function Sidebar({
                     icon={Sliders}
                     label="Preferences"
                     isCollapsed={isCollapsed}
+                    navigate={navigate}
+                    route="/preferences"
                 />
                 <SidebarButton
                     icon={Settings}
                     label="Settings"
                     isCollapsed={isCollapsed}
+                    navigate={navigate}
+                    route="/settings"
                 />
                 <SidebarButton
                     icon={User}
                     label="User"
                     isCollapsed={isCollapsed}
+                    navigate={navigate}
+                    route="/user"
                 />
             </div>
         </aside>

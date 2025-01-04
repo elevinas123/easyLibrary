@@ -57,7 +57,7 @@ function CanvasElement(
     const [arrows] = useAtom(arrowsAtom);
 
     const [activeTool] = useAtom(activeToolAtom);
-    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [, setIsEditing] = useState<boolean>(false);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const rectangleRef = useRef<RectangleRef | null>(null);
