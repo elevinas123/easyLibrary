@@ -1,69 +1,73 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { User, UserDocument } from "./schemas/user.schema";
-import { Model } from "mongoose";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
+import { Prisma } from "@prisma/client";
+
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        private readonly prisma: PrismaService,
         private jwtService: JwtService
     ) {}
 
-    async create(createUserDto: CreateUserDto): Promise<User> {
-        const createdUser = new this.userModel(createUserDto);
-        return createdUser.save();
+    async create(data: Prisma.UserCreateInput) {
+        return this.prisma.user.create({ data });
     }
 
-    async findAll(): Promise<User[]> {
-        return this.userModel.find().exec();
+    async findAll() {
+        return this.prisma.user.findMany();
     }
-    async findOneByUsername(username: string): Promise<User> {
-        const userFound = await this.userModel.findOne({
-            username: username,
+
+    async findOneByUsername(username: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
         });
-        if (!userFound) {
+        if (!user) {
             throw new NotFoundException(
                 `User with username ${username} not found`
             );
         }
-        return userFound;
+        return user;
     }
-    async findOneByJwtPayload(jwt: string): Promise<User> {
-        console.log("jwt", jwt);
-        const decodedToken = this.jwtService.decode(jwt) as any; // Decode JWT payload
-        const username = decodedToken?.username; // Extract data from JWT payload
+
+    async findOneByJwtPayload(jwt: string) {
+        const decodedToken = this.jwtService.decode(jwt) as any;
+        const username = decodedToken?.username;
         if (!username) {
             throw new Error("Invalid JWT");
         }
-
-        // Fetch the user based on the username or other payload data
         return this.findOneByUsername(username);
     }
 
-    async findOne(id: string): Promise<User> {
-        const userFound = await this.userModel.findById(id).exec();
-        if (!userFound) {
+    async findOne(id: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+        });
+        if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
-        return userFound;
+        return user;
     }
-    async update(id: string, updateUserDto: CreateUserDto): Promise<User> {
-        const updatedUser = await this.userModel
-            .findByIdAndUpdate(id, updateUserDto, { new: true })
-            .exec();
-        if (!updatedUser) {
+
+    async update(id: string, data: Prisma.UserUpdateInput) {
+        const user = await this.prisma.user.update({
+            where: { id },
+            data,
+        });
+        if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
-        return updatedUser;
+        return user;
     }
-    async remove(id: string): Promise<User> {
-        const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
-        if (!deletedUser) {
+
+    async remove(id: string) {
+        const user = await this.prisma.user.delete({
+            where: { id },
+        });
+        if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
-        return deletedUser;
+        return user;
     }
 }

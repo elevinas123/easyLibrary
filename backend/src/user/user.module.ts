@@ -1,17 +1,15 @@
 import { Module } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { UserController } from "./user.controller";
-import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "./schemas/user.schema";
 import { JwtModule } from "@nestjs/jwt";
 
+import { PrismaService } from "../prisma/prisma.service";
+
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+
 @Module({
-    providers: [UserService],
+    providers: [UserService, PrismaService],
     controllers: [UserController],
-    imports: [
-        MongooseModule.forFeature([{ name: "User", schema: UserSchema }]),
-        JwtModule,
-    ],
+    imports: [JwtModule],
     exports: [UserService],
 })
 export class UserModule {}
