@@ -1,28 +1,24 @@
 import { useState } from "react";
 
-import { Trash2, ChevronRight, ChevronDown } from "lucide-react";
 import { useAtom } from "jotai";
+import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
 import { toolbarConfig } from "./ToolBar.config";
 
-import ToolBarItem from "./ToolBarItem";
+import { Button } from "../../../../../components/ui/button";
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
 } from "../../../../../components/ui/card";
-import { ScrollArea } from "../../../../../components/ui/scroll-area";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "../../../../../components/ui/collapsible";
-import { Button } from "../../../../../components/ui/button";
-import {
-    CanvaElementSkeleton,
-    CurveElementSkeleton,
-} from "../../../../../endPointTypes/types";
+import { ScrollArea } from "../../../../../components/ui/scroll-area";
+import ToolBarItem from "./ToolBarItem";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -50,8 +46,9 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         );
     };
 
-    let controlShape: CanvaElementSkeleton | CurveElementSkeleton | undefined =
-        canvaElements.find((element) => element.id === selectedItemsIds[0]);
+    let controlShape: any = canvaElements.find(
+        (element) => element.id === selectedItemsIds[0]
+    );
     if (!controlShape)
         controlShape = arrows.find(
             (element) => element.id === selectedItemsIds[0]
@@ -80,7 +77,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
             </CardHeader>
             <CardContent className="p-0 text-">
                 <ScrollArea className="h-[calc(100vh-12rem)]">
-                    {controls.map((controlGroup) => (
+                    {controls.map((controlGroup: any) => (
                         <Collapsible
                             key={controlGroup.groupName}
                             open={openGroups.includes(controlGroup.groupName)}
@@ -104,7 +101,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                                 </Button>
                             </CollapsibleTrigger>
                             <CollapsibleContent className="p-4 space-y-4">
-                                {controlGroup.controls.map((control) => (
+                                {controlGroup.controls.map((control: any) => (
                                     <ToolBarItem
                                         key={control.property}
                                         property={control.property}

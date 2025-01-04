@@ -31,8 +31,9 @@ export default function RenderCircle({
                 radius: element.circleElement.radius,
             }}
             onDragMove={handleDragMove}
-            sceneFunc={(context, shape) => {
-                const roughCanvas = rough.canvas(context.canvas);
+            sceneFunc={(context) => {
+                const canvas = context.canvas as unknown as HTMLCanvasElement;
+                const roughCanvas = rough.canvas(canvas);
                 context.save();
                 // Move to the center of the bounding box
                 context.translate(

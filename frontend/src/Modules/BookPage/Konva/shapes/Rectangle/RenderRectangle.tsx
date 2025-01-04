@@ -26,8 +26,11 @@ export default function RenderRectangle({
             draggable={draggable}
             onDragMove={handleDragMove}
             sceneFunc={(context, shape) => {
+                // Explicitly cast context.canvas to HTMLCanvasElement
+                const canvas = context.canvas as unknown as HTMLCanvasElement;
+
                 // Create a Rough.js canvas wrapper
-                const roughCanvas = rough.canvas(context.canvas);
+                const roughCanvas = rough.canvas(canvas);
 
                 // Save the context state
                 context.save();
@@ -50,6 +53,7 @@ export default function RenderRectangle({
                 // Restore the context state
                 context.restore();
                 context.rect(0, 0, element.width, element.height);
+
                 // Tell Konva that the drawing is complete
                 context.fillStrokeShape(shape);
             }}

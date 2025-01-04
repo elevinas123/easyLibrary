@@ -1,6 +1,6 @@
 // ToolBar.config.ts
 
-export const toolbarConfig = {
+export const toolbarConfig: any = {
     rect: [
         {
             groupName: "Stroke",

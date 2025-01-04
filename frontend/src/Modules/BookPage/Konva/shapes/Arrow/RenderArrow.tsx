@@ -83,7 +83,8 @@ export default function RenderArrow({ element }: RenderArrowProps) {
             x={x1}
             y={y1}
             sceneFunc={(context, shape) => {
-                const roughCanvas = rough.canvas(context.canvas);
+                const canvas = context.canvas as unknown as HTMLCanvasElement;
+                const roughCanvas = rough.canvas(canvas);
 
                 // Draw the main line of the arrow with styling
                 roughCanvas.line(0, 0, relativeX2, relativeY2, {
@@ -98,7 +99,13 @@ export default function RenderArrow({ element }: RenderArrowProps) {
                 const angle = Math.atan2(relativeY2, relativeX2);
 
                 // Draw the arrowhead with styling
-                drawArrowHead(context, relativeX2, relativeY2, angle, element);
+                drawArrowHead(
+                    context as unknown as CanvasRenderingContext2D,
+                    relativeX2,
+                    relativeY2,
+                    angle,
+                    element
+                );
 
                 // Finalize the shape
                 context.fillStrokeShape(shape);
