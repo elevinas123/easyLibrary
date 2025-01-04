@@ -8,34 +8,45 @@ import {
     Put,
     UseGuards,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 import { BookshelveService } from "./bookshelve.service";
-import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("bookshelve")
 export class BookshelveController {
     constructor(private readonly bookshelveService: BookshelveService) {}
+
     @Get()
     async getAllBooks() {
         return this.bookshelveService.getAllBookshelves();
     }
 
     @Post()
-    async addBook(@Body() createBookDto: CreateBookshelveDto) {
-        return this.bookshelveService.addBookshelve(createBookDto);
+    async addBookshelve(@Body() data: Prisma.BookshelveCreateInput) {
+        return this.bookshelveService.addBookshelve(data);
     }
 
     @Put(":id")
-    async updateBook(
+    async updateBookshelve(
         @Param("id") id: string,
-        @Body() updatedBookDto: CreateBookshelveDto
+        @Body() data: Prisma.BookshelveUpdateInput
     ) {
-        return this.bookshelveService.updateBookshelve(id, updatedBookDto);
+        return this.bookshelveService.updateBookshelve(id, data);
     }
+
+    @Post(":bookshelveId/books/:bookId")
+    async addBookToBookshelve(
+        @Param("bookshelveId") bookshelveId: string,
+        @Param("bookId") bookId: string
+    ) {
+        return this.bookshelveService.addBookToBookshelve(bookshelveId, bookId);
+    }
+
     @Delete(":id")
-    async deleteBook(@Param("id") id: string) {
+    async deleteBookshelve(@Param("id") id: string) {
         return this.bookshelveService.deleteBookshelve(id);
     }
 }

@@ -1,77 +1,78 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Prisma } from "@prisma/client";
 
-
-import { CreateBookshelveDto } from "./dto/create-bookshelve.dto";
-import { Bookshelve } from "./schema/bookshelve-schema";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class BookshelveService {
-    constructor(
-        @InjectModel(Bookshelve.name)
-        private bookshelveModel: Model<Bookshelve>,
-    ) {}
-    async addBookshelve(
-        createBookshelveDto: CreateBookshelveDto
-    ): Promise<Bookshelve> {
-        const newBook = new this.bookshelveModel(createBookshelveDto);
-        return newBook.save();
+    constructor(private readonly prisma: PrismaService) {}
+
+    async addBookshelve(data: Prisma.BookshelveCreateInput) {
+        return this.prisma.bookshelve.create({ data });
     }
 
-    async getAllBookshelves(): Promise<Bookshelve[]> {
-        return this.bookshelveModel.find().exec();
+    async getAllBookshelves() {
+        return this.prisma.bookshelve.findMany();
     }
 
-    async getBookshelveById(id: string): Promise<Bookshelve> {
-        const bookFound = await this.bookshelveModel.findById(id).exec();
-        if (!bookFound) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
+    async getBookshelveById(id: string) {
+        const bookshelve = await this.prisma.bookshelve.findUnique({
+            where: { id },
+        });
+        if (!bookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
         }
-        return bookFound;
+        return bookshelve;
     }
-    async updateBookshelve(
-        id: string,
-        updatedBookDto: CreateBookshelveDto
-    ): Promise<Bookshelve> {
-        const updatedBook = await this.bookshelveModel
-            .findByIdAndUpdate(id, updatedBookDto, { new: true })
-            .exec();
-        if (!updatedBook) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
+
+    async updateBookshelve(id: string, data: Prisma.BookshelveUpdateInput) {
+        const updatedBookshelve = await this.prisma.bookshelve.update({
+            where: { id },
+            data,
+        });
+        if (!updatedBookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
         }
-        return updatedBook;
+        return updatedBookshelve;
     }
-    async addBookToBookshelve(
-        bookshelveId: string,
-        bookId: string
-    ): Promise<Bookshelve> {
-        const bookshelve = await this.bookshelveModel
-            .findById(bookshelveId)
-            .exec();
+
+    async addBookToBookshelve(bookshelveId: string, bookId: string) {
+        const bookshelve = await this.prisma.bookshelve.findUnique({
+            where: { id: bookshelveId },
+            include: { books: true },
+        });
         if (!bookshelve) {
             throw new NotFoundException(
                 `Bookshelve with ID ${bookshelveId} not found`
             );
         }
-        const bookObjectId = new Types.ObjectId(bookId);
 
-        if (bookshelve.books.includes(bookObjectId)) {
+        const bookAlreadyExists = bookshelve.books.some(
+            (book) => book.id === bookId
+        );
+        if (bookAlreadyExists) {
             throw new NotFoundException(
                 `Book with ID ${bookId} already exists in the bookshelve`
             );
         }
-        bookshelve.books.push(bookObjectId);
-        return bookshelve.save();
+
+        return this.prisma.bookshelve.update({
+            where: { id: bookshelveId },
+            data: {
+                books: {
+                    connect: { id: bookId },
+                },
+            },
+        });
     }
 
-    async deleteBookshelve(id: string): Promise<Bookshelve> {
-        const deletedBook = await this.bookshelveModel
-            .findByIdAndDelete(id)
-            .exec();
-        if (!deletedBook) {
-            throw new NotFoundException(`Book with ID ${id} not found`);
+    async deleteBookshelve(id: string) {
+        const deletedBookshelve = await this.prisma.bookshelve.delete({
+            where: { id },
+        });
+        if (!deletedBookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
         }
-        return deletedBook;
+        return deletedBookshelve;
     }
 }
