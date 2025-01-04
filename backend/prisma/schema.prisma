@@ -21,7 +21,6 @@ model Settings {
 model User {
   id          String       @id @default(cuid())
   username    String       @unique
-  age         Int
   password    String
   comment     String?
   books       Book[]

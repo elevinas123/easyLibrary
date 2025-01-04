@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client"; // Import Prisma's User type
 
 import { PrismaService } from "../prisma/prisma.service";
-
 @Injectable()
 export class UserService {
     constructor(
@@ -11,15 +10,18 @@ export class UserService {
         private jwtService: JwtService
     ) {}
 
-    async create(data: Prisma.UserCreateInput) {
+    // Create a new user
+    async create(data: Prisma.UserCreateInput): Promise<User> {
         return this.prisma.user.create({ data });
     }
 
-    async findAll() {
+    // Get all users
+    async findAll(): Promise<User[]> {
         return this.prisma.user.findMany();
     }
 
-    async findOneByUsername(username: string) {
+    // Find a user by username
+    async findOneByUsername(username: string): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: { username },
         });
@@ -31,8 +33,11 @@ export class UserService {
         return user;
     }
 
-    async findOneByJwtPayload(jwt: string) {
-        const decodedToken = this.jwtService.decode(jwt) as any;
+    // Find a user by JWT payload
+    async findOneByJwtPayload(jwt: string): Promise<User> {
+        const decodedToken = this.jwtService.decode(jwt) as {
+            username?: string;
+        };
         const username = decodedToken?.username;
         if (!username) {
             throw new Error("Invalid JWT");
@@ -40,7 +45,8 @@ export class UserService {
         return this.findOneByUsername(username);
     }
 
-    async findOne(id: string) {
+    // Find a user by ID
+    async findOne(id: string): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: { id },
         });
@@ -50,7 +56,8 @@ export class UserService {
         return user;
     }
 
-    async update(id: string, data: Prisma.UserUpdateInput) {
+    // Update a user by ID
+    async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
         const user = await this.prisma.user.update({
             where: { id },
             data,
@@ -61,7 +68,8 @@ export class UserService {
         return user;
     }
 
-    async remove(id: string) {
+    // Remove a user by ID
+    async remove(id: string): Promise<User> {
         const user = await this.prisma.user.delete({
             where: { id },
         });

@@ -1,5 +1,4 @@
 // auth/constants.ts
 export const jwtConstants = {
-    secret: "secret", // Replace this with a stronger secret for
-    // production
+    secret: "key", // Replace with a secure key
 };

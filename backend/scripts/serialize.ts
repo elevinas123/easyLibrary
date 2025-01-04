@@ -67,6 +67,7 @@ export function serializeClass(
                     }
 
                     const serializedType = serializeType(propType, checker);
+                    console.log("serializedType", serializedType);
                     const isOptional = !!member.questionToken;
                     details.properties.push({
                         name: memberSymbol.getName(),
@@ -107,6 +108,12 @@ export function serializeClass(
 }
 
 export function serializeType(type: ts.Type, checker: ts.TypeChecker): string {
+    const symbol = type.getSymbol();
+
+    if (symbol) {
+        // If the type has a symbol, return its name
+        return symbol.getName();
+    }
     if (type.isUnion()) {
         return type.types
             .map((t) => serializeType(t, checker))

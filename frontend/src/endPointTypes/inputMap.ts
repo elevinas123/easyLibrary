@@ -1,54 +1,35 @@
 // This file is auto-generated from inputMap.json and endpointMap.json. Do not modify manually.
 
-import { CreateUserDto, UpdateBookDto, CreateBookDto, CreateBookshelveDto, UpdateSettingsDto, CreateSettingsDto } from './types';
+import { BookUpdateInput, BookCreateInput, BookshelveCreateInput, BookshelveUpdateInput, SettingsUpdateInput, SettingsCreateInput, UserCreateInput, UserUpdateInput } from './types';
 
 export type InputMap = {
-  "POST /user": {
-    body: CreateUserDto;
-  };
-  "GET /user": {};
-  "GET /user/findOneByJwtPayload": {};
-  "GET /user/:id": {
-    params: { id: string };
-  };
-  "GET /user/:username": {
-    params: { username: string };
-  };
-  "PUT /user/:id": {
-    params: { id: string };
-    body: CreateUserDto;
-  };
-  "DELETE /user/:id": {
-    params: { id: string };
-  };
-  "POST /auth/login": {};
-  "POST /auth/register": {
-    body: CreateUserDto;
-  };
   "GET /book": {};
   "GET /book/getUserBooks": {
     query: { userId: string };
   };
   "PATCH /book/:id": {
     params: { id: string };
-    body: UpdateBookDto;
+    body: BookUpdateInput;
   };
   "GET /book/:id": {
     params: { id: string };
   };
   "POST /book": {
-    body: CreateBookDto;
+    body: BookCreateInput;
   };
   "DELETE /book/:id": {
     params: { id: string };
   };
   "GET /bookshelve": {};
   "POST /bookshelve": {
-    body: CreateBookshelveDto;
+    body: BookshelveCreateInput;
   };
   "PUT /bookshelve/:id": {
     params: { id: string };
-    body: CreateBookshelveDto;
+    body: BookshelveUpdateInput;
+  };
+  "POST /bookshelve/:bookshelveId/books/:bookId": {
+    params: { bookshelveId: string } & { bookId: string };
   };
   "DELETE /bookshelve/:id": {
     params: { id: string };
@@ -62,14 +43,36 @@ export type InputMap = {
   };
   "PATCH /settings/:id": {
     params: { id: string };
-    body: UpdateSettingsDto;
+    body: SettingsUpdateInput;
   };
   "PATCH /settings/user/:userId": {
     params: { userId: string };
-    body: UpdateSettingsDto;
+    body: SettingsUpdateInput;
   };
   "POST /settings": {
-    body: CreateSettingsDto;
+    body: SettingsCreateInput;
+  };
+  "POST /user": {
+    body: UserCreateInput;
+  };
+  "GET /user": {};
+  "GET /user/findOneByJwtPayload": {};
+  "GET /user/:id": {
+    params: { id: string };
+  };
+  "GET /user/username/:username": {
+    params: { username: string };
+  };
+  "PUT /user/:id": {
+    params: { id: string };
+    body: UserUpdateInput;
+  };
+  "DELETE /user/:id": {
+    params: { id: string };
+  };
+  "POST /auth/login": {};
+  "POST /auth/register": {
+    body: UserCreateInput;
   };
 };
 

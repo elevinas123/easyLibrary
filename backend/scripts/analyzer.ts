@@ -102,6 +102,10 @@ const fillDoc = (
     if (!currentType.name || (!currentType.properties && !currentType.type)) {
         return typeDict;
     }
+    if (typeDict[currentType.name]) {
+        return typeDict;
+    }
+
     if (currentType.name === "CanvaElementType") {
         console.log("currentType", currentType);
     }
@@ -291,13 +295,16 @@ const createTsType = (
     let typeDict: TypeDict = {};
     let endpointMap: EndpointMapping = {};
     let inputMap: InputMapping = {};
-
     controllers.forEach((controller) => {
         controller.methods?.forEach((method) => {
             if (!method.name || !method.returnType) return;
 
             // Extract the inner return type if it's a generic type like Promise<>
             let returnInnerType = extractInnerType(method.returnType);
+            if (method.name === "updateSettings") {
+                console.log("returnInnerType", returnInnerType);
+                console.log("method", method);
+            }
             let isReturnArray = false;
             if (returnInnerType.endsWith("[]")) {
                 isReturnArray = true;
@@ -480,6 +487,7 @@ const generateDocumentation = (
 
     // Generate TypeScript types and endpoint mapping from the collected
     // documentation
+    console.log(output)
     const { typeDict, endpointMap, inputMap } = createTsType(output);
 
     generateTypes(typeDict);
