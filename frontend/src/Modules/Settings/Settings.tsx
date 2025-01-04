@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { SettingsType } from "../../../../backend/src/settings/settings.schema";
 import { Button } from "../../components/ui/button";
 import {
     Dialog,
@@ -20,6 +19,7 @@ import {
 import { Slider } from "../../components/ui/slider";
 import { Switch } from "../../components/ui/switch";
 import { useSettings } from "../../hooks/useSettings";
+import { SettingsType } from "../../endPointTypes/types";
 
 export default function Settings() {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +40,6 @@ export default function Settings() {
         { label: "Sepia", value: "#5B4636" },
     ];
 
-    const fontSizeOptions = Array.from({ length: 20 }, (_, i) => 12 + i * 2);
     const fontFamilyOptions = [
         "Arial",
         "Georgia",
@@ -51,7 +50,6 @@ export default function Settings() {
         "Open Sans",
         "Roboto",
     ];
-    const lineHeightOptions = [1, 1.25, 1.5, 1.75, 2];
 
     const handleSettingChange = <K extends keyof SettingsType>(
         key: K,
@@ -59,6 +57,8 @@ export default function Settings() {
     ) => {
         updateSettings({ [key]: value });
     };
+
+    if (!settings) return null;
 
     return (
         <div>

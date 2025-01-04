@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useState } from "react";
 import { FiEdit, FiMessageCircle, FiSave, FiTrash2, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
 import { Button } from "../../../../../components/ui/button";
@@ -6,6 +6,7 @@ import { Card } from "../../../../../components/ui/card"; // Import Card for sty
 import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
 import {
     arrowsAtom,
+    bookIdAtom,
     canvaElementsAtom,
     currentHighlightAtom,
     highlightsAtom,
@@ -19,13 +20,13 @@ type HoverOptionsTabProps = {};
 export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const [currentHighlight, setCurrentHighlight] =
         useAtom(currentHighlightAtom);
-    const [highlights, setHighlights] = useAtom(highlightsAtom);
-    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const setHighlights = useSetAtom(highlightsAtom);
+    const setHoveredItems = useSetAtom(hoveredItemsAtom);
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [arrowElements, setArrowElements] = useAtom(arrowsAtom);
     const [isAddingNote, setIsAddingNote] = useState(false);
     const [noteText, setNoteText] = useState("");
-
+    const [bookId] = useAtom(bookIdAtom);
     const deleteHighlight = () => {
         setHighlights((highlights) =>
             highlights.filter(
@@ -35,7 +36,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         setHoveredItems([]);
 
         setCurrentHighlight({
-            id: null,
+            id: undefined,
             editing: false,
             creating: false,
             mousePosition: { x: 0, y: 0 },
@@ -57,6 +58,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
             // Optionally, you can add validation or error handling here
             return;
         }
+        if (!bookId) return;
 
         console.log("Save Note", noteText);
         const textX = currentHighlight.mousePosition.x + 200;
@@ -64,17 +66,20 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         const newNoteText = CreateText({
             x: textX,
             y: textY,
+            bookId: bookId,
             text: noteText,
             fill: "white",
             strokeColor: "white",
         });
         const newNoteArrow = createArrow({
             points: [
-                currentHighlight.mousePosition.x,
-                currentHighlight.mousePosition.y,
-                textX,
-                textY,
+                {
+                    x: currentHighlight.mousePosition.x,
+                    y: currentHighlight.mousePosition.y,
+                },
+                { x: textX, y: textY },
             ],
+            bookId,
             startId: currentHighlight.id,
             endId: newNoteText.id,
             startType: "bookText",

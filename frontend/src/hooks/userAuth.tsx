@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { accessTokenAtom, userAtom } from "../atoms";
 import { apiFetch } from "../endPointTypes/apiClient";
 
-const fetchUser = async (accessToken: string | null) => {
+const fetchUser = async (accessToken: string | undefined) => {
     if (!accessToken) {
         throw new Error("Access token is null");
     }
@@ -51,7 +51,7 @@ export const useAuth = () => {
                 return;
             }
             if (!accessToken) {
-                token = localStorage.getItem("token");
+                token = localStorage.getItem("token") || undefined;
                 if (token) {
                     setAccessToken(token);
                 } else {

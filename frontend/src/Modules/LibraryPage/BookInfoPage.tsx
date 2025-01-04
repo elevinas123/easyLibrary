@@ -57,8 +57,7 @@ export default function BookInfoPage({
                                 {selectedBook.genres?.join(", ")}
                             </p>
                             <p className="mb-4">
-                                <strong>Added:</strong>{" "}
-                                {selectedBook.dateAdded.toDateString()}
+                                <strong>Added:</strong> {selectedBook.dateAdded}
                             </p>
                             <Button
                                 className="w-full mt-auto"

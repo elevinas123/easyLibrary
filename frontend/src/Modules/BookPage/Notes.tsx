@@ -14,11 +14,12 @@ import {
     CardDescription,
 } from "../../components/ui/card";
 import { ScrollArea } from "../../components/ui/scroll-area";
+import { Point } from "../../endPointTypes/types";
 
 type Note = {
     endText: string;
     startText: string;
-    points: number[];
+    points: Point[];
     arrowId: string;
     startType: string;
     endType: string;
@@ -32,28 +33,39 @@ export default function Notes() {
 
     useEffect(() => {
         const validArrows = arrows.filter(
-            (arrow) => arrow.startId !== null && arrow.endId !== null
+            (arrow) =>
+                arrow.arrowElement.startId !== undefined &&
+                arrow.arrowElement.endId !== undefined
         );
 
         const mappedNotes = validArrows.map((arrow) => {
+            if (!arrow.arrowElement.startType || !arrow.arrowElement.endType) {
+                throw new Error("Arrow does not have a start or end element");
+            }
             const startElement = canvasElements.find(
-                (element) => element.id === arrow.startId
+                (element) => element.id === arrow.arrowElement.startId
             );
             const endElement = canvasElements.find(
-                (element) => element.id === arrow.endId
+                (element) => element.id === arrow.arrowElement.endId
             );
             console.log("startElement", startElement);
             console.log("endElement", endElement);
-            const startText = getElementContent(startElement, arrow.startType);
-            const endText = getElementContent(endElement, arrow.endType);
+            const startText = getElementContent(
+                startElement,
+                arrow.arrowElement.startType
+            );
+            const endText = getElementContent(
+                endElement,
+                arrow.arrowElement.endType
+            );
 
             return {
                 startText,
                 endText,
                 points: arrow.points,
                 arrowId: arrow.id,
-                startType: arrow.startType,
-                endType: arrow.endType,
+                startType: arrow.arrowElement.startType,
+                endType: arrow.arrowElement.endType,
             };
         });
 

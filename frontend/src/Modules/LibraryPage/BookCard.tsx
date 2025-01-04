@@ -81,7 +81,12 @@ export default function BookCard({
                 <Button className="w-full" onClick={(e) => handleGoToBook(e)}>
                     <BookOpen className="mr-2 h-4 w-4" /> Read Book
                 </Button>
-                <Button className="bg-blue-500 ml-2" onClick={() => selectBook(book._id)}>Info</Button>
+                <Button
+                    className="bg-blue-500 ml-2"
+                    onClick={() => selectBook(book.id)}
+                >
+                    Info
+                </Button>
             </CardFooter>
         </Card>
     );
@@ -91,15 +96,16 @@ type DeleteDialogProps = {
     book: Book;
     deleteBook: (bookId: string) => void;
 };
-
 export function DeleteDialog({ hovered, book, deleteBook }: DeleteDialogProps) {
-    const closeRefButton = useRef(null);
+    const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
     const handleBookDelete = () => {
         deleteBook(book.id);
-        if (closeRefButton.current) {
-            closeRefButton.current?.click();
+        if (closeButtonRef.current) {
+            closeButtonRef.current.click(); // Trigger the close button
         }
     };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -124,10 +130,13 @@ export function DeleteDialog({ hovered, book, deleteBook }: DeleteDialogProps) {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="mt-6 flex justify-end space-x-3">
-                    <DialogClose asChild ref={closeRefButton}>
-                        <Button className="px-4 py-2 text-gray-300 bg-gray-700  rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <DialogClose asChild>
+                        <button
+                            ref={closeButtonRef}
+                            className="px-4 py-2 text-gray-300 bg-gray-700  rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
                             Cancel
-                        </Button>
+                        </button>
                     </DialogClose>
                     <Button
                         onClick={handleBookDelete}

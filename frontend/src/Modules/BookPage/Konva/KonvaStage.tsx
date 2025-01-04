@@ -14,12 +14,11 @@ import {
     activeToolAtom,
     canvaElementsAtom,
     currentHighlightAtom,
-    highlightsAtom,
     hoveredItemsAtom,
     newArrowAtom,
     offsetPositionAtom,
     scaleAtom,
-    selectedItemsIdsAtom,
+    selectedItemsIdsAtom
 } from "./konvaAtoms";
 import HoverHighlightLayer from "./modules/BookTextLayers/HoverHighlightLayer";
 import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
@@ -55,11 +54,10 @@ export default function KonvaStage({
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const viewportBuffer = 200;
     const mainNotesLayerRef = useRef<MainNotesLayerRef | null>(null);
-    const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const [, setHoveredItems] = useAtom(hoveredItemsAtom);
     const [newArrow] = useAtom(newArrowAtom);
     const [canvaElements] = useAtom(canvaElementsAtom);
     const [selectedItemsIds] = useAtom(selectedItemsIdsAtom);
-    const [highlights] = useAtom(highlightsAtom);
     const [currentHighlight] = useAtom(currentHighlightAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
@@ -249,8 +247,8 @@ export default function KonvaStage({
 
                 const isArrowRelated =
                     newArrow &&
-                    (item.id === newArrow.startId ||
-                        item.id === newArrow.endId);
+                    (item.id === newArrow.arrowElement.startId ||
+                        item.id === newArrow.arrowElement.endId);
                 return (
                     ((activeTool === "Arrow" || activeTool === "Select") &&
                         (isInPolygon || isArrowRelated)) ||

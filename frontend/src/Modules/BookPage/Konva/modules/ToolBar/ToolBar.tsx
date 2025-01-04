@@ -4,10 +4,7 @@ import { Trash2, ChevronRight, ChevronDown } from "lucide-react";
 import { useAtom } from "jotai";
 import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
 import { toolbarConfig } from "./ToolBar.config";
-import {
-    ArrowElementType,
-    CanvaElementType,
-} from "../../../../../endPointTypes/types";
+
 import ToolBarItem from "./ToolBarItem";
 import {
     Card,
@@ -22,6 +19,10 @@ import {
     CollapsibleTrigger,
 } from "../../../../../components/ui/collapsible";
 import { Button } from "../../../../../components/ui/button";
+import {
+    CanvaElementSkeleton,
+    CurveElementSkeleton,
+} from "../../../../../endPointTypes/types";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -49,7 +50,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         );
     };
 
-    let controlShape: CanvaElementType | ArrowElementType | undefined =
+    let controlShape: CanvaElementSkeleton | CurveElementSkeleton | undefined =
         canvaElements.find((element) => element.id === selectedItemsIds[0]);
     if (!controlShape)
         controlShape = arrows.find(

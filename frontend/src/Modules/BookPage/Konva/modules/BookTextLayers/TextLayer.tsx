@@ -182,7 +182,7 @@ function TextLayer(
                               offsetPosition: currentHighlight.offsetPosition,
                           }
                         : {
-                              id: null,
+                              id: undefined,
                               editing: false,
                               creating: false,
                               mousePosition: { x: 0, y: 0 },
@@ -216,7 +216,7 @@ function TextLayer(
             settings.fontFamily
         );
         //const textWidth = measureTextWidth(text, fontSize, settings.fontFamily);
-        const mouseRelativeX = mouseStartingX - textStartingX;
+        const mouseRelativeX = (mouseStartingX - textStartingX) * scale;
         // Find the character corresponding to the mouse position
         let posInText = 0;
 

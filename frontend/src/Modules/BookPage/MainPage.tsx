@@ -1,18 +1,9 @@
 // src/pages/MainPage.tsx
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useAtom } from "jotai";
-import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Book, ChaptersData } from "../../endPointTypes/types";
+import { Book } from "../../endPointTypes/types";
 import { useAuth } from "../../hooks/userAuth";
-import {
-    arrowsAtom,
-    canvaElementsAtom,
-    highlightsAtom,
-    offsetPositionAtom,
-    scaleAtom,
-} from "./Konva/konvaAtoms";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 
@@ -37,6 +28,7 @@ const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
 };
 
 // Unified update function using PATCH
+/*
 const patchBook = async (
     updateData: Partial<Book>,
     id: string,
@@ -50,12 +42,12 @@ const patchBook = async (
     console.log("Updated Book Data:", data);
     return data;
 };
-
+*/
 function MainPage() {
     const { accessToken, user } = useAuth();
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
-
+   /*
     // Initialize atoms
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
@@ -66,7 +58,7 @@ function MainPage() {
     // Initialize chapters (assuming this will be populated elsewhere)
     const [chapters] = useState<ChaptersData[]>([]);
     const queryClient = useQueryClient();
-
+*/
     // React Query: Fetch book data
     const {
         data: book,

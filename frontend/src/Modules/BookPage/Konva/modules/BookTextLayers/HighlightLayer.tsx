@@ -124,12 +124,11 @@ function HighlightLayer(
                     activeTool !== "Select"
                 ) {
                     setCurrentHighlight({
-                        id: null,
+                        id: undefined,
                         editing: false,
                         creating: false,
                         mousePosition: { x: 0, y: 0 },
                         offsetPosition: { x: 0, y: 0 },
-                        
                     });
                     setHoveredItems([]);
                     return;

@@ -18,15 +18,15 @@ export const endpointMap = {
   "PATCH /settings/:id": "{ id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; }",
   "PATCH /settings/user/:userId": "{ id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; }",
   "POST /settings": "{ id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; }",
-  "POST /user": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
-  "GET /user": "{ id: string; username: string; age: number; password: string; comment: string | null; }[]",
-  "GET /user/findOneByJwtPayload": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
-  "GET /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
-  "GET /user/username/:username": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
-  "PUT /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
-  "DELETE /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
+  "POST /user": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
+  "GET /user": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }[]",
+  "GET /user/findOneByJwtPayload": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
+  "GET /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
+  "GET /user/username/:username": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
+  "PUT /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
+  "DELETE /user/:id": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
   "POST /auth/login": "{ access_token: string; user: any; }",
-  "POST /auth/register": "{ id: string; username: string; age: number; password: string; comment: string | null; }",
+  "POST /auth/register": "{ id: string; username: string; age: number; password: string; comment: string | undefined; }",
 } as const;
 
 export type Endpoint = keyof typeof endpointMap;
@@ -49,13 +49,13 @@ export type ApiResponseTypes = {
   "PATCH /settings/:id": { id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; };
   "PATCH /settings/user/:userId": { id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; };
   "POST /settings": { id: string; userId: string; fontSize: number; fontFamily: string; lineHeight: number; backgroundColor: string; textColor: string; darkMode: boolean; };
-  "POST /user": { id: string; username: string; age: number; password: string; comment: string | null; };
-  "GET /user": { id: string; username: string; age: number; password: string; comment: string | null; }[];
-  "GET /user/findOneByJwtPayload": { id: string; username: string; age: number; password: string; comment: string | null; };
-  "GET /user/:id": { id: string; username: string; age: number; password: string; comment: string | null; };
-  "GET /user/username/:username": { id: string; username: string; age: number; password: string; comment: string | null; };
-  "PUT /user/:id": { id: string; username: string; age: number; password: string; comment: string | null; };
-  "DELETE /user/:id": { id: string; username: string; age: number; password: string; comment: string | null; };
+  "POST /user": { id: string; username: string; age: number; password: string; comment: string | undefined; };
+  "GET /user": { id: string; username: string; age: number; password: string; comment: string | undefined; }[];
+  "GET /user/findOneByJwtPayload": { id: string; username: string; age: number; password: string; comment: string | undefined; };
+  "GET /user/:id": { id: string; username: string; age: number; password: string; comment: string | undefined; };
+  "GET /user/username/:username": { id: string; username: string; age: number; password: string; comment: string | undefined; };
+  "PUT /user/:id": { id: string; username: string; age: number; password: string; comment: string | undefined; };
+  "DELETE /user/:id": { id: string; username: string; age: number; password: string; comment: string | undefined; };
   "POST /auth/login": { access_token: string; user: any; };
-  "POST /auth/register": { id: string; username: string; age: number; password: string; comment: string | null; };
+  "POST /auth/register": { id: string; username: string; age: number; password: string; comment: string | undefined; };
 };

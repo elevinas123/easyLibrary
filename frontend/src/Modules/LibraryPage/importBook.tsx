@@ -1,23 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { load } from "cheerio";
-import { useAtom } from "jotai";
 import JSZip from "jszip";
+import { Plus } from "lucide-react";
 import { useRef, useState } from "react";
-import { accessTokenAtom, userAtom } from "../../atoms";
+import { Button } from "../../components/ui/button";
+import { apiFetch } from "../../endPointTypes/apiClient";
 import { useToast } from "../../hooks/use-toast";
+import { useAuth } from "../../hooks/userAuth";
 import { extractToc } from "../../preprocess/epub/extractToc";
 import {
     ProcessedElement,
     processElements,
 } from "../../preprocess/epub/htmlToBookElements";
 import { preprocessEpub, readEpub } from "../../preprocess/epub/preprocessEpub";
-import { apiFetch } from "../../endPointTypes/apiClient";
-import { Plus } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { ChaptersDataType } from "../../../../backend/src/book/schema/chaptersData/chaptersData.schema";
-import { Book } from "../../endPointTypes/types";
-import { useAuth } from "../../hooks/userAuth";
+import { ChaptersData } from "../../endPointTypes/types";
+import { v4 as uuidv4 } from "uuid";
+import { useAtom } from "jotai";
+import { bookIdAtom } from "../BookPage/Konva/konvaAtoms";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -35,9 +35,9 @@ const importBook = async ({
     bookElements: ProcessedElement[];
     metaData: Partial<Record<string, string>>;
     userId: string;
-    accessToken: string | null;
+    accessToken: string | undefined;
     coverImage: Blob | null;
-    chaptersData: ChaptersDataType[];
+    chaptersData: ChaptersData[];
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
     if (!accessToken) {
@@ -95,6 +95,7 @@ export default function ImportBook({
     const [_, setError] = useState<string | null>(null);
     const { accessToken, user } = useAuth();
     const { toast } = useToast();
+    const [bookId] = useAtom(bookIdAtom);
     // Use the mutation with the correct types
     const queryClient = useQueryClient();
     const mutation = useMutation({
@@ -115,7 +116,7 @@ export default function ImportBook({
             console.error("Failed to import book:", err);
         },
     });
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleButtonClick = () => {
         if (fileInputRef.current) {
@@ -139,6 +140,10 @@ export default function ImportBook({
             console.error("User not found");
             return;
         }
+        if (!bookId) {
+            console.error("BookId not found");
+            return;
+        }
         const processedElements = processElements(
             elements.epubElements,
             24,
@@ -150,6 +155,8 @@ export default function ImportBook({
                 processedElements.find(
                     (element) => element.elementId === chapter.elementId
                 )?.lineY + "" || "someId",
+            id: uuidv4(),
+            bookId,
         }));
         mutation.mutate({
             bookElements: processedElements,
@@ -182,7 +189,7 @@ export default function ImportBook({
             const chaptersData = toc.map((item) => ({
                 elementId: item.id || "someId",
                 title: item.title,
-                href: item.href || null,
+                href: item.href || undefined,
                 indentLevel: calculateIndentLevel(item.href),
             }));
             console.log("chaptersData", chaptersData);
@@ -194,7 +201,7 @@ export default function ImportBook({
         }
     };
     function calculateIndentLevel(href: string | undefined) {
-        if (!href) return null;
+        if (!href) return undefined;
         // Simple example: increase indent level based on depth of href structure
         return (href.match(/\//g) || []).length;
     }
