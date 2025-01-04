@@ -1,4 +1,3 @@
-// src/settings/settings.controller.ts
 import {
     Body,
     Controller,
@@ -8,10 +7,12 @@ import {
     Post,
     UseGuards,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
-import { CreateSettingsDto, UpdateSettingsDto } from "./settings.dto";
 import { SettingsService } from "./settings.service";
+
 @UseGuards(JwtAuthGuard)
 @Controller("settings")
 export class SettingsController {
@@ -21,6 +22,7 @@ export class SettingsController {
     async getAllSettings() {
         return this.settingsService.getAllSettings();
     }
+
     @Get("user/:userId")
     async getSettingsByUserId(@Param("userId") userId: string) {
         return this.settingsService.getSettingsByUserId(userId);
@@ -34,23 +36,21 @@ export class SettingsController {
     @Patch(":id")
     async updateSettings(
         @Param("id") id: string,
-        @Body() updateSettingsDto: UpdateSettingsDto
+        @Body() data: Prisma.SettingsUpdateInput
     ) {
-        return this.settingsService.updateSettings(id, updateSettingsDto);
+        return this.settingsService.updateSettings(id, data);
     }
+
     @Patch("user/:userId")
     async updateSettingsForUser(
         @Param("userId") userId: string,
-        @Body() updateSettingsDto: UpdateSettingsDto
+        @Body() data: Prisma.SettingsUpdateInput
     ) {
-        return this.settingsService.updateSettingsForUser(
-            userId,
-            updateSettingsDto
-        );
+        return this.settingsService.updateSettingsForUser(userId, data);
     }
 
     @Post()
-    async createSettings(@Body() createSettingsDto: CreateSettingsDto) {
-        return this.settingsService.createSettings(createSettingsDto);
+    async createSettings(@Body() data: Prisma.SettingsCreateInput) {
+        return this.settingsService.createSettings(data);
     }
 }

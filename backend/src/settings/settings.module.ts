@@ -1,17 +1,13 @@
 import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
-import { SettingsService } from "./settings.service";
-import { SettingsSchema } from "./settings.schema";
+
+import { PrismaService } from "../prisma/prisma.service";
+
 import { SettingsController } from "./settings.controller";
+import { SettingsService } from "./settings.service";
 
 @Module({
     controllers: [SettingsController],
-    providers: [SettingsService],
-    imports: [
-        MongooseModule.forFeature([
-            { name: "Settings", schema: SettingsSchema },
-        ]),
-    ],
+    providers: [SettingsService, PrismaService],
     exports: [SettingsService],
 })
 export class SettingsModule {}

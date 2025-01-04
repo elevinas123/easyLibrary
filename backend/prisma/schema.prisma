@@ -5,6 +5,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DIRECT_URL")
 }
+model Settings {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  fontSize       Int      @default(16)
+  fontFamily     String   @default("Arial")
+  lineHeight     Int      @default(3)
+  backgroundColor String  @default("#111111")
+  textColor      String   @default("#ffffff")
+  darkMode       Boolean  @default(false)
+  user           User     @relation(fields: [userId], references: [id])
+}
+
 // User model
 model User {
   id          String       @id @default(cuid())
@@ -14,6 +26,7 @@ model User {
   comment     String?
   books       Book[]
   bookshelves Bookshelve[]
+  settings    Settings?
 }
 
 model Genre {
