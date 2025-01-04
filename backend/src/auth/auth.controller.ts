@@ -1,6 +1,7 @@
 import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
 
-import { AuthService, PrismaUserCreation } from "./auth.service";
+import { Prisma } from "@prisma/client";
+import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./localAuthGuard";
 
 @Controller("auth")
@@ -13,8 +14,8 @@ export class AuthController {
         return this.authService.login(req.user);
     }
 
-    @Post("register")
-    async register(@Body() data: PrismaUserCreation) {
-        return this.authService.register(data);
+    @Post('register')
+    async register(@Body() data: Prisma.UserCreateInput) {
+      return this.authService.register(data);
     }
 }

@@ -9,11 +9,11 @@ import {
     Query,
     UseGuards,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client"; // Import Prisma types
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 import { BookService } from "./book.service";
-import { CreateBookDto } from "./dto/createBookDto";
-import { UpdateBookDto } from "./dto/updateBook.dto"; // Import the new DTO
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("book")
@@ -30,25 +30,22 @@ export class BookController {
         return this.bookService.getUserBooks(userId);
     }
 
-    // Unified update endpoint using PATCH (recommended for partial updates)
     @Patch(":id")
     async updateBook(
         @Param("id") id: string,
-        @Body() updateBookDto: UpdateBookDto
+        @Body() data: Prisma.BookUpdateInput
     ) {
-        return this.bookService.updateBook(id, updateBookDto);
+        return this.bookService.updateBook(id, data);
     }
 
     @Get(":id")
     async getBookById(@Param("id") id: string) {
-        console.log("bookGot from things");
-        console.log("id", id);
         return this.bookService.getBookById(id);
     }
 
     @Post()
-    async addBook(@Body() createBookDto: CreateBookDto) {
-        return this.bookService.addBook(createBookDto);
+    async addBook(@Body() data: Prisma.BookCreateInput) {
+        return this.bookService.addBook(data);
     }
 
     @Delete(":id")

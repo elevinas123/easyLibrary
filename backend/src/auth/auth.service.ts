@@ -5,7 +5,6 @@ import * as bcrypt from "bcrypt"; // Import bcrypt for password hashing
 
 import { PrismaService } from "../prisma/prisma.service";
 
-export type PrismaUserCreation = Prisma.UserCreateInput;
 
 @Injectable()
 export class AuthService {
@@ -32,13 +31,14 @@ export class AuthService {
         };
     }
 
-    async register(data: PrismaUserCreation) {
-        const hashedPassword = await bcrypt.hash(data.password, 10); // Hash the password
-        return this.prisma.user.create({
-            data: {
-                ...data,
-                password: hashedPassword, // Store hashed password
-            },
-        });
+    async register(data: Prisma.UserCreateInput) {
+      const hashedPassword =
+          await bcrypt.hash(data.password, 10);  // Hash the password
+      return this.prisma.user.create({
+        data: {
+          ...data,
+          password: hashedPassword,  // Store hashed password
+        },
+      });
     }
 }
