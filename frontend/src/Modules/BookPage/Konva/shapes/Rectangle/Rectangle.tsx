@@ -38,10 +38,9 @@ function Rectangle(
     ref: ForwardedRef<RectangleRef>
 ) {
     const [activeTool] = useAtom(activeToolAtom);
-    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [canvaElements] = useAtom(canvaElementsAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
-    const [isCreating, setIsCreating] = useState<boolean>(false);
     const [currentItem, setCurrentItem] = useState<SpecificRectElement | null>(
         null
     );

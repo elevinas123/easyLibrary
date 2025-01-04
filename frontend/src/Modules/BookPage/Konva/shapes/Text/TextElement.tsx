@@ -38,7 +38,6 @@ export type TextElementRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
     ) => Partial<SpecificTextElement>;
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
@@ -111,7 +110,6 @@ function TextElement(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
     ): Partial<SpecificTextElement> => {
         const newAttrs = {

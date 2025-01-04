@@ -210,9 +210,9 @@ function CanvasElement(
         if (isSpecificRectElement(element)) {
             newAttrs = rectangleRef.current?.handleDragMove(element, node);
         } else if (isSpecificCircleElement(element)) {
-            newAttrs = circleRef.current?.handleDragMove(element, node);
+            newAttrs = circleRef.current?.handleDragMove(node);
         } else if (isSpecificTextElement(element)) {
-            newAttrs = textElementRef.current?.handleDragMove(element, node);
+            newAttrs = textElementRef.current?.handleDragMove(node);
         }
         if (!newAttrs) return;
         updateElementInState(id, newAttrs);

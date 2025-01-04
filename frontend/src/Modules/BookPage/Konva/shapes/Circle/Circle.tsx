@@ -15,7 +15,6 @@ import { getPos } from "../../functions/getPos";
 import {
     activeToolAtom,
     bookIdAtom,
-    canvaElementsAtom,
     offsetPositionAtom,
     scaleAtom,
 } from "../../konvaAtoms";
@@ -31,7 +30,6 @@ export type CircleRef = {
     handleMouseMove: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
-        element: SpecificCircleElement,
         node: Shape<ShapeConfig> | Stage
     ) => Partial<CanvaElementSkeleton>;
 };
@@ -41,7 +39,6 @@ function Circle(
     ref: ForwardedRef<CircleRef>
 ) {
     const [activeTool] = useAtom(activeToolAtom);
-    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom);
     const [currentItem, setCurrentItem] =
@@ -102,7 +99,6 @@ function Circle(
         setCurrentItem(null);
     };
     const handleDragMove = (
-        element: SpecificCircleElement,
         node: Shape<ShapeConfig> | Stage
     ): Partial<SpecificCircleElement> => {
         const newAttrs = {
