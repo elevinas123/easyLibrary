@@ -1,9 +1,11 @@
 // src/pages/MainPage.tsx
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Book } from "../../endPointTypes/types";
 import { useAuth } from "../../hooks/userAuth";
+import { startReadingSession, endReadingSession } from "../../api/bookTrackingApi";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 
@@ -47,18 +49,25 @@ function MainPage() {
     const { accessToken, user } = useAuth();
     const [searchParams] = useSearchParams();
     const bookId = searchParams.get("id");
-   /*
-    // Initialize atoms
-    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
-    const [arrows, setArrows] = useAtom(arrowsAtom);
-    const [highlights, setHighlights] = useAtom(highlightsAtom);
-    const [scale, setScale] = useAtom(scaleAtom);
-    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
-    const [updated, setUpdated] = useState(false);
-    // Initialize chapters (assuming this will be populated elsewhere)
-    const [chapters] = useState<ChaptersData[]>([]);
-    const queryClient = useQueryClient();
-*/
+    const [sessionId, setSessionId] = useState<string | null>(null);
+    const [startTime, setStartTime] = useState<Date | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [lastPosition, setLastPosition] = useState<number>(0);
+    
+    // Use refs to track the latest values for the cleanup function
+    const sessionIdRef = useRef<string | null>(null);
+    const currentPageRef = useRef<number>(0);
+    const lastPositionRef = useRef<number>(0);
+    const accessTokenRef = useRef<string | null>(null);
+    
+    // Update refs when values change
+    useEffect(() => {
+        sessionIdRef.current = sessionId;
+        currentPageRef.current = currentPage;
+        lastPositionRef.current = lastPosition;
+        accessTokenRef.current = accessToken;
+    }, [sessionId, currentPage, lastPosition, accessToken]);
+
     // React Query: Fetch book data
     const {
         data: book,
@@ -150,6 +159,123 @@ function MainPage() {
         accessToken,
     ]);
 */
+    // Start reading session mutation
+    const startSessionMutation = useMutation({
+        mutationFn: () => startReadingSession(bookId!, accessToken!),
+        onSuccess: (data) => {
+            console.log("Reading session started:", data);
+            setSessionId(data.id);
+            setStartTime(new Date());
+        },
+        onError: (error) => {
+            console.error("Error starting reading session:", error);
+        }
+    });
+
+    // End reading session mutation
+    const endSessionMutation = useMutation({
+        mutationFn: () => {
+            if (!sessionIdRef.current) return Promise.reject("No active session");
+            return endReadingSession(
+                sessionIdRef.current,
+                currentPageRef.current,
+                lastPositionRef.current,
+                accessTokenRef.current!
+            );
+        },
+        onSuccess: (data) => {
+            console.log("Reading session ended:", data);
+            setSessionId(null);
+            setStartTime(null);
+        },
+        onError: (error) => {
+            console.error("Error ending reading session:", error);
+        }
+    });
+
+    // Update reading session mutation (for periodic updates)
+    const updateSessionMutation = useMutation({
+        mutationFn: () => {
+            if (!sessionIdRef.current) return Promise.reject("No active session");
+            return endReadingSession(
+                sessionIdRef.current,
+                currentPageRef.current,
+                lastPositionRef.current,
+                accessTokenRef.current!
+            );
+        },
+        onSuccess: (data) => {
+            console.log("Reading session updated:", data);
+            // Don't reset the session ID or start time for updates
+        },
+        onError: (error) => {
+            console.error("Error updating reading session:", error);
+        }
+    });
+
+    // Start reading session when component mounts
+    useEffect(() => {
+        if (bookId && accessToken && user && !sessionId) {
+            startSessionMutation.mutate();
+        }
+    }, [bookId, accessToken, user]);
+
+    // Set up periodic updates (every 2 minutes)
+    useEffect(() => {
+        if (!sessionId) return;
+        
+        const updateInterval = setInterval(() => {
+            if (sessionIdRef.current) {
+                updateSessionMutation.mutate();
+            }
+        }, 2 * 60 * 1000); // 2 minutes
+        
+        return () => clearInterval(updateInterval);
+    }, [sessionId]);
+
+    // End reading session when component unmounts
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (sessionIdRef.current) {
+                // Use synchronous fetch for beforeunload
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `/api/tracking/session/end`, false); // Synchronous request
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Authorization', `Bearer ${accessTokenRef.current}`);
+                xhr.send(JSON.stringify({
+                    sessionId: sessionIdRef.current,
+                    pagesRead: currentPageRef.current,
+                    lastPosition: lastPositionRef.current
+                }));
+            }
+        };
+
+        // Add beforeunload event listener
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        // Regular cleanup function for component unmount
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            
+            if (sessionIdRef.current) {
+                endSessionMutation.mutate();
+            }
+        };
+    }, []);
+
+    // Update page position when user navigates
+    const handlePageChange = (page: number, position: number) => {
+        setCurrentPage(page);
+        setLastPosition(position);
+    };
+
+    // Manual end session handler
+    const handleEndSession = () => {
+        if (sessionId) {
+            endSessionMutation.mutate();
+        }
+    };
+
     // Handle loading and error states
     if (isLoading) {
         return <div>Loading...</div>;
@@ -171,8 +297,15 @@ function MainPage() {
             <KonvaStage
                 chaptersData={book.chaptersData}
                 bookElements={bookElements}
+                onPageChange={handlePageChange}
             />
-            <RightHand />
+            <RightHand 
+                sessionActive={!!sessionId}
+                startTime={startTime}
+                currentPage={currentPage}
+                totalPages={book.totalPages || 0}
+                onEndSession={handleEndSession}
+            />
         </div>
     );
 }

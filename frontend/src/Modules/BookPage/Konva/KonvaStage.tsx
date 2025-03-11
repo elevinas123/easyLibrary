@@ -39,11 +39,13 @@ export type VisibleArea = {
 type KonvaStageProps = {
     bookElements: ProcessedElement[];
     chaptersData: ChaptersData[] | undefined;
+    onPageChange?: (page: number, position: number) => void;
 };
 
 export default function KonvaStage({
     bookElements,
     chaptersData,
+    onPageChange,
 }: KonvaStageProps) {
     const { settings } = useSettings();
     const width = 1200;
@@ -346,6 +348,19 @@ export default function KonvaStage({
         smoothScroll(offsetPosition.x, targetY * scale, 500);
     };
     if (!settings) return null;
+    useEffect(() => {
+        // Calculate current page based on visible area
+        if (visibleArea && bookElements.length > 0 && settings) {
+            const currentPosition = -offsetPosition.y / scale;
+            const linesPerPage = Math.floor(window.innerHeight / settings.fontSize);
+            const currentPage = Math.ceil(currentPosition / (linesPerPage * settings.fontSize));
+            
+            // Call the onPageChange callback if provided
+            if (onPageChange) {
+                onPageChange(Math.max(1, currentPage), currentPosition);
+            }
+        }
+    }, [offsetPosition, scale, visibleArea, bookElements, settings]);
     return (
         <>
             <Chapters
