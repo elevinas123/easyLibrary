@@ -5,7 +5,8 @@ import {
   Body, 
   Param, 
   UseGuards,
-  Request
+  Request,
+  Query
 } from '@nestjs/common';
 import { TrackingService } from './tracking.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -74,7 +75,7 @@ export class TrackingController {
 
   @UseGuards(JwtAuthGuard)
   @Get('dashboard')
-  async getDashboardData(@Request() req) {
-    return this.trackingService.getDashboardData(req.user.userId);
+  async getDashboardData(@Query('userId') userId: string) {
+    return this.trackingService.getDashboardData(userId);
   }
 }
