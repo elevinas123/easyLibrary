@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Settings {
@@ -28,6 +29,11 @@ model User {
   books       Book[]
   bookshelves Bookshelve[]
   settings    Settings?
+  readingSessions ReadingSession[]
+  readingStreak   ReadingStreak?
+  bookProgress    BookProgress[]
+  readingGoals    ReadingGoal[]
+  readingStats    ReadingStats?
 }
 
 model Genre {
@@ -65,6 +71,8 @@ model Book {
   canvaElements  CanvaElementSkeleton[]
   curveElements  CurveElementSkeleton[]
   chaptersData   ChaptersData[]
+  readingSessions ReadingSession[]
+  bookProgress    BookProgress[]
 }
 
 // Bookshelve model
@@ -232,4 +240,87 @@ model TextElement {
   type       String
   canvaId    String               @unique
   canva      CanvaElementSkeleton @relation(fields: [canvaId], references: [id])
+}
+
+// Track individual reading sessions
+model ReadingSession {
+  id           String   @id @default(cuid())
+  userId       String
+  bookId       String
+  startTime    DateTime
+  endTime      DateTime?
+  duration     Int?     // Duration in seconds, calculated on session end
+  pagesRead    Int?     // Number of pages/screens read in this session
+  lastPosition Float?   // Last position in the book (percentage or page number)
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id])
+  book         Book     @relation(fields: [bookId], references: [id])
+  
+  @@index([userId])
+  @@index([bookId])
+}
+
+// Track reading streaks
+model ReadingStreak {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastReadDate   DateTime?
+  totalReadDays  Int      @default(0)
+  
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+// Track progress for each book
+model BookProgress {
+  id               String    @id @default(cuid())
+  userId           String
+  bookId           String
+  percentComplete  Float     @default(0)
+  currentPage      Int       @default(0)
+  totalPages       Int       @default(0)
+  isCompleted      Boolean   @default(false)
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  lastReadAt       DateTime?
+  timeSpentReading Int       @default(0)  // Total time in seconds
+  
+  user             User      @relation(fields: [userId], references: [id])
+  book             Book      @relation(fields: [bookId], references: [id])
+  
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+}
+
+// Track reading goals
+model ReadingGoal {
+  id               String    @id @default(cuid())
+  userId           String
+  goalType         String    // "daily", "weekly", "monthly", "yearly", "books"
+  targetValue      Int       // Minutes per day, books per year, etc.
+  currentValue     Int       @default(0)
+  startDate        DateTime  @default(now())
+  endDate          DateTime?
+  isCompleted      Boolean   @default(false)
+  
+  user             User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+}
+
+// Track reading statistics
+model ReadingStats {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  totalBooksRead      Int      @default(0)
+  totalPagesRead      Int      @default(0)
+  totalReadingTime    Int      @default(0)  // In seconds
+  averageReadingSpeed Float?   // Pages per hour
+  favoriteGenre       String?
+  lastUpdated         DateTime @default(now())
+  
+  user                User     @relation(fields: [userId], references: [id])
 }

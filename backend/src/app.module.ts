@@ -10,6 +10,7 @@ import { BookshelveModule } from "./bookshelve/bookshelve.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SettingsModule } from "./settings/settings.module";
 import { UserModule } from "./user/user.module";
+import { TrackingModule } from './tracking/tracking.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { UserModule } from "./user/user.module";
         AuthModule,
         SettingsModule,
         PrismaModule,
+        TrackingModule,
     ],
 
     controllers: [AppController],
