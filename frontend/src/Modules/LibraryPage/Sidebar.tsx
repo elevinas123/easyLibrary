@@ -8,7 +8,7 @@ import {
     Star,
     User,
 } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import ImportBook from "./importBook";
@@ -41,15 +41,34 @@ const SidebarButton = ({
         onClick={() => navigate(route)}
     >
         <Icon size={20} />
-        {!isCollapsed && <span className="ml-2">{label}</span>}
+        {!isCollapsed && (
+            <span className="ml-2 transition-opacity duration-300 opacity-100">
+                {label}
+            </span>
+        )}
     </Button>
 );
+
 export default function Sidebar({
     isCollapsed,
     toggleCollapse,
     setBooksLoading,
 }: SidebarProps) {
     const navigate = useNavigate();
+    const [textVisible, setTextVisible] = useState(!isCollapsed);
+
+    // Handle text visibility based on sidebar state
+    useEffect(() => {
+        if (isCollapsed) {
+            setTextVisible(false);
+        } else {
+            // Small delay to ensure text appears after sidebar expands
+            const timer = setTimeout(() => {
+                setTextVisible(true);
+            }, 150); // Half of the sidebar transition duration
+            return () => clearTimeout(timer);
+        }
+    }, [isCollapsed]);
 
     return (
         <aside
@@ -68,7 +87,11 @@ export default function Sidebar({
                     ) : (
                         <ChevronLeft size={20} />
                     )}
-                    {!isCollapsed && <span className="ml-2">Collapse</span>}
+                    {!isCollapsed && textVisible && (
+                        <span className="ml-2 transition-opacity duration-150 opacity-100">
+                            Collapse
+                        </span>
+                    )}
                 </Button>
             </div>
 
@@ -77,32 +100,33 @@ export default function Sidebar({
                     <ImportBook
                         isCollapsed={isCollapsed}
                         setBooksLoading={setBooksLoading}
+                        textVisible={textVisible}
                     />
                     <SidebarButton
                         icon={Home}
                         label="Home"
-                        isCollapsed={isCollapsed}
+                        isCollapsed={isCollapsed || !textVisible}
                         navigate={navigate}
                         route="/"
                     />
                     <SidebarButton
                         icon={Library}
                         label="Library"
-                        isCollapsed={isCollapsed}
+                        isCollapsed={isCollapsed || !textVisible}
                         navigate={navigate}
                         route="/library"
                     />
                     <SidebarButton
                         icon={Star}
                         label="Pinned"
-                        isCollapsed={isCollapsed}
+                        isCollapsed={isCollapsed || !textVisible}
                         navigate={navigate}
                         route="/pinned"
                     />
                     <SidebarButton
                         icon={DashIcon}
                         label="Dashboard"
-                        isCollapsed={isCollapsed}
+                        isCollapsed={isCollapsed || !textVisible}
                         navigate={navigate}
                         route="/dashboard"
                     />
@@ -113,21 +137,21 @@ export default function Sidebar({
                 <SidebarButton
                     icon={Sliders}
                     label="Preferences"
-                    isCollapsed={isCollapsed}
+                    isCollapsed={isCollapsed || !textVisible}
                     navigate={navigate}
                     route="/preferences"
                 />
                 <SidebarButton
                     icon={Settings}
                     label="Settings"
-                    isCollapsed={isCollapsed}
+                    isCollapsed={isCollapsed || !textVisible}
                     navigate={navigate}
                     route="/settings"
                 />
                 <SidebarButton
                     icon={User}
                     label="User"
-                    isCollapsed={isCollapsed}
+                    isCollapsed={isCollapsed || !textVisible}
                     navigate={navigate}
                     route="/user"
                 />

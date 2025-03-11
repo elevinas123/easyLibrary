@@ -2,6 +2,7 @@ import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Book } from "../../endPointTypes/types";
+import { useState, useEffect } from "react";
 
 type BookInfoPageProps = {
     infoOpen: boolean;
@@ -15,13 +16,28 @@ export default function BookInfoPage({
     setInfoOpen,
 }: BookInfoPageProps) {
     const navigate = useNavigate();
+    const [contentVisible, setContentVisible] = useState(infoOpen);
+    
+    // Handle content visibility based on sidebar state
+    useEffect(() => {
+        if (!infoOpen) {
+            setContentVisible(false);
+        } else {
+            // Small delay to ensure content appears after sidebar expands
+            const timer = setTimeout(() => {
+                setContentVisible(true);
+            }, 150); // Half of the sidebar transition duration
+            return () => clearTimeout(timer);
+        }
+    }, [infoOpen]);
+    
     const startReading = () => {
         navigate(`/book?id=${selectedBook?.id}`);
     };
 
     return (
         <aside
-            className={` transform transition-all duration-300 ease-in-out bg-card text-card-foreground border-l ${
+            className={`transform transition-all duration-300 ease-in-out bg-card text-card-foreground border-l ${
                 infoOpen ? "w-64 translate-x-0" : "w-16 translate-x-0"
             }`}
         >
@@ -29,7 +45,7 @@ export default function BookInfoPage({
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="w-full "
+                    className="w-full"
                     onClick={() => setInfoOpen(!infoOpen)}
                 >
                     {infoOpen ? (
@@ -38,9 +54,9 @@ export default function BookInfoPage({
                         <ChevronLeft className="h-4 w-4" />
                     )}
                 </Button>
-                {infoOpen ? (
+                {infoOpen && contentVisible ? (
                     selectedBook ? (
-                        <>
+                        <div className="transition-opacity duration-300 opacity-100">
                             <h2 className="text-2xl font-bold mb-4">
                                 {selectedBook.title}
                             </h2>
@@ -66,9 +82,11 @@ export default function BookInfoPage({
                                 <BookOpen className="mr-2 h-4 w-4" /> Start
                                 Reading
                             </Button>
-                        </>
+                        </div>
                     ) : (
-                        <p>Select a book to view details</p>
+                        <p className="transition-opacity duration-300 opacity-100">
+                            Select a book to view details
+                        </p>
                     )
                 ) : (
                     <div className="flex flex-col items-center space-y-4"></div>

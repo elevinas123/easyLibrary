@@ -22,6 +22,7 @@ import { bookIdAtom } from "../BookPage/Konva/konvaAtoms";
 type ImportBookProps = {
     isCollapsed: boolean;
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
+    textVisible: boolean;
 };
 const importBook = async ({
     bookElements,
@@ -91,6 +92,7 @@ const importBook = async ({
 export default function ImportBook({
     isCollapsed,
     setBooksLoading,
+    textVisible,
 }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
     const { accessToken, user } = useAuth();
@@ -227,7 +229,11 @@ export default function ImportBook({
             onClick={handleButtonClick}
         >
             <Plus size={20} />
-            {!isCollapsed && <span className="ml-2">Add Book</span>}
+            {!isCollapsed && textVisible && (
+                <span className="ml-2 transition-opacity duration-300 opacity-100">
+                    Add Book
+                </span>
+            )}
             <input
                 ref={fileInputRef}
                 className="hidden"
