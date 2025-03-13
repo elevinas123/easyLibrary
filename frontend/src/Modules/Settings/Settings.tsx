@@ -14,10 +14,12 @@ import { Switch } from "../../components/ui/switch";
 import { useAtom } from "jotai";
 import { themeModeAtom } from "../../atoms/themeAtom";
 import { useEffect } from "react";
+import { cn } from "../../lib/utils";
 
 export default function Settings() {
     const { settings, updateSettings } = useSettings();
     const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+    const isDarkMode = themeMode === "dark";
 
     // Update document theme when theme mode changes
     useEffect(() => {
@@ -79,7 +81,9 @@ export default function Settings() {
         <div className="space-y-6">
             {/* Dark Mode Toggle */}
             <div className="flex items-center justify-between">
-                <Label className="text-gray-300 dark:text-gray-300">Dark Mode</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Dark Mode
+                </Label>
                 <Switch
                     checked={settings.darkMode}
                     onCheckedChange={(checked) =>
@@ -90,7 +94,9 @@ export default function Settings() {
 
             {/* Background Color */}
             <div>
-                <Label className="text-gray-300 dark:text-gray-300">Background Color</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Background Color
+                </Label>
                 <Select
                     value={settings.backgroundColor}
                     onValueChange={(value) =>
@@ -100,15 +106,20 @@ export default function Settings() {
                         )
                     }
                 >
-                    <SelectTrigger className="w-full mt-1 bg-zinc-800 border-gray-700 text-gray-200">
+                    <SelectTrigger className={cn(
+                        "w-full mt-1",
+                        isDarkMode 
+                            ? "bg-zinc-800 border-gray-700 text-gray-200" 
+                            : "bg-white border-gray-300 text-gray-800"
+                    )}>
                         <SelectValue placeholder="Select background color" />
                     </SelectTrigger>
-                    <SelectContent className="bg-zinc-800 border-gray-700">
+                    <SelectContent className={isDarkMode ? "bg-zinc-800 border-gray-700" : "bg-white border-gray-300"}>
                         {backgroundOptions.map((option) => (
                             <SelectItem
                                 key={option.value}
                                 value={option.value}
-                                className="text-gray-200"
+                                className={isDarkMode ? "text-gray-200" : "text-gray-800"}
                             >
                                 <div className="flex items-center">
                                     <div 
@@ -125,22 +136,29 @@ export default function Settings() {
 
             {/* Text Color */}
             <div>
-                <Label className="text-gray-300 dark:text-gray-300">Text Color</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Text Color
+                </Label>
                 <Select
                     value={settings.textColor}
                     onValueChange={(value) =>
                         handleSettingChange("textColor", value)
                     }
                 >
-                    <SelectTrigger className="w-full mt-1 bg-zinc-800 border-gray-700 text-gray-200">
+                    <SelectTrigger className={cn(
+                        "w-full mt-1",
+                        isDarkMode 
+                            ? "bg-zinc-800 border-gray-700 text-gray-200" 
+                            : "bg-white border-gray-300 text-gray-800"
+                    )}>
                         <SelectValue placeholder="Select text color" />
                     </SelectTrigger>
-                    <SelectContent className="bg-zinc-800 border-gray-700">
+                    <SelectContent className={isDarkMode ? "bg-zinc-800 border-gray-700" : "bg-white border-gray-300"}>
                         {textColorOptions.map((option) => (
                             <SelectItem
                                 key={option.value}
                                 value={option.value}
-                                className="text-gray-200"
+                                className={isDarkMode ? "text-gray-200" : "text-gray-800"}
                             >
                                 <div className="flex items-center">
                                     <div 
@@ -157,7 +175,9 @@ export default function Settings() {
 
             {/* Font Size */}
             <div>
-                <Label className="text-gray-300 dark:text-gray-300">Font Size ({settings.fontSize}px)</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Font Size ({settings.fontSize}px)
+                </Label>
                 <Slider
                     value={[settings.fontSize]}
                     onValueChange={(value) =>
@@ -172,19 +192,30 @@ export default function Settings() {
 
             {/* Font Family */}
             <div>
-                <Label className="text-gray-300 dark:text-gray-300">Font Family</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Font Family
+                </Label>
                 <Select
                     value={settings.fontFamily}
                     onValueChange={(value) =>
                         handleSettingChange("fontFamily", value)
                     }
                 >
-                    <SelectTrigger className="w-full mt-1 bg-zinc-800 border-gray-700 text-gray-200">
+                    <SelectTrigger className={cn(
+                        "w-full mt-1",
+                        isDarkMode 
+                            ? "bg-zinc-800 border-gray-700 text-gray-200" 
+                            : "bg-white border-gray-300 text-gray-800"
+                    )}>
                         <SelectValue placeholder="Select font family" />
                     </SelectTrigger>
-                    <SelectContent className="bg-zinc-800 border-gray-700">
+                    <SelectContent className={isDarkMode ? "bg-zinc-800 border-gray-700" : "bg-white border-gray-300"}>
                         {fontFamilyOptions.map((font) => (
-                            <SelectItem key={font} value={font} className="text-gray-200">
+                            <SelectItem 
+                                key={font} 
+                                value={font} 
+                                className={isDarkMode ? "text-gray-200" : "text-gray-800"}
+                            >
                                 <span style={{ fontFamily: font }}>{font}</span>
                             </SelectItem>
                         ))}
@@ -194,7 +225,9 @@ export default function Settings() {
 
             {/* Line Height */}
             <div>
-                <Label className="text-gray-300 dark:text-gray-300">Line Height ({settings.lineHeight})</Label>
+                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
+                    Line Height ({settings.lineHeight})
+                </Label>
                 <Slider
                     value={[settings.lineHeight]}
                     onValueChange={(value) =>
@@ -213,7 +246,8 @@ export default function Settings() {
                 color: settings.textColor,
                 fontFamily: settings.fontFamily,
                 fontSize: `${settings.fontSize}px`,
-                lineHeight: settings.lineHeight
+                lineHeight: settings.lineHeight,
+                border: isDarkMode ? "none" : "1px solid #e5e7eb"
             }}>
                 <p>This is a preview of your text settings.</p>
                 <p>Adjust the controls above to customize your reading experience.</p>
@@ -222,9 +256,13 @@ export default function Settings() {
             {/* Reset to Defaults */}
             <div className="flex justify-end">
                 <Button
-                    variant="outline"
+                    variant={isDarkMode ? "outline" : "secondary"}
                     size="sm"
-                    className="text-gray-300 border-gray-700 hover:bg-zinc-700 hover:text-white"
+                    className={cn(
+                        isDarkMode 
+                            ? "text-gray-300 border-gray-700 hover:bg-zinc-700 hover:text-white" 
+                            : "text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+                    )}
                     onClick={() => {
                         updateSettings({
                             fontSize: 16,

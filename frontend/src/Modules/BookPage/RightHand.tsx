@@ -15,6 +15,8 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { ChevronLeft, ChevronRight, BookOpen, Settings as SettingsIcon, FileText } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { useAtom } from "jotai";
+import { themeModeAtom } from "../../atoms/themeAtom";
 
 type RightHandProps = {
     sessionActive?: boolean;
@@ -33,6 +35,8 @@ export default function RightHand({
 }: RightHandProps) {
     const [selected, setSelected] = useState<"notes" | "settings">("notes");
     const [sidebarExpanded, setSidebarExpanded] = useState(true);
+    const [themeMode] = useAtom(themeModeAtom);
+    const isDarkMode = themeMode === "dark";
 
     const toggleSidebar = () => {
         setSidebarExpanded(!sidebarExpanded);
@@ -51,16 +55,26 @@ export default function RightHand({
     return (
         <div 
             className={cn(
-                "flex flex-col bg-zinc-900 border-l border-gray-800 h-screen overflow-hidden",
-                sidebarExpanded ? "w-80" : "w-12",
-                "transition-all duration-300 ease-in-out"
+                "flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out border-l",
+                isDarkMode 
+                    ? "bg-zinc-900 border-gray-800" 
+                    : "bg-white border-gray-200",
+                sidebarExpanded ? "w-80" : "w-12"
             )}
         >
-            <div className="border-b border-gray-800 flex flex-row h-14 w-full items-center justify-center">
+            <div className={cn(
+                "flex flex-row h-14 w-full items-center justify-center border-b",
+                isDarkMode ? "border-gray-800" : "border-gray-200"
+            )}>
                 <Button 
                     variant="ghost" 
                     size="icon"
-                    className="text-gray-400 hover:text-white h-8 w-8 flex-shrink-0"
+                    className={cn(
+                        "h-8 w-8 flex-shrink-0",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white" 
+                            : "text-gray-600 hover:text-gray-900"
+                    )}
                     onClick={toggleSidebar}
                     title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
                 >
@@ -71,7 +85,12 @@ export default function RightHand({
                     "flex-grow text-center transition-opacity duration-200 mr-8",
                     sidebarExpanded ? "opacity-100" : "opacity-0 invisible"
                 )}>
-                    <div className="text-sm font-medium text-gray-300">Tools</div>
+                    <div className={cn(
+                        "text-sm font-medium",
+                        isDarkMode ? "text-gray-300" : "text-gray-800"
+                    )}>
+                        Tools
+                    </div>
                 </div>
             </div>
             
@@ -88,17 +107,30 @@ export default function RightHand({
                             }
                             className="flex flex-col h-full"
                         >
-                            <TabsList className="flex-shrink-0 bg-zinc-800 p-1 mx-4 mt-4 rounded-md">
+                            <TabsList className={cn(
+                                "flex-shrink-0 p-1 mx-4 mt-4 rounded-md",
+                                isDarkMode ? "bg-zinc-800" : "bg-gray-100"
+                            )}>
                                 <TabsTrigger 
                                     value="notes" 
-                                    className="flex-1 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                                    className={cn(
+                                        "flex-1",
+                                        isDarkMode 
+                                            ? "data-[state=active]:bg-zinc-700 data-[state=active]:text-white text-gray-400" 
+                                            : "data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600"
+                                    )}
                                 >
                                     <FileText size={16} className="mr-2" />
                                     Notes
                                 </TabsTrigger>
                                 <TabsTrigger 
                                     value="settings" 
-                                    className="flex-1 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                                    className={cn(
+                                        "flex-1",
+                                        isDarkMode 
+                                            ? "data-[state=active]:bg-zinc-700 data-[state=active]:text-white text-gray-400" 
+                                            : "data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600"
+                                    )}
                                 >
                                     <SettingsIcon size={16} className="mr-2" />
                                     Settings
@@ -116,29 +148,59 @@ export default function RightHand({
                         
                         {/* Reading Session Info */}
                         {sessionActive && (
-                            <div className="p-4 border-t border-gray-800">
-                                <Card className="bg-zinc-800 border-0 text-gray-300">
+                            <div className={cn(
+                                "p-4 border-t",
+                                isDarkMode ? "border-gray-800" : "border-gray-200"
+                            )}>
+                                <Card className={cn(
+                                    "border-0",
+                                    isDarkMode 
+                                        ? "bg-zinc-800 text-gray-300" 
+                                        : "bg-gray-100 text-gray-800"
+                                )}>
                                     <CardContent className="p-4 space-y-4">
                                         <div className="space-y-1">
-                                            <p className="text-xs text-gray-400">Reading Time</p>
-                                            <p className="text-sm font-medium">{formatReadingTime()}</p>
+                                            <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-600 font-medium"}>
+                                                Reading Time
+                                            </p>
+                                            <p className={cn(
+                                                "text-sm font-medium",
+                                                isDarkMode ? "text-white" : "text-gray-800"
+                                            )}>
+                                                {formatReadingTime()}
+                                            </p>
                                         </div>
                                         
                                         <div className="space-y-1">
                                             <div className="flex justify-between items-center">
-                                                <p className="text-xs text-gray-400">Progress</p>
-                                                <p className="text-xs text-gray-400">{currentPage} of {totalPages}</p>
+                                                <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-600 font-medium"}>
+                                                    Progress
+                                                </p>
+                                                <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-600 font-medium"}>
+                                                    {currentPage} of {totalPages}
+                                                </p>
                                             </div>
                                             <Progress 
                                                 value={calculateProgress()} 
-                                                className="h-1.5 bg-zinc-700" 
+                                                className={cn(
+                                                    "h-1.5",
+                                                    isDarkMode ? "bg-zinc-700" : "bg-gray-200"
+                                                )}
+                                                style={{
+                                                    ["--progress-foreground" as any]: isDarkMode ? "#60a5fa" : "#3b82f6"
+                                                }}
                                             />
                                         </div>
                                         
                                         <Button 
-                                            variant="outline" 
+                                            variant={isDarkMode ? "outline" : "secondary"}
                                             size="sm"
-                                            className="w-full text-xs border-gray-700 hover:bg-zinc-700 hover:text-white"
+                                            className={cn(
+                                                "w-full text-xs",
+                                                isDarkMode 
+                                                    ? "border-gray-700 hover:bg-zinc-700 hover:text-white" 
+                                                    : "text-gray-700 hover:text-gray-900"
+                                            )}
                                             onClick={onEndSession}
                                         >
                                             End Reading Session
@@ -158,7 +220,15 @@ export default function RightHand({
                 <Button 
                     variant="ghost" 
                     size="icon"
-                    className="text-gray-400 hover:text-white h-8 w-8"
+                    className={cn(
+                        "h-8 w-8",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white" 
+                            : "text-gray-600 hover:text-gray-900",
+                        selected === "notes" && !sidebarExpanded 
+                            ? isDarkMode ? "bg-zinc-800" : "bg-gray-200" 
+                            : ""
+                    )}
                     onClick={() => {
                         setSidebarExpanded(true);
                         setSelected("notes");
@@ -171,7 +241,15 @@ export default function RightHand({
                 <Button 
                     variant="ghost" 
                     size="icon"
-                    className="text-gray-400 hover:text-white h-8 w-8"
+                    className={cn(
+                        "h-8 w-8",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white" 
+                            : "text-gray-600 hover:text-gray-900",
+                        selected === "settings" && !sidebarExpanded 
+                            ? isDarkMode ? "bg-zinc-800" : "bg-gray-200" 
+                            : ""
+                    )}
                     onClick={() => {
                         setSidebarExpanded(true);
                         setSelected("settings");
@@ -185,7 +263,12 @@ export default function RightHand({
                     <Button 
                         variant="ghost" 
                         size="icon"
-                        className="text-gray-400 hover:text-white h-8 w-8"
+                        className={cn(
+                            "h-8 w-8",
+                            isDarkMode 
+                                ? "text-gray-400 hover:text-white" 
+                                : "text-gray-600 hover:text-gray-900"
+                        )}
                         onClick={() => {
                             setSidebarExpanded(true);
                         }}

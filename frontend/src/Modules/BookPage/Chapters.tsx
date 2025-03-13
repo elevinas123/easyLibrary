@@ -3,6 +3,8 @@ import { ChaptersData } from "../../endPointTypes/types";
 import { ChevronLeft, ChevronRight, ChevronDown, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "../../lib/utils";
+import { useAtom } from "jotai";
+import { themeModeAtom } from "../../atoms/themeAtom";
 
 type ChaptersProps = {
     chapters: ChaptersData[] | undefined;
@@ -19,6 +21,9 @@ export default function Chapters({
     const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
     // Track if sidebar is expanded
     const [sidebarExpanded, setSidebarExpanded] = useState(true);
+    // Get current theme
+    const [themeMode] = useAtom(themeModeAtom);
+    const isDarkMode = themeMode === "dark";
     
     // Group chapters by parent-child relationship
     const chapterTree = buildChapterTree(chapters || []);
@@ -128,16 +133,27 @@ export default function Chapters({
     return (
         <div 
             className={cn(
-                "flex flex-col bg-zinc-900 border-l border-gray-800 h-screen overflow-hidden",
+                "flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out",
+                isDarkMode 
+                    ? "bg-zinc-900 border-gray-800" 
+                    : "bg-white border-gray-200",
                 sidebarExpanded ? "w-80" : "w-12",
-                "transition-all duration-300 ease-in-out"
+                "border-l"
             )}
         >
-            <div className="border-b border-gray-800 flex flex-row h-14 w-full items-center justify-center">
+            <div className={cn(
+                "flex flex-row h-14 w-full items-center justify-center border-b",
+                isDarkMode ? "border-gray-800" : "border-gray-200"
+            )}>
                 <Button 
                     variant="ghost" 
                     size="icon"
-                    className="text-gray-400 hover:text-white h-8 w-8 flex-shrink-0"
+                    className={cn(
+                        "h-8 w-8 flex-shrink-0",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white" 
+                            : "text-gray-600 hover:text-gray-900"
+                    )}
                     onClick={toggleSidebar}
                     title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
                 >
@@ -148,7 +164,12 @@ export default function Chapters({
                     "flex-grow text-center transition-opacity duration-200 mr-8",
                     sidebarExpanded ? "opacity-100" : "opacity-0 invisible"
                 )}>
-                    <div className="text-sm font-medium text-gray-300">Contents</div>
+                    <div className={cn(
+                        "text-sm font-medium",
+                        isDarkMode ? "text-gray-300" : "text-gray-800"
+                    )}>
+                        Contents
+                    </div>
                 </div>
             </div>
             
@@ -174,7 +195,12 @@ export default function Chapters({
                                             {hasChildChapters && (
                                                 <button 
                                                     onClick={(e) => toggleChapter(chapter.id, e)}
-                                                    className="mr-1 text-gray-400 hover:text-white focus:outline-none flex-shrink-0"
+                                                    className={cn(
+                                                        "mr-1 focus:outline-none flex-shrink-0",
+                                                        isDarkMode 
+                                                            ? "text-gray-400 hover:text-white" 
+                                                            : "text-gray-600 hover:text-gray-900"
+                                                    )}
                                                 >
                                                     {isExpanded ? 
                                                         <ChevronDown size={16} /> : 
@@ -183,11 +209,16 @@ export default function Chapters({
                                                 </button>
                                             )}
                                             <div
-                                                className={`text-sm py-1.5 transition-all duration-200 cursor-pointer truncate ${
+                                                className={cn(
+                                                    "text-sm py-1.5 transition-all duration-200 cursor-pointer truncate",
                                                     currentChapterId === chapter.id 
-                                                        ? "text-white font-medium" 
-                                                        : "text-gray-400 hover:text-gray-200"
-                                                }`}
+                                                        ? isDarkMode 
+                                                            ? "text-white font-medium" 
+                                                            : "text-gray-900 font-medium"
+                                                        : isDarkMode 
+                                                            ? "text-gray-400 hover:text-gray-200" 
+                                                            : "text-gray-600 hover:text-gray-800"
+                                                )}
                                                 style={{
                                                     paddingLeft: `${(chapter.indentLevel ?? 0) * 16 + (hasChildChapters ? 0 : 20)}px`,
                                                 }}
@@ -211,7 +242,12 @@ export default function Chapters({
                 <Button 
                     variant="ghost" 
                     size="icon"
-                    className="text-gray-400 hover:text-white h-8 w-8"
+                    className={cn(
+                        "h-8 w-8",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white" 
+                            : "text-gray-600 hover:text-gray-900"
+                    )}
                     onClick={() => {
                         setSidebarExpanded(true);
                     }}
