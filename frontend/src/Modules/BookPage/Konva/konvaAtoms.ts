@@ -46,3 +46,6 @@ export const selectedItemsIdsAtom = atom<string[]>([]);
 export const scaleAtom = atom(1);
 export const bookIdAtom = atom<string|null>(null);
 export const settingsAtom = atom<SettingsType|undefined>(undefined);
+export const navigationSourceAtom = atom<'scroll' | 'progressBar' | null>(null);
+export const lockPageUpdatesAtom = atom<boolean>(false);
+export const displayPageAtom = atom<number>(1);

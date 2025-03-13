@@ -45,10 +45,10 @@ model Genre {
 model BookGenre {
   bookId  String
   genreId String
-  book    Book   @relation(fields: [bookId], references: [id])
+  book    Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
   genre   Genre  @relation(fields: [genreId], references: [id])
 
-  @@id([bookId, genreId]) // Composite key to avoid duplicate relations
+  @@id([bookId, genreId])
 }
 
 // Book model
@@ -73,7 +73,7 @@ model Book {
   chaptersData   ChaptersData[]
   readingSessions ReadingSession[]
   bookProgress    BookProgress[]
-  totalPages     Int      @default(0)
+  totalPages     Int                    @default(0)
 }
 
 // Bookshelve model
@@ -95,7 +95,7 @@ model ProcessedElement {
   lineWidth Float
   lineY     Float
   bookId    String
-  book      Book   @relation(fields: [bookId], references: [id])
+  book      Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }
 
 // Highlight model
@@ -106,7 +106,7 @@ model Highlight {
   endX      Float
   endY      Float
   bookId    String
-  book      Book   @relation(fields: [bookId], references: [id])
+  book      Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }
 
 // OffsetPosition model
@@ -115,7 +115,7 @@ model OffsetPosition {
   x      Float
   y      Float
   bookId String @unique // Ensures one-to-one relation
-  book   Book   @relation(fields: [bookId], references: [id])
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }
 
 // ChaptersData model
@@ -126,7 +126,7 @@ model ChaptersData {
   href        String?
   indentLevel Int?
   bookId      String
-  book        Book    @relation(fields: [bookId], references: [id])
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }
 
 model Point {
@@ -154,40 +154,36 @@ model CanvaElementSkeleton {
   opacity        Float
   rotation       Float
   type           String
-  points         Point[] // We'll discuss points later
+  points         Point[]
   outgoingArrows ArrowElement[] @relation("OutgoingArrows")
   incomingArrows ArrowElement[] @relation("IncomingArrows")
-
-  outgoingArrowIds String[] // List of outgoing arrow IDs
-  incomingArrowIds String[] // List of incoming arrow IDs
-
-  bookId        String
-  book          Book           @relation(fields: [bookId], references: [id])
-  circleElement CircleElement?
-  rectElement   RectElement?
-  textElement   TextElement?
+  circleElement  CircleElement?
+  rectElement    RectElement?
+  textElement    TextElement?
+  bookId         String
+  book           Book           @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }
 
 // CurveElementSkeleton model
 model CurveElementSkeleton {
-  id            String         @id @default(cuid())
-  points        Point[]
-  fill          String
-  text          String?
-  roughness     Float
-  bowing        Float
-  seed          Float
-  strokeWidth   Float
-  strokeStyle   String
-  stroke        String
-  fillStyle     String
-  fillWeight    Float
-  hachureAngle  Float
-  hachureGap    Float
-  type          String
-  bookId        String
-  book          Book           @relation(fields: [bookId], references: [id])
-  arrowElements ArrowElement[]
+  id             String         @id @default(cuid())
+  points         Point[]
+  fill           String
+  text           String?
+  roughness      Float
+  bowing         Float
+  seed           Float
+  strokeWidth    Float
+  strokeStyle    String
+  stroke         String
+  fillStyle      String
+  fillWeight     Float
+  hachureAngle   Float
+  hachureGap     Float
+  type           String
+  bookId         String
+  book           Book           @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  arrowElements  ArrowElement[]
 }
 
 model ArrowElement {
@@ -256,7 +252,7 @@ model ReadingSession {
   createdAt    DateTime @default(now())
   
   user         User     @relation(fields: [userId], references: [id])
-  book         Book     @relation(fields: [bookId], references: [id])
+  book         Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
   
   @@index([userId])
   @@index([bookId])
@@ -289,7 +285,7 @@ model BookProgress {
   timeSpentReading Int       @default(0)  // Total time in seconds
   
   user             User      @relation(fields: [userId], references: [id])
-  book             Book      @relation(fields: [bookId], references: [id])
+  book             Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   
   @@unique([userId, bookId])
   @@index([userId])

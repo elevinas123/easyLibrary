@@ -9,6 +9,8 @@ import { startReadingSession, endReadingSession } from "../../api/bookTrackingAp
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import ProgressBar from "./ProgressBar";
+import { displayPageAtom } from './Konva/konvaAtoms';
+import { useAtom } from 'jotai';
 
 export type HighlightRange = {
     startElementId: string;
@@ -52,22 +54,19 @@ function MainPage() {
     const bookId = searchParams.get("id");
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<Date | null>(null);
-    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [displayPage, setDisplayPage] = useAtom(displayPageAtom);
+    const [internalPage, setInternalPage] = useState(1);
     const [lastPosition, setLastPosition] = useState<number>(0);
     
     // Use refs to track the latest values for the cleanup function
     const sessionIdRef = useRef<string | null>(null);
-    const currentPageRef = useRef<number>(0);
-    const lastPositionRef = useRef<number>(0);
     const accessTokenRef = useRef<string | null>(null);
     
     // Update refs when values change
     useEffect(() => {
         sessionIdRef.current = sessionId;
-        currentPageRef.current = currentPage;
-        lastPositionRef.current = lastPosition;
         accessTokenRef.current = accessToken;
-    }, [sessionId, currentPage, lastPosition, accessToken]);
+    }, [sessionId, accessToken]);
 
     // React Query: Fetch book data
     const {
@@ -179,8 +178,8 @@ function MainPage() {
             if (!sessionIdRef.current) return Promise.reject("No active session");
             return endReadingSession(
                 sessionIdRef.current,
-                currentPageRef.current,
-                lastPositionRef.current,
+                internalPage,
+                lastPosition,
                 accessTokenRef.current!
             );
         },
@@ -200,8 +199,8 @@ function MainPage() {
             if (!sessionIdRef.current) return Promise.reject("No active session");
             return endReadingSession(
                 sessionIdRef.current,
-                currentPageRef.current,
-                lastPositionRef.current,
+                internalPage,
+                lastPosition,
                 accessTokenRef.current!
             );
         },
@@ -246,8 +245,8 @@ function MainPage() {
                 xhr.setRequestHeader('Authorization', `Bearer ${accessTokenRef.current}`);
                 xhr.send(JSON.stringify({
                     sessionId: sessionIdRef.current,
-                    pagesRead: currentPageRef.current,
-                    lastPosition: lastPositionRef.current
+                    pagesRead: internalPage,
+                    lastPosition: lastPosition
                 }));
             }
         };
@@ -283,21 +282,22 @@ function MainPage() {
         };
     }, []);
 
-    // Update page position when user navigates
-    const handlePageChange = (page: number, position: number) => {
-        setCurrentPage(page);
-        setLastPosition(position);
-    };
+    // Add a flag to track the source of page changes
+    const [navigationSource, setNavigationSource] = useState<'scroll' | 'progressBar'>('scroll');
 
-    // Manual end session handler
-    const handleEndSession = () => {
-        if (sessionId) {
-            endSessionMutation.mutate();
+    // Modify handlePageChange to only update internal state
+    const handlePageChange = (page: number, position: number) => {
+        if (navigationSource !== 'progressBar') {
+            setInternalPage(page);
+            setLastPosition(position);
+            // Also update the display page for UI consistency
+            setDisplayPage(page);
         }
     };
 
-    // Add this to the component
+    // Update handleNavigate to directly set display page
     const handleNavigate = (page: number) => {
+        setDisplayPage(page);
         if (konvaStageRef.current) {
             konvaStageRef.current.navigateToPage(page);
         }
@@ -334,12 +334,12 @@ function MainPage() {
             <RightHand 
                 sessionActive={!!sessionId}
                 startTime={startTime}
-                currentPage={currentPage}
+                currentPage={internalPage}
                 totalPages={book.totalPages || 0}
-                onEndSession={handleEndSession}
+                onEndSession={endSessionMutation.mutate}
             />
             <ProgressBar
-                currentPage={currentPage}
+                currentPage={displayPage}
                 totalPages={book.totalPages || 0}
                 onNavigate={handleNavigate}
             />

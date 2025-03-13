@@ -31,6 +31,7 @@ const importBook = async ({
     accessToken,
     coverImage,
     chaptersData,
+    totalPages,
     setBooksLoading,
 }: {
     bookElements: ProcessedElement[];
@@ -39,6 +40,7 @@ const importBook = async ({
     accessToken: string | undefined;
     coverImage: Blob | null;
     chaptersData: ChaptersData[];
+    totalPages: number;
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
     if (!accessToken) {
@@ -75,7 +77,11 @@ const importBook = async ({
         offsetPosition: { x: 0, y: 0 }, // Raw data for offset position
         chaptersData, // Pass raw chaptersData
         scale: 1, // Include the scale as raw data
+        totalPages: totalPages, // Make sure this is included
     };
+    
+    console.log("Sending book with totalPages:", totalPages);
+    
     const data = await apiFetch(
         "POST /book",
         { body: dataSending },
@@ -147,8 +153,11 @@ export default function ImportBook({
             24,
             800
         );
+        
+        // Calculate total pages
         const totalPages = calculateTotalPages(processedElements);
-        console.log("totalPages", totalPages);
+        console.log("Calculated totalPages:", totalPages);
+        
         const chapterData = elements.chaptersData.map((chapter) => ({
             ...chapter,
             elementId:
@@ -157,6 +166,7 @@ export default function ImportBook({
                 )?.lineY + "" || "someId",
             id: uuidv4(),
         }));
+        
         mutation.mutate({
             bookElements: processedElements,
             metaData: elements.metaData,
@@ -164,7 +174,7 @@ export default function ImportBook({
             accessToken: accessToken,
             chaptersData: chapterData,
             coverImage: elements.coverImage,
-            totalPages: totalPages,
+            totalPages: totalPages, // Make sure this is passed to the mutation
             setBooksLoading,
         });
     };

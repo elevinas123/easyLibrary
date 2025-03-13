@@ -18,7 +18,10 @@ import {
     newArrowAtom,
     offsetPositionAtom,
     scaleAtom,
-    selectedItemsIdsAtom
+    selectedItemsIdsAtom,
+    navigationSourceAtom,
+    lockPageUpdatesAtom,
+    displayPageAtom
 } from "./konvaAtoms";
 import HoverHighlightLayer from "./modules/BookTextLayers/HoverHighlightLayer";
 import HoverOptionsTab from "./modules/BookTextLayers/HoverOptionsTab";
@@ -27,6 +30,7 @@ import MainNotesLayer, {
     MainNotesLayerRef,
 } from "./modules/NotesLayer/MainNotesLayer";
 import ToolBar from "./modules/ToolBar/ToolBar";
+import { throttle } from "lodash";
 
 export type VisibleArea = {
     x: number;
@@ -67,6 +71,9 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
     const [currentHighlight] = useAtom(currentHighlightAtom);
     const mainLayerRef = useRef<MainLayerRef | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
+    const [navigationSource, setNavigationSource] = useAtom(navigationSourceAtom);
+    const [lockPageUpdates, setLockPageUpdates] = useAtom(lockPageUpdatesAtom);
+    const [displayPage, setDisplayPage] = useAtom(displayPageAtom);
     useEffect(() => {}, [canvaElements]);
 
     const [visibleArea, setVisibleArea] = useState<VisibleArea>({
@@ -105,6 +112,9 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
     };
 
     const handlePanWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        // Set the navigation source to scroll
+        setNavigationSource('scroll');
+        
         const stage = stageRef.current;
         if (!stage) return;
 
@@ -184,6 +194,9 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
         offsetPositionRef.current = offsetPosition;
     }, [offsetPosition]);
     const handleMouseMoveForPan = () => {
+        // Set navigation source to scroll
+        setNavigationSource('scroll');
+        
         const stage = stageRef.current;
         if (!stage || !isDragging) return;
 
@@ -229,6 +242,10 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
     };
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        if ((e.evt.target as HTMLElement).closest('.progress-bar-container')) {
+            return;
+        }
+
         if (activeTool === "Pan" || e.evt.buttons === 4) {
             handleMouseDownForPan();
             e.evt.preventDefault();
@@ -351,37 +368,39 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
         const targetY = -parseInt(chapterId) * settings.fontSize;
         smoothScroll(offsetPosition.x, targetY * scale, 500);
     };
-    if (!settings) return null;
-    useEffect(() => {
-        // Calculate current page based on visible area
-        if (visibleArea && bookElements.length > 0 && settings) {
-            const currentPosition = -offsetPosition.y / scale;
-            const linesPerPage = Math.floor(window.innerHeight / settings.fontSize);
-            const currentPage = Math.ceil(currentPosition / (linesPerPage * settings.fontSize));
-            
-            // Call the onPageChange callback if provided
-            if (onPageChange) {
-                onPageChange(Math.max(1, currentPage), currentPosition);
-            }
-        }
-    }, [offsetPosition, scale, visibleArea, bookElements, settings]);
 
     const navigateToPage = (page: number) => {
         if (!settings) return;
         
-        // Calculate the position based on page number
+        // Don't bother with UI callbacks or locks
+        // Just directly calculate the position and move there
         const linesPerPage = Math.floor(window.innerHeight / settings.fontSize);
         const targetLine = (page - 1) * linesPerPage;
         const targetY = -targetLine * settings.fontSize * scale;
         
-        // Smooth scroll to the position
-        smoothScroll(offsetPosition.x, targetY, 500);
+        // Just update position directly
+        setOffsetPosition({ x: offsetPosition.x, y: targetY });
         
-        // Call the onNavigate callback if provided
-        if (onNavigate) {
-            onNavigate(page);
-        }
+        // Let the ProgressBar component handle its own UI updates
     };
+
+    // Make the scroll effect much simpler - no locks needed
+    const throttledUpdate = useRef(throttle((position) => {
+        if (!settings) return;
+        
+        const currentLine = Math.floor(-position.y / (settings.fontSize || 16) / scale);
+        const linesPerPage = Math.floor(window.innerHeight / (settings.fontSize || 16));
+        const currentPage = Math.floor(currentLine / linesPerPage) + 1;
+        
+        if (onPageChange) {
+            onPageChange(currentPage, position.y);
+        }
+    }, 100)).current;
+    
+    // Update on position change with throttling
+    useEffect(() => {
+        throttledUpdate(offsetPosition);
+    }, [offsetPosition]);
 
     useImperativeHandle(ref, () => ({
         navigateToPage,
@@ -400,12 +419,12 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
                     <HoverOptionsTab />
                     <Stage
                         width={window.innerWidth}
-                        style={{ backgroundColor: settings.backgroundColor }}
+                        style={{ backgroundColor: settings?.backgroundColor || "#111111" }}
                         height={window.innerHeight}
                         ref={stageRef}
                         scaleX={scale}
                         scaleY={scale}
-                        draggable={false} // Prevent Konva's built-in drag
+                        draggable={false}
                         onMouseDown={handleMouseDown}
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}

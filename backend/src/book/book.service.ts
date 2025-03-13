@@ -89,6 +89,7 @@ export class BookService {
                 chaptersData: {
                     create: chaptersData || [],
                 },
+                totalPages: data.totalPages || 0,
             },
         });
     }
