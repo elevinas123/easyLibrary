@@ -178,7 +178,10 @@ export default function Chapters({
                 sidebarExpanded ? "opacity-100" : "opacity-0 w-0"
             )}>
                 {sidebarExpanded && (
-                    <div className="p-5 overflow-y-auto custom-scrollbar h-full">
+                    <div className={cn(
+                        "p-5 overflow-y-auto custom-scrollbar h-full",
+                        isDarkMode ? "" : "bg-white"
+                    )}>
                         <ul className="space-y-3">
                             {chapters?.map((chapter, index) => {
                                 const isVisible = isChapterVisible(chapter);
@@ -214,10 +217,10 @@ export default function Chapters({
                                                     currentChapterId === chapter.id 
                                                         ? isDarkMode 
                                                             ? "text-white font-medium" 
-                                                            : "text-gray-900 font-medium"
+                                                            : "text-gray-900 font-medium bg-gray-100 rounded px-2"
                                                         : isDarkMode 
                                                             ? "text-gray-400 hover:text-gray-200" 
-                                                            : "text-gray-600 hover:text-gray-800"
+                                                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded px-2"
                                                 )}
                                                 style={{
                                                     paddingLeft: `${(chapter.indentLevel ?? 0) * 16 + (hasChildChapters ? 0 : 20)}px`,
