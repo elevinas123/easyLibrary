@@ -3,7 +3,7 @@ import axios from "axios";
 import { load } from "cheerio";
 import JSZip from "jszip";
 import { Plus } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { useToast } from "../../hooks/use-toast";
@@ -18,11 +18,11 @@ import { ChaptersData } from "../../endPointTypes/types";
 import { v4 as uuidv4 } from "uuid";
 import { useAtom } from "jotai";
 import { bookIdAtom } from "../BookPage/Konva/konvaAtoms";
+import { useSettings } from "../../hooks/useSettings";
 
 type ImportBookProps = {
     isCollapsed: boolean;
     setBooksLoading: React.Dispatch<React.SetStateAction<string[]>>;
-    textVisible: boolean;
 };
 const importBook = async ({
     bookElements,
@@ -92,12 +92,12 @@ const importBook = async ({
 export default function ImportBook({
     isCollapsed,
     setBooksLoading,
-    textVisible,
 }: ImportBookProps) {
     const [_, setError] = useState<string | null>(null);
     const { accessToken, user } = useAuth();
     const { toast } = useToast();
     const [bookId] = useAtom(bookIdAtom);
+    const { settings } = useSettings();
     // Use the mutation with the correct types
     const queryClient = useQueryClient();
     const mutation = useMutation({
@@ -142,15 +142,13 @@ export default function ImportBook({
             console.error("User not found");
             return;
         }
-        if (!bookId) {
-            console.error("BookId not found");
-            return;
-        }
         const processedElements = processElements(
             elements.epubElements,
             24,
             800
         );
+        const totalPages = calculateTotalPages(processedElements);
+        console.log("totalPages", totalPages);
         const chapterData = elements.chaptersData.map((chapter) => ({
             ...chapter,
             elementId:
@@ -158,7 +156,6 @@ export default function ImportBook({
                     (element) => element.elementId === chapter.elementId
                 )?.lineY + "" || "someId",
             id: uuidv4(),
-            bookId,
         }));
         mutation.mutate({
             bookElements: processedElements,
@@ -167,6 +164,7 @@ export default function ImportBook({
             accessToken: accessToken,
             chaptersData: chapterData,
             coverImage: elements.coverImage,
+            totalPages: totalPages,
             setBooksLoading,
         });
     };
@@ -221,6 +219,24 @@ export default function ImportBook({
         }
         return null;
     }
+
+    // Calculate total pages based on book elements
+    const calculateTotalPages = (bookElements: ProcessedElement[], fontSize: number = 16): number => {
+        if (!bookElements || bookElements.length === 0) return 0;
+        
+        // Calculate how many lines fit in a page based on viewport height
+        const viewportHeight = window.innerHeight;
+        const lineHeight = settings?.lineHeight || 1.5; // Use settings or default
+        const linesPerPage = Math.floor(viewportHeight / (fontSize * lineHeight));
+        
+        // Get the total number of lines in the book
+        const lastElement = bookElements[bookElements.length - 1];
+        const totalLines = lastElement.lineY + 1; // +1 because lineY is zero-indexed
+        
+        // Calculate total pages
+        return Math.ceil(totalLines / linesPerPage);
+    };
+
     return (
         <Button
             variant="ghost"
@@ -229,11 +245,7 @@ export default function ImportBook({
             onClick={handleButtonClick}
         >
             <Plus size={20} />
-            {!isCollapsed && textVisible && (
-                <span className="ml-2 transition-opacity duration-300 opacity-100">
-                    Add Book
-                </span>
-            )}
+            {!isCollapsed && <span className="ml-2">Add Book</span>}
             <input
                 ref={fileInputRef}
                 className="hidden"

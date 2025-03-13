@@ -8,6 +8,7 @@ import { useAuth } from "../../hooks/userAuth";
 import { startReadingSession, endReadingSession } from "../../api/bookTrackingApi";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
+import ProgressBar from "./ProgressBar";
 
 export type HighlightRange = {
     startElementId: string;
@@ -220,15 +221,16 @@ function MainPage() {
         }
     }, [bookId, accessToken, user]);
 
-    // Set up periodic updates (every 2 minutes)
+    // Set up periodic updates (every 20 seconds)
     useEffect(() => {
         if (!sessionId) return;
         
         const updateInterval = setInterval(() => {
             if (sessionIdRef.current) {
+                console.log("Periodic update of reading session");
                 updateSessionMutation.mutate();
             }
-        }, 2 * 60 * 1000); // 2 minutes
+        }, 20 * 1000); // 20 seconds
         
         return () => clearInterval(updateInterval);
     }, [sessionId]);
@@ -258,8 +260,26 @@ function MainPage() {
             window.removeEventListener('beforeunload', handleBeforeUnload);
             
             if (sessionIdRef.current) {
+                // Try to end the session when component unmounts
                 endSessionMutation.mutate();
             }
+        };
+    }, []);
+
+    // Add visibility change listener to update session when tab becomes hidden
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden' && sessionIdRef.current) {
+                console.log("Page hidden, updating reading session");
+                // Use the update mutation to save progress when tab becomes hidden
+                updateSessionMutation.mutate();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
 
@@ -275,6 +295,16 @@ function MainPage() {
             endSessionMutation.mutate();
         }
     };
+
+    // Add this to the component
+    const handleNavigate = (page: number) => {
+        if (konvaStageRef.current) {
+            konvaStageRef.current.navigateToPage(page);
+        }
+    };
+
+    // Add a ref to the KonvaStage
+    const konvaStageRef = useRef(null);
 
     // Handle loading and error states
     if (isLoading) {
@@ -295,9 +325,11 @@ function MainPage() {
     return (
         <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
             <KonvaStage
+                ref={konvaStageRef}
                 chaptersData={book.chaptersData}
                 bookElements={bookElements}
                 onPageChange={handlePageChange}
+                totalPages={book.totalPages || 0}
             />
             <RightHand 
                 sessionActive={!!sessionId}
@@ -305,6 +337,11 @@ function MainPage() {
                 currentPage={currentPage}
                 totalPages={book.totalPages || 0}
                 onEndSession={handleEndSession}
+            />
+            <ProgressBar
+                currentPage={currentPage}
+                totalPages={book.totalPages || 0}
+                onNavigate={handleNavigate}
             />
         </div>
     );

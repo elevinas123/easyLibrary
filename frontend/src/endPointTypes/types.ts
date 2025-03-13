@@ -44,6 +44,7 @@ export type Book = {
   canvaElements?: CanvaElementSkeleton[];  // Optional reference array
   curveElements?: CurveElementSkeleton[];  // Optional reference array
   chaptersData?: ChaptersData[];           // Optional reference array
+  totalPages: number;
 };
 
 export type Bookshelve = {

@@ -73,6 +73,7 @@ model Book {
   chaptersData   ChaptersData[]
   readingSessions ReadingSession[]
   bookProgress    BookProgress[]
+  totalPages     Int      @default(0)
 }
 
 // Bookshelve model

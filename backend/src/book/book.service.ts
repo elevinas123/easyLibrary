@@ -122,6 +122,7 @@ export class BookService {
                 highlights: true,
                 offsetPosition: true,
                 chaptersData: true,
+
             },
         });
         if (!book) {

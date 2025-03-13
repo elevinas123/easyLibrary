@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
 import { Stage } from "react-konva";
 import { ChaptersData } from "../../../endPointTypes/types";
 import { useSettings } from "../../../hooks/useSettings";
@@ -40,13 +40,17 @@ type KonvaStageProps = {
     bookElements: ProcessedElement[];
     chaptersData: ChaptersData[] | undefined;
     onPageChange?: (page: number, position: number) => void;
+    onNavigate?: (page: number) => void;
+    totalPages: number;
 };
 
-export default function KonvaStage({
+const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaStageProps>(({
     bookElements,
     chaptersData,
     onPageChange,
-}: KonvaStageProps) {
+    onNavigate,
+    totalPages,
+}, ref) => {
     const { settings } = useSettings();
     const width = 1200;
     const [activeTool] = useAtom(activeToolAtom);
@@ -361,6 +365,28 @@ export default function KonvaStage({
             }
         }
     }, [offsetPosition, scale, visibleArea, bookElements, settings]);
+
+    const navigateToPage = (page: number) => {
+        if (!settings) return;
+        
+        // Calculate the position based on page number
+        const linesPerPage = Math.floor(window.innerHeight / settings.fontSize);
+        const targetLine = (page - 1) * linesPerPage;
+        const targetY = -targetLine * settings.fontSize * scale;
+        
+        // Smooth scroll to the position
+        smoothScroll(offsetPosition.x, targetY, 500);
+        
+        // Call the onNavigate callback if provided
+        if (onNavigate) {
+            onNavigate(page);
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        navigateToPage,
+    }), [settings, scale, offsetPosition]);
+
     return (
         <>
             <Chapters
@@ -400,4 +426,6 @@ export default function KonvaStage({
             </div>
         </>
     );
-}
+});
+
+export default KonvaStage;
