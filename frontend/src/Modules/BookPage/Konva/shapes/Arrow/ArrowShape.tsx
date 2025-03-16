@@ -1,13 +1,14 @@
 import { useAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Vector2d } from "konva/lib/types";
-import { ForwardedRef, forwardRef, useImperativeHandle } from "react";
+import { ForwardedRef, forwardRef, useEffect, useImperativeHandle } from "react";
 import { Circle } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 
 import {
     CanvaElementSkeleton,
     Point,
+    ProcessedElement,
     SpecificArrowElement,
     StartType,
 } from "../../../../../endPointTypes/types";
@@ -51,7 +52,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [bookId] = useAtom(bookIdAtom);
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
-
+    useEffect(() => {
+        console.log("naujas cia arrows", arrows);
+    }, [arrows]);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseMove,
@@ -140,11 +143,42 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             return [...otherArrows, ...updatedArrows];
         });
     };
+    // Add a helper function to extract text content based on element type
+    const getElementText = (element: CanvaElementSkeleton | undefined): string => {
+        console.log("element", element)
+        if (!element) return "Unknown";
+        console.log("element.type", element.type)
+        // Text element content is in the textElement.text property
+        if (element.type === 'text' && element.textElement) {
+            return element.textElement.text || "Text Element";
+        }
+        
+        // For book text highlights, we need to get the text from the content
+        if (element.type === 'bookText' && element.content) {
+            return element.content || "Book Text";
+        }
+        
+        // For shapes, we can use a default description or any associated label
+        if (element.type === 'rect') {
+            console.log("rect", element)
+            return "Rectangle Shape";
+        }
+        
+        if (element.type === 'circle') {
+            return "Circle Shape";
+        }
+        console.log("element.type", element.type)
+        
+        // Fall back to a descriptive string based on type
+        return `${element.type || "Unknown"} Element`;
+    };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (!bookId) return;
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
         const id = uuidv4();
+
+        console.log("Mouse down at position:", pos);
 
         const highlightsUnderMouse = getArrowHighlightsUnderMouse(
             hoveredItems,
@@ -155,10 +189,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         console.log("highlightsUnderMouse", highlightsUnderMouse);
         if (highlightsUnderMouse.length > 0) {
             startId = highlightsUnderMouse[0].id;
-            if (highlightsUnderMouse[0].points) {
-                type = "bookText";
-            } else {
+            if (!highlightsUnderMouse[0].type) {
                 type = "text";
+            } else {
+                type = highlightsUnderMouse[0].type;
             }
         }
         const arrow = createArrow({
@@ -167,37 +201,61 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 { x: pos.x, y: pos.y },
             ],
             bookId: bookId,
-
             startId,
             startType: type,
             id,
         });
+        console.log("Created new arrow:", arrow);
         setNewArrow(arrow);
     };
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-        if (!newArrow) return;
+        if (!newArrow) {
+            console.log("No new arrow to complete");
+            return;
+        }
         const pos = getPos(offsetPosition, scale, e);
+        console.log("Mouse up at position:", pos);
 
         if (!pos) return;
-        let arrow = newArrow;
+        let arrow = {...newArrow}; // Create copy to avoid direct mutation
         const highlightsUnderMouse = getArrowHighlightsUnderMouse(
             hoveredItems,
             pos
         );
+        
+        // Get the end element if there's one under the mouse
         if (
             highlightsUnderMouse.length > 0 &&
             highlightsUnderMouse[0].id !== arrow.arrowElement.startId
         ) {
             arrow.arrowElement.endId = highlightsUnderMouse[0].id;
-            if (highlightsUnderMouse[0].rects) {
-                arrow.arrowElement.endType = "bookText";
+            if (highlightsUnderMouse[0].type) {
+                arrow.arrowElement.endType = highlightsUnderMouse[0].type;
             } else {
-                arrow.arrowElement.endType = "text";
+                arrow.arrowElement.endType = "unknown";
             }
+            
+            // Find the start and end elements to extract their text content
+            const startElement = canvasElements.find(
+                (element) => element.id === arrow.arrowElement.startId
+            );
+            
+            const endElement = canvasElements.find(
+                (element) => element.id === arrow.arrowElement.endId
+            );
+            const startText = getElementText(startElement);
+            const endText = getElementText(endElement);
+            console.log("newFrom here startElement", startElement)
+            console.log("newFrom here endElement", endElement)
+            console.log("newFrom here startText", startText)
+            console.log("newFrom here endText", endText)
+            // Add text content to the arrow
+            arrow.arrowElement.startText = startText;
+            arrow.arrowElement.endText = endText;
         }
 
-        setArrows((prevArrows) => [...prevArrows, newArrow]);
-
+        console.log("Saving final arrow:", arrow);
+        setArrows((prevArrows) => [...prevArrows, arrow]);
         setNewArrow(null);
     };
     const hoverItems = (pos: Vector2d) => {
@@ -233,6 +291,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                     },
                 ],
                 id: firstHighlight.id,
+                type: firstHighlight.type,
             };
             if (isAlreadyHovered) {
                 // If it's already hovered, refresh its position in the hovered list
@@ -275,8 +334,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             (arrow) =>
                 pos.x >= Math.min(arrow.points[0].x, arrow.points[1].x) - 10 &&
                 pos.x <= Math.max(arrow.points[0].x, arrow.points[1].x) + 10 &&
-                pos.y >= Math.min(arrow.points[1].y, arrow.points[1].y) - 10 &&
-                pos.y <= Math.max(arrow.points[1].y, arrow.points[1].y) + 10
+                pos.y >= Math.min(arrow.points[0].y, arrow.points[1].y) - 10 &&
+                pos.y <= Math.max(arrow.points[0].y, arrow.points[1].y) + 10
         );
         setSelectedArrowIds(arrowUnderMouse.map((arrow) => arrow.id));
     };
@@ -330,11 +389,18 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         which: "end" | "start"
     ) => {
         e.cancelBubble = false;
-        const arrow = arrows.find((arrow) => arrow.id === arrowId);
+        const arrowToUpdate = arrows.find((arrow) => arrow.id === arrowId);
         const pos = getPos(offsetPosition, scale, e);
 
         if (!pos) return;
-        if (!arrow) return;
+        if (!arrowToUpdate) return;
+        
+        // Create a copy of the arrow for immutability
+        const updatedArrow = { 
+            ...arrowToUpdate,
+            arrowElement: { ...arrowToUpdate.arrowElement }
+        };
+        
         const highlightsUnderMouse = hoveredItems.filter((highlight) => {
             if (highlight.rects) {
                 return highlight.rects.some((rect) => {
@@ -354,49 +420,60 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 );
             }
         });
+        
         console.log("highlightsUnderMouse", highlightsUnderMouse, which);
         if (which === "start") {
             if (highlightsUnderMouse.length > 0) {
-                arrow.arrowElement.startId = highlightsUnderMouse[0].id;
-                if (highlightsUnderMouse[0].rects) {
-                    arrow.arrowElement.startType = "bookText";
+                updatedArrow.arrowElement.startId = highlightsUnderMouse[0].id;
+                if (highlightsUnderMouse[0].type) {
+                    updatedArrow.arrowElement.startType = highlightsUnderMouse[0].type;
                 } else {
-                    arrow.arrowElement.startType = "text";
+                    updatedArrow.arrowElement.startType = "unknown";
                 }
+                
+                // Update the start text when the element changes
+                const startElement = canvasElements.find(
+                    (element) => element.id === updatedArrow.arrowElement.startId
+                );
+                updatedArrow.arrowElement.startText = getElementText(startElement);
             } else {
-                arrow.arrowElement.startId = undefined;
-                arrow.arrowElement.startType = undefined;
+                updatedArrow.arrowElement.startId = undefined;
+                updatedArrow.arrowElement.startType = undefined;
+                updatedArrow.arrowElement.startText = "Unconnected";
             }
         }
         if (which === "end") {
             if (highlightsUnderMouse.length > 0) {
-                arrow.arrowElement.endId = highlightsUnderMouse[0].id;
-                if (highlightsUnderMouse[0].rects) {
-                    arrow.arrowElement.endType = "bookText";
+                updatedArrow.arrowElement.endId = highlightsUnderMouse[0].id;
+                if (highlightsUnderMouse[0].type) {
+                    updatedArrow.arrowElement.endType = highlightsUnderMouse[0].type;
                 } else {
-                    arrow.arrowElement.endType = "text";
+                    updatedArrow.arrowElement.endType = "unknown";
                 }
+                
+                // Update the end text when the element changes
+                const endElement = canvasElements.find(
+                    (element) => element.id === updatedArrow.arrowElement.endId
+                );
+                updatedArrow.arrowElement.endText = getElementText(endElement);
             } else {
-                arrow.arrowElement.endId = undefined;
-                arrow.arrowElement.endType = undefined;
+                updatedArrow.arrowElement.endId = undefined;
+                updatedArrow.arrowElement.endType = undefined;
+                updatedArrow.arrowElement.endText = "Unconnected";
             }
         }
 
-        setArrows((prevArrows) => {
-            return prevArrows.map((prevArrow) => {
-                if (prevArrow.id === arrow.id) {
-                    return arrow;
-                } else {
-                    return prevArrow;
-                }
-            });
-        });
+        setArrows((prevArrows) => 
+            prevArrows.map((prevArrow) => 
+                prevArrow.id === arrowId ? updatedArrow : prevArrow
+            )
+        );
     };
 
     return (
         <>
             {arrows.map((arrow) => (
-                <RenderArrow element={arrow} />
+                <RenderArrow key={arrow.id} element={arrow} />
             ))}
 
             {selectedArrowIds.map((id) => {

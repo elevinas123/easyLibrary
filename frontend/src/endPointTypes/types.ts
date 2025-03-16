@@ -175,4 +175,4 @@ export type SpecificArrowElement = CurveElementSkeleton&{
   arrowElement: ArrowElement;
 };
 
-export type StartType = 'text'|'rect'|'circle'|'bookText'|undefined;
+export type StartType = 'text'|'rect'|'circle'|'bookText'|undefined | string;

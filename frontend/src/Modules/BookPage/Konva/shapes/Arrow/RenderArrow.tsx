@@ -63,7 +63,7 @@ export default function RenderArrow({ element }: RenderArrowProps) {
     const points = element.points;
 
     // Ensure there are at least two points to form an arrow
-    if (points.length < 4) {
+    if (points.length < 2) {
         console.error("ArrowElement requires at least two points.");
         return null;
     }
@@ -75,6 +75,9 @@ export default function RenderArrow({ element }: RenderArrowProps) {
     // Calculate relative position for rendering within the Shape
     const relativeX2 = x2 - x1;
     const relativeY2 = y2 - y1;
+
+    // Add a small console log to verify coordinates
+    console.log("Drawing arrow from", x1, y1, "to", x2, y2, "with relative endpoint", relativeX2, relativeY2);
 
     return (
         <Shape

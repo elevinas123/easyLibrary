@@ -1,5 +1,5 @@
 import { Note } from "../types";
-import { ArrowLeftRight, Book, StickyNote, Image, ArrowRight, Clock, ChevronDown } from "lucide-react";
+import { ArrowLeftRight, Book, StickyNote, Image, ArrowRight, Clock, ChevronDown, List } from "lucide-react";
 import { cn } from "../../../../lib/utils";
 import { Button } from "../../../../components/ui/button";
 import { ScrollArea } from "../../../../components/ui/scroll-area";
@@ -40,10 +40,25 @@ export const CardView = ({
         }
     };
 
+    // Get additional type-specific info based on element type
+    const getTypeSpecificInfo = (type: string) => {
+        switch (type) {
+            case 'BookText':
+                return <span className="text-xs opacity-80">Book Content</span>;
+            case 'StickyNote':
+                return <span className="text-xs opacity-80">Personal Note</span>;
+            case 'Image':
+                return <span className="text-xs opacity-80">Visual Element</span>;
+            default:
+                return null;
+        }
+    };
+
     // Get a different truncation length based on expanded state
     const getTruncatedText = (text: string, noteId: string) => {
         return expandedNote === noteId ? text : truncateText(text);
     };
+    console.log("notes", notes)
 
     return (
         <ScrollArea className="h-full pb-4">
@@ -171,15 +186,46 @@ export const CardView = ({
                                             {getTypeIcon(note.startType)}
                                         </div>
                                         <div className="flex-1 text-sm">
-                                            <p className={cn(
-                                                "text-xs mb-1 font-medium",
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
-                                            )}>
-                                                From: {note.startType}
-                                            </p>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <p className={cn(
+                                                    "text-xs font-medium",
+                                                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                )}>
+                                                    From: {note.startType}
+                                                </p>
+                                                {getTypeSpecificInfo(note.startType)}
+                                            </div>
                                             <p className="break-words">
                                                 {getTruncatedText(note.startText, note.arrowId)}
                                             </p>
+                                            
+                                            {/* Type-specific content for BookText */}
+                                            {expandedNote === note.arrowId && note.startType === "BookText" && (
+                                                <div className={cn(
+                                                    "mt-2 p-1.5 text-xs rounded",
+                                                    isDarkMode ? "bg-emerald-900/20 text-emerald-300" : "bg-emerald-50 text-emerald-700"
+                                                )}>
+                                                    <div className="flex items-center gap-1 mb-1 font-medium">
+                                                        <List className="h-3 w-3" />
+                                                        <span>Context</span>
+                                                    </div>
+                                                    <p className="opacity-80">Part of book content</p>
+                                                </div>
+                                            )}
+                                            
+                                            {/* Type-specific content for StickyNote */}
+                                            {expandedNote === note.arrowId && note.startType === "StickyNote" && (
+                                                <div className={cn(
+                                                    "mt-2 p-1.5 text-xs rounded",
+                                                    isDarkMode ? "bg-amber-900/20 text-amber-300" : "bg-amber-50 text-amber-700"
+                                                )}>
+                                                    <div className="flex items-center gap-1 mb-1 font-medium">
+                                                        <StickyNote className="h-3 w-3" />
+                                                        <span>User Note</span>
+                                                    </div>
+                                                    <p className="opacity-80">Your personal annotation</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     
@@ -192,15 +238,46 @@ export const CardView = ({
                                             {getTypeIcon(note.endType)}
                                         </div>
                                         <div className="flex-1 text-sm">
-                                            <p className={cn(
-                                                "text-xs mb-1 font-medium",
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
-                                            )}>
-                                                To: {note.endType}
-                                            </p>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <p className={cn(
+                                                    "text-xs font-medium",
+                                                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                )}>
+                                                    To: {note.endType}
+                                                </p>
+                                                {getTypeSpecificInfo(note.endType)}
+                                            </div>
                                             <p className="break-words">
                                                 {getTruncatedText(note.endText, note.arrowId)}
                                             </p>
+                                            
+                                            {/* Type-specific content for BookText */}
+                                            {expandedNote === note.arrowId && note.endType === "BookText" && (
+                                                <div className={cn(
+                                                    "mt-2 p-1.5 text-xs rounded",
+                                                    isDarkMode ? "bg-emerald-900/20 text-emerald-300" : "bg-emerald-50 text-emerald-700"
+                                                )}>
+                                                    <div className="flex items-center gap-1 mb-1 font-medium">
+                                                        <List className="h-3 w-3" />
+                                                        <span>Context</span>
+                                                    </div>
+                                                    <p className="opacity-80">Part of book content</p>
+                                                </div>
+                                            )}
+                                            
+                                            {/* Type-specific content for StickyNote */}
+                                            {expandedNote === note.arrowId && note.endType === "StickyNote" && (
+                                                <div className={cn(
+                                                    "mt-2 p-1.5 text-xs rounded",
+                                                    isDarkMode ? "bg-amber-900/20 text-amber-300" : "bg-amber-50 text-amber-700"
+                                                )}>
+                                                    <div className="flex items-center gap-1 mb-1 font-medium">
+                                                        <StickyNote className="h-3 w-3" />
+                                                        <span>User Note</span>
+                                                    </div>
+                                                    <p className="opacity-80">Your personal annotation</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

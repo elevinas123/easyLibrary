@@ -1,12 +1,13 @@
 import {atom} from 'jotai';
 
-import {CanvaElementSkeleton, Highlight, SettingsType, SpecificArrowElement} from '../../../endPointTypes/types';
+import {CanvaElementSkeleton, Highlight, SettingsType, SpecificArrowElement, StartType} from '../../../endPointTypes/types';
 
 import {DrawingToolNames} from './components/Tools';
 import {HighlightRect} from './modules/BookTextLayers/HighlightLayer';
 
 export type ArrowHover = {
   points: HighlightPoints[]; id: string;
+  type: StartType;
   rects?: HighlightRect[];
 };
 
