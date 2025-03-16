@@ -225,4 +225,49 @@ export class BookService {
             };
         }
     }
+
+    async getFavoriteBooks(userId: string) {
+        try {
+            const books = await this.prisma.book.findMany({
+                where: { 
+                    userId,
+                    liked: true 
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    author: true,
+                    imageUrl: true,
+                    liked: true,
+                    dateAdded: true,
+                    scale: true,
+                    userId: true,
+                    totalPages: true,
+                    genres: {
+                        include: {
+                            genre: true
+                        }
+                    }
+                }
+            });
+            
+            // Transform the data to include the genres properly
+            const booksWithGenres = books.map(book => ({
+                ...book,
+                genres: book.genres.map(g => g.genre.name)
+            }));
+            
+            return {
+                success: true,
+                data: booksWithGenres
+            };
+        } catch (error) {
+            console.error('Error fetching favorite books:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch favorite books'
+            };
+        }
+    }
 }

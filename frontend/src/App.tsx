@@ -11,6 +11,7 @@ import BookmarksPage from "./Modules/BookmarksPage/BookmarksPage";
 import ReadingHistoryPage from "./Modules/HistoryPage/ReadingHistoryPage";
 import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./ThemeProvider";
+import { CollectionsPage, CollectionDetailPage } from './Modules/CollectionsPage';
 
 function App() {
     return (
@@ -26,6 +27,8 @@ function App() {
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/bookmarks" element={<BookmarksPage />} />
                     <Route path="/history" element={<ReadingHistoryPage />} />
+                    <Route path="/collections" element={<CollectionsPage />} />
+                    <Route path="/collections/:id" element={<CollectionDetailPage />} />
                 </Routes>
                 <Toaster />
             </Router>

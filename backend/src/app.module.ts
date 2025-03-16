@@ -7,6 +7,7 @@ import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
 import { BookModule } from "./book/book.module";
 import { BookshelveModule } from "./bookshelve/bookshelve.module";
+import { CollectionModule } from "./collection/collection.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SettingsModule } from "./settings/settings.module";
 import { UserModule } from "./user/user.module";
@@ -25,6 +26,7 @@ import { TrackingModule } from './tracking/tracking.module';
         SettingsModule,
         PrismaModule,
         TrackingModule,
+        CollectionModule,
     ],
 
     controllers: [AppController],
