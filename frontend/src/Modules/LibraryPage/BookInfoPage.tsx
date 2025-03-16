@@ -170,7 +170,7 @@ export default function BookInfoPage({
                                                                     : "bg-amber-100 text-amber-700"
                                                             )}
                                                         >
-                                                            {genre}
+                                                            {String(genre)}
                                                         </span>
                                                     ))}
                                                 </div>

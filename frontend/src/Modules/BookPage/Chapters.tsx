@@ -1,10 +1,12 @@
 import { Button } from "../../components/ui/button";
 import { ChaptersData } from "../../endPointTypes/types";
-import { ChevronLeft, ChevronRight, ChevronDown, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, BookOpen, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "../../lib/utils";
 import { useAtom } from "jotai";
 import { themeModeAtom } from "../../atoms/themeAtom";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 
 type ChaptersProps = {
     chapters: ChaptersData[] | undefined;
@@ -111,7 +113,8 @@ export default function Chapters({
         
         // Look backward to find the parent (with lower indent level)
         for (let i = chapterIndex - 1; i >= 0; i--) {
-            if (allChapters[i].indentLevel !== undefined && 
+            if (allChapters[i]?.indentLevel !== undefined && 
+                chapter.indentLevel !== undefined &&
                 allChapters[i].indentLevel < chapter.indentLevel) {
                 return allChapters[i].id;
             }
@@ -131,134 +134,132 @@ export default function Chapters({
     };
 
     return (
-        <div 
+        <aside
             className={cn(
-                "flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out",
+                "h-screen flex flex-col transition-all duration-300 border-l",
                 isDarkMode 
-                    ? "bg-zinc-900 border-gray-800" 
+                    ? "bg-gray-900 border-gray-800" 
                     : "bg-white border-gray-200",
-                sidebarExpanded ? "w-80" : "w-12",
-                "border-l"
+                sidebarExpanded ? "w-64" : "w-16"
             )}
         >
-            <div className={cn(
-                "flex flex-row h-14 w-full items-center justify-center border-b",
-                isDarkMode ? "border-gray-800" : "border-gray-200"
-            )}>
-                <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className={cn(
-                        "h-8 w-8 flex-shrink-0",
-                        isDarkMode 
-                            ? "text-gray-400 hover:text-white" 
-                            : "text-gray-600 hover:text-gray-900"
-                    )}
+            <div className="p-2">
+                <Button
+                    variant="ghost"
                     onClick={toggleSidebar}
-                    title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+                    className={cn(
+                        "w-full justify-start p-2",
+                        isDarkMode 
+                            ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                            : "text-gray-600 hover:text-gray-900 hover:bg-amber-50"
+                    )}
                 >
-                    {sidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+                    {sidebarExpanded ? (
+                        <ChevronRight size={20} />
+                    ) : (
+                        <ChevronLeft size={20} />
+                    )}
+                    {sidebarExpanded && (
+                        <span className="ml-2 transition-opacity duration-150 opacity-100">
+                            Contents
+                        </span>
+                    )}
                 </Button>
-                
-                <div className={cn(
-                    "flex-grow text-center transition-opacity duration-200 mr-8",
-                    sidebarExpanded ? "opacity-100" : "opacity-0 invisible"
-                )}>
-                    <div className={cn(
-                        "text-sm font-medium",
-                        isDarkMode ? "text-gray-300" : "text-gray-800"
-                    )}>
-                        Contents
-                    </div>
-                </div>
             </div>
-            
-            <div className={cn(
-                "overflow-hidden transition-all duration-300 ease-in-out flex-grow",
-                sidebarExpanded ? "opacity-100" : "opacity-0 w-0"
-            )}>
-                {sidebarExpanded && (
-                    <div className={cn(
-                        "p-5 overflow-y-auto custom-scrollbar h-full",
-                        isDarkMode ? "" : "bg-white"
-                    )}>
-                        <ul className="space-y-3">
-                            {chapters?.map((chapter, index) => {
-                                const isVisible = isChapterVisible(chapter);
-                                const hasChildChapters = hasChildren(chapter, chapters);
-                                const isExpanded = expandedChapters[chapter.id];
+
+            <ScrollArea className="flex-grow">
+                <div className="space-y-1 p-2">
+                    {sidebarExpanded && (
+                        chapters?.map((chapter, index) => {
+                            const isVisible = isChapterVisible(chapter);
+                            const hasChildChapters = hasChildren(chapter, chapters);
+                            const isExpanded = expandedChapters[chapter.id];
+                            const isActive = currentChapterId === chapter.id;
+                            const indentLevel = chapter.indentLevel ?? 0;
                                 
-                                if (!isVisible && chapter.indentLevel && chapter.indentLevel > 0) {
-                                    return null;
-                                }
-                                
-                                return (
-                                    <li key={index}>
-                                        <div className="flex items-center">
+                            if (!isVisible && indentLevel > 0) {
+                                return null;
+                            }
+
+                            return (
+                                <div key={index} className="relative">
+                                    <div className="flex items-center">
+                                        <div 
+                                            style={{
+                                                paddingLeft: `${indentLevel * 12}px`
+                                            }}
+                                            className="flex-grow flex items-center"
+                                        >
                                             {hasChildChapters && (
-                                                <button 
+                                                <button
                                                     onClick={(e) => toggleChapter(chapter.id, e)}
                                                     className={cn(
-                                                        "mr-1 focus:outline-none flex-shrink-0",
+                                                        "mr-1.5 h-5 w-5 flex items-center justify-center flex-shrink-0 rounded",
                                                         isDarkMode 
-                                                            ? "text-gray-400 hover:text-white" 
-                                                            : "text-gray-600 hover:text-gray-900"
+                                                            ? "text-gray-400 hover:text-white hover:bg-gray-700" 
+                                                            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
                                                     )}
                                                 >
-                                                    {isExpanded ? 
-                                                        <ChevronDown size={16} /> : 
-                                                        <ChevronRight size={16} />
-                                                    }
+                                                    <ChevronDown
+                                                        size={16}
+                                                        className={cn(
+                                                            "transition-transform duration-200",
+                                                            !isExpanded && "-rotate-90"
+                                                        )}
+                                                    />
                                                 </button>
                                             )}
-                                            <div
+                                            
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
                                                 className={cn(
-                                                    "text-sm py-1.5 transition-all duration-200 cursor-pointer truncate",
-                                                    currentChapterId === chapter.id 
-                                                        ? isDarkMode 
-                                                            ? "text-white font-medium" 
-                                                            : "text-gray-900 font-medium bg-gray-100 rounded px-2"
-                                                        : isDarkMode 
-                                                            ? "text-gray-400 hover:text-gray-200" 
-                                                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded px-2"
+                                                    "justify-start flex-grow w-full text-left",
+                                                    !hasChildChapters && "pl-6",
+                                                    isActive && (isDarkMode 
+                                                        ? "bg-gray-800 text-white" 
+                                                        : "bg-amber-100 text-gray-900"),
+                                                    !isActive && (isDarkMode 
+                                                        ? "text-gray-300 hover:text-white hover:bg-gray-800" 
+                                                        : "text-gray-700 hover:text-gray-900 hover:bg-amber-50")
                                                 )}
-                                                style={{
-                                                    paddingLeft: `${(chapter.indentLevel ?? 0) * 16 + (hasChildChapters ? 0 : 20)}px`,
-                                                }}
                                                 onClick={() => handleChapterClick(chapter.id)}
                                             >
-                                                {chapter.title}
-                                            </div>
+                                                <span className="truncate">{chapter.title}</span>
+                                            </Button>
                                         </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                )}
-            </div>
-            
-            <div className={cn(
-                "flex flex-col items-center justify-center transition-opacity duration-300 py-4",
-                !sidebarExpanded ? "opacity-100" : "opacity-0 invisible h-0"
-            )}>
-                <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className={cn(
-                        "h-8 w-8",
-                        isDarkMode 
-                            ? "text-gray-400 hover:text-white" 
-                            : "text-gray-600 hover:text-gray-900"
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
-                    onClick={() => {
-                        setSidebarExpanded(true);
-                    }}
-                    title="Expand Table of Contents"
-                >
-                    <BookOpen size={18} />
-                </Button>
-            </div>
-        </div>
+                </div>
+            </ScrollArea>
+
+            {!sidebarExpanded && (
+                <TooltipProvider>
+                    <div className="flex flex-col items-center py-4">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={cn(
+                                        "h-8 w-8 mb-2",
+                                        isDarkMode 
+                                            ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                                            : "text-gray-600 hover:text-gray-900 hover:bg-amber-50"
+                                    )}
+                                    onClick={() => setSidebarExpanded(true)}
+                                >
+                                    <BookOpen size={18} />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">Show Contents</TooltipContent>
+                        </Tooltip>
+                    </div>
+                </TooltipProvider>
+            )}
+        </aside>
     );
 }
