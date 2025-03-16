@@ -4,6 +4,7 @@ import {
     SpecificTextElement,
     TextElementType,
 } from "../../../../../endPointTypes/types";
+import { measureTextWidth } from "../../functions/measureTextWidth";
 
 type CreateTextProps = {
     x: number;
@@ -18,22 +19,25 @@ export default function CreateText({
     x,
     y,
     bookId,
-    text = "Sample Text",
+    text = "New text",
     fontFamily = "Arial",
-    fontSize = 14,
-    fill = "black",
+    fontSize = 16,
+    fill = "#333333",
     id = uuidv4(),
     outgoingArrowIds = [],
     incomingArrowIds = [],
-    strokeColor = "black",
-    strokeWidth = 1,
-    width = 24 * 8 + 10,
-    height = 24 + 10,
+    strokeColor = "transparent",
+    strokeWidth = 0,
+    width,
+    height,
     opacity = 1,
     points,
-
     ...overrides
 }: CreateTextProps): SpecificTextElement {
+    // Calculate width and height based on text content if not provided
+    const calculatedWidth = width ?? measureTextWidth(text, fontSize, fontFamily) + 20; // Add padding
+    const calculatedHeight = height ?? fontSize * 1.5; // Reasonable height based on font size
+    
     return {
         type: "text",
         id: id,
@@ -47,8 +51,8 @@ export default function CreateText({
         },
         strokeColor,
         strokeWidth,
-        width,
-        height,
+        width: calculatedWidth,
+        height: calculatedHeight,
         opacity,
         fill,
         x,
@@ -57,7 +61,9 @@ export default function CreateText({
         incomingArrowIds: incomingArrowIds ?? [], // Default to an empty array
         points: points || [
             { x, y },
-            { x, y: y + fontSize },
+            { x: x + calculatedWidth, y },
+            { x: x + calculatedWidth, y: y + calculatedHeight },
+            { x, y: y + calculatedHeight },
         ],
         rotation: 0,
         ...overrides,

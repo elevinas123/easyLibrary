@@ -28,8 +28,17 @@ export default function RenderText({
             opacity={element.opacity}
             fontSize={element.textElement.fontSize}
             fontFamily={element.textElement.fontFamily}
+            padding={5}
+            align="left"
+            verticalAlign="middle"
+            wrap="word"
+            ellipsis={true}
             draggable={draggable}
             onDragMove={handleDragMove}
+            shadowColor="rgba(0,0,0,0.1)"
+            shadowBlur={element.strokeWidth > 0 ? 0 : 2}
+            shadowOffset={{ x: 1, y: 1 }}
+            cornerRadius={2}
         />
     );
 }
