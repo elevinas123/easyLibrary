@@ -24,9 +24,13 @@ export const offsetPositionAtom = atom({
   y: 0,
 });
 export type CurrentHighlight = {
-  id: string|undefined; editing: boolean; creating: boolean;
-  mousePosition: {x: number; y: number};
-  offsetPosition: {x: number; y: number};
+  id?: string;
+  editing: boolean;
+  creating: boolean;
+  mousePosition: { x: number; y: number };
+  offsetPosition: { x: number; y: number };
+  initialX?: number;
+  initialY?: number;
 };
 
 export const highlightsAtom = atom<Highlight[]>([]);

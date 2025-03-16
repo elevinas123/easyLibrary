@@ -120,13 +120,16 @@ export class BookService {
             include: {
                 genres: true,
                 bookshelves: true,
-                bookElements: true,
+                bookElements: {
+                    orderBy: {
+                        lineY: "asc",
+                    },
+                },
                 canvaElements: true,
                 curveElements: true,
                 highlights: true,
                 offsetPosition: true,
                 chaptersData: true,
-
             },
         });
         if (!book) {
