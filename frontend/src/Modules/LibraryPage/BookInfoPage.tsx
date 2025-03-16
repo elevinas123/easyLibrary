@@ -40,19 +40,23 @@ export default function BookInfoPage({
             navigate(`/book?id=${selectedBook.id}`);
         }
     };
+    console.log(selectedBook);
 
     return (
         <aside
             className={cn(
                 "transform transition-all duration-300 ease-in-out border-l h-screen",
                 isDarkMode 
-                    ? "bg-zinc-800 border-gray-700 text-gray-200" 
+                    ? "bg-gray-900 border-gray-800 text-gray-200" 
                     : "bg-white border-gray-200 text-gray-800",
                 infoOpen ? "w-80" : "w-16"
             )}
         >
             <div className="h-full flex flex-col">
-                <div className="p-4 border-b flex items-center justify-between">
+                <div className={cn(
+                    "p-4 border-b flex items-center justify-between",
+                    isDarkMode ? "border-gray-800" : "border-gray-200"
+                )}>
                     {infoOpen && contentVisible && (
                         <h3 className={cn(
                             "text-sm font-medium",
@@ -95,7 +99,7 @@ export default function BookInfoPage({
                                     </div>
                                     <div className="absolute -top-2 -right-2">
                                         <Badge variant={isDarkMode ? "default" : "secondary"} className="font-normal">
-                                            <Star className="h-3 w-3 mr-1 text-yellow-400 fill-yellow-400" />
+                                            <Star className="h-3 w-3 mr-1 text-amber-400 fill-amber-400" />
                                             Favorite
                                         </Badge>
                                     </div>
@@ -103,8 +107,8 @@ export default function BookInfoPage({
                                 
                                 <div className="space-y-4">
                                     <h2 className={cn(
-                                        "text-xl font-bold text-center",
-                                        isDarkMode ? "text-white" : "text-gray-900"
+                                        "text-xl font-serif font-bold text-center",
+                                        isDarkMode ? "text-white" : "text-amber-800"
                                     )}>
                                         {selectedBook.title}
                                     </h2>
@@ -113,11 +117,11 @@ export default function BookInfoPage({
                                         <div className="flex items-center">
                                             <User className={cn(
                                                 "h-4 w-4 mr-2 flex-shrink-0",
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                isDarkMode ? "text-amber-400" : "text-amber-500"
                                             )} />
                                             <p className={cn(
                                                 "text-sm",
-                                                isDarkMode ? "text-gray-300" : "text-gray-700"
+                                                isDarkMode ? "text-amber-300" : "text-amber-700"
                                             )}>
                                                 {selectedBook.author}
                                             </p>
@@ -126,11 +130,11 @@ export default function BookInfoPage({
                                         <div className="flex items-center">
                                             <Calendar className={cn(
                                                 "h-4 w-4 mr-2 flex-shrink-0",
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                isDarkMode ? "text-amber-400" : "text-amber-500"
                                             )} />
                                             <p className={cn(
                                                 "text-sm",
-                                                isDarkMode ? "text-gray-300" : "text-gray-700"
+                                                isDarkMode ? "text-amber-300" : "text-amber-700"
                                             )}>
                                                 Added: {new Date(selectedBook.dateAdded).toLocaleDateString()}
                                             </p>
@@ -139,11 +143,11 @@ export default function BookInfoPage({
                                         <div className="flex items-center">
                                             <Clock className={cn(
                                                 "h-4 w-4 mr-2 flex-shrink-0",
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                isDarkMode ? "text-amber-400" : "text-amber-500"
                                             )} />
                                             <p className={cn(
                                                 "text-sm",
-                                                isDarkMode ? "text-gray-300" : "text-gray-700"
+                                                isDarkMode ? "text-amber-300" : "text-amber-700"
                                             )}>
                                                 {selectedBook.totalPages || 0} pages
                                             </p>
@@ -153,7 +157,7 @@ export default function BookInfoPage({
                                             <div className="flex items-start">
                                                 <Tag className={cn(
                                                     "h-4 w-4 mr-2 mt-1 flex-shrink-0",
-                                                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                                                    isDarkMode ? "text-amber-400" : "text-amber-500"
                                                 )} />
                                                 <div className="flex flex-wrap gap-1">
                                                     {selectedBook.genres.map((genre, index) => (
@@ -162,8 +166,8 @@ export default function BookInfoPage({
                                                             className={cn(
                                                                 "text-xs px-2 py-0.5 rounded-full",
                                                                 isDarkMode 
-                                                                    ? "bg-zinc-700 text-gray-300" 
-                                                                    : "bg-gray-100 text-gray-700"
+                                                                    ? "bg-amber-700 text-amber-300" 
+                                                                    : "bg-amber-100 text-amber-700"
                                                             )}
                                                         >
                                                             {genre}
@@ -178,13 +182,13 @@ export default function BookInfoPage({
                                         <div className="pt-2">
                                             <h3 className={cn(
                                                 "text-sm font-medium mb-2",
-                                                isDarkMode ? "text-gray-300" : "text-gray-700"
+                                                isDarkMode ? "text-amber-300" : "text-amber-700"
                                             )}>
                                                 Description
                                             </h3>
                                             <p className={cn(
                                                 "text-sm",
-                                                isDarkMode ? "text-gray-400" : "text-gray-600"
+                                                isDarkMode ? "text-amber-400" : "text-amber-600"
                                             )}>
                                                 {selectedBook.description}
                                             </p>
@@ -194,9 +198,8 @@ export default function BookInfoPage({
                                 
                                 <div className="pt-4">
                                     <Button
-                                        className="w-full"
+                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white"
                                         onClick={startReading}
-                                        variant={isDarkMode ? "default" : "secondary"}
                                     >
                                         <BookOpen className="mr-2 h-4 w-4" /> 
                                         Start Reading

@@ -67,15 +67,15 @@ const SidebarButton = ({
                         className={cn(
                             "w-full justify-start",
                             isActive && (isDarkMode 
-                                ? "bg-zinc-800 text-white" 
-                                : "bg-gray-100 text-gray-900"),
+                                ? "bg-gray-800 text-white" 
+                                : "bg-amber-100 text-gray-900"),
                             !isActive && (isDarkMode 
-                                ? "text-gray-400 hover:text-white hover:bg-zinc-800" 
-                                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100")
+                                ? "text-gray-300 hover:text-white hover:bg-gray-800" 
+                                : "text-gray-700 hover:text-gray-900 hover:bg-amber-50")
                         )}
                         onClick={() => navigate(route)}
                     >
-                        <Icon size={20} className={isActive ? "text-blue-500" : ""} />
+                        <Icon size={20} className={isActive ? "text-amber-600" : ""} />
                         {!isCollapsed && textVisible && (
                             <span className="ml-2 transition-opacity duration-150 opacity-100">
                                 {label}
@@ -85,8 +85,8 @@ const SidebarButton = ({
                             <span className={cn(
                                 "ml-auto px-2 py-0.5 rounded-full text-xs",
                                 isDarkMode 
-                                    ? "bg-zinc-700 text-gray-300" 
-                                    : "bg-gray-200 text-gray-700"
+                                    ? "bg-gray-700 text-gray-200" 
+                                    : "bg-amber-100 text-amber-800"
                             )}>
                                 {badge}
                             </span>
@@ -136,8 +136,8 @@ export default function Sidebar({
             className={cn(
                 "h-screen flex flex-col transition-all duration-300 border-r",
                 isDarkMode 
-                    ? "bg-zinc-900 border-gray-700" 
-                    : "bg-gray-50 border-gray-200",
+                    ? "bg-gray-900 border-gray-800" 
+                    : "bg-white border-gray-200",
                 isCollapsed ? "w-16" : "w-64"
             )}
         >
@@ -148,8 +148,8 @@ export default function Sidebar({
                     className={cn(
                         "w-full justify-start p-2",
                         isDarkMode 
-                            ? "text-gray-400 hover:text-white hover:bg-zinc-800" 
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                            ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                            : "text-gray-600 hover:text-gray-900 hover:bg-amber-50"
                     )}
                 >
                     {isCollapsed ? (
@@ -216,7 +216,7 @@ export default function Sidebar({
                     
                     <Separator className={cn(
                         "my-2",
-                        isDarkMode ? "bg-gray-700" : "bg-gray-200"
+                        isDarkMode ? "bg-gray-800" : "bg-gray-200"
                     )} />
                     
                     <SidebarButton
@@ -262,7 +262,7 @@ export default function Sidebar({
                     
                     <Separator className={cn(
                         "my-2",
-                        isDarkMode ? "bg-gray-700" : "bg-gray-200"
+                        isDarkMode ? "bg-gray-800" : "bg-gray-200"
                     )} />
                     
                     <SidebarButton
@@ -277,7 +277,10 @@ export default function Sidebar({
                 </div>
             </ScrollArea>
 
-            <div className="p-2 border-t border-gray-700">
+            <div className={cn(
+                "p-2 border-t",
+                isDarkMode ? "border-gray-800" : "border-gray-200"
+            )}>
                 <SidebarButton
                     icon={Sliders}
                     label="Preferences"
