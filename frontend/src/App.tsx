@@ -8,6 +8,7 @@ import Dashboard from "./Modules/UserDataPage/Dashboard";
 import CurrentlyReadingPage from "./Modules/ReadingPage/CurrentlyReadingPage";
 import FavoritesPage from "./Modules/FavoritesPage/FavoritesPage";
 import BookmarksPage from "./Modules/BookmarksPage/BookmarksPage";
+import ReadingHistoryPage from "./Modules/HistoryPage/ReadingHistoryPage";
 import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./ThemeProvider";
 
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/reading" element={<CurrentlyReadingPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/bookmarks" element={<BookmarksPage />} />
+                    <Route path="/history" element={<ReadingHistoryPage />} />
                 </Routes>
                 <Toaster />
             </Router>

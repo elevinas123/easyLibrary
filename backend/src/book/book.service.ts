@@ -153,4 +153,76 @@ export class BookService {
         }
         return deletedBook;
     }
+
+    async getCurrentlyReading(userId: string) {
+        // Get books that the user is currently reading (in progress but not completed)
+        try {
+            console.log("userId", userId);
+            // Alternative approach - get bookIds ordered by lastReadAt first
+            const bookProgressOrdered = await this.prisma.bookProgress.findMany({
+                where: {
+                    userId: userId,
+                    isCompleted: false,
+                },
+                orderBy: {
+                    lastReadAt: 'desc'
+                },
+                select: {
+                    bookId: true
+                }
+            });
+            console.log("bookProgressOrdered", bookProgressOrdered);
+            
+            // Use this ordered list to fetch books in the correct order
+            const bookIds = bookProgressOrdered.map(progress => progress.bookId);
+            
+            // Now fetch the actual books with those IDs
+            const books = await this.prisma.book.findMany({
+                where: {
+                    id: {
+                        in: bookIds
+                    }
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    author: true,
+                    imageUrl: true,
+                    liked: true,
+                    dateAdded: true,
+                    scale: true,
+                    userId: true,
+                    totalPages: true,
+                    genres: {
+                        include: {
+                            genre: true
+                        }
+                    },
+                    bookProgress: {
+                        orderBy: {
+                            lastReadAt: 'desc'
+                        }
+                    }
+                }
+            });
+            console.log("books", books);
+            // Manually sort books to match the order of bookIds
+            const sortedBooks = bookIds.map(id => 
+                books.find(book => book.id === id)
+            ).filter(Boolean);
+            console.log("sortedBooks", sortedBooks);
+            
+            return {
+                success: true,
+                data: sortedBooks
+            };
+        } catch (error) {
+            console.error('Error fetching currently reading books:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch currently reading books'
+            };
+        }
+    }
 }

@@ -12,10 +12,10 @@ import { TrackingService } from './tracking.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('tracking')
+@UseGuards(JwtAuthGuard)
 export class TrackingController {
   constructor(private readonly trackingService: TrackingService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post('session/start')
   async startReadingSession(
     @Request() req,
@@ -27,7 +27,6 @@ export class TrackingController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('session/end')
   async endReadingSession(
     @Body() data: { 
@@ -43,39 +42,46 @@ export class TrackingController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('sessions/recent')
   async getRecentSessions(@Request() req) {
     return this.trackingService.getRecentSessions(req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('progress/book/:bookId')
   async getBookProgress(@Request() req, @Param('bookId') bookId: string) {
     return this.trackingService.getBookProgress(req.user.userId, bookId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('progress/all')
   async getAllBookProgress(@Request() req) {
     return this.trackingService.getAllBookProgress(req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('streak')
   async getReadingStreak(@Request() req) {
     return this.trackingService.getReadingStreak(req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('stats')
   async getReadingStats(@Request() req) {
     return this.trackingService.getReadingStats(req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('dashboard')
   async getDashboardData(@Query('userId') userId: string) {
     return this.trackingService.getDashboardData(userId);
+  }
+
+  @Post('progress/update')
+  async updateBookProgress(@Request() req, @Body() body: { bookId: string, percentComplete: number, currentPage: number }) {
+    const userId = req.user.userId;
+    const { bookId, percentComplete, currentPage } = body;
+    
+    return this.trackingService.updateBookProgressDirect(
+      userId,
+      bookId,
+      percentComplete,
+      currentPage
+    );
   }
 }

@@ -41,4 +41,31 @@ export const getBookProgress = async (bookId: string, accessToken: string) => {
     },
   });
   return data;
+};
+
+// Update book progress
+export const updateBookProgress = async (
+  bookId: string,
+  percentComplete: number,
+  currentPage: number,
+  accessToken: string
+): Promise<any> => {
+  const response = await fetch(`/api/tracking/progress/update`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    },
+    body: JSON.stringify({
+      bookId,
+      percentComplete,
+      currentPage
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update book progress');
+  }
+  
+  return response.json();
 }; 

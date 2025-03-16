@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Book } from "../../endPointTypes/types";
 import { useAuth } from "../../hooks/userAuth";
-import { startReadingSession, endReadingSession } from "../../api/bookTrackingApi";
+import { startReadingSession, endReadingSession, updateBookProgress } from "../../api/bookTrackingApi";
 import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import ProgressBar from "./ProgressBar";
@@ -172,19 +172,65 @@ function MainPage() {
         }
     });
 
-    // End reading session mutation
-    const endSessionMutation = useMutation({
+    // Add this mutation for updating progress
+    const updateProgressMutation = useMutation({
         mutationFn: () => {
+            if (!book) return Promise.reject("Book data not available");
+            
+            // Calculate progress percentage
+            const progressPercent = Math.min(Math.max(internalPage / (book.totalPages || 100), 0), 1);
+            
+            // Cap pages at the book's total pages
+            const pagesRead = Math.min(internalPage, book.totalPages || 1);
+            
+            return updateBookProgress(
+                bookId!,
+                progressPercent,
+                pagesRead,
+                accessTokenRef.current!
+            );
+        },
+        onSuccess: (data) => {
+            console.log("Book progress updated:", data);
+        },
+        onError: (error) => {
+            console.error("Error updating book progress:", error);
+        }
+    });
+
+    // Modify the endSessionMutation to also update progress
+    const endSessionMutation = useMutation({
+        mutationFn: async () => {
             if (!sessionIdRef.current) return Promise.reject("No active session");
-            return endReadingSession(
+            
+            // First end the reading session
+            const sessionResult = await endReadingSession(
                 sessionIdRef.current,
                 internalPage,
                 lastPosition,
                 accessTokenRef.current!
             );
+            
+            // Then update the book progress
+            if (book) {
+                // Calculate progress percentage (0-1)
+                const progressPercent = Math.min(Math.max(internalPage / (book.totalPages || 100), 0), 1);
+                
+                // Cap pages at the book's total pages
+                const pagesRead = Math.min(internalPage, book.totalPages || 1);
+                
+                await updateBookProgress(
+                    bookId!,
+                    progressPercent,
+                    pagesRead,
+                    accessTokenRef.current!
+                );
+            }
+            
+            return sessionResult;
         },
         onSuccess: (data) => {
-            console.log("Reading session ended:", data);
+            console.log("Reading session ended and progress updated:", data);
             setSessionId(null);
             setStartTime(null);
         },
@@ -220,7 +266,7 @@ function MainPage() {
         }
     }, [bookId, accessToken, user]);
 
-    // Set up periodic updates (every 20 seconds)
+    // Also update the periodic updates to include progress
     useEffect(() => {
         if (!sessionId) return;
         
@@ -228,11 +274,12 @@ function MainPage() {
             if (sessionIdRef.current) {
                 console.log("Periodic update of reading session");
                 updateSessionMutation.mutate();
+                updateProgressMutation.mutate(); // Also update progress
             }
         }, 20 * 1000); // 20 seconds
         
         return () => clearInterval(updateInterval);
-    }, [sessionId]);
+    }, [sessionId, book]);
 
     // End reading session when component unmounts
     useEffect(() => {

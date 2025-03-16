@@ -143,6 +143,7 @@ export class TrackingService {
   }
 
   async getAllBookProgress(userId: string) {
+    console.log("userId", userId);
     return this.prisma.bookProgress.findMany({
       where: { userId },
       include: {
@@ -398,5 +399,63 @@ export class TrackingService {
       { genre: 'Fantasy', count: 4 },
       { genre: 'Mystery', count: 1 },
     ];
+  }
+
+  // Add this new method to handle direct progress updates from the reading page
+  async updateBookProgressDirect(
+    userId: string,
+    bookId: string,
+    percentComplete: number,
+    currentPage: number
+  ) {
+    try {
+      // Get existing book progress or create new one
+      const bookProgress = await this.prisma.bookProgress.upsert({
+        where: {
+          userId_bookId: {
+            userId,
+            bookId,
+          },
+        },
+        update: {
+          percentComplete: Math.min(Math.max(percentComplete, 0), 1), // Ensure between 0-1
+          currentPage: currentPage,
+          lastReadAt: new Date(),
+        },
+        create: {
+          userId,
+          bookId,
+          percentComplete: Math.min(Math.max(percentComplete, 0), 1),
+          currentPage: currentPage,
+          lastReadAt: new Date(),
+          timeSpentReading: 0, // Initial value
+        },
+      });
+
+      // Check if book is completed (98% or more)
+      if (bookProgress.percentComplete >= 0.98 && !bookProgress.isCompleted) {
+        await this.prisma.bookProgress.update({
+          where: { id: bookProgress.id },
+          data: {
+            isCompleted: true,
+            completedAt: new Date(),
+          },
+        });
+
+        // Update reading stats
+        await this.updateReadingStats(userId);
+      }
+
+      return {
+        success: true,
+        data: bookProgress
+      };
+    } catch (error) {
+      console.error('Error updating book progress:', error);
+      return {
+        success: false,
+        error: 'Failed to update book progress'
+      };
+    }
   }
 }

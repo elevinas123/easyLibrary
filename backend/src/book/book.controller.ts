@@ -30,6 +30,11 @@ export class BookController {
         return this.bookService.getUserBooks(userId);
     }
 
+    @Get("/getCurrentlyReading")
+    async getCurrentlyReading(@Query("userId") userId: string) {
+        return this.bookService.getCurrentlyReading(userId);
+    }
+
     @Patch(":id")
     async updateBook(
         @Param("id") id: string,
