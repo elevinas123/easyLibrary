@@ -93,6 +93,10 @@ function Rectangle(
     };
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
+        console.log("pos", pos);
+        console.log("activeTool", activeTool);
+        console.log("bookId", bookId);
+        console.log("canvaElements", canvaElements);
         if (!bookId) return;
         if (!pos) return;
         if (activeTool !== "Rectangle") return;

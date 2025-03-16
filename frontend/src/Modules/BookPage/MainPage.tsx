@@ -10,7 +10,8 @@ import KonvaStage from "./Konva/KonvaStage";
 import RightHand from "./RightHand";
 import ProgressBar from "./ProgressBar";
 import { displayPageAtom } from './Konva/konvaAtoms';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
+import { bookIdAtom } from './Konva/konvaAtoms';
 
 export type HighlightRange = {
     startElementId: string;
@@ -57,7 +58,7 @@ function MainPage() {
     const [displayPage, setDisplayPage] = useAtom(displayPageAtom);
     const [internalPage, setInternalPage] = useState(1);
     const [lastPosition, setLastPosition] = useState<number>(0);
-    
+    const setBookID = useSetAtom(bookIdAtom);
     // Use refs to track the latest values for the cleanup function
     const sessionIdRef = useRef<string | null>(null);
     const accessTokenRef = useRef<string | null>(null);
@@ -74,7 +75,12 @@ function MainPage() {
         error,
         isLoading,
     } = useQuery({
-        queryFn: () => fetchBook(bookId!, accessToken!),
+        queryFn: () => {
+            if (bookId) {
+                setBookID(bookId!);
+            }
+            return fetchBook(bookId!, accessToken!)
+        },
         queryKey: ["book", bookId],
         enabled: !!accessToken && !!user && !!bookId,
     });
