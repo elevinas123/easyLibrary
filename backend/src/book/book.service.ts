@@ -106,6 +106,9 @@ export class BookService {
                 title: true,
                 description: true,
                 author: true,
+                imageUrl: true,
+                totalPages: true,
+                dateAdded: true,
                 // Exclude bookElements or any other fields as needed
             },
         });
