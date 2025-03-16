@@ -49,6 +49,7 @@
         "compromise": "^14.14.0",
         "date-fns": "^4.1.0",
         "express": "^4.21.0",
+        "framer-motion": "^12.5.0",
         "jotai": "^2.9.3",
         "jszip": "^3.10.1",
         "konva": "^9.3.14",

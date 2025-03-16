@@ -1,7 +1,6 @@
 // RightHand.tsx
 
 import { useState } from "react";
-import Notes from "./Notes";
 import Settings from "../Settings/Settings";
 import {
     Tabs,
@@ -17,6 +16,7 @@ import { ChevronLeft, ChevronRight, BookOpen, Settings as SettingsIcon, FileText
 import { cn } from "../../lib/utils";
 import { useAtom } from "jotai";
 import { themeModeAtom } from "../../atoms/themeAtom";
+import { Notes } from "./Notes/Notes";
 
 type RightHandProps = {
     sessionActive?: boolean;
