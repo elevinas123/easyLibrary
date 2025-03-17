@@ -70,8 +70,8 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         if (!bookId) return;
 
         console.log("Save Note", noteText);
-        const textX = currentHighlight.mousePosition.x + 200;
-        const textY = currentHighlight.mousePosition.y + 10;
+        const textX = currentHighlight.mousePosition.x + 400;
+        const textY = currentHighlight.mousePosition.y ;
         const newNoteText = CreateText({
             x: textX,
             y: textY,

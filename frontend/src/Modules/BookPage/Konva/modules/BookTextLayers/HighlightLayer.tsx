@@ -22,6 +22,7 @@ import {
     hoveredItemsAtom,
     offsetPositionAtom,
     scaleAtom,
+    settingsAtom,
 } from "../../konvaAtoms";
 
 export type FullHighlight = {
@@ -65,7 +66,7 @@ function HighlightLayer(
     const [activeTool] = useAtom(activeToolAtom);
     const [scale] = useAtom(scaleAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
-
+    const [settings] = useAtom(settingsAtom);
     const [currentHighlight, setCurrentHighlight] =
         useAtom(currentHighlightAtom);
     useImperativeHandle(
@@ -161,13 +162,13 @@ function HighlightLayer(
             activeTool,
             scale,
             offsetPosition,
-            fontSize,
+            settings,
         ]
     );
 
     useEffect(() => {
         setHighlightElements(createHighlightElements());
-    }, [highlights, fontSize]);
+    }, [highlights, fontSize, settings]);
     useEffect(() => {
         setVirtualizedHighlights(
             highlightElements.flatMap((highlightElement) =>
@@ -192,7 +193,7 @@ function HighlightLayer(
                     ))
             )
         );
-    }, [visibleArea, highlightElements, fontSize]);
+    }, [visibleArea, highlightElements, fontSize, settings]);
     const createHighlightElements = (): FullHighlight[] => {
         return highlights.map((highlight) => {
             const rects: HighlightRect[] = [];
@@ -226,7 +227,7 @@ function HighlightLayer(
                 const currentLineIndex = startY + i;
                 const text = processedElements[currentLineIndex].text;
                 const letterWidth =
-                    measureTextWidth(text, fontSize) / text.length;
+                    measureTextWidth(text, fontSize, settings?.fontFamily) / text.length;
 
                 let currentX = 0;
                 let lineWidth = text.length * letterWidth;

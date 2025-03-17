@@ -132,6 +132,7 @@ function MainPage() {
 
     // Initialize data from the book when it's loaded
     useEffect(() => {
+        console.log("Book data initialized:", book);
         if (book && !updated) {
             setArrows(book?.curveElements ?? []);
             setCanvaElements(book?.canvaElements ?? []);

@@ -365,11 +365,10 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
 
         requestAnimationFrame(animateScroll);
     };
-    const handleChapterClick = (chapterId: string) => {
-        if (chapterId === "someId") return;
-        if (!settings) return;
-        const targetY = -parseInt(chapterId) * settings.fontSize;
-        smoothScroll(offsetPosition.x, targetY * scale, 500);
+    const handleChapterClick = (chapter: ChaptersData, chapters: ChaptersData[]) => {
+        const chapterIndex = chapters.findIndex((c) => c.id === chapter.id);
+        const targetY = -chapterIndex * 200 * (settings?.fontSize || 16) * scale;
+        smoothScroll(offsetPosition.x, targetY, 500);
     };
 
     const navigateToPage = (page: number) => {

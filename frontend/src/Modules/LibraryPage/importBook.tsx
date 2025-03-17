@@ -74,7 +74,7 @@ const importBook = async ({
         bookElements, // Pass raw book elements as received
         dateAdded: new Date(),
         highlights: [], // Same as above
-        offsetPosition: { x: 0, y: 0 }, // Raw data for offset position
+        offsetPosition: { x: -200, y: -200 }, // Raw data for offset position
         chaptersData, // Pass raw chaptersData
         scale: 1, // Include the scale as raw data
         totalPages: totalPages, // Make sure this is included
@@ -151,7 +151,7 @@ export default function ImportBook({
         const processedElements = processElements(
             elements.epubElements,
             24,
-            800
+            1200
         );
         
         // Calculate total pages

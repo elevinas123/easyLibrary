@@ -71,6 +71,7 @@ function TextLayer(
     const { settings } = useSettings();
     const [bookId] = useAtom(bookIdAtom);
     const fontSize = settings?.fontSize;
+    const fontFamily = settings?.fontFamily;
     useImperativeHandle(
         ref,
         () => ({
@@ -89,7 +90,7 @@ function TextLayer(
                 const textElementCords = [
                     textElement.x,
                     textElement.x +
-                        measureTextWidth(textElement.text, settings.fontSize),
+                        measureTextWidth(textElement.text, fontSize, fontFamily),
                 ];
                 if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
                     return;
@@ -141,7 +142,7 @@ function TextLayer(
                 const textElementCords = [
                     textElement.x,
                     textElement.x +
-                        measureTextWidth(textElement.text, settings.fontSize),
+                        measureTextWidth(textElement.text, fontSize, fontFamily),
                 ];
                 if (pos.x < textElementCords[0] || pos.x > textElementCords[1])
                     return;
@@ -203,13 +204,14 @@ function TextLayer(
         [
             setCurrentHighlight,
             setHighlights,
-            
+
             currentHighlight,
             activeTool,
             scale,
             offsetPosition,
             settings,
             fontSize,
+            fontFamily,
         ]
     );
 

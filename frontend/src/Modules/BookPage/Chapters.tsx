@@ -224,7 +224,7 @@ export default function Chapters({
                                                         ? "text-gray-300 hover:text-white hover:bg-gray-800" 
                                                         : "text-gray-700 hover:text-gray-900 hover:bg-amber-50")
                                                 )}
-                                                onClick={() => handleChapterClick(chapter.id)}
+                                                onClick={() => handleChapterClick(chapter, chapters)}
                                             >
                                                 <span className="truncate">{chapter.title}</span>
                                             </Button>

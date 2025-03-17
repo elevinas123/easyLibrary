@@ -102,8 +102,17 @@ function Circle(
         node: Shape<ShapeConfig> | Stage
     ): Partial<SpecificCircleElement> => {
         const newAttrs = {
-            x: node.x(),
-            y: node.y(),
+          x: node.x(),
+          y: node.y(),
+          points: [
+            { x: node.x(), y: node.y() },
+            { x: node.x() + node.attrs.width, y: node.y() },
+            {
+              x: node.x() + node.attrs.width,
+              y: node.y() + node.attrs.height,
+            },
+            { x: node.x(), y: node.y() + node.attrs.height },
+          ],
         };
         return newAttrs;
     };

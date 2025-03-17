@@ -45,6 +45,7 @@ export type TextElementRef = {
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
     handleKeyDown: (e: KeyboardEvent) => void;
     handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+    updateElementDimensions(elementId: string, fontProps: {fontSize?: number, fontFamily?: string}): void;
 };
 
 function TextElement(
@@ -68,6 +69,7 @@ function TextElement(
         handleDoubleClick,
         handleKeyDown,
         handleInputChange,
+        updateElementDimensions,
     }));
     
     // When text editing starts, hide the transformer
@@ -314,12 +316,12 @@ function TextElement(
     };
     
     // Update text element content and dimensions
-    const updateTextElement = (text: string) => {
+    const updateTextElement = (text: string, newFontProps?: {fontSize?: number, fontFamily?: string}) => {
         if (!currentItem) return;
         
-        // Calculate new dimensions based on text content
-        const fontSize = currentItem.textElement.fontSize || 16;
-        const fontFamily = currentItem.textElement.fontFamily || 'Arial';
+        // Calculate new dimensions based on text content and font properties
+        const fontSize = newFontProps?.fontSize || currentItem.textElement.fontSize || 16;
+        const fontFamily = newFontProps?.fontFamily || currentItem.textElement.fontFamily || 'Arial';
         
         // Ensure reasonable minimum width
         const textWidth = measureTextWidth(text, fontSize, fontFamily);
@@ -331,7 +333,8 @@ function TextElement(
             ...currentItem,
             textElement: {
                 ...currentItem.textElement,
-                text
+                text,
+                ...(newFontProps || {})
             },
             width: newWidth,
             height: newHeight,
@@ -351,6 +354,62 @@ function TextElement(
         const editor = document.getElementById('text-editor');
         if (editor) {
             editor.style.width = `${newWidth * scale}px`;
+            if (newFontProps?.fontSize) {
+                editor.style.fontSize = `${fontSize * scale}px`;
+            }
+        }
+    };
+    
+    // Add this new function to update dimensions when font properties change
+    const updateElementDimensions = (elementId: string, fontProps: {fontSize?: number, fontFamily?: string}) => {
+        // Find the element by ID
+        const element = canvaElements.find(el => el.id === elementId);
+        if (!element || !isSpecificTextElement(element)) return;
+        
+        // Get current properties or use defaults
+        const fontSize = fontProps?.fontSize || element.textElement.fontSize || 16;
+        const fontFamily = fontProps?.fontFamily || element.textElement.fontFamily || 'Arial';
+        const text = element.textElement.text || '';
+        
+        // Calculate new dimensions
+        const textWidth = measureTextWidth(text, fontSize, fontFamily);
+        const newWidth = Math.max(textWidth + 20, 60);
+        const newHeight = Math.max(fontSize * 1.5, 30);
+        
+        // Create updated element
+        const updatedElement = {
+            ...element,
+            textElement: {
+                ...element.textElement,
+                ...(fontProps || {})
+            },
+            width: newWidth,
+            height: newHeight,
+            points: [
+                { x: element.x, y: element.y },
+                { x: element.x + newWidth, y: element.y },
+                { x: element.x + newWidth, y: element.y + newHeight },
+                { x: element.x, y: element.y + newHeight }
+            ]
+        };
+        
+        // Update the element and refresh the current item if it's the one being edited
+        updateElement(updatedElement);
+        
+        // If this is the current item being edited, update our local state too
+        if (currentItem && currentItem.id === elementId) {
+            setCurrentItem(updatedElement);
+        }
+        
+        // Force an immediate re-selection to update the transformer
+        if (selectedItemsIds.includes(elementId)) {
+            const currentSelection = [...selectedItemsIds];
+            setSelectedItemsIds([]);
+            
+            // Re-apply selection on next tick to force transformer update
+            setTimeout(() => {
+                setSelectedItemsIds(currentSelection);
+            }, 10);
         }
     };
     

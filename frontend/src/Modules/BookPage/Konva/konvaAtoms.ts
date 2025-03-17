@@ -21,7 +21,7 @@ export const stageStateAtom = atom({
   currentShape: null,
 });
 export const offsetPositionAtom = atom({
-  x: -200,
+  x: -300,
   y: -200,
 });
 export type CurrentHighlight = {
