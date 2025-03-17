@@ -172,6 +172,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         // Fall back to a descriptive string based on type
         return `${element.type || "Unknown"} Element`;
     };
+    useEffect(() => {
+      console.log("Hovered items", hoveredItems);
+    }, [hoveredItems]);
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (!bookId) return;
         const pos = getPos(offsetPosition, scale, e);

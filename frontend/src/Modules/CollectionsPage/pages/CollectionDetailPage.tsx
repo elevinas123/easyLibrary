@@ -50,6 +50,7 @@ import { Alert, AlertDescription } from "../../../components/ui/alert";
 import { Card, CardContent } from "../../../components/ui/card";
 import CollectionForm from "../components/CollectionForm";
 import { formatDistance, formatDistanceToNow } from "date-fns";
+import Sidebar from "../../LibraryPage/Sidebar";
 
 export default function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();

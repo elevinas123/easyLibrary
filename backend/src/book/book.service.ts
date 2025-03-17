@@ -109,6 +109,7 @@ export class BookService {
                 imageUrl: true,
                 totalPages: true,
                 dateAdded: true,
+                liked: true,
                 // Exclude bookElements or any other fields as needed
             },
         });
@@ -130,6 +131,7 @@ export class BookService {
                 highlights: true,
                 offsetPosition: true,
                 chaptersData: true,
+                
             },
         });
         if (!book) {

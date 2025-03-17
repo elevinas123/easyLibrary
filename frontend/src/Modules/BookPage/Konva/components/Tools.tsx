@@ -27,14 +27,9 @@ export type DrawingToolNames =
     | "Pan"
     | "Select"
     | "Rectangle"
-    | "Rhombus"
     | "Circle"
     | "Arrow"
-    | "Line"
-    | "Color Picker"
     | "Text"
-    | "Image"
-    | "Eraser";
 
 type DrawingTool = {
     name: DrawingToolNames;
@@ -53,14 +48,9 @@ export default function Tools() {
         { name: "Pan", icon: <Hand size={20} /> },
         { name: "Select", icon: <MousePointer size={20} /> },
         { name: "Rectangle", icon: <Square size={20} /> },
-        { name: "Rhombus", icon: <Diamond size={20} /> },
         { name: "Circle", icon: <Circle size={20} /> },
         { name: "Arrow", icon: <ArrowRight size={20} /> },
-        { name: "Line", icon: <Minus size={20} /> },
-        { name: "Color Picker", icon: <Pipette size={20} /> },
         { name: "Text", icon: <Type size={20} /> },
-        { name: "Image", icon: <Image size={20} /> },
-        { name: "Eraser", icon: <Eraser size={20} /> },
     ];
 
     return (

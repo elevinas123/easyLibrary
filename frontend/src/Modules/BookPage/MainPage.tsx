@@ -11,7 +11,9 @@ import RightHand from "./RightHand";
 import ProgressBar from "./ProgressBar";
 import { displayPageAtom } from './Konva/konvaAtoms';
 import { useAtom, useSetAtom } from 'jotai';
-import { bookIdAtom } from './Konva/konvaAtoms';
+import { bookIdAtom, offsetPositionAtom } from './Konva/konvaAtoms';
+import { easeInOutCubic } from "./Notes/utils";
+import { Card, CardContent } from "../../components/ui/card";
 
 export type HighlightRange = {
     startElementId: string;
@@ -58,6 +60,19 @@ function MainPage() {
     const [displayPage, setDisplayPage] = useAtom(displayPageAtom);
     const [internalPage, setInternalPage] = useState(1);
     const [lastPosition, setLastPosition] = useState<number>(0);
+    const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
+    const [navigateBack, setNavigateBack] = useState(false);
+    const offsetPositionRef = useRef(offsetPosition);
+
+    useEffect(() => {
+        if (offsetPosition.x >200 || offsetPosition.x < -600) {
+            setNavigateBack(true);
+        } else {
+            setNavigateBack(false);
+        }
+    }, [offsetPosition]);
+    
+    
     const setBookID = useSetAtom(bookIdAtom);
     // Use refs to track the latest values for the cleanup function
     const sessionIdRef = useRef<string | null>(null);
@@ -347,6 +362,9 @@ function MainPage() {
             setDisplayPage(page);
         }
     };
+    useEffect(() => {
+      offsetPositionRef.current = offsetPosition;
+    }, [offsetPosition]);
 
     // Update handleNavigate to directly set display page
     const handleNavigate = (page: number) => {
@@ -355,20 +373,78 @@ function MainPage() {
             konvaStageRef.current.navigateToPage(page);
         }
     };
+    const smoothScroll = (
+      targetX: number,
+      targetY: number,
+      duration: number
+    ) => {
+      const start = performance.now();
+      const initialOffset = { ...offsetPositionRef.current };
+      const deltaX = targetX - initialOffset.x;
+      const deltaY = targetY - initialOffset.y;
+
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeInOutCubic(progress);
+
+        setOffsetPosition({
+          x: initialOffset.x + deltaX * easeProgress,
+          y: initialOffset.y + deltaY * easeProgress,
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
+    };
+    const navigateBackToText = () => {
+        smoothScroll(-200, offsetPositionRef.current.y, 500);
+    };
 
     // Add a ref to the KonvaStage
     const konvaStageRef = useRef(null);
 
     // Handle loading and error states
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex min-h-screen w-full bg-amber-50 dark:bg-gray-900 items-center justify-center">
+                <div className="flex flex-col items-center p-8 rounded-lg">
+                    <div className="relative w-24 h-24 mb-6">
+                        {/* Book loading animation */}
+                        <div className="absolute w-16 h-20 bg-amber-600 rounded-r-md animate-pulse"></div>
+                        <div className="absolute w-16 h-20 left-8 bg-amber-500 rounded-l-md animate-pulse"></div>
+                        <div className="absolute top-2 left-4 w-16 h-16 bg-amber-50 dark:bg-gray-800 rounded-md border-2 border-amber-600 animate-spin"></div>
+                        <div className="absolute bottom-0 w-full flex justify-center">
+                            <div className="h-1 w-16 bg-amber-600 animate-pulse"></div>
+                        </div>
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold text-amber-800 dark:text-amber-500 mb-2">
+                        Loading your book
+                    </h2>
+                    
+                    <div className="flex space-x-2 mt-4">
+                        <div className="w-3 h-3 rounded-full bg-amber-600 animate-bounce" style={{ animationDelay: '0s' }}></div>
+                        <div className="w-3 h-3 rounded-full bg-amber-600 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-3 h-3 rounded-full bg-amber-600 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
+                    
+                    <p className="text-gray-600 dark:text-gray-400 mt-4 text-center max-w-sm">
+                        Preparing your reading experience. This should only take a moment...
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
         return <div>Error loading book: {error.message}</div>;
     }
     if (!book) {
-        return <div>No book found</div>;
+        return null
     }
     // Extract book elements from the fetched book data
     const bookElements = book.bookElements;
@@ -396,6 +472,13 @@ function MainPage() {
                 totalPages={book.totalPages || 0}
                 onNavigate={handleNavigate}
             />
+            {navigateBack && (
+                <div className="absolute bottom-32 left-1/2  flex items-center justify-center">
+                    <button  className="bg-white text-black px-4 py-2 rounded-md" onClick={navigateBackToText}>
+                        Back to Text
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

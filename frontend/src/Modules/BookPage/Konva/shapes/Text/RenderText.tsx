@@ -28,6 +28,8 @@ export default function RenderText({
             opacity={element.opacity}
             fontSize={element.textElement.fontSize}
             fontFamily={element.textElement.fontFamily}
+            fontStyle={element.textElement.fontStyle}
+            textDecoration={element.textElement.textDecoration}
             padding={5}
             align="left"
             verticalAlign="middle"

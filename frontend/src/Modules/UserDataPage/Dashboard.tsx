@@ -7,8 +7,8 @@ import { RecentActivity } from "./components/RecentActivity";
 import { StatCards } from "./components/StatCards";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardData } from "../../api/trackingApi";
-import { Skeleton } from "../../components/ui/skeleton";
 import { useAuth } from "../../hooks/userAuth";
+import Skeleton from "../../components/ui/skeleton";
 
 export default function Dashboard() {
     const { toggleCollapse, isCollapsed, setBooksLoading } = useSidebar();

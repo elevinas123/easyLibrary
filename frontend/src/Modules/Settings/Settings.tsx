@@ -223,22 +223,7 @@ export default function Settings() {
                 </Select>
             </div>
 
-            {/* Line Height */}
-            <div>
-                <Label className={isDarkMode ? "text-gray-300" : "text-gray-800 font-medium"}>
-                    Line Height ({settings.lineHeight})
-                </Label>
-                <Slider
-                    value={[settings.lineHeight]}
-                    onValueChange={(value) =>
-                        handleSettingChange("lineHeight", value[0])
-                    }
-                    min={1}
-                    max={2}
-                    step={0.05}
-                    className="mt-2"
-                />
-            </div>
+           
 
             {/* Preview */}
             <div className="mt-6 p-4 rounded-md" style={{ 

@@ -55,7 +55,7 @@ export default function RightHand({
     return (
         <div 
             className={cn(
-                "flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out border-l",
+                "flex flex-col h-screen  transition-all duration-300 ease-in-out border-l",
                 isDarkMode 
                     ? "bg-zinc-900 border-gray-800" 
                     : "bg-white border-gray-200",

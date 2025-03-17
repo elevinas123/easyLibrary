@@ -230,15 +230,7 @@ export default function Sidebar({
                         badge={5}
                     />
                     
-                    <SidebarButton
-                        icon={Bookmark}
-                        label="Bookmarks"
-                        isCollapsed={isCollapsed}
-                        navigate={navigate}
-                        route="/bookmarks"
-                        isActive={isRouteActive('/bookmarks')}
-                        textVisible={textVisible}
-                    />
+                   
                     
                     <SidebarButton
                         icon={History}
@@ -250,15 +242,7 @@ export default function Sidebar({
                         textVisible={textVisible}
                     />
                     
-                    <SidebarButton
-                        icon={FileText}
-                        label="Notes"
-                        isCollapsed={isCollapsed}
-                        navigate={navigate}
-                        route="/notes"
-                        isActive={isRouteActive('/notes')}
-                        textVisible={textVisible}
-                    />
+                  
                     
                     <Separator className={cn(
                         "my-2",
@@ -281,15 +265,7 @@ export default function Sidebar({
                 "p-2 border-t",
                 isDarkMode ? "border-gray-800" : "border-gray-200"
             )}>
-                <SidebarButton
-                    icon={Sliders}
-                    label="Preferences"
-                    isCollapsed={isCollapsed}
-                    navigate={navigate}
-                    route="/preferences"
-                    isActive={isRouteActive('/preferences')}
-                    textVisible={textVisible}
-                />
+               
                 <SidebarButton
                     icon={Settings}
                     label="Settings"

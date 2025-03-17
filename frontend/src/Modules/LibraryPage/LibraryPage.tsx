@@ -11,7 +11,7 @@ import BookCard from "./BookCard";
 import BookCardSkeleton from "./BookCardSkeleton";
 import BookInfoPage from "./BookInfoPage";
 import Sidebar from "./Sidebar";
-import { Book } from "../../endPointTypes/types";
+import { Book, BookGenre } from "../../endPointTypes/types";
 import { useAtom } from "jotai";
 import { themeModeAtom } from "../../atoms/themeAtom";
 import { cn } from "../../lib/utils";
@@ -108,7 +108,7 @@ export default function LibraryPage() {
         return (
             book.title.toLowerCase().includes(query) ||
             book.author.toLowerCase().includes(query) ||
-            book.genres?.some(genre => genre.toLowerCase().includes(query))
+            book.genres?.some((genre: BookGenre) => genre.name.toLowerCase().includes(query))
         );
     });
     
@@ -119,7 +119,7 @@ export default function LibraryPage() {
     return (
         <div className={cn(
             "flex h-screen",
-            isDarkMode ? "bg-amber-950/90" : "bg-amber-50"
+            isDarkMode ? "bg-gray-950" : "bg-amber-50"
         )}>
             <Sidebar
                 toggleCollapse={toggleCollapse}
@@ -130,55 +130,21 @@ export default function LibraryPage() {
             {/* Main Content */}
             <main className={cn(
                 "flex-1 p-6 overflow-auto transition-all duration-300 ease-in-out",
-                isDarkMode ? "text-amber-50" : "text-amber-950"
+                isDarkMode ? "text-gray-200" : "text-gray-900"
             )}>
                 <div className="flex flex-col space-y-4 mb-6">
                     <div className="flex justify-between items-center">
                         <h1 className={cn(
                             "text-3xl font-serif font-bold",
-                            isDarkMode ? "text-amber-100" : "text-amber-800"
+                            isDarkMode ? "text-gray-100" : "text-amber-800"
                         )}>My Library</h1>
-                        <div className="flex items-center space-x-2">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => setFilterOpen(!filterOpen)}
-                                className={cn(
-                                    isDarkMode 
-                                        ? "border-amber-800/50 text-amber-200 hover:text-amber-100 hover:bg-amber-900" 
-                                        : "border-amber-300 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
-                                )}
-                            >
-                                <Filter className="h-[1.2rem] w-[1.2rem]" />
-                                <span className="sr-only">Filter books</span>
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => {
-                                    const newTheme = themeMode === "dark" ? "light" : "dark";
-                                    setThemeMode(newTheme);
-                                }}
-                                className={cn(
-                                    isDarkMode 
-                                        ? "border-amber-800/50 text-amber-200 hover:text-amber-100 hover:bg-amber-900" 
-                                        : "border-amber-300 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
-                                )}
-                            >
-                                {themeMode === "dark" ? (
-                                    <Sun className="h-[1.2rem] w-[1.2rem]" />
-                                ) : (
-                                    <Moon className="h-[1.2rem] w-[1.2rem]" />
-                                )}
-                                <span className="sr-only">Toggle theme</span>
-                            </Button>
-                        </div>
+                        
                     </div>
                     
                     <div className="relative">
                         <Search className={cn(
                             "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4",
-                            isDarkMode ? "text-amber-500" : "text-amber-500"
+                            isDarkMode ? "text-gray-500" : "text-amber-500"
                         )} />
                         <Input
                             placeholder="Search by title, author, or genre..."
@@ -187,43 +153,25 @@ export default function LibraryPage() {
                             className={cn(
                                 "pl-10",
                                 isDarkMode 
-                                    ? "bg-amber-900/50 border-amber-800/50 text-amber-100 placeholder:text-amber-600" 
-                                    : "bg-white border-amber-200 text-amber-900 placeholder:text-amber-400"
+                                    ? "bg-gray-900 border-gray-800 text-gray-200 placeholder:text-gray-500" 
+                                    : "bg-white border-amber-200 text-gray-900 placeholder:text-gray-400"
                             )}
                         />
                     </div>
-                    
-                    {filterOpen && (
-                        <div className={cn(
-                            "p-4 rounded-md",
-                            isDarkMode ? "bg-amber-900/70 border border-amber-800/50" : "bg-white border border-amber-200 shadow-sm"
-                        )}>
-                            <h3 className={cn(
-                                "text-sm font-medium mb-3",
-                                isDarkMode ? "text-amber-200" : "text-amber-700"
-                            )}>Filter Options</h3>
-                            {/* Add filter options here */}
-                            <div className={cn(
-                                "text-sm",
-                                isDarkMode ? "text-amber-400" : "text-amber-600"
-                            )}>
-                                Filter options coming soon...
-                            </div>
-                        </div>
-                    )}
+                   
                 </div>
                 
                 {filteredBooks?.length === 0 ? (
                     <div className={cn(
                         "text-center py-12",
-                        isDarkMode ? "text-amber-400" : "text-amber-600"
+                        isDarkMode ? "text-gray-400" : "text-amber-600"
                     )}>
                         <p className="text-lg">No books found matching your search.</p>
                         {searchQuery && (
                             <Button 
                                 variant="link" 
                                 onClick={() => setSearchQuery("")}
-                                className={isDarkMode ? "text-amber-300" : "text-amber-700"}
+                                className={isDarkMode ? "text-amber-400" : "text-amber-700"}
                             >
                                 Clear search
                             </Button>
@@ -248,7 +196,7 @@ export default function LibraryPage() {
                 
                 {filteredBooks?.length === 0 && bookData.length > 0 && searchQuery && (
                     <div className="mt-8 text-center">
-                        <p className={isDarkMode ? "text-amber-400" : "text-amber-600"}>
+                        <p className={isDarkMode ? "text-gray-400" : "text-amber-600"}>
                             No books match your search criteria.
                         </p>
                     </div>
@@ -258,22 +206,22 @@ export default function LibraryPage() {
                     <div className={cn(
                         "text-center py-16 px-4 rounded-lg border",
                         isDarkMode 
-                            ? "bg-amber-900/30 border-amber-800/50" 
+                            ? "bg-gray-900/30 border-gray-800" 
                             : "bg-amber-50 border-amber-200"
                     )}>
                         <BookOpen className={cn(
                             "mx-auto h-12 w-12 mb-4",
-                            isDarkMode ? "text-amber-500" : "text-amber-400"
+                            isDarkMode ? "text-amber-500" : "text-amber-500"
                         )} />
                         <h3 className={cn(
                             "text-xl font-serif font-medium mb-2",
-                            isDarkMode ? "text-amber-200" : "text-amber-700"
+                            isDarkMode ? "text-gray-200" : "text-amber-800"
                         )}>
                             Your library is empty
                         </h3>
                         <p className={cn(
                             "mb-6 max-w-md mx-auto",
-                            isDarkMode ? "text-amber-400" : "text-amber-600"
+                            isDarkMode ? "text-gray-400" : "text-amber-700"
                         )}>
                             Start by adding some books to your library using the "Add Book" button in the sidebar.
                         </p>

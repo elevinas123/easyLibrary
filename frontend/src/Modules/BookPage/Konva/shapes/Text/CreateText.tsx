@@ -32,6 +32,9 @@ export default function CreateText({
     height,
     opacity = 1,
     points,
+    fontWeight = "normal",
+    fontStyle = "normal",
+    textDecoration = "none",
     ...overrides
 }: CreateTextProps): SpecificTextElement {
     // Calculate width and height based on text content if not provided
@@ -48,6 +51,9 @@ export default function CreateText({
             text,
             fontFamily,
             fontSize,
+            fontWeight,
+            fontStyle,
+            textDecoration,
         },
         strokeColor,
         strokeWidth,

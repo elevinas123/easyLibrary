@@ -12,6 +12,9 @@ import ReadingHistoryPage from "./Modules/HistoryPage/ReadingHistoryPage";
 import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./ThemeProvider";
 import { CollectionsPage, CollectionDetailPage } from './Modules/CollectionsPage';
+import SettingsPage from "./Modules/SettingsPage/SettingsPage";
+import ProfilePage from "./Modules/ProfilePage/ProfilePage";
+import HomePage from "./Modules/HomePage/HomePage";
 
 function App() {
     return (
@@ -21,7 +24,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/book" element={<MainPage />} />
-                    <Route path="/" element={<LibraryPage />} />
+                    <Route path="/library" element={<LibraryPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/reading" element={<CurrentlyReadingPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
@@ -29,6 +32,9 @@ function App() {
                     <Route path="/history" element={<ReadingHistoryPage />} />
                     <Route path="/collections" element={<CollectionsPage />} />
                     <Route path="/collections/:id" element={<CollectionDetailPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/" element={<HomePage />} />
                 </Routes>
                 <Toaster />
             </Router>

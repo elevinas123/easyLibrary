@@ -19,6 +19,7 @@ export default function Chapters({
     handleChapterClick,
     currentChapterId,
 }: ChaptersProps) {
+    console.log("chapters", chapters);
     // Track expanded chapters
     const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
     // Track if sidebar is expanded
@@ -115,8 +116,8 @@ export default function Chapters({
         for (let i = chapterIndex - 1; i >= 0; i--) {
             if (allChapters[i]?.indentLevel !== undefined && 
                 chapter.indentLevel !== undefined &&
-                allChapters[i].indentLevel < chapter.indentLevel) {
-                return allChapters[i].id;
+                allChapters[i]?.indentLevel < chapter.indentLevel) {
+                return allChapters[i]?.id;
             }
         }
         
@@ -136,7 +137,7 @@ export default function Chapters({
     return (
         <aside
             className={cn(
-                "h-screen flex flex-col transition-all duration-300 border-l",
+                "h-screen border-r pr-2  flex flex-col transition-all duration-300 border-l",
                 isDarkMode 
                     ? "bg-gray-900 border-gray-800" 
                     : "bg-white border-gray-200",

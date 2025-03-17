@@ -74,5 +74,18 @@ export const useAuth = () => {
         authenticate();
     }, [accessToken, user, navigate, setAccessToken, setUser]);
 
-    return { accessToken, user };
+    // Add logout function
+    const logout = () => {
+        // Clear the access token from state and localStorage
+        setAccessToken(undefined);
+        localStorage.removeItem("token");
+        
+        // Clear the user from state
+        setUser(undefined);
+        
+        // Redirect to login page
+        navigate("/login");
+    };
+
+    return { accessToken, user, logout };
 };

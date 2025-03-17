@@ -25,6 +25,7 @@ const SliderControl = ({
             step={step}
             value={[value]}
             onValueChange={(values) => onChange(values[0])}
+            className="py-0.5"
         />
     );
 };

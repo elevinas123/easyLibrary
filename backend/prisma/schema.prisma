@@ -236,6 +236,9 @@ model TextElement {
   text       String
   fontFamily String
   fontSize   Float
+  fontWeight String @default("normal")
+  fontStyle  String @default("normal")
+  textDecoration String @default("none")
   type       String
   canvaId    String               @unique
   canva      CanvaElementSkeleton @relation(fields: [canvaId], references: [id])

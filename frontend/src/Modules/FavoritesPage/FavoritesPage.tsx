@@ -239,18 +239,7 @@ export default function FavoritesPage() {
                             <h1 className="text-2xl font-serif font-medium">My Favorites</h1>
                         </div>
                         
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={cn(
-                                    isDarkMode ? "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700" : ""
-                                )}
-                                onClick={() => setShowProgressBar(!showProgressBar)}
-                            >
-                                {showProgressBar ? "Hide Progress" : "Show Progress"}
-                            </Button>
-                        </div>
+                       
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -279,47 +268,7 @@ export default function FavoritesPage() {
                         </div>
                         
                         <div className="flex gap-2 flex-wrap md:flex-nowrap">
-                            {/* Genre filter */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        className={cn(
-                                            "flex items-center whitespace-nowrap",
-                                            isDarkMode ? "bg-gray-800 border-gray-700 text-gray-300" : "",
-                                            activeGenre ? (isDarkMode ? "border-amber-600" : "border-amber-600") : ""
-                                        )}
-                                    >
-                                        <Filter className="mr-2 h-4 w-4" />
-                                        {activeGenre || "All Genres"}
-                                        <ChevronDown className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
-                                    <DropdownMenuItem 
-                                        onClick={() => setActiveGenre(null)}
-                                        className={cn(
-                                            !activeGenre ? (isDarkMode ? "bg-gray-700" : "bg-gray-100") : "",
-                                            isDarkMode ? "text-gray-300 focus:bg-gray-700" : ""
-                                        )}
-                                    >
-                                        All Genres
-                                    </DropdownMenuItem>
-                                    {allGenres.map(genre => (
-                                        <DropdownMenuItem 
-                                            key={genre} 
-                                            onClick={() => setActiveGenre(genre)}
-                                            className={cn(
-                                                activeGenre === genre ? (isDarkMode ? "bg-gray-700" : "bg-gray-100") : "",
-                                                isDarkMode ? "text-gray-300 focus:bg-gray-700" : ""
-                                            )}
-                                        >
-                                            {genre}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                        
                             
                             {/* Sort dropdown */}
                             <DropdownMenu>
@@ -394,7 +343,7 @@ export default function FavoritesPage() {
                             </DropdownMenu>
                             
                             {/* View toggle */}
-                            <div className="flex bg-gray-100 rounded-md p-1">
+                            <div className="flex bg-gray-100 rounded-md h-8 overflow-hidden">
                                 <Button
                                     size="sm"
                                     variant="ghost"
@@ -465,7 +414,7 @@ export default function FavoritesPage() {
                                     <Card 
                                         key={book.id} 
                                         className={cn(
-                                            "overflow-hidden h-80 relative group cursor-pointer",
+                                            "relative group cursor-pointer",
                                             isDarkMode ? "bg-gray-800 hover:bg-gray-750" : "bg-white hover:bg-gray-50",
                                             booksLoading.includes(book.id) ? "opacity-50" : "opacity-100"
                                         )}
@@ -488,7 +437,7 @@ export default function FavoritesPage() {
                                         </TooltipProvider>
                                         
                                         <div 
-                                            className="h-56 bg-cover bg-center"
+                                            className="h-80 bg-cover bg-center"
                                             style={{
                                                 backgroundImage: book.imageUrl 
                                                     ? `url(${book.imageUrl})` 
@@ -563,39 +512,7 @@ export default function FavoritesPage() {
                                                 </div>
                                             )}
                                             
-                                            {book.genres && book.genres.length > 0 && (
-                                                <div className="mt-2 flex flex-wrap gap-1">
-                                                    {book.genres.slice(0, 2).map((genre, index) => {
-                                                        const genreName = typeof genre === 'string' 
-                                                            ? genre 
-                                                            : (genre as any).name || 'Unknown';
-                                                        
-                                                        return (
-                                                            <Badge 
-                                                                key={index} 
-                                                                variant="secondary"
-                                                                className={cn(
-                                                                    "text-xs px-1.5 py-0",
-                                                                    isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                                                                )}
-                                                            >
-                                                                {genreName}
-                                                            </Badge>
-                                                        );
-                                                    })}
-                                                    {book.genres.length > 2 && (
-                                                        <Badge 
-                                                            variant="secondary"
-                                                            className={cn(
-                                                                "text-xs px-1.5 py-0",
-                                                                isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                                                            )}
-                                                        >
-                                                            +{book.genres.length - 2}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            )}
+                                          
                                         </CardContent>
                                     </Card>
                                 ))}
@@ -606,14 +523,14 @@ export default function FavoritesPage() {
                                     <div 
                                         key={book.id}
                                         className={cn(
-                                            "flex rounded-lg overflow-hidden cursor-pointer",
+                                            "flex rounded-lg cursor-pointer",
                                             isDarkMode ? "bg-gray-800 hover:bg-gray-750" : "bg-white hover:bg-gray-50",
                                             booksLoading.includes(book.id) ? "opacity-50" : "opacity-100"
                                         )}
                                         onClick={() => handleBookClick(book.id)}
                                     >
                                         <div 
-                                            className="w-20 h-28 bg-cover bg-center flex-shrink-0"
+                                            className="w-20 bg-cover bg-center flex-shrink-0"
                                             style={{
                                                 backgroundImage: book.imageUrl 
                                                     ? `url(${book.imageUrl})` 
@@ -654,29 +571,7 @@ export default function FavoritesPage() {
                                                     </Tooltip>
                                                 </TooltipProvider>
                                             </div>
-                                            
-                                            {book.genres && book.genres.length > 0 && (
-                                                <div className="mt-2 flex flex-wrap gap-1">
-                                                    {book.genres.map((genre, index) => {
-                                                        const genreName = typeof genre === 'string' 
-                                                            ? genre 
-                                                            : (genre as any).name || 'Unknown';
-                                                        
-                                                        return (
-                                                            <Badge 
-                                                                key={index} 
-                                                                variant="secondary"
-                                                                className={cn(
-                                                                    "text-xs px-1.5 py-0",
-                                                                    isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                                                                )}
-                                                            >
-                                                                {genreName}
-                                                            </Badge>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
+                            
                                             
                                             {showProgressBar && (
                                                 <div className="mt-auto pt-3">

@@ -136,6 +136,7 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
 
         stage.batchDraw();
     };
+    
 
     const handleControlWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
@@ -263,9 +264,9 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
     const removeHoversNotUnderMouse = (e: KonvaEventObject<MouseEvent>) => {
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
-
+        console.log("Removing hovers not under mouse", pos);
         setHoveredItems((prevItems) => {
-            return prevItems.filter((item) => {
+            const filteredItems = prevItems.filter((item) => {
                 const isInPolygon = isPointInPolygon(pos, item.points);
 
                 const isArrowRelated =
@@ -279,6 +280,8 @@ const KonvaStage = forwardRef<{ navigateToPage: (page: number) => void }, KonvaS
                         (currentHighlight.editing || currentHighlight.creating))
                 );
             });
+            console.log("Filtered items", filteredItems);
+            return filteredItems;
         });
     };
 

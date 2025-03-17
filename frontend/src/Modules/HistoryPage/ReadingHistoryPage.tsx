@@ -266,7 +266,6 @@ export default function ReadingHistoryPage() {
                             isDarkMode ? "bg-gray-800" : "bg-amber-100/50"
                         )}>
                             <TabsTrigger value="activity">Activity</TabsTrigger>
-                            <TabsTrigger value="stats">Statistics</TabsTrigger>
                             <TabsTrigger value="books">Books</TabsTrigger>
                         </TabsList>
                         
