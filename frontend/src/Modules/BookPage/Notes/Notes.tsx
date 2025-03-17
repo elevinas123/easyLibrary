@@ -4,6 +4,7 @@ import {
     arrowsAtom,
     canvaElementsAtom,
     offsetPositionAtom,
+    highlightsAtom,
 } from "../Konva/konvaAtoms";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
@@ -36,7 +37,30 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
     const [activeFilter, setActiveFilter] = useState("all");
     const [expandedNote, setExpandedNote] = useState<string | null>(null);
     const [view, setView] = useState<ViewType>("card");
-
+    const [highlightElements] = useAtom(highlightsAtom);
+    useEffect(() => {
+        console.log("notes", notes);
+    }, [notes]);
+    
+    // Extract text based on element type
+    const getTextFromElement = (element: any, type: string): string => {
+        if (!element) return "Unknown Element";
+        
+        if (type === "bookText" || type === "BookText") {
+            // For highlights, use the highlighted text
+            return element.highlightedText || "Highlighted Text";
+        } else if (type === "text") {
+            // For text elements, get the text content
+            return element.textElement?.text || "Text Element";
+        } else if (type === "rect" || type === "circle") {
+            // For shapes, just show a placeholder
+            return `${type.charAt(0).toUpperCase() + type.slice(1)} Shape`;
+        } else {
+            // Default case
+            return "Unknown Element";
+        }
+    };
+    
     // Process arrows to generate notes
     useEffect(() => {
         const validArrows = arrows.filter(
@@ -49,23 +73,37 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
             if (!arrow.arrowElement.startType || !arrow.arrowElement.endType) {
                 throw new Error("Arrow does not have a start or end element");
             }
-            const startElement = canvasElements.find(
-                (element) => element.id === arrow.arrowElement.startId
-            );
-            const endElement = canvasElements.find(
-                (element) => element.id === arrow.arrowElement.endId
-            );
+            let startElement: any = null;
+            let endElement: any = null;
+            if (arrow.arrowElement.startType === "bookText") {
+                startElement = highlightElements.find(
+                    (element) => element.id === arrow.arrowElement.startId
+                );
+            } else {
+                startElement = canvasElements.find(
+                    (element) => element.id === arrow.arrowElement.startId
+                );
+            }
+            if (arrow.arrowElement.endType === "bookText") {
+                console.log("from here arrow.arrowElement.endId", arrow.arrowElement.endId);
+                console.log("from here highlightElements", highlightElements);
+                endElement = highlightElements.find(
+                    (element) => element.id === arrow.arrowElement.endId
+                );
+
+            } else {
+                endElement = canvasElements.find(
+                    (element) => element.id === arrow.arrowElement.endId
+                );
+            }
             
-            const startText = getElementContent(
-                startElement,
-                arrow.arrowElement.startType
-            );
-            const endText = getElementContent(
-                endElement,
-                arrow.arrowElement.endType
-            );
+            // Get the appropriate text for start and end elements
+            const startText = getTextFromElement(startElement, arrow.arrowElement.startType);
+            const endText = getTextFromElement(endElement, arrow.arrowElement.endType);
 
             return {
+                startElement,
+                endElement,
                 startText,
                 endText,
                 points: arrow.points,
@@ -78,7 +116,8 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
 
         setNotes(mappedNotes);
     }, [arrows, canvasElements]);
-      const offsetPositionRef = useRef(offsetPosition);
+    
+    const offsetPositionRef = useRef(offsetPosition);
 
     // Count notes by type for filtering
     const noteCounts = countNotesByType(notes);
@@ -114,7 +153,6 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
       requestAnimationFrame(animateScroll);
     };
    
-
     // Handle note click to navigate on canvas
     const handleNoteClick = (note: Note) => {
         console.log("note singular", note);

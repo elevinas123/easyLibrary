@@ -17,10 +17,12 @@ export const getHighlightUnderMouse = (
     );
 };
 export const getArrowHighlightsUnderMouse = (
-    hoveredItems: ArrowHover[],
+    hoveredItems: ArrowHover[] | null,
     pos: { x: number; y: number }
-) =>
-    hoveredItems.filter((highlight) => {
+) => {
+    if (!hoveredItems) return [];
+
+    return hoveredItems.filter((highlight) => {
         if (highlight.rects) {
             return highlight.rects.some((rect) => {
                 return (
@@ -39,7 +41,7 @@ export const getArrowHighlightsUnderMouse = (
             );
         }
     });
-
+};
 export const isPointInPolygon = (
     point: { x: number; y: number },
     polygon: { x: number; y: number }[]

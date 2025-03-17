@@ -100,29 +100,29 @@ function TextLayer(
                     mousePosition: { x: pos.x, y: pos.y },
                     offsetPosition: { x: e.evt.offsetX, y: e.evt.offsetY },
                 });
+                
+                // Calculate the starting positions
+                const startingX = calculateXPositionInText(
+                    e.target.attrs.text,
+                    e.target.attrs.x,
+                    pos.x,
+                    scale
+                );
+                const startingY = Math.floor(
+                    (e.target.attrs.y - initialOffset.y) / fontSize
+                );
+                
                 setHighlights((oldHighlights) => [
                     ...oldHighlights,
                     {
                         bookId: bookId,
                         id: currentId,
-                        startingX: calculateXPositionInText(
-                            e.target.attrs.text,
-                            e.target.attrs.x,
-                            pos.x,
-                            scale
-                        ),
-                        startingY: Math.floor(
-                            (e.target.attrs.y - initialOffset.y) / fontSize
-                        ),
-                        endX: calculateXPositionInText(
-                            e.target.attrs.text,
-                            e.target.attrs.x,
-                            pos.x,
-                            scale
-                        ),
-                        endY: Math.floor(
-                            (e.target.attrs.y - initialOffset.y) / fontSize
-                        ),
+                        startingX: startingX,
+                        startingY: startingY,
+                        endX: startingX,
+                        endY: startingY,
+                        // Initialize with the character at the starting position
+                        highlightedText: e.target.attrs.text.charAt(startingX) || ''
                     },
                 ]);
             },
@@ -167,7 +167,16 @@ function TextLayer(
                     // Update only if the positions are different
                     highlight.endX = xPos;
                     highlight.endY = yPos;
-                    console.log("highlight", highlight);
+                    
+                    // Update the highlighted text when dragging
+                    highlight.highlightedText = extractHighlightedText(
+                        processedElements,
+                        highlight.startingY,
+                        highlight.startingX,
+                        highlight.endY,
+                        highlight.endX
+                    );
+                    
                     return newHighlights;
                 });
             },
@@ -194,6 +203,7 @@ function TextLayer(
         [
             setCurrentHighlight,
             setHighlights,
+            
             currentHighlight,
             activeTool,
             scale,
@@ -327,3 +337,45 @@ function TextLayer(
 }
 
 export default forwardRef(TextLayer);
+
+// Add this helper function to extract the highlighted text
+const extractHighlightedText = (
+    elements: ProcessedElement[],
+    startY: number,
+    startX: number,
+    endY: number,
+    endX: number
+): string => {
+    // Ensure proper ordering of start and end positions
+    const actualStartY = Math.min(startY, endY);
+    const actualEndY = Math.max(startY, endY);
+    let actualStartX = startY <= endY ? startX : endX;
+    let actualEndX = startY <= endY ? endX : startX;
+    
+    // Single line highlight
+    if (actualStartY === actualEndY) {
+        if (actualStartX > actualEndX) {
+            [actualStartX, actualEndX] = [actualEndX, actualStartX];
+        }
+        const line = elements[actualStartY]?.text || '';
+        return line.substring(actualStartX, actualEndX + 1);
+    }
+    
+    // Multi-line highlight
+    let result = '';
+    for (let i = actualStartY; i <= actualEndY; i++) {
+        const line = elements[i]?.text || '';
+        if (i === actualStartY) {
+            // First line - from start position to end of line
+            result += line.substring(actualStartX) + ' ';
+        } else if (i === actualEndY) {
+            // Last line - from start of line to end position
+            result += line.substring(0, actualEndX + 1);
+        } else {
+            // Middle lines - entire line
+            result += line + ' ';
+        }
+    }
+    
+    return result.trim();
+};

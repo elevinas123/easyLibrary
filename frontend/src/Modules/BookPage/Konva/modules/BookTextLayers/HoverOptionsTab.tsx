@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from "jotai";
-import { useState } from "react";
-import { FiEdit, FiMessageCircle, FiSave, FiTrash2, FiX } from "react-icons/fi"; // Added FiSave and FiX for new actions
+import { useState, useEffect } from "react";
+import { FiEdit, FiMessageCircle, FiSave, FiTrash2, FiX, FiCopy } from "react-icons/fi"; // Added FiCopy
 import { Button } from "../../../../../components/ui/button";
 import { Card } from "../../../../../components/ui/card"; // Import Card for styling
 import { Textarea } from "../../../../../components/ui/textarea"; // Import Textarea from shadcn
@@ -14,12 +14,13 @@ import {
 } from "../../konvaAtoms";
 import createArrow from "../../shapes/Arrow/CreateArrow";
 import CreateText from "../../shapes/Text/CreateText";
-
+import { useToast } from "../../../../../hooks/use-toast";
 type HoverOptionsTabProps = {};
 
 export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const [currentHighlight, setCurrentHighlight] =
         useAtom(currentHighlightAtom);
+    const [highlights] = useAtom(highlightsAtom);
     const setHighlights = useSetAtom(highlightsAtom);
     const setHoveredItems = useSetAtom(hoveredItemsAtom);
     const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
@@ -27,6 +28,18 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
     const [isAddingNote, setIsAddingNote] = useState(false);
     const [noteText, setNoteText] = useState("");
     const [bookId] = useAtom(bookIdAtom);
+    const [currentHighlightText, setCurrentHighlightText] = useState("");
+    const { toast } = useToast();
+    // Get the highlighted text when currentHighlight changes
+    useEffect(() => {
+        if (currentHighlight.id) {
+            const highlight = highlights.find(h => h.id === currentHighlight.id);
+            if (highlight?.highlightedText) {
+                setCurrentHighlightText(highlight.highlightedText);
+            }
+        }
+    }, [currentHighlight, highlights]);
+    
     const deleteHighlight = () => {
         setHighlights((highlights) =>
             highlights.filter(
@@ -97,6 +110,22 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         setIsAddingNote(false);
     };
 
+    const copyHighlightedText = () => {
+        if (currentHighlightText) {
+            navigator.clipboard.writeText(currentHighlightText)
+                .then(() => {
+                    // Show success message if you have a toast component
+                    toast?.({
+                        title: "Text copied",
+                        description: "Highlighted text copied to clipboard",
+                    });
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+        }
+    };
+
     return (
         <div className="absolute z-50">
             {!currentHighlight.creating && currentHighlight.editing ? (
@@ -109,7 +138,20 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
                     className="w-64"
                 >
                     <div className="divide-y divide-gray-200">
-                       
+                        {currentHighlightText && (
+                            <div className="p-3">
+                                <p className="text-sm font-medium text-gray-700 mb-1">Highlighted Text:</p>
+                                <p className="text-sm text-gray-600 italic mb-2 line-clamp-3">{currentHighlightText}</p>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={copyHighlightedText}
+                                    className="flex items-center gap-1 text-xs"
+                                >
+                                    <FiCopy className="h-3 w-3" /> Copy Text
+                                </Button>
+                            </div>
+                        )}
                         {!isAddingNote && (
                             <div
                                 className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"

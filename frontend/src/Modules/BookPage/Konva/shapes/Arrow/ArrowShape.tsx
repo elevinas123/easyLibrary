@@ -12,18 +12,21 @@ import {
     SpecificArrowElement,
     StartType,
 } from "../../../../../endPointTypes/types";
-import { getArrowHighlightsUnderMouse } from "../../functions/getElementsUnderMouse";
+import { getArrowHighlightsUnderMouse, getHighlightUnderMouse } from "../../functions/getElementsUnderMouse";
 import { getPos } from "../../functions/getPos";
 import {
     activeToolAtom,
+    ArrowHover,
     arrowsAtom,
     bookIdAtom,
     canvaElementsAtom,
     hoveredItemsAtom,
+    highlightsAtom,
     newArrowAtom,
     offsetPositionAtom,
     scaleAtom,
     selectedArrowIdsAtom,
+    highlightElementsAtom,
 } from "../../konvaAtoms";
 import createArrow from "./CreateArrow";
 import RenderArrow from "./RenderArrow";
@@ -33,7 +36,7 @@ type ArrowShapeProps = {
 };
 
 export type ArrowShapeRef = {
-    handleMouseDown(e: KonvaEventObject<MouseEvent>): void;
+     handleMouseDown(e: KonvaEventObject<MouseEvent>): void;
     handleMouseMove(e: KonvaEventObject<MouseEvent>): void;
     handleMouseUp(e: KonvaEventObject<MouseEvent>): void;
     handleElementAttachedToArrowMove(selectedTextId: string[]): void;
@@ -46,6 +49,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [newArrow, setNewArrow] = useAtom(newArrowAtom);
     const [arrows, setArrows] = useAtom(arrowsAtom);
     const [hoveredItems, setHoveredItems] = useAtom(hoveredItemsAtom);
+    const [highlightElements] = useAtom(highlightElementsAtom);
     const [canvasElements] = useAtom(canvaElementsAtom);
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
@@ -182,11 +186,19 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         const id = uuidv4();
 
         console.log("Mouse down at position:", pos);
-
-        const highlightsUnderMouse = getArrowHighlightsUnderMouse(
-            hoveredItems,
-            pos
+        const hoveredItemsNew: ArrowHover | null = hoverItems(pos);
+        console.log("hoveredItemsNew", hoveredItemsNew);
+        const hoveredItemsNewArray: ArrowHover[] = hoveredItemsNew ? [hoveredItemsNew] : [];
+        const highlightsCanvasUnderMouse = getArrowHighlightsUnderMouse(
+          hoveredItemsNewArray,
+          pos
         );
+        const highlightHoversUnderMouse = getHighlightUnderMouse(
+          highlightElements,
+          pos
+        );
+        console.log("highlightHoversUnderMouse", highlightHoversUnderMouse);
+        const highlightsUnderMouse = [...highlightHoversUnderMouse, ...highlightsCanvasUnderMouse];
         let startId: string | undefined = undefined;
         let type: StartType = undefined;
         console.log("highlightsUnderMouse", highlightsUnderMouse);
@@ -221,10 +233,19 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
 
         if (!pos) return;
         let arrow = {...newArrow}; // Create copy to avoid direct mutation
-        const highlightsUnderMouse = getArrowHighlightsUnderMouse(
+        const highlightsCanvasUnderMouse = getArrowHighlightsUnderMouse(
             hoveredItems,
             pos
         );
+        const highlightHoversUnderMouse = getHighlightUnderMouse(
+          highlightElements,
+          pos
+        );
+        const highlightsUnderMouse = [
+          ...highlightHoversUnderMouse,
+          ...highlightsCanvasUnderMouse,
+        ];
+
         
         // Get the end element if there's one under the mouse
         if (
@@ -253,8 +274,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             console.log("newFrom here startText", startText)
             console.log("newFrom here endText", endText)
             // Add text content to the arrow
-            arrow.arrowElement.startText = startText;
-            arrow.arrowElement.endText = endText;
+            arrow.arrowElement.startElement = startElement;
+            arrow.arrowElement.endElement = endElement;
         }
 
         console.log("Saving final arrow:", arrow);
@@ -269,7 +290,6 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 pos.y >= textItem.y - 10 &&
                 pos.y <= textItem.y + textItem.height + 10
         );
-
         if (highlightsUnderMouse.length > 0) {
             const firstHighlight = highlightsUnderMouse[0];
 
@@ -311,7 +331,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                     updatedHighlight,
                 ]);
             }
+            return updatedHighlight;
+
         }
+        return  null
     };
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         if (activeTool !== "Arrow" && activeTool !== "Select") return;

@@ -17,6 +17,7 @@ import {
     activeToolAtom,
     currentHighlightAtom,
     HighlightPoints,
+    highlightElementsAtom,
     highlightsAtom,
     hoveredItemsAtom,
     offsetPositionAtom,
@@ -28,6 +29,7 @@ export type FullHighlight = {
     points: HighlightPoints[];
     id: string;
     type: "bookText";
+    highlightedText?: string;
 };
 
 export type HighlightRect = {
@@ -55,9 +57,7 @@ function HighlightLayer(
 ) {
     const [highlights] = useAtom(highlightsAtom);
 
-    const [highlightElements, setHighlightElements] = useState<FullHighlight[]>(
-        []
-    );
+    const [highlightElements, setHighlightElements] = useAtom(highlightElementsAtom);
     const [virtualizedHighlights, setVirtualizedHighlights] = useState<
         JSX.Element[]
     >([]);
@@ -86,16 +86,21 @@ function HighlightLayer(
                     const isAlreadyHovered = hoveredItems.some(
                         (highlight) => highlight.id === firstHighlight.id
                     );
+                    console.log("isAlreadyHovered", isAlreadyHovered);
 
                     if (isAlreadyHovered) {
                         // If it's already hovered, refresh its position in the hovered list
-                        setHoveredItems((prevHighlights) => [
+                        setHoveredItems((prevHighlights) =>{
+                            const newhovers =  [
                             ...prevHighlights.filter(
-                                (highlight) =>
-                                    highlight.id !== firstHighlight.id
-                            ),
-                            firstHighlight,
-                        ]);
+                                    (highlight) =>
+                                        highlight.id !== firstHighlight.id
+                                ),
+                                firstHighlight,
+                            ];
+                            console.log("newhovers", newhovers);
+                            return newhovers;
+                        });
                     } else {
                         // If it's a new highlight, update hoveredHighlight to the first highlight under the mouse
                         setHoveredItems((prevHighlights) => [
@@ -281,6 +286,7 @@ function HighlightLayer(
                 points: polygonPoints,
                 rects: rects,
                 type: "bookText",
+                highlightedText: highlight.highlightedText
             };
         });
     };

@@ -3,7 +3,7 @@ import {atom} from 'jotai';
 import {CanvaElementSkeleton, Highlight, SettingsType, SpecificArrowElement, StartType} from '../../../endPointTypes/types';
 
 import {DrawingToolNames} from './components/Tools';
-import {HighlightRect} from './modules/BookTextLayers/HighlightLayer';
+import {FullHighlight, HighlightRect} from './modules/BookTextLayers/HighlightLayer';
 
 export type ArrowHover = {
   points: HighlightPoints[]; id: string;
@@ -35,6 +35,7 @@ export type CurrentHighlight = {
 };
 
 export const highlightsAtom = atom<Highlight[]>([]);
+export const highlightElementsAtom = atom<FullHighlight[]>([]);
 export const currentHighlightAtom = atom<CurrentHighlight>({
   id: undefined,
   editing: false,

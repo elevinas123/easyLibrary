@@ -153,50 +153,50 @@ function MainPage() {
         JSON.stringify(newValue) !== JSON.stringify(oldValue);
 
     // Save changes to the server
-    useEffect(() => {
-        if (!bookId || !accessToken || !book || !updated) return;
+    // useEffect(() => {
+    //     if (!bookId || !accessToken || !book || !updated) return;
 
-        const updateData: Partial<Book> = {};
+    //     const updateData: Partial<Book> = {};
 
-        // Only include changed fields in the update
-        if (hasChanged(arrows, book.curveElements)) {
-            updateData.curveElements = arrows;
-        }
-        if (hasChanged(canvaElements, book.canvaElements)) {
-            updateData.canvaElements = canvaElements;
-        }
-        if (hasChanged(highlights, book.highlights)) {
-            updateData.highlights = highlights;
-        }
-        if (hasChanged(scale, book.scale)) {
-            updateData.scale = scale;
-        }
-        if (hasChanged(offsetPosition, book.offsetPosition)) {
-            updateData.offsetPosition = offsetPosition;
-        }
+    //     // Only include changed fields in the update
+    //     if (hasChanged(arrows, book.curveElements)) {
+    //         updateData.curveElements = arrows;
+    //     }
+    //     if (hasChanged(canvaElements, book.canvaElements)) {
+    //         updateData.canvaElements = canvaElements;
+    //     }
+    //     if (hasChanged(highlights, book.highlights)) {
+    //         updateData.highlights = highlights;
+    //     }
+    //     if (hasChanged(scale, book.scale)) {
+    //         updateData.scale = scale;
+    //     }
+    //     if (hasChanged(offsetPosition, book.offsetPosition)) {
+    //         updateData.offsetPosition = offsetPosition;
+    //     }
 
-        // Only send update if there are changes
-        if (Object.keys(updateData).length > 0) {
-            console.log("Saving changes to server:", updateData);
-            debouncedUpdate(updateData);
-        }
+    //     // Only send update if there are changes
+    //     if (Object.keys(updateData).length > 0) {
+    //         console.log("Saving changes to server:", updateData);
+    //         debouncedUpdate(updateData);
+    //     }
 
-        // Cleanup on unmount
-        return () => {
-            debouncedUpdate.cancel();
-        };
-    }, [
-        arrows,
-        canvaElements,
-        highlights,
-        scale,
-        offsetPosition,
-        bookId,
-        accessToken,
-        book,
-        updated,
-        debouncedUpdate
-    ]);
+    //     // Cleanup on unmount
+    //     return () => {
+    //         debouncedUpdate.cancel();
+    //     };
+    // }, [
+    //     arrows,
+    //     canvaElements,
+    //     highlights,
+    //     scale,
+    //     offsetPosition,
+    //     bookId,
+    //     accessToken,
+    //     book,
+    //     updated,
+    //     debouncedUpdate
+    // ]);
 
     // Start reading session mutation
     const startSessionMutation = useMutation({

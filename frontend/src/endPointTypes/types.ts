@@ -83,6 +83,7 @@ export type Highlight = {
   endX: number;
   endY: number;
   bookId: string;
+  highlightedText?: string;
   book?: Book; // Optional reference
 };
 

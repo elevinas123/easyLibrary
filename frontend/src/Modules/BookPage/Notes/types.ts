@@ -1,8 +1,7 @@
-import { Point } from "../../../endPointTypes/types";
-
+import { CanvaElementSkeleton, Point, Highlight } from "../../../endPointTypes/types";
 export type Note = {
-    endText: string;
-    startText: string;
+    startElement: CanvaElementSkeleton | Highlight;
+    endElement: CanvaElementSkeleton | Highlight;
     points: Point[];
     arrowId: string;
     startType: string;
