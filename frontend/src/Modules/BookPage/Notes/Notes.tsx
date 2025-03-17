@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     arrowsAtom,
     canvaElementsAtom,
@@ -24,7 +24,6 @@ import { getElementContent, easeInOutCubic, filterNotes, countNotesByType } from
 // Import components
 import { CardView } from "./components/CardView";
 import { TimelineView } from "./components/TimelineView";
-import { MapView } from "./components/MapView";
 import { SearchFilter } from "./components/SearchFilter";
 import { EmptyState } from "./components/EmptyState";
 
@@ -73,12 +72,13 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
                 arrowId: arrow.id,
                 startType: arrow.arrowElement.startType,
                 endType: arrow.arrowElement.endType,
-                createdAt: arrow.createdAt || new Date(),
+                createdAt: 'createdAt' in arrow ? arrow.createdAt : new Date(),
             };
         });
 
         setNotes(mappedNotes);
     }, [arrows, canvasElements]);
+      const offsetPositionRef = useRef(offsetPosition);
 
     // Count notes by type for filtering
     const noteCounts = countNotesByType(notes);
@@ -86,40 +86,41 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
     // Apply filtering based on search and filter
     const filteredNotes = filterNotes(notes, searchQuery, activeFilter);
 
-    // Smooth scroll to note position
     const smoothScroll = (
-        targetX: number,
-        targetY: number,
-        duration: number
+      targetX: number,
+      targetY: number,
+      duration: number
     ) => {
-        const start = performance.now();
-        const initialOffset = { ...offsetPosition };
-        const deltaX = targetX - initialOffset.x;
-        const deltaY = targetY - initialOffset.y;
+      const start = performance.now();
+      const initialOffset = { ...offsetPositionRef.current };
+      const deltaX = targetX - initialOffset.x;
+      const deltaY = targetY - initialOffset.y;
 
-        const animateScroll = (currentTime: number) => {
-            const elapsed = currentTime - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeProgress = easeInOutCubic(progress);
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeInOutCubic(progress);
 
-            setOffsetPosition({
-                x: initialOffset.x + deltaX * easeProgress,
-                y: initialOffset.y + deltaY * easeProgress,
-            });
+        setOffsetPosition({
+          x: initialOffset.x + deltaX * easeProgress,
+          y: initialOffset.y + deltaY * easeProgress,
+        });
 
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        };
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
 
-        requestAnimationFrame(animateScroll);
+      requestAnimationFrame(animateScroll);
     };
+   
 
     // Handle note click to navigate on canvas
     const handleNoteClick = (note: Note) => {
+        console.log("note singular", note);
         if (note.points && note.points.length >= 2) {
-            const targetY = -note.points[1];
-            smoothScroll(-note.points[0] + 500, targetY + 300, 500);
+            const targetY = -note.points[0].y;
+            smoothScroll(-note.points[0].x + 500, targetY + 300, 500);
         }
     };
 
@@ -209,16 +210,7 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
                             <Clock className="h-3.5 w-3.5" />
                             <span>Timeline</span>
                         </TabsTrigger>
-                        <TabsTrigger 
-                            value="map" 
-                            className={cn(
-                                "text-xs flex items-center gap-1",
-                                isDarkMode ? "data-[state=active]:bg-gray-700" : "data-[state=active]:bg-white"
-                            )}
-                        >
-                            <MapPin className="h-3.5 w-3.5" />
-                            <span>Map</span>
-                        </TabsTrigger>
+                       
                     </TabsList>
                 </Tabs>
             </div>
@@ -245,13 +237,7 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
                             />
                         )}
                         
-                        {view === 'map' && (
-                            <MapView 
-                                notes={filteredNotes} 
-                                isDarkMode={isDarkMode} 
-                                handleNoteClick={handleNoteClick} 
-                            />
-                        )}
+                        
                     </>
                 ) : (
                     // Show empty state when no notes or all filtered out

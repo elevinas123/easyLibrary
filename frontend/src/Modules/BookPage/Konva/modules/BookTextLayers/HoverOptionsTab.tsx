@@ -44,11 +44,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
         });
     };
 
-    const editHighlight = () => {
-        console.log("Edit Highlight");
-        // Add edit logic here
-    };
-
+    
     const addComment = () => {
         setIsAddingNote(true);
     };
@@ -68,7 +64,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
             y: textY,
             bookId: bookId,
             text: noteText,
-            fill: "white",
+            fill: "black",
             strokeColor: "white",
         });
         const newNoteArrow = createArrow({
@@ -113,13 +109,7 @@ export default function HoverOptionsTab({}: HoverOptionsTabProps) {
                     className="w-64"
                 >
                     <div className="divide-y divide-gray-200">
-                        <div
-                            className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"
-                            onClick={editHighlight}
-                        >
-                            <FiEdit className="text-gray-500" />
-                            <span>Edit Highlight</span>
-                        </div>
+                       
                         {!isAddingNote && (
                             <div
                                 className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"

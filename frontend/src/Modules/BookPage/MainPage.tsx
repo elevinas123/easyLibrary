@@ -1,7 +1,7 @@
 // src/pages/MainPage.tsx
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Book } from "../../endPointTypes/types";
 import { useAuth } from "../../hooks/userAuth";
@@ -14,6 +14,8 @@ import { useAtom, useSetAtom } from 'jotai';
 import { bookIdAtom, offsetPositionAtom } from './Konva/konvaAtoms';
 import { easeInOutCubic } from "./Notes/utils";
 import { Card, CardContent } from "../../components/ui/card";
+import { debounce } from "lodash";
+import { arrowsAtom, canvaElementsAtom, highlightsAtom, scaleAtom } from './Konva/konvaAtoms';
 
 export type HighlightRange = {
     startElementId: string;
@@ -36,7 +38,6 @@ const fetchBook = async (id: string, accessToken: string): Promise<Book> => {
 };
 
 // Unified update function using PATCH
-/*
 const patchBook = async (
     updateData: Partial<Book>,
     id: string,
@@ -50,7 +51,7 @@ const patchBook = async (
     console.log("Updated Book Data:", data);
     return data;
 };
-*/
+
 function MainPage() {
     const { accessToken, user } = useAuth();
     const [searchParams] = useSearchParams();
@@ -63,7 +64,12 @@ function MainPage() {
     const [offsetPosition, setOffsetPosition] = useAtom(offsetPositionAtom);
     const [navigateBack, setNavigateBack] = useState(false);
     const offsetPositionRef = useRef(offsetPosition);
-
+    const [updated, setUpdated] = useState(false);
+    const queryClient = useQueryClient();
+    const [arrows, setArrows] = useAtom(arrowsAtom);
+    const [canvaElements, setCanvaElements] = useAtom(canvaElementsAtom);
+    const [highlights, setHighlights] = useAtom(highlightsAtom);
+    const [scale, setScale] = useAtom(scaleAtom);
     useEffect(() => {
         if (offsetPosition.x >200 || offsetPosition.x < -600) {
             setNavigateBack(true);
@@ -81,7 +87,7 @@ function MainPage() {
     // Update refs when values change
     useEffect(() => {
         sessionIdRef.current = sessionId;
-        accessTokenRef.current = accessToken;
+        accessTokenRef.current = accessToken || null;
     }, [sessionId, accessToken]);
 
     // React Query: Fetch book data
@@ -99,7 +105,7 @@ function MainPage() {
         queryKey: ["book", bookId],
         enabled: !!accessToken && !!user && !!bookId,
     });
-    /*
+
     // React Query: Mutation for updating the book
     const mutation = useMutation<Book, Error, Partial<Book>, unknown>({
         mutationFn: (updateData) =>
@@ -116,10 +122,15 @@ function MainPage() {
 
     const debouncedUpdate = useCallback(
         debounce((updatedFields: Partial<Book>) => {
-            mutation.mutate(updatedFields);
-        }, 500),
-        [mutation]
+            // Only run update if we have an access token
+            if (accessToken) {
+                mutation.mutate(updatedFields);
+            }
+        }, 1000), // Increased debounce time for better performance
+        [mutation, accessToken]
     );
+
+    // Initialize data from the book when it's loaded
     useEffect(() => {
         if (book && !updated) {
             setArrows(book?.curveElements ?? []);
@@ -132,20 +143,22 @@ function MainPage() {
                     y: 0,
                 }
             );
-            console.log("bookUpdated", book);
+            console.log("Book data initialized:", book);
             setUpdated(true);
         }
-        console.log("Book data updated:", book);
-    }, [book]);
+    }, [book, updated, setArrows, setCanvaElements, setHighlights, setScale, setOffsetPosition]);
 
+    // Function to check if values have changed
     const hasChanged = (newValue: any, oldValue: any) =>
-        !isEqual(newValue, oldValue);
+        JSON.stringify(newValue) !== JSON.stringify(oldValue);
 
+    // Save changes to the server
     useEffect(() => {
-        if (!bookId || !accessToken || !book) return;
+        if (!bookId || !accessToken || !book || !updated) return;
 
         const updateData: Partial<Book> = {};
 
+        // Only include changed fields in the update
         if (hasChanged(arrows, book.curveElements)) {
             updateData.curveElements = arrows;
         }
@@ -161,8 +174,10 @@ function MainPage() {
         if (hasChanged(offsetPosition, book.offsetPosition)) {
             updateData.offsetPosition = offsetPosition;
         }
-        console.log("updateData", updateData);
+
+        // Only send update if there are changes
         if (Object.keys(updateData).length > 0) {
+            console.log("Saving changes to server:", updateData);
             debouncedUpdate(updateData);
         }
 
@@ -178,8 +193,11 @@ function MainPage() {
         offsetPosition,
         bookId,
         accessToken,
+        book,
+        updated,
+        debouncedUpdate
     ]);
-*/
+
     // Start reading session mutation
     const startSessionMutation = useMutation({
         mutationFn: () => startReadingSession(bookId!, accessToken!),
@@ -404,8 +422,8 @@ function MainPage() {
         smoothScroll(-200, offsetPositionRef.current.y, 500);
     };
 
-    // Add a ref to the KonvaStage
-    const konvaStageRef = useRef(null);
+    // Add a ref to the KonvaStage with proper typing
+    const konvaStageRef = useRef<any>(null);
 
     // Handle loading and error states
     if (isLoading) {
@@ -474,7 +492,7 @@ function MainPage() {
             />
             {navigateBack && (
                 <div className="absolute bottom-32 left-1/2  flex items-center justify-center">
-                    <button  className="bg-white text-black px-4 py-2 rounded-md" onClick={navigateBackToText}>
+                    <button  className="bg-gray-100 text-black px-4 py-2 rounded-md" onClick={navigateBackToText}>
                         Back to Text
                     </button>
                 </div>

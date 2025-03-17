@@ -15,7 +15,8 @@ import {
     AlignCenter, 
     AlignRight, 
     AlignJustify,
-    Palette
+    Palette,
+    Circle
 } from "lucide-react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
@@ -51,6 +52,7 @@ import {
 import { Slider } from "../../../../../components/ui/slider";
 import { Input } from "../../../../../components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/popover";
+import { CanvaElementSkeleton, CircleElement, SpecificCircleElement } from "../../../../../endPointTypes/types";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -135,6 +137,28 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         }
     }, [selectedItemsIds, controlShape]);
 
+    // Add radius state for circles
+    const [radius, setRadius] = useState(50);
+    const [hachureGap, setHachureGap] = useState(5);
+    const [hachureAngle, setHachureAngle] = useState(45);
+    const [roughness, setRoughness] = useState(1);
+    const [fillStyle, setFillStyle] = useState("solid");
+    
+    // Load circle properties when a circle is selected
+    useEffect(() => {
+        if (controlShape && controlShape.type === 'circle' && controlShape.circleElement) {
+            // Set circle specific properties
+            setRadius(controlShape.circleElement.radius || 50);
+            setHachureGap(controlShape.circleElement.hachureGap || 5);
+            setHachureAngle(controlShape.circleElement.hachureAngle || 45);
+            setRoughness(controlShape.circleElement.roughness || 1);
+            setFillStyle(controlShape.circleElement.fillStyle || "solid");
+            
+            // Set common properties
+            setTextColor(controlShape.fill || '#000000');
+        }
+    }, [selectedItemsIds, controlShape]);
+
     const updateItems = (property: { [key: string]: any }) => {
         setCanvaElements((elements) =>
             elements.map((element) =>
@@ -193,7 +217,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                                     ...element.textElement,
                                     ...textProps
                                 }
-                            };
+                            } as CanvaElementSkeleton;
                         }
                         return element;
                     })
@@ -241,7 +265,100 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         updateTextFormat({ fill: newColor });
     };
 
- 
+    // Update circle properties
+    const updateCircleFormat = (property: { [key: string]: any }) => {
+        if (controlShape.type === 'circle') {
+            // Handle properties that go directly on the CanvaElementSkeleton
+            const canvasProps: { [key: string]: any } = {};
+            // Handle properties that go in the circleElement
+            const circleProps: { [key: string]: any } = {};
+            
+            Object.entries(property).forEach(([key, value]) => {
+                // Properties that should be on the main canvas element
+                if (['fill', 'opacity', 'rotation', 'x', 'y', 'width', 'height', 'strokeWidth', 'stroke'].includes(key)) {
+                    canvasProps[key] = value;
+                } 
+                // Properties that belong in the circleElement
+                else if (['radius', 'fillStyle', 'roughness', 'seed', 'hachureGap', 'hachureAngle'].includes(key)) {
+                    circleProps[key] = value;
+                }
+            });
+            
+            // Update the main canvas element
+            if (Object.keys(canvasProps).length > 0) {
+                setCanvaElements((elements) =>
+                    elements.map((element) =>
+                        selectedItemsIds.includes(element.id)
+                            ? { ...element, ...canvasProps }
+                            : element
+                    )
+                );
+            }
+            
+            // Update the circleElement property
+            if (Object.keys(circleProps).length > 0) {
+                setCanvaElements((elements) =>
+                    elements.map((element) => {
+                        if (selectedItemsIds.includes(element.id) && element.type === 'circle') {
+                            return {
+                                ...element,
+                                circleElement: {
+                                    ...element.circleElement,
+                                    ...circleProps
+                                }
+                            } as CanvaElementSkeleton;
+                        }
+                        return element;
+                    })
+                );
+            }
+        } else {
+            // For non-circle elements, just update the main properties
+            updateItems(property);
+        }
+    };
+    
+    // Handle radius change for circles
+    const handleRadiusChange = (value: number[]) => {
+        const newRadius = value[0];
+        setRadius(newRadius);
+        updateCircleFormat({ radius: newRadius });
+    };
+    
+    // Handle hachure gap change for circles
+    const handleHachureGapChange = (value: number[]) => {
+        const newGap = value[0];
+        setHachureGap(newGap);
+        updateCircleFormat({ hachureGap: newGap });
+    };
+    
+    // Handle hachure angle change for circles
+    const handleHachureAngleChange = (value: number[]) => {
+        const newAngle = value[0];
+        setHachureAngle(newAngle);
+        updateCircleFormat({ hachureAngle: newAngle });
+    };
+    
+    // Handle roughness change for circles
+    const handleRoughnessChange = (value: number[]) => {
+        const newRoughness = value[0];
+        setRoughness(newRoughness);
+        updateCircleFormat({ roughness: newRoughness });
+    };
+    
+    // Handle fill style change for circles
+    const handleFillStyleChange = (value: string) => {
+        setFillStyle(value);
+        updateCircleFormat({ fillStyle: value });
+    };
+    
+    // Handle circle color change
+    const handleCircleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newColor = e.target.value;
+        setTextColor(newColor);
+        updateCircleFormat({ fill: newColor });
+    };
+
     if (!controlShape)
         controlShape = arrows.find(
             (element) => element.id === selectedItemsIds[0]
@@ -253,6 +370,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
 
     const controls = toolbarConfig[controlShape.type] || [];
     const isTextElement = controlShape.type === 'text';
+    const isCircleElement = controlShape.type === 'circle';
 
     const toggleGroup = (groupName: string) => {
         setOpenGroups((prev) =>
@@ -360,6 +478,182 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                             <CardContent className="p-0">
                                 <ScrollArea className="h-64" type="always">
                                     <div className="p-3 space-y-2">
+                                        {/* Circle formatting tools */}
+                                        {isCircleElement && (
+                                            <Collapsible
+                                                open={openGroups.includes("Circle Properties")}
+                                                onOpenChange={() => toggleGroup("Circle Properties")}
+                                                className="mb-1"
+                                            >
+                                                <CollapsibleTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-between py-2 px-3 text-sm h-8 bg-muted/50 hover:bg-muted"
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <Circle className="h-4 w-4 mr-2" />
+                                                            Circle Properties
+                                                        </div>
+                                                        <motion.div
+                                                            animate={{ rotate: openGroups.includes("Circle Properties") ? 180 : 0 }}
+                                                            transition={{ duration: 0.2 }}
+                                                        >
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        </motion.div>
+                                                    </Button>
+                                                </CollapsibleTrigger>
+                                                <CollapsibleContent className="py-2 px-3 space-y-3 border-l-2 border-muted ml-2 mt-1">
+                                                    {/* Radius */}
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <label className="text-xs text-muted-foreground">Radius</label>
+                                                            <span className="text-xs font-medium">{radius}px</span>
+                                                        </div>
+                                                        <Slider 
+                                                            value={[radius]} 
+                                                            min={5} 
+                                                            max={200} 
+                                                            step={1} 
+                                                            onValueChange={handleRadiusChange} 
+                                                        />
+                                                    </div>
+                                                    
+                                                    {/* Fill Style */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Fill Style</label>
+                                                        <Select value={fillStyle} onValueChange={handleFillStyleChange}>
+                                                            <SelectTrigger className="w-full h-8 text-xs">
+                                                                <SelectValue placeholder="Select Fill Style" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="solid">Solid</SelectItem>
+                                                                <SelectItem value="hachure">Hachure</SelectItem>
+                                                                <SelectItem value="cross-hatch">Cross-Hatch</SelectItem>
+                                                                <SelectItem value="zigzag">Zigzag</SelectItem>
+                                                                <SelectItem value="dots">Dots</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    
+                                                    {/* Roughness */}
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <label className="text-xs text-muted-foreground">Roughness</label>
+                                                            <span className="text-xs font-medium">{roughness}</span>
+                                                        </div>
+                                                        <Slider 
+                                                            value={[roughness]} 
+                                                            min={0} 
+                                                            max={3} 
+                                                            step={0.1} 
+                                                            onValueChange={handleRoughnessChange} 
+                                                        />
+                                                    </div>
+                                                    
+                                                    {fillStyle !== 'solid' && (
+                                                        <>
+                                                            {/* Hachure Gap */}
+                                                            <div className="space-y-1">
+                                                                <div className="flex justify-between">
+                                                                    <label className="text-xs text-muted-foreground">Hachure Gap</label>
+                                                                    <span className="text-xs font-medium">{hachureGap}px</span>
+                                                                </div>
+                                                                <Slider 
+                                                                    value={[hachureGap]} 
+                                                                    min={1} 
+                                                                    max={20} 
+                                                                    step={1} 
+                                                                    onValueChange={handleHachureGapChange} 
+                                                                />
+                                                            </div>
+                                                            
+                                                            {/* Hachure Angle */}
+                                                            <div className="space-y-1">
+                                                                <div className="flex justify-between">
+                                                                    <label className="text-xs text-muted-foreground">Hachure Angle</label>
+                                                                    <span className="text-xs font-medium">{hachureAngle}°</span>
+                                                                </div>
+                                                                <Slider 
+                                                                    value={[hachureAngle]} 
+                                                                    min={0} 
+                                                                    max={180} 
+                                                                    step={5} 
+                                                                    onValueChange={handleHachureAngleChange} 
+                                                                />
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {/* Fill Color */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Fill Color</label>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button 
+                                                                        variant="outline" 
+                                                                        size="sm" 
+                                                                        className="h-8 flex items-center gap-2"
+                                                                    >
+                                                                        <div 
+                                                                            className="w-4 h-4 rounded-sm border border-gray-300" 
+                                                                            style={{ backgroundColor: textColor }}
+                                                                        />
+                                                                        <Palette className="h-4 w-4" />
+                                                                        {textColor}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-3">
+                                                                    <div className="flex flex-col gap-2">
+                                                                        <div className="grid grid-cols-5 gap-1">
+                                                                            {["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", 
+                                                                                "#FF00FF", "#00FFFF", "#FFA500", "#800080", "#008000",
+                                                                                "#800000", "#008080", "#000080", "#FFC0CB", "#A52A2A",
+                                                                                "#808080", "#C0C0C0", "#FFD700", "#4B0082", "#FFFFFF"
+                                                                            ].map(color => (
+                                                                                <div 
+                                                                                    key={color}
+                                                                                    className="w-6 h-6 rounded-sm border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
+                                                                                    style={{ backgroundColor: color }}
+                                                                                    onClick={() => {
+                                                                                        setTextColor(color);
+                                                                                        updateCircleFormat({ fill: color });
+                                                                                    }}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="flex items-center mt-2">
+                                                                            <label className="text-xs mr-2">Custom:</label>
+                                                                            <Input
+                                                                                type="color"
+                                                                                value={textColor}
+                                                                                onChange={handleCircleColorChange}
+                                                                                className="w-8 h-8 p-0 border-0"
+                                                                            />
+                                                                            <Input 
+                                                                                type="text" 
+                                                                                value={textColor}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                                                                                        setTextColor(value);
+                                                                                        if (value.length === 7) {
+                                                                                            updateCircleFormat({ fill: value });
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                                className="w-24 h-8 ml-2 text-xs"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                    </div>
+                                                </CollapsibleContent>
+                                            </Collapsible>
+                                        )}
+                                        
                                         {/* Show text formatting tools if it's a text element */}
                                         {isTextElement && (
                                             <Collapsible
