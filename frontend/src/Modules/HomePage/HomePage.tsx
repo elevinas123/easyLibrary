@@ -504,7 +504,7 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Collections Section */}
+            {/* Collections Section
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold flex items-center">
@@ -650,7 +650,7 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               )}
-            </div>
+            </div> */}
           </div>
 
           {/* Recent Activity Section */}

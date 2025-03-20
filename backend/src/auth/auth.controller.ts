@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Request, UseGuards, Put } from "@nestjs/common";
 
 import { Prisma } from "@prisma/client";
 import { AuthService } from "./auth.service";
@@ -17,5 +17,15 @@ export class AuthController {
     @Post('register')
     async register(@Body() data: Prisma.UserCreateInput) {
       return this.authService.register(data);
+    }
+
+    @Post('password-match')
+    async passwordMatch(@Body() data: { username: string, password: string }) {
+        return this.authService.passwordMatch(data.username, data.password);
+    }
+
+    @Put('password')
+    async updatePassword(@Body() data: { username: string, password: string }) {
+        return this.authService.updatePassword(data.username, data.password);
     }
 }

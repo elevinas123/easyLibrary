@@ -598,7 +598,7 @@ function MainPage() {
   };
   const navigateBackToText = () => {
     setScale(1)
-    smoothScroll(-200 / scale, offsetPositionRef.current.y, 500);
+    smoothScroll(-200 / scale, offsetPositionRef.current.y /scale, 500);
   };
 
   // Add a ref to the KonvaStage with proper typing

@@ -372,6 +372,7 @@ const KonvaStage = forwardRef<
       requestAnimationFrame(animateScroll);
     };
     const handleChapterClick = (chapterId: string) => {
+      console.log("handleChapterClick", chapterId);
       // Find the chapter and chapters data
       const chapter = chaptersData?.find((c) => c.id === chapterId);
       if (!chapter || !chaptersData) return;

@@ -12,6 +12,15 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly prisma: PrismaService
     ) {}
+    async passwordMatch(username: string, password: string): Promise<boolean> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+        });
+        if (!user) {
+            return false;
+        }
+        return await bcrypt.compare(password, user.password);
+    }
 
     async validateUser(username: string, password: string): Promise<any> {
         const user = await this.prisma.user.findUnique({
@@ -40,5 +49,13 @@ export class AuthService {
           password: hashedPassword,  // Store hashed password
         },
       });
+    }
+
+    async updatePassword(username: string, password: string) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.prisma.user.update({
+            where: { username },
+            data: { password: hashedPassword },
+        });
     }
 }

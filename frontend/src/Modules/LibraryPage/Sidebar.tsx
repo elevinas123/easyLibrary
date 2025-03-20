@@ -231,7 +231,7 @@ export default function Sidebar({
                         textVisible={textVisible}
                     />
                     
-                    <SidebarButton
+                    {/* <SidebarButton
                         icon={FolderHeart}
                         label="Collections"
                         isCollapsed={isCollapsed}
@@ -239,7 +239,7 @@ export default function Sidebar({
                         route="/collections"
                         isActive={isRouteActive('/collections')}
                         textVisible={textVisible}
-                    />
+                    /> */}
                     
                     <Separator className={cn(
                         "my-2",

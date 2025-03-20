@@ -10,13 +10,13 @@ import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import { useToast } from "../../hooks/use-toast";
 import { User, Edit, Save, Key, LogOut } from "lucide-react";
-
+import axios from "axios";
 export default function ProfilePage() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [booksLoading, setBooksLoading] = useState<string[]>([]);
     const [themeMode] = useAtom(themeModeAtom);
     const isDarkMode = themeMode === "dark";
-    const { user, logout } = useAuth();
+    const { user, logout, accessToken } = useAuth();
     const { toast } = useToast();
     
     const [isEditing, setIsEditing] = useState(false);
@@ -25,22 +25,28 @@ export default function ProfilePage() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-
     const toggleCollapse = () => {
         setIsCollapsed(!isCollapsed);
     };
 
-    const handleSaveProfile = () => {
+    const handleSaveProfile = async () => {
         // Here you would implement the API call to update the user's profile
         toast({
             title: "Profile updated",
             description: "Your profile has been successfully updated.",
             duration: 3000,
         });
+        await axios.put(`/api/user/${user?.id}`, {
+            username,
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         setIsEditing(false);
     };
 
-    const handleChangePassword = () => {
+    const handleChangePassword = async () => {
         if (newPassword !== confirmPassword) {
             toast({
                 title: "Passwords don't match",
@@ -50,6 +56,27 @@ export default function ProfilePage() {
             });
             return;
         }
+        const match = await axios.post("/api/auth/password-match", {
+            username: user?.username,
+            password: currentPassword,
+        });
+        if (!match) {
+            toast({
+                title: "Incorrect password",
+                description: "The current password is incorrect.",
+                variant: "destructive",
+                duration: 3000,
+            });
+            return;
+        }
+        await axios.put(`/api/auth/password`, {
+            username: user?.username,
+            password: newPassword,
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         
         // Here you would implement the API call to change the password
         toast({
