@@ -40,6 +40,7 @@ export type TextElementRef = {
     handleMouseDown: (e: KonvaEventObject<MouseEvent>) => void;
     handleMouseUp: () => void;
     handleDragMove: (
+        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
     ) => Partial<SpecificTextElement>;
     handleDoubleClick: (e: KonvaEventObject<MouseEvent>) => void;
@@ -258,12 +259,27 @@ function TextElement(
     
     // Handle dragging text elements
     const handleDragMove = (
+        element: SpecificTextElement,
         node: Shape<ShapeConfig> | Stage
     ): Partial<SpecificTextElement> => {
-        return {
-            x: node.x(),
-            y: node.y(),
+        console.log("element", element);
+        console.log("node", node);
+        const newAttrs = {
+          x: node.x(),
+          y: node.y(),
+          
+          points: [
+            { x: node.x(), y: node.y() },
+            { x: node.x() + element.width, y: node.y() },
+            {
+              x: node.x() + element.width,
+              y: node.y() + element.height,
+            },
+            { x: node.x(), y: node.y() + element.height },
+          ],
         };
+        console.log("element newAttrs", newAttrs);
+        return newAttrs;
     };
     
     // Find elements at a specific position

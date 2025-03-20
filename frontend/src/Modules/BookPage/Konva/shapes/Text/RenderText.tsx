@@ -41,6 +41,10 @@ export default function RenderText({
             shadowBlur={element.strokeWidth > 0 ? 0 : 2}
             shadowOffset={{ x: 1, y: 1 }}
             cornerRadius={2}
+            attrs={{
+                elementType: "text",
+                textElement: element.textElement,
+            }}
         />
     );
 }

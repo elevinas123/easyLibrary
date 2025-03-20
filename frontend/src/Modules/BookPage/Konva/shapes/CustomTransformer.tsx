@@ -81,7 +81,7 @@ export default function CustomTransformer({
                 const type = node.getAttr("elementType"); // Retrieve the custom type
 
                 let newAttrs: Partial<CanvaElementSkeleton> = {};
-
+                console.log("type", node);
                 if (type === "rect") {
                     newAttrs = {
                         x: node.x(),
@@ -89,6 +89,7 @@ export default function CustomTransformer({
                         width: node.width() * node.scaleX(),
                         height: node.height() * node.scaleY(),
                     };
+                    console.log("newAttrs", newAttrs);
                 } else if (type === "text") {
                     // Get existing textElement properties
                     const existingTextElement = node.getAttr("textElement");

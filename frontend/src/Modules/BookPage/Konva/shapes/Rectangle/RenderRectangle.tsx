@@ -25,6 +25,10 @@ export default function RenderRectangle({
             opacity={element.opacity}
             draggable={draggable}
             onDragMove={handleDragMove}
+            attrs={{
+                elementType: "rect",
+                rectElement: element.rectElement,
+            }}
             sceneFunc={(context, shape) => {
                 // Explicitly cast context.canvas to HTMLCanvasElement
                 const canvas = context.canvas as unknown as HTMLCanvasElement;
