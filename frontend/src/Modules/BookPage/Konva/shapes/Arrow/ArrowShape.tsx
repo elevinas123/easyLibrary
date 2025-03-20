@@ -54,6 +54,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const [offsetPosition] = useAtom(offsetPositionAtom);
     const [scale] = useAtom(scaleAtom); // State to handle scale
     const [bookId] = useAtom(bookIdAtom);
+    const size = 20;
     const [selectedArrowIds, setSelectedArrowIds] =
         useAtom(selectedArrowIdsAtom);
     useEffect(() => {
@@ -69,14 +70,15 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     }));
     const calculateClosestPointOnShape = (
         element: CanvaElementSkeleton,
-        points: Point[]
+        arrowPointX: number,
+        arrowPointY: number
     ) => {
         if (!element.points) return { x: 0, y: 0 };
         let minDistance = Infinity;
         let minPoints = element.points[0];
         element.points.forEach((point) => {
-            if (distance(point, points[0]) < minDistance) {
-                minDistance = distance(point, points[0]);
+            if (distance(point, { x: arrowPointX, y: arrowPointY }) < minDistance) {
+                minDistance = distance(point, { x: arrowPointX, y: arrowPointY });
                 minPoints = point;
                 console.log("minPoints", minPoints);
             }
@@ -90,7 +92,9 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         );
     };
     const handleElementAttachedToArrowMove = (selectedTextId: string[]) => {
+        console.log("selectedTextId", selectedTextId);
         console.log("canvasElements", canvasElements);
+        console.log("arrows", arrows);
         setArrows((arrows) => {
             const elementsSelected = canvasElements.filter((element) =>
                 selectedTextId.includes(element.id)
@@ -123,7 +127,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 if (startElement && selectedTextId.includes(startElement.id)) {
                     const startPoint = calculateClosestPointOnShape(
                         startElement,
-                        arrow.points.slice(2, 4) // Relative to the shape
+                        arrow.points[0].x,
+                        arrow.points[0].y
                     );
                     console.log("Start Point:", startPoint); // Debugging start point
                     updatedPoints[0] = startPoint;
@@ -131,7 +136,8 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
                 if (endElement && selectedTextId.includes(endElement.id)) {
                     const endPoint = calculateClosestPointOnShape(
                         endElement,
-                        arrow.points.slice(0, 2) // Relative to the shape
+                        arrow.points[1].x,
+                        arrow.points[1].y
                     );
                     console.log("endElement:", endElement); // Debugging end point
                     console.log("End Point:", endPoint); // Debugging end point
@@ -180,6 +186,7 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
       console.log("Hovered items", hoveredItems);
     }, [hoveredItems]);
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        console.log("Mouse down");
         if (!bookId) return;
         const pos = getPos(offsetPosition, scale, e);
         if (!pos) return;
@@ -285,32 +292,33 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
     const hoverItems = (pos: Vector2d) => {
         const highlightsUnderMouse = canvasElements.filter(
             (textItem) =>
-                pos.x >= textItem.x - 10 &&
-                pos.x <= textItem.x + textItem.width + 10 &&
-                pos.y >= textItem.y - 10 &&
-                pos.y <= textItem.y + textItem.height + 10
+                pos.x >= textItem.x - size &&
+                pos.x <= textItem.x + textItem.width + size &&
+                pos.y >= textItem.y - size &&
+                pos.y <= textItem.y + textItem.height + size
         );
+        console.log("highlightsUnderMouse", highlightsUnderMouse);
         if (highlightsUnderMouse.length > 0) {
             const firstHighlight = highlightsUnderMouse[0];
-
+            console.log("firstHighlight", firstHighlight);
             // Check if the first highlight under the mouse is already hovered
-            const isAlreadyHovered = hoveredItems.some(
-                (highlight) => highlight.id === firstHighlight.id
+            const isAlreadyHovered = highlightsUnderMouse.some(
+              (highlight) => highlight.id === firstHighlight.id
             );
             const updatedHighlight = {
                 points: [
-                    { x: firstHighlight.x, y: firstHighlight.y },
+                    { x: firstHighlight.x - size, y: firstHighlight.y - size },
                     {
-                        x: firstHighlight.x + firstHighlight.width,
-                        y: firstHighlight.y,
+                        x: firstHighlight.x + firstHighlight.width + size,
+                        y: firstHighlight.y - size,
                     },
                     {
-                        x: firstHighlight.x + firstHighlight.width,
-                        y: firstHighlight.y + firstHighlight.height,
+                        x: firstHighlight.x + firstHighlight.width + size,
+                        y: firstHighlight.y + firstHighlight.height + size,
                     },
                     {
-                        x: firstHighlight.x,
-                        y: firstHighlight.y + firstHighlight.height,
+                        x: firstHighlight.x - size,
+                        y: firstHighlight.y + firstHighlight.height + size,
                     },
                 ],
                 id: firstHighlight.id,
@@ -358,10 +366,10 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
         if (!pos) return;
         const arrowUnderMouse = arrows.filter(
             (arrow) =>
-                pos.x >= Math.min(arrow.points[0].x, arrow.points[1].x) - 10 &&
-                pos.x <= Math.max(arrow.points[0].x, arrow.points[1].x) + 10 &&
-                pos.y >= Math.min(arrow.points[0].y, arrow.points[1].y) - 10 &&
-                pos.y <= Math.max(arrow.points[0].y, arrow.points[1].y) + 10
+                pos.x >= Math.min(arrow.points[0].x, arrow.points[1].x) - size &&
+                pos.x <= Math.max(arrow.points[0].x, arrow.points[1].x) + size &&
+                pos.y >= Math.min(arrow.points[0].y, arrow.points[1].y) - size &&
+                pos.y <= Math.max(arrow.points[0].y, arrow.points[1].y) + size
         );
         setSelectedArrowIds(arrowUnderMouse.map((arrow) => arrow.id));
     };
@@ -431,18 +439,18 @@ function ArrowShape({}: ArrowShapeProps, ref: ForwardedRef<ArrowShapeRef>) {
             if (highlight.rects) {
                 return highlight.rects.some((rect) => {
                     return (
-                        pos.x >= rect.x - 10 &&
-                        pos.x <= rect.x + rect.width + 10 &&
-                        pos.y >= rect.y - 10 &&
-                        pos.y <= rect.y + rect.height + 10
+                        pos.x >= rect.x - size &&
+                        pos.x <= rect.x + rect.width + size &&
+                        pos.y >= rect.y - size &&
+                        pos.y <= rect.y + rect.height + size
                     );
                 });
             } else {
                 return (
-                    pos.x >= highlight.points[0].x - 10 &&
-                    pos.x <= highlight.points[1].x &&
-                    pos.y >= highlight.points[0].y - 10 &&
-                    pos.y <= highlight.points[2].y + 10
+                    pos.x >= highlight.points[0].x - size &&
+                    pos.x <= highlight.points[1].x + size &&
+                    pos.y >= highlight.points[0].y - size &&
+                    pos.y <= highlight.points[2].y + size
                 );
             }
         });

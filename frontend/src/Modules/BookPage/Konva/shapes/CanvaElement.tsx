@@ -92,12 +92,13 @@ function CanvasElement(
         console.log("mouseDown", activeTool);
         // Check if the click is on the transformer or its children
         const pos = getPos(offsetPosition, scale, e);
-        if (!pos) return;
+        console.log("Mouse down at position:", pos, e);
         switch (activeTool) {
             case "Text":
                 textElementRef.current?.handleMouseDown(e);
                 break;
             case "Arrow":
+                console.log("MouseDown onto Arrow", arrowShapeRef.current);
                 arrowShapeRef.current?.handleMouseDown(e);
                 break;
             case "Rectangle":

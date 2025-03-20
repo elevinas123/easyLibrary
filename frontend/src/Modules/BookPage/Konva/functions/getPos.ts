@@ -5,9 +5,10 @@ export const getPos = (
     scale: number,
     e: Konva.KonvaEventObject<MouseEvent>
 ) => {
-    const stage = e.target?.getStage();
+    const stage = e.currentTarget?.getStage();
     const pointer = stage?.getPointerPosition();
-
+    console.log("Mouse down pointer", pointer);
+    console.log("Mouse down offsetPosition", offsetPosition);
     if (!pointer) return null;
 
     return {
