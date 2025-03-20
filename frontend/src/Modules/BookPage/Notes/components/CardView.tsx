@@ -58,8 +58,6 @@ export const CardView = ({
     const getTruncatedText = (text: string, noteId: string) => {
         return expandedNote === noteId ? text : truncateText(text);
     };
-    console.log("notes", notes)
-
     return (
         <ScrollArea className="h-full pb-4">
             <div className="p-3 space-y-3">

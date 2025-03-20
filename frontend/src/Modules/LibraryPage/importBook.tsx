@@ -70,7 +70,7 @@ const importBook = async ({
         genres: ["Classic", "Fiction"], // Send genres as plain strings
         bookshelves: [],
         imageUrl: url,
-        liked: true,
+        liked: false,
         bookElements, // Pass raw book elements as received
         dateAdded: new Date(),
         highlights: [], // Same as above

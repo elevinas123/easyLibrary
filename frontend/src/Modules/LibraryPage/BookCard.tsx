@@ -1,5 +1,5 @@
 import { BookOpen, Heart, MoreVertical, Trash2, Star, ExternalLink, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
@@ -29,6 +29,7 @@ import { useAtom } from "jotai";
 import { themeModeAtom } from "../../atoms/themeAtom";
 import { Badge } from "../../components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
+import { useAuth } from "../../hooks/userAuth";
 
 type BookCardProps = {
     book: Book;
@@ -49,7 +50,20 @@ export default function BookCard({
     const navigate = useNavigate();
     const [themeMode] = useAtom(themeModeAtom);
     const isDarkMode = themeMode === "dark";
-
+    const {accessToken} = useAuth();
+    useEffect(() => {
+        const updateBook = async () => {
+            await fetch(`/api/book/${book.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ liked: isLiked }),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`,
+                },
+            });
+        };
+        updateBook();
+    }, [isLiked]);
     const handleGoToBook = () => {
         navigate(`/book?id=${book.id}`);
     };
@@ -160,6 +174,7 @@ export default function BookCard({
                                     Read Book
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
+                                    onClick={() => window.open(`/book?id=${book.id}`, "_blank")}
                                     className={isDarkMode ? "hover:bg-zinc-700" : ""}
                                 >
                                     <ExternalLink className="h-4 w-4 mr-2" />

@@ -5,6 +5,7 @@ import {
     canvaElementsAtom,
     offsetPositionAtom,
     highlightsAtom,
+    scaleAtom,
 } from "../Konva/konvaAtoms";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
@@ -38,9 +39,14 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
     const [expandedNote, setExpandedNote] = useState<string | null>(null);
     const [view, setView] = useState<ViewType>("card");
     const [highlightElements] = useAtom(highlightsAtom);
+    const [scale] = useAtom(scaleAtom);
     useEffect(() => {
         console.log("notes", notes);
     }, [notes]);
+    useEffect(() => {
+        offsetPositionRef.current.x = offsetPosition.x
+        offsetPositionRef.current.y = offsetPosition.y
+    }, [offsetPosition]);
     
     // Extract text based on element type
     const getTextFromElement = (element: any, type: string): string => {
@@ -134,12 +140,18 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
       const initialOffset = { ...offsetPositionRef.current };
       const deltaX = targetX - initialOffset.x;
       const deltaY = targetY - initialOffset.y;
-
+        console.log("nou cia targetX", targetX);
+        console.log("nou cia targetY", targetY);
+        console.log("nou cia initialOffset.x", initialOffset.x);
+        console.log("nou cia initialOffset.y", initialOffset.y);
+      console.log("nou cia deltaX", deltaX);
+      console.log("nou cia deltaY", deltaY);
       const animateScroll = (currentTime: number) => {
+          console.log("offsetPositionRef.current", offsetPositionRef.current);
         const elapsed = currentTime - start;
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = easeInOutCubic(progress);
-
+        
         setOffsetPosition({
           x: initialOffset.x + deltaX * easeProgress,
           y: initialOffset.y + deltaY * easeProgress,
@@ -158,7 +170,10 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
         console.log("note singular", note);
         if (note.points && note.points.length >= 2) {
             const targetY = -note.points[0].y;
-            smoothScroll(-note.points[0].x + 500, targetY + 300, 500);
+            offsetPositionRef.current.x = offsetPosition.x
+            offsetPositionRef.current.y = offsetPosition.y
+
+            smoothScroll((note.points[0].x + 30 )/ scale, (targetY + 200 )/scale, 500);
         }
     };
 

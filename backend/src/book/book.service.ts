@@ -141,6 +141,7 @@ export class BookService {
     }
 
     async updateBook(id: string, data: Prisma.BookUpdateInput) {
+        console.log("Updating book", id, data);
         const updatedBook = await this.prisma.book.update({
             where: { id },
             data,

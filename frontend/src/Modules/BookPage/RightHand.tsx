@@ -38,6 +38,7 @@ export default function RightHand({
     const [themeMode] = useAtom(themeModeAtom);
     const isDarkMode = themeMode === "dark";
 
+    
     const toggleSidebar = () => {
         setSidebarExpanded(!sidebarExpanded);
     };

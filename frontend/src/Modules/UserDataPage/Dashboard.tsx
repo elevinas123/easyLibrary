@@ -84,7 +84,6 @@ export default function Dashboard() {
                             {/* Charts Section */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <ReadingProgressChart data={dashboardData?.readingProgressData || []} />
-                                <GenreDistributionChart data={dashboardData?.genreDistribution || []} />
                             </div>
                         </>
                     )}

@@ -21,6 +21,7 @@ export class TrackingService {
     pagesRead: number, 
     lastPosition: number
   ) {
+    console.log("Ending reading session", sessionId, pagesRead, lastPosition);
     const session = await this.prisma.readingSession.findUnique({
       where: { id: sessionId },
     });

@@ -25,7 +25,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/book" element={<MainPage />} />
                     <Route path="/library" element={<LibraryPage />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/statistics" element={<Dashboard />} />
                     <Route path="/reading" element={<CurrentlyReadingPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/bookmarks" element={<BookmarksPage />} />
