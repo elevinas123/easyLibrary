@@ -25,6 +25,7 @@ import {
     offsetPositionAtom,
     scaleAtom,
     selectedItemsIdsAtom,
+    settingsAtom,
 } from "../../konvaAtoms";
 import CreateText from "./CreateText";
 import { isSpecificTextElement } from "../../../../../endPointTypes/typeGuards";
@@ -62,7 +63,7 @@ function TextElement(
     const [bookId] = useAtom(bookIdAtom);
     const [selectedItemsIds, setSelectedItemsIds] = useAtom(selectedItemsIdsAtom);
     const previousSelectionRef = useRef<string[]>([]);
-    
+    const [settings] = useAtom(settingsAtom);
     useImperativeHandle(ref, () => ({
         handleMouseDown,
         handleMouseUp,
@@ -111,7 +112,7 @@ function TextElement(
         // Calculate position - adjust for scale and offset
         const x = (currentItem.x * scale + offsetPosition.x) + containerRect.left;
         const y = (currentItem.y * scale + offsetPosition.y) + containerRect.top;
-        const width = currentItem.width * scale;
+        const width = currentItem.width *  scale;
         const height = currentItem.height * scale;
         
         // Style the editor to look like the text element
@@ -330,19 +331,20 @@ function TextElement(
             deleteElement(currentItem.id);
         }
     };
+
     
     // Update text element content and dimensions
     const updateTextElement = (text: string, newFontProps?: {fontSize?: number, fontFamily?: string}) => {
         if (!currentItem) return;
         
         // Calculate new dimensions based on text content and font properties
-        const fontSize = newFontProps?.fontSize || currentItem.textElement.fontSize || 16;
-        const fontFamily = newFontProps?.fontFamily || currentItem.textElement.fontFamily || 'Arial';
+        const fontSize = currentItem.textElement.fontSize;
+        const fontFamily = currentItem.textElement.fontFamily;
         
         // Ensure reasonable minimum width
         const textWidth = measureTextWidth(text, fontSize, fontFamily);
-        const newWidth = Math.max(textWidth + 20, 60);
-        const newHeight = Math.max(fontSize * 1.5, 30);
+        const newWidth = Math.max(textWidth +20);
+        const newHeight = Math.max(fontSize * 1.5);
         
         // Create updated element
         const updatedElement = {

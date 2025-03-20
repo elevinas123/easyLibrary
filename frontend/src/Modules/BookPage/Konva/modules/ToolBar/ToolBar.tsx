@@ -55,6 +55,7 @@ import { Slider } from "../../../../../components/ui/slider";
 import { Input } from "../../../../../components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/popover";
 import { CanvaElementSkeleton, CircleElement, SpecificCircleElement } from "../../../../../endPointTypes/types";
+import { measureTextWidth } from "../../functions/measureTextWidth";
 
 type ToolBarProps = {
     selectedItemsIds: string[];
@@ -254,6 +255,7 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
             
             // Update the textElement property
             if (Object.keys(textProps).length > 0) {
+                // First update the textElement properties
                 setCanvaElements((elements) =>
                     elements.map((element) => {
                         if (selectedItemsIds.includes(element.id) && element.type === 'text') {
@@ -268,6 +270,42 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                         return element;
                     })
                 );
+                
+                // Then recalculate dimensions for each selected text element
+                selectedItemsIds.forEach(id => {
+                    const element = canvaElements.find(el => el.id === id);
+                    if (element && element.type === 'text') {
+                        // Calculate new dimensions based on text content and font properties
+                        const text = element.textElement.text || '';
+                        const fontSize = textProps.fontSize || element.textElement.fontSize;
+                        const fontFamily = textProps.fontFamily || element.textElement.fontFamily;
+                        
+                        // Calculate new width based on text content
+                        const textWidth = measureTextWidth(text, fontSize, fontFamily);
+                        const newWidth = Math.max(textWidth + 20, 60);
+                        const newHeight = Math.max(fontSize * 1.5, 30);
+                        
+                        // Update element dimensions
+                        setCanvaElements((elements) =>
+                            elements.map((el) => {
+                                if (el.id === id) {
+                                    return {
+                                        ...el,
+                                        width: newWidth,
+                                        height: newHeight,
+                                        points: [
+                                            { x: el.x, y: el.y },
+                                            { x: el.x + newWidth, y: el.y },
+                                            { x: el.x + newWidth, y: el.y + newHeight },
+                                            { x: el.x, y: el.y + newHeight }
+                                        ]
+                                    };
+                                }
+                                return el;
+                            })
+                        );
+                    }
+                });
             }
         } else {
             // For non-text elements, just update the main properties

@@ -83,10 +83,12 @@ export class TrackingService {
   async updateBookProgress(
     userId: string,
     bookId: string,
-    lastPosition: number,
+    percentComplete: number,
     pagesRead: number,
     duration: number
   ) {
+    
+
     // Get or create book progress
     const bookProgress = await this.prisma.bookProgress.upsert({
       where: {
@@ -96,10 +98,9 @@ export class TrackingService {
         },
       },
       update: {
-        percentComplete: lastPosition,
-        currentPage: {
-          increment: pagesRead,
-        },
+        percentComplete: percentComplete,
+        // Set currentPage directly instead of incrementing
+        currentPage: pagesRead,
         lastReadAt: new Date(),
         timeSpentReading: {
           increment: duration,
@@ -108,7 +109,7 @@ export class TrackingService {
       create: {
         userId,
         bookId,
-        percentComplete: lastPosition,
+        percentComplete: percentComplete,
         currentPage: pagesRead,
         lastReadAt: new Date(),
         timeSpentReading: duration,
@@ -241,11 +242,29 @@ export class TrackingService {
       _sum: { duration: true },
     });
 
-    // Calculate total pages read
-    const totalPagesRead = await this.prisma.readingSession.aggregate({
+    // Calculate total pages read based on maximum progress for each book
+    // This prevents counting the same pages multiple times
+    const bookProgresses = await this.prisma.bookProgress.findMany({
       where: { userId },
-      _sum: { pagesRead: true },
+      include: {
+        book: {
+          select: {
+            totalPages: true,
+          },
+        },
+      },
     });
+    
+    // Sum the current page from each book's progress
+    const totalPagesRead = bookProgresses.reduce((total, progress) => {
+      // Use currentPage if available, otherwise calculate from percentComplete if book has totalPages
+      if (progress.currentPage) {
+        return total + progress.currentPage;
+      } else if (progress.book?.totalPages && progress.percentComplete) {
+        return total + Math.floor(progress.book.totalPages * progress.percentComplete);
+      }
+      return total;
+    }, 0);
 
     // Find favorite genre (would require more complex query in a real app)
     // For now, we'll leave it null
@@ -255,14 +274,15 @@ export class TrackingService {
       update: {
         totalBooksRead: completedBooks.length,
         totalReadingTime: totalReadingTime._sum.duration || 0,
-        totalPagesRead: totalPagesRead._sum.pagesRead || 0,
+        totalPagesRead: totalPagesRead,
         lastUpdated: new Date(),
       },
       create: {
         userId,
         totalBooksRead: completedBooks.length,
         totalReadingTime: totalReadingTime._sum.duration || 0,
-        totalPagesRead: totalPagesRead._sum.pagesRead || 0,
+        totalPagesRead: totalPagesRead,
+        lastUpdated: new Date(),
       },
     });
   }
@@ -338,6 +358,8 @@ export class TrackingService {
           day,
           totalMinutes: 0,
           pagesRead: 0,
+          maxPageReached: 0,
+          bookPageCounts: {}, // Track max page per book
         };
       }
       
@@ -345,9 +367,24 @@ export class TrackingService {
         groupedByDay[day].totalMinutes += Math.floor(session.duration / 60);
       }
       
-      if (session.pagesRead) {
-        groupedByDay[day].pagesRead += session.pagesRead;
+      // Track the highest page number for each book separately
+      if (session.pagesRead && session.bookId) {
+        const currentMax = groupedByDay[day].bookPageCounts[session.bookId] || 0;
+        if (session.pagesRead > currentMax) {
+          // If this session has a higher page count for this book, update it
+          groupedByDay[day].bookPageCounts[session.bookId] = session.pagesRead;
+        }
       }
+    });
+    
+    // Calculate total pages read by summing the max pages for each book
+    Object.values(groupedByDay).forEach((dayData: any) => {
+      dayData.pagesRead = Object.values(dayData.bookPageCounts).reduce(
+        (sum: number, pages: number) => sum + pages, 
+        0
+      );
+      // Remove the temporary tracking object
+      delete dayData.bookPageCounts;
     });
     
     return Object.values(groupedByDay);
