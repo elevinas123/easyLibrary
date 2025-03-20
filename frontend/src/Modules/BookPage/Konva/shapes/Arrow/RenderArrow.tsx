@@ -92,6 +92,8 @@ export default function RenderArrow({ element }: RenderArrowProps) {
                 // Draw the main line of the arrow with styling
                 roughCanvas.line(0, 0, relativeX2, relativeY2, {
                     stroke: element.stroke || "white",
+                    fill: element.stroke || "white",
+                    strokeLineDash: element.strokeStyle === "dashed" ? [10, 5] : element.strokeStyle === "dotted" ? [2, 3] : [],
                     strokeWidth: element.strokeWidth || 2,
                     roughness: element.roughness || 1,
                     bowing: element.bowing || 1,

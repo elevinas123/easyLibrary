@@ -16,7 +16,9 @@ import {
     AlignRight, 
     AlignJustify,
     Palette,
-    Circle
+    Circle,
+    Square,
+    ArrowUpRight
 } from "lucide-react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { arrowsAtom, canvaElementsAtom } from "../../konvaAtoms";
@@ -156,6 +158,50 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
             
             // Set common properties
             setTextColor(controlShape.fill || '#000000');
+        }
+    }, [selectedItemsIds, controlShape]);
+
+    // Add rectangle state variables (similar to circle state variables)
+    const [rectColor, setRectColor] = useState("#000000");
+
+    // Add useEffect to load rectangle properties
+    useEffect(() => {
+        if (controlShape && controlShape.type === 'rect' && controlShape.rectElement) {
+            // Set rectangle specific properties
+            setRoughness(controlShape.rectElement.roughness || 1);
+            setFillStyle(controlShape.rectElement.fillStyle || "solid");
+            setHachureGap(controlShape.rectElement.hachureGap || 5);
+            setHachureAngle(controlShape.rectElement.hachureAngle || 45);
+            
+            // Set common properties
+            setRectColor(controlShape.fill || '#000000');
+        }
+    }, [selectedItemsIds, controlShape]);
+
+    // Add arrow state variables
+    const [arrowStrokeWidth, setArrowStrokeWidth] = useState(2);
+    const [arrowStrokeStyle, setArrowStrokeStyle] = useState("solid");
+    const [arrowRoughness, setArrowRoughness] = useState(1);
+    const [arrowColor, setArrowColor] = useState("#000000");
+    const [arrowFillStyle, setArrowFillStyle] = useState("solid");
+    const [arrowStartType, setArrowStartType] = useState("none");
+    const [arrowEndType, setArrowEndType] = useState("arrow");
+
+    // Add useEffect to load arrow properties
+    useEffect(() => {
+        if (controlShape && controlShape.type === 'arrow') {
+            // Set arrow specific properties
+            setArrowStrokeWidth(controlShape.strokeWidth || 2);
+            setArrowStrokeStyle(controlShape.strokeStyle || "solid");
+            setArrowRoughness(controlShape.roughness || 1);
+            setArrowColor(controlShape.stroke || '#000000');
+            setArrowFillStyle(controlShape.fillStyle || "solid");
+            
+            // Set arrow endpoint types if they exist
+            if (controlShape.arrowElement) {
+                setArrowStartType(controlShape.arrowElement.startType || "none");
+                setArrowEndType(controlShape.arrowElement.endType || "arrow");
+            }
         }
     }, [selectedItemsIds, controlShape]);
 
@@ -359,6 +405,169 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
         updateCircleFormat({ fill: newColor });
     };
 
+    // Add function to update rectangle properties
+    const updateRectFormat = (property: { [key: string]: any }) => {
+        if (controlShape.type === 'rect') {
+            // Handle properties that go directly on the CanvaElementSkeleton
+            const canvasProps: { [key: string]: any } = {};
+            // Handle properties that go in the rectElement
+            const rectProps: { [key: string]: any } = {};
+            
+            Object.entries(property).forEach(([key, value]) => {
+                // Properties that should be on the main canvas element
+                if (['fill', 'opacity', 'rotation', 'x', 'y', 'width', 'height', 'strokeWidth', 'strokeColor'].includes(key)) {
+                    canvasProps[key] = value;
+                } 
+                // Properties that belong in the rectElement
+                else if (['fillStyle', 'roughness', 'seed', 'hachureGap', 'hachureAngle'].includes(key)) {
+                    rectProps[key] = value;
+                }
+            });
+            
+            // Update the main canvas element
+            if (Object.keys(canvasProps).length > 0) {
+                setCanvaElements((elements) =>
+                    elements.map((element) =>
+                        selectedItemsIds.includes(element.id)
+                            ? { ...element, ...canvasProps }
+                            : element
+                    )
+                );
+            }
+            
+            // Update the rectElement property
+            if (Object.keys(rectProps).length > 0) {
+                setCanvaElements((elements) =>
+                    elements.map((element) => {
+                        if (selectedItemsIds.includes(element.id) && element.type === 'rect') {
+                            return {
+                                ...element,
+                                rectElement: {
+                                    ...element.rectElement,
+                                    ...rectProps
+                                }
+                            } as CanvaElementSkeleton;
+                        }
+                        return element;
+                    })
+                );
+            }
+        } else {
+            // For non-rectangle elements, just update the main properties
+            updateItems(property);
+        }
+    };
+
+    // Add handler functions for rectangle properties
+    const handleRectFillStyleChange = (value: string) => {
+        setFillStyle(value);
+        updateRectFormat({ fillStyle: value });
+    };
+
+    const handleRectRoughnessChange = (value: number[]) => {
+        const newRoughness = value[0];
+        setRoughness(newRoughness);
+        updateRectFormat({ roughness: newRoughness });
+    };
+
+    const handleRectHachureGapChange = (value: number[]) => {
+        const newGap = value[0];
+        setHachureGap(newGap);
+        updateRectFormat({ hachureGap: newGap });
+    };
+
+    const handleRectHachureAngleChange = (value: number[]) => {
+        const newAngle = value[0];
+        setHachureAngle(newAngle);
+        updateRectFormat({ hachureAngle: newAngle });
+    };
+
+    const handleRectColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newColor = e.target.value;
+        setRectColor(newColor);
+        updateRectFormat({ fill: newColor });
+    };
+
+    // Add function to update arrow properties
+    const updateArrowFormat = (property: { [key: string]: any }) => {
+        if (controlShape.type === 'arrow') {
+            // Handle properties that go directly on the CurveElementSkeleton
+            const curveProps: { [key: string]: any } = {};
+            // Handle properties that go in the arrowElement
+            const arrowProps: { [key: string]: any } = {};
+            
+            Object.entries(property).forEach(([key, value]) => {
+                // Properties that should be on the main curve element
+                if (['stroke', 'strokeWidth', 'strokeStyle', 'roughness', 'fill', 'fillStyle', 'hachureGap', 'hachureAngle'].includes(key)) {
+                    curveProps[key] = value;
+                } 
+                // Properties that belong in the arrowElement
+                else if (['startType', 'endType'].includes(key)) {
+                    arrowProps[key] = value;
+                }
+            });
+            
+            // Update the main curve element
+            if (Object.keys(curveProps).length > 0) {
+                setArrows((elements) =>
+                    elements.map((element) =>
+                        selectedItemsIds.includes(element.id)
+                            ? { ...element, ...curveProps }
+                            : element
+                    )
+                );
+            }
+            
+            // Update the arrowElement property
+            if (Object.keys(arrowProps).length > 0) {
+                setArrows((elements) =>
+                    elements.map((element) => {
+                        if (selectedItemsIds.includes(element.id) && element.type === 'arrow') {
+                            return {
+                                ...element,
+                                arrowElement: {
+                                    ...element.arrowElement,
+                                    ...arrowProps
+                                }
+                            };
+                        }
+                        return element;
+                    })
+                );
+            }
+        }
+    };
+
+    // Add handler functions for arrow properties
+    const handleArrowStrokeWidthChange = (value: number[]) => {
+        const newWidth = value[0];
+        setArrowStrokeWidth(newWidth);
+        updateArrowFormat({ strokeWidth: newWidth });
+    };
+
+    const handleArrowStrokeStyleChange = (value: string) => {
+        setArrowStrokeStyle(value);
+        updateArrowFormat({ strokeStyle: value });
+    };
+
+    const handleArrowRoughnessChange = (value: number[]) => {
+        const newRoughness = value[0];
+        setArrowRoughness(newRoughness);
+        updateArrowFormat({ roughness: newRoughness });
+    };
+
+    const handleArrowColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newColor = e.target.value;
+        setArrowColor(newColor);
+        updateArrowFormat({ stroke: newColor });
+    };
+
+
+    const handleArrowEndTypeChange = (value: string) => {
+        setArrowEndType(value);
+        updateArrowFormat({ endType: value });
+    };
+
     if (!controlShape)
         controlShape = arrows.find(
             (element) => element.id === selectedItemsIds[0]
@@ -371,6 +580,8 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
     const controls = toolbarConfig[controlShape.type] || [];
     const isTextElement = controlShape.type === 'text';
     const isCircleElement = controlShape.type === 'circle';
+    const isRectElement = controlShape.type === 'rect';
+    const isArrowElement = controlShape.type === 'arrow';
 
     const toggleGroup = (groupName: string) => {
         setOpenGroups((prev) =>
@@ -827,11 +1038,11 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                                             </Collapsible>
                                         )}
                                         
-                                        {controls.map((controlGroup: any) => (
+                                        {/* Rectangle formatting tools */}
+                                        {isRectElement && (
                                             <Collapsible
-                                                key={controlGroup.groupName}
-                                                open={openGroups.includes(controlGroup.groupName)}
-                                                onOpenChange={() => toggleGroup(controlGroup.groupName)}
+                                                open={openGroups.includes("Rectangle Properties")}
+                                                onOpenChange={() => toggleGroup("Rectangle Properties")}
                                                 className="mb-1"
                                             >
                                                 <CollapsibleTrigger asChild>
@@ -839,9 +1050,12 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                                                         variant="ghost"
                                                         className="w-full justify-between py-2 px-3 text-sm h-8 bg-muted/50 hover:bg-muted"
                                                     >
-                                                        {controlGroup.groupName}
+                                                        <div className="flex items-center">
+                                                            <Square className="h-4 w-4 mr-2" />
+                                                            Rectangle Properties
+                                                        </div>
                                                         <motion.div
-                                                            animate={{ rotate: openGroups.includes(controlGroup.groupName) ? 180 : 0 }}
+                                                            animate={{ rotate: openGroups.includes("Rectangle Properties") ? 180 : 0 }}
                                                             transition={{ duration: 0.2 }}
                                                         >
                                                             <ChevronDown className="h-4 w-4" />
@@ -849,20 +1063,302 @@ export default function ToolBar({ selectedItemsIds }: ToolBarProps) {
                                                     </Button>
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent className="py-2 px-3 space-y-3 border-l-2 border-muted ml-2 mt-1">
-                                                    {controlGroup.controls.map((control: any) => (
-                                                        <ToolBarItem
-                                                            key={control.property}
-                                                            property={control.property}
-                                                            label={control.label}
-                                                            controlItem={(controlShape as any)[control.property]}
-                                                            updateItems={updateItems}
-                                                            controlType={control.type}
-                                                            options={control.options}
+                                                    {/* Roughness */}
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <label className="text-xs text-muted-foreground">Roughness</label>
+                                                            <span className="text-xs font-medium">{roughness}</span>
+                                                        </div>
+                                                        <Slider 
+                                                            value={[roughness]} 
+                                                            min={0} 
+                                                            max={3} 
+                                                            step={0.1} 
+                                                            onValueChange={handleRectRoughnessChange} 
                                                         />
-                                                    ))}
+                                                    </div>
+                                                    
+                                                    {/* Fill Style */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Fill Style</label>
+                                                        <Select value={fillStyle} onValueChange={handleRectFillStyleChange}>
+                                                            <SelectTrigger className="w-full h-8 text-xs">
+                                                                <SelectValue placeholder="Select Fill Style" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="solid">Solid</SelectItem>
+                                                                <SelectItem value="hachure">Hachure</SelectItem>
+                                                                <SelectItem value="cross-hatch">Cross-Hatch</SelectItem>
+                                                                <SelectItem value="zigzag">Zigzag</SelectItem>
+                                                                <SelectItem value="dots">Dots</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    
+                                                    {fillStyle !== 'solid' && (
+                                                        <>
+                                                            {/* Hachure Gap */}
+                                                            <div className="space-y-1">
+                                                                <div className="flex justify-between">
+                                                                    <label className="text-xs text-muted-foreground">Hachure Gap</label>
+                                                                    <span className="text-xs font-medium">{hachureGap}px</span>
+                                                                </div>
+                                                                <Slider 
+                                                                    value={[hachureGap]} 
+                                                                    min={1} 
+                                                                    max={20} 
+                                                                    step={1} 
+                                                                    onValueChange={handleRectHachureGapChange} 
+                                                                />
+                                                            </div>
+                                                            
+                                                            {/* Hachure Angle */}
+                                                            <div className="space-y-1">
+                                                                <div className="flex justify-between">
+                                                                    <label className="text-xs text-muted-foreground">Hachure Angle</label>
+                                                                    <span className="text-xs font-medium">{hachureAngle}°</span>
+                                                                </div>
+                                                                <Slider 
+                                                                    value={[hachureAngle]} 
+                                                                    min={0} 
+                                                                    max={180} 
+                                                                    step={5} 
+                                                                    onValueChange={handleRectHachureAngleChange} 
+                                                                />
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {/* Fill Color */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Fill Color</label>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button 
+                                                                        variant="outline" 
+                                                                        size="sm" 
+                                                                        className="h-8 flex items-center gap-2"
+                                                                    >
+                                                                        <div 
+                                                                            className="w-4 h-4 rounded-sm border border-gray-300" 
+                                                                            style={{ backgroundColor: rectColor }}
+                                                                        />
+                                                                        <Palette className="h-4 w-4" />
+                                                                        {rectColor}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-3">
+                                                                    <div className="flex flex-col gap-2">
+                                                                        <div className="grid grid-cols-5 gap-1">
+                                                                            {["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", 
+                                                                                "#FF00FF", "#00FFFF", "#FFA500", "#800080", "#008000",
+                                                                                "#800000", "#008080", "#000080", "#FFC0CB", "#A52A2A",
+                                                                                "#808080", "#C0C0C0", "#FFD700", "#4B0082", "#FFFFFF"
+                                                                            ].map(color => (
+                                                                                <div 
+                                                                                    key={color}
+                                                                                    className="w-6 h-6 rounded-sm border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
+                                                                                    style={{ backgroundColor: color }}
+                                                                                    onClick={() => {
+                                                                                        setRectColor(color);
+                                                                                        updateRectFormat({ fill: color });
+                                                                                    }}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="flex items-center mt-2">
+                                                                            <label className="text-xs mr-2">Custom:</label>
+                                                                            <Input
+                                                                                type="color"
+                                                                                value={rectColor}
+                                                                                onChange={handleRectColorChange}
+                                                                                className="w-8 h-8 p-0 border-0"
+                                                                            />
+                                                                            <Input 
+                                                                                type="text" 
+                                                                                value={rectColor}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                                                                                        setRectColor(value);
+                                                                                        if (value.length === 7) {
+                                                                                            updateRectFormat({ fill: value });
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                                className="w-24 h-8 ml-2 text-xs"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                    </div>
                                                 </CollapsibleContent>
                                             </Collapsible>
-                                        ))}
+                                        )}
+                                        
+                                        {/* Arrow formatting tools */}
+                                        {isArrowElement && (
+                                            <Collapsible
+                                                open={openGroups.includes("Arrow Properties")}
+                                                onOpenChange={() => toggleGroup("Arrow Properties")}
+                                                className="mb-1"
+                                            >
+                                                <CollapsibleTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-between py-2 px-3 text-sm h-8 bg-muted/50 hover:bg-muted"
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <ArrowUpRight className="h-4 w-4 mr-2" />
+                                                            Arrow Properties
+                                                        </div>
+                                                        <motion.div
+                                                            animate={{ rotate: openGroups.includes("Arrow Properties") ? 180 : 0 }}
+                                                            transition={{ duration: 0.2 }}
+                                                        >
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        </motion.div>
+                                                    </Button>
+                                                </CollapsibleTrigger>
+                                                <CollapsibleContent className="py-2 px-3 space-y-3 border-l-2 border-muted ml-2 mt-1">
+                                                    {/* Stroke Width */}
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <label className="text-xs text-muted-foreground">Stroke Width</label>
+                                                            <span className="text-xs font-medium">{arrowStrokeWidth}px</span>
+                                                        </div>
+                                                        <Slider 
+                                                            value={[arrowStrokeWidth]} 
+                                                            min={1} 
+                                                            max={10} 
+                                                            step={1} 
+                                                            onValueChange={handleArrowStrokeWidthChange} 
+                                                        />
+                                                    </div>
+                                                    
+                                                    {/* Stroke Style */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Stroke Style</label>
+                                                        <Select value={arrowStrokeStyle} onValueChange={handleArrowStrokeStyleChange}>
+                                                            <SelectTrigger className="w-full h-8 text-xs">
+                                                                <SelectValue placeholder="Select Stroke Style" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="solid">Solid</SelectItem>
+                                                                <SelectItem value="dashed">Dashed</SelectItem>
+                                                                <SelectItem value="dotted">Dotted</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    
+                                                    {/* Roughness */}
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <label className="text-xs text-muted-foreground">Roughness</label>
+                                                            <span className="text-xs font-medium">{arrowRoughness}</span>
+                                                        </div>
+                                                        <Slider 
+                                                            value={[arrowRoughness]} 
+                                                            min={0} 
+                                                            max={3} 
+                                                            step={0.1} 
+                                                            onValueChange={handleArrowRoughnessChange} 
+                                                        />
+                                                    </div>
+                                                    
+                                                  
+                                                    
+                                                    {/* Arrow End Type */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">End Type</label>
+                                                        <Select value={arrowEndType} onValueChange={handleArrowEndTypeChange}>
+                                                            <SelectTrigger className="w-full h-8 text-xs">
+                                                                <SelectValue placeholder="Select End Type" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="none">None</SelectItem>
+                                                                <SelectItem value="arrow">Arrow</SelectItem>
+                                                                <SelectItem value="circle">Circle</SelectItem>
+                                                                <SelectItem value="square">Square</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    
+                                                    {/* Arrow Color */}
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs text-muted-foreground">Arrow Color</label>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button 
+                                                                        variant="outline" 
+                                                                        size="sm" 
+                                                                        className="h-8 flex items-center gap-2"
+                                                                    >
+                                                                        <div 
+                                                                            className="w-4 h-4 rounded-sm border border-gray-300" 
+                                                                            style={{ backgroundColor: arrowColor }}
+                                                                        />
+                                                                        <Palette className="h-4 w-4" />
+                                                                        {arrowColor}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-3">
+                                                                    <div className="flex flex-col gap-2">
+                                                                        <div className="grid grid-cols-5 gap-1">
+                                                                            {["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", 
+                                                                                "#FF00FF", "#00FFFF", "#FFA500", "#800080", "#008000",
+                                                                                "#800000", "#008080", "#000080", "#FFC0CB", "#A52A2A",
+                                                                                "#808080", "#C0C0C0", "#FFD700", "#4B0082", "#FFFFFF"
+                                                                            ].map(color => (
+                                                                                <div 
+                                                                                    key={color}
+                                                                                    className="w-6 h-6 rounded-sm border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
+                                                                                    style={{ backgroundColor: color }}
+                                                                                    onClick={() => {
+                                                                                        setArrowColor(color);
+                                                                                        updateArrowFormat({ stroke: color });
+                                                                                    }}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="flex items-center mt-2">
+                                                                            <label className="text-xs mr-2">Custom:</label>
+                                                                            <Input
+                                                                                type="color"
+                                                                                value={arrowColor}
+                                                                                onChange={handleArrowColorChange}
+                                                                                className="w-8 h-8 p-0 border-0"
+                                                                            />
+                                                                            <Input 
+                                                                                type="text" 
+                                                                                value={arrowColor}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                                                                                        setArrowColor(value);
+                                                                                        if (value.length === 7) {
+                                                                                            updateArrowFormat({ stroke: value });
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                                className="w-24 h-8 ml-2 text-xs"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                    </div>
+                                               
+                                                </CollapsibleContent>
+                                            </Collapsible>
+                                        )}
+                                        
+                                     
                                     </div>
                                 </ScrollArea>
                                 <div className="p-3 border-t">

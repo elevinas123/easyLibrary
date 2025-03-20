@@ -30,7 +30,7 @@ export const toolbarConfig: any = {
             groupName: "Effects",
             controls: [
                 {
-                    property: "roughness",
+                    property: "rectElement.roughness",
                     label: "Roughness",
                     type: "number",
                     min: 0,
@@ -38,13 +38,13 @@ export const toolbarConfig: any = {
                     step: 0.1,
                 },
                 {
-                    property: "fillStyle",
+                    property: "rectElement.fillStyle",
                     label: "Fill Style",
                     type: "select",
                     options: ["hachure", "solid", "zigzag", "cross-hatch"],
                 },
                 {
-                    property: "hachureGap",
+                    property: "rectElement.hachureGap",
                     label: "Hachure Gap",
                     type: "number",
                     min: 0,
@@ -52,7 +52,7 @@ export const toolbarConfig: any = {
                     step: 0.5,
                 },
                 {
-                    property: "hachureAngle",
+                    property: "rectElement.hachureAngle",
                     label: "Hachure Angle",
                     type: "number",
                     min: 0,
