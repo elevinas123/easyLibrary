@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useAtom } from "jotai";
 import { bookIdAtom } from "../BookPage/Konva/konvaAtoms";
 import { useSettings } from "../../hooks/useSettings";
+import { themeModeAtom } from "../../atoms/themeAtom";
 
 type ImportBookProps = {
     isCollapsed: boolean;
@@ -104,6 +105,8 @@ export default function ImportBook({
     const { toast } = useToast();
     const [bookId] = useAtom(bookIdAtom);
     const { settings } = useSettings();
+    const [themeMode] = useAtom(themeModeAtom);
+    const isDarkMode = themeMode === "dark";
     // Use the mutation with the correct types
     const queryClient = useQueryClient();
     const mutation = useMutation({
@@ -254,8 +257,8 @@ export default function ImportBook({
             className="w-full justify-start"
             onClick={handleButtonClick}
         >
-            <Plus size={20} />
-            {!isCollapsed && <span className="ml-2">Add Book</span>}
+            <Plus size={20} className={isDarkMode ? "text-gray-300" : "text-gray-600"} />
+            {!isCollapsed && <span className={`ml-2 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>Add Book</span>}
             <input
                 ref={fileInputRef}
                 className="hidden"

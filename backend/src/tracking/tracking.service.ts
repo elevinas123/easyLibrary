@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class TrackingService {
@@ -17,8 +17,8 @@ export class TrackingService {
   }
 
   async endReadingSession(
-    sessionId: string, 
-    pagesRead: number, 
+    sessionId: string,
+    pagesRead: number,
     lastPosition: number
   ) {
     console.log("Ending reading session", sessionId, pagesRead, lastPosition);
@@ -27,7 +27,7 @@ export class TrackingService {
     });
 
     if (!session) {
-      throw new Error('Reading session not found');
+      throw new Error("Reading session not found");
     }
 
     const endTime = new Date();
@@ -64,7 +64,7 @@ export class TrackingService {
   async getRecentSessions(userId: string, limit = 10) {
     return this.prisma.readingSession.findMany({
       where: { userId },
-      orderBy: { startTime: 'desc' },
+      orderBy: { startTime: "desc" },
       take: limit,
       include: {
         book: {
@@ -87,8 +87,6 @@ export class TrackingService {
     pagesRead: number,
     duration: number
   ) {
-    
-
     // Get or create book progress
     const bookProgress = await this.prisma.bookProgress.upsert({
       where: {
@@ -184,7 +182,10 @@ export class TrackingService {
     }
 
     // If already read today, no need to update
-    if (streak.lastReadDate && streak.lastReadDate.getTime() === today.getTime()) {
+    if (
+      streak.lastReadDate &&
+      streak.lastReadDate.getTime() === today.getTime()
+    ) {
       return streak;
     }
 
@@ -254,14 +255,17 @@ export class TrackingService {
         },
       },
     });
-    
+
     // Sum the current page from each book's progress
     const totalPagesRead = bookProgresses.reduce((total, progress) => {
       // Use currentPage if available, otherwise calculate from percentComplete if book has totalPages
       if (progress.currentPage) {
         return total + progress.currentPage;
       } else if (progress.book?.totalPages && progress.percentComplete) {
-        return total + Math.floor(progress.book.totalPages * progress.percentComplete);
+        return (
+          total +
+          Math.floor(progress.book.totalPages * progress.percentComplete)
+        );
       }
       return total;
     }, 0);
@@ -295,17 +299,15 @@ export class TrackingService {
 
   // Dashboard Data
   async getDashboardData(userId: string) {
-    const [
-      readingStats,
-      readingStreak,
-      recentSessions,
-      bookProgress
-    ] = await Promise.all([
-      this.getReadingStats(userId),
-      this.getReadingStreak(userId),
-      this.getRecentSessions(userId, 5),
-      this.getAllBookProgress(userId),
-    ]);
+    const [readingStats, readingStreak, recentSessions, bookProgress] =
+      await Promise.all([
+        this.getReadingStats(userId),
+        this.getReadingStreak(userId),
+        this.getRecentSessions(userId, 5),
+        this.getAllBookProgress(userId),
+      ]);
+    console.log("readingStats", readingStats);
+    console.log("userId", userId);
 
     // Calculate reading progress over time (last 7 days)
     const sevenDaysAgo = new Date();
@@ -319,7 +321,7 @@ export class TrackingService {
         },
       },
       orderBy: {
-        startTime: 'asc',
+        startTime: "asc",
       },
     });
 
@@ -348,11 +350,11 @@ export class TrackingService {
 
   private groupReadingSessionsByDay(sessions) {
     const groupedByDay = {};
-    
-    sessions.forEach(session => {
+
+    sessions.forEach((session) => {
       const date = new Date(session.startTime);
-      const day = date.toISOString().split('T')[0];
-      
+      const day = date.toISOString().split("T")[0];
+
       if (!groupedByDay[day]) {
         groupedByDay[day] = {
           day,
@@ -362,31 +364,32 @@ export class TrackingService {
           bookPageCounts: {}, // Track max page per book
         };
       }
-      
+
       if (session.duration) {
         groupedByDay[day].totalMinutes += Math.floor(session.duration / 60);
       }
-      
+
       // Track the highest page number for each book separately
       if (session.pagesRead && session.bookId) {
-        const currentMax = groupedByDay[day].bookPageCounts[session.bookId] || 0;
+        const currentMax =
+          groupedByDay[day].bookPageCounts[session.bookId] || 0;
         if (session.pagesRead > currentMax) {
           // If this session has a higher page count for this book, update it
           groupedByDay[day].bookPageCounts[session.bookId] = session.pagesRead;
         }
       }
     });
-    
+
     // Calculate total pages read by summing the max pages for each book
     Object.values(groupedByDay).forEach((dayData: any) => {
       dayData.pagesRead = Object.values(dayData.bookPageCounts).reduce(
-        (sum: number, pages: number) => sum + pages, 
+        (sum: number, pages: number) => sum + pages,
         0
       );
       // Remove the temporary tracking object
       delete dayData.bookPageCounts;
     });
-    
+
     return Object.values(groupedByDay);
   }
 
@@ -398,32 +401,52 @@ export class TrackingService {
       timestamp: Date | string;
       bookId: string;
     }> = [];
-    
+
     // Add reading sessions
-    sessions.forEach(session => {
+    sessions.forEach((session) => {
       if (session.endTime) {
-        const durationMinutes = Math.floor((session.duration || 0) / 60);
+        // Format duration more precisely
+        let durationText = "";
+        const durationSeconds = session.duration || 0;
+
+        if (durationSeconds < 60) {
+          // Less than a minute
+          durationText = `${durationSeconds} seconds`;
+        } else {
+          const minutes = Math.floor(durationSeconds / 60);
+          const seconds = durationSeconds % 60;
+
+          if (seconds === 0) {
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+          } else {
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""} and ${seconds} second${seconds !== 1 ? "s" : ""}`;
+          }
+        }
+
         activity.push({
-          type: 'reading',
-          description: `Read "${session.book.title}" for ${durationMinutes} minutes`,
+          type: "reading",
+          description: `Read "${session.book.title}" for ${durationText}`,
           timestamp: session.endTime,
           bookId: session.bookId,
         });
       }
     });
-    
+
     // Add completed books
     const completedBooks = bookProgress
-      .filter(progress => progress.isCompleted && progress.completedAt)
-      .map(progress => ({
-        type: 'completed',
+      .filter((progress) => progress.isCompleted && progress.completedAt)
+      .map((progress) => ({
+        type: "completed",
         description: `Finished reading "${progress.book.title}"`,
         timestamp: progress.completedAt,
         bookId: progress.bookId,
       }));
-    
+
     return [...activity, ...completedBooks]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 5);
   }
 
@@ -431,11 +454,11 @@ export class TrackingService {
     // This would be a more complex query in a real app
     // For now, we'll return mock data
     return [
-      { genre: 'Fiction', count: 5 },
-      { genre: 'Non-Fiction', count: 3 },
-      { genre: 'Science Fiction', count: 2 },
-      { genre: 'Fantasy', count: 4 },
-      { genre: 'Mystery', count: 1 },
+      { genre: "Fiction", count: 5 },
+      { genre: "Non-Fiction", count: 3 },
+      { genre: "Science Fiction", count: 2 },
+      { genre: "Fantasy", count: 4 },
+      { genre: "Mystery", count: 1 },
     ];
   }
 
@@ -481,18 +504,18 @@ export class TrackingService {
         });
 
         // Update reading stats
-        await this.updateReadingStats(userId);
       }
+      await this.updateReadingStats(userId);
 
       return {
         success: true,
-        data: bookProgress
+        data: bookProgress,
       };
     } catch (error) {
-      console.error('Error updating book progress:', error);
+      console.error("Error updating book progress:", error);
       return {
         success: false,
-        error: 'Failed to update book progress'
+        error: "Failed to update book progress",
       };
     }
   }

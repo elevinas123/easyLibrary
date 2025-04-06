@@ -67,12 +67,18 @@ function MainPage() {
   const { accessToken, user } = useAuth();
   const [searchParams] = useSearchParams();
   const bookId = searchParams.get("id");
-  
+
   // Move these definitions to the top, before any useEffects
-  const getCanvasStorageKey = useCallback(() => `book_${bookId}_canvas_elements`, [bookId]);
-  const getCurveStorageKey = useCallback(() => `book_${bookId}_curve_elements`, [bookId]);
+  const getCanvasStorageKey = useCallback(
+    () => `book_${bookId}_canvas_elements`,
+    [bookId]
+  );
+  const getCurveStorageKey = useCallback(
+    () => `book_${bookId}_curve_elements`,
+    [bookId]
+  );
   const prevStateRef = useRef<Partial<Book>>({});
-  
+
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [displayPage, setDisplayPage] = useAtom(displayPageAtom);
@@ -132,7 +138,7 @@ function MainPage() {
       setCanvaElements(book.canvaElements);
       setArrows(book.curveElements);
       setHighlights(book.highlights);
-      setScale(book.scale);
+      setScale(1);
     }
   }, [book]);
   const removeUnwantedProperties = (obj, propertiesToRemove) => {
@@ -186,7 +192,7 @@ function MainPage() {
     debounce(async (changes: Partial<Book>) => {
       console.log("Debounced update with changes:", changes);
       if (!bookId || !accessToken) return;
-      
+
       try {
         console.log("Saving changes to server:", changes);
         // Your API call to update the book
@@ -218,67 +224,85 @@ function MainPage() {
         try {
           const parsedElements = JSON.parse(storedCanvasElements);
           setCanvaElements(parsedElements);
-          console.log("Loaded canvas elements from local storage:", parsedElements.length);
+          console.log(
+            "Loaded canvas elements from local storage:",
+            parsedElements.length
+          );
         } catch (error) {
-          console.error("Error parsing canvas elements from local storage:", error);
+          console.error(
+            "Error parsing canvas elements from local storage:",
+            error
+          );
         }
       }
-      
+
       // Try to get curve elements from local storage
       const storedCurveElements = localStorage.getItem(getCurveStorageKey());
       if (storedCurveElements) {
         try {
           const parsedElements = JSON.parse(storedCurveElements);
           setArrows(parsedElements);
-          console.log("Loaded curve elements from local storage:", parsedElements.length);
+          console.log(
+            "Loaded curve elements from local storage:",
+            parsedElements.length
+          );
         } catch (error) {
-          console.error("Error parsing curve elements from local storage:", error);
+          console.error(
+            "Error parsing curve elements from local storage:",
+            error
+          );
         }
       }
     }
   }, [bookId, loaded, getCanvasStorageKey, getCurveStorageKey]);
-  
+
   // Save canvas elements to local storage when they change (debounced)
   useEffect(() => {
     if (bookId && loaded && canvaElements) {
       debouncedSaveCanvasElements(canvaElements, getCanvasStorageKey());
     }
-    
+
     // Cleanup function to ensure pending saves are executed
     return () => {
       debouncedSaveCanvasElements.flush();
     };
-  }, [canvaElements, bookId, loaded, getCanvasStorageKey, debouncedSaveCanvasElements]);
-  
+  }, [
+    canvaElements,
+    bookId,
+    loaded,
+    getCanvasStorageKey,
+    debouncedSaveCanvasElements,
+  ]);
+
   // Save curve elements to local storage when they change (debounced)
   useEffect(() => {
     if (bookId && loaded && arrows) {
       debouncedSaveCurveElements(arrows, getCurveStorageKey());
     }
-    
+
     // Cleanup function to ensure pending saves are executed
     return () => {
       debouncedSaveCurveElements.flush();
     };
   }, [arrows, bookId, loaded, getCurveStorageKey, debouncedSaveCurveElements]);
-  
+
   // Update the highlights effect to use the debounced function
   useEffect(() => {
     if (!bookId || !accessToken || !book || !loaded) return;
-    
+
     // Only check highlights changes
     if (!isEqual(highlights, prevStateRef.current.highlights)) {
       const changes: Partial<Book> = {
-        highlights
+        highlights,
       };
-      
+
       console.log("Highlights changed, queueing update:", changes);
       debouncedUpdateBookData(changes);
-      
+
       // Update the reference
       prevStateRef.current = {
         ...prevStateRef.current,
-        highlights
+        highlights,
       };
     }
   }, [highlights, bookId, accessToken, book, loaded, debouncedUpdateBookData]);
@@ -286,20 +310,20 @@ function MainPage() {
   // Update the scale effect to use the debounced function
   useEffect(() => {
     if (!bookId || !accessToken || !book || !loaded) return;
-    
+
     // Only check scale changes
     if (scale !== prevStateRef.current.scale) {
       const changes: Partial<Book> = {
-        scale
+        scale,
       };
-      
+
       console.log("Scale changed, queueing update:", changes);
       debouncedUpdateBookData(changes);
-      
+
       // Update the reference
       prevStateRef.current = {
         ...prevStateRef.current,
-        scale
+        scale,
       };
     }
   }, [scale, bookId, accessToken, book, loaded, debouncedUpdateBookData]);
@@ -307,7 +331,7 @@ function MainPage() {
   // Update the offset position effect to use the debounced function
   useEffect(() => {
     if (!bookId || !accessToken || !book || !loaded) return;
-    
+
     // Only check offsetPosition changes
     if (!isEqual(offsetPosition, prevStateRef.current.offsetPosition)) {
       const changes: Partial<Book> = {
@@ -316,47 +340,61 @@ function MainPage() {
           upsert: {
             create: {
               x: offsetPosition.x,
-              y: offsetPosition.y
+              y: offsetPosition.y,
             },
             update: {
               x: offsetPosition.x,
-              y: offsetPosition.y
-            }
-          }
-        }
+              y: offsetPosition.y,
+            },
+          },
+        },
       };
-      
+
       console.log("Offset position changed, queueing update:", changes);
       debouncedUpdateBookData(changes);
-      
+
       // Update the reference
       prevStateRef.current = {
         ...prevStateRef.current,
-        offsetPosition
+        offsetPosition,
       };
     }
-  }, [offsetPosition, bookId, accessToken, book, loaded, debouncedUpdateBookData]);
+  }, [
+    offsetPosition,
+    bookId,
+    accessToken,
+    book,
+    loaded,
+    debouncedUpdateBookData,
+  ]);
 
   // Update the page change effect to use the debounced function
   useEffect(() => {
     if (!bookId || !accessToken || !book || !loaded) return;
-    
+
     // Only check page changes
     if (internalPage !== prevStateRef.current.currentPage) {
       const changes: Partial<Book> = {
-        currentPage: internalPage
+        currentPage: internalPage,
       };
-      
+
       console.log("Page changed, queueing update:", changes);
       debouncedUpdateBookData(changes);
-      
+
       // Update the reference
       prevStateRef.current = {
         ...prevStateRef.current,
-        currentPage: internalPage
+        currentPage: internalPage,
       };
     }
-  }, [internalPage, bookId, accessToken, book, loaded, debouncedUpdateBookData]);
+  }, [
+    internalPage,
+    bookId,
+    accessToken,
+    book,
+    loaded,
+    debouncedUpdateBookData,
+  ]);
 
   // Cleanup all debounced functions on component unmount
   useEffect(() => {
@@ -365,7 +403,11 @@ function MainPage() {
       debouncedSaveCurveElements.cancel();
       debouncedUpdateBookData.cancel();
     };
-  }, [debouncedSaveCanvasElements, debouncedSaveCurveElements, debouncedUpdateBookData]);
+  }, [
+    debouncedSaveCanvasElements,
+    debouncedSaveCurveElements,
+    debouncedUpdateBookData,
+  ]);
 
   const startSessionMutation = useMutation({
     mutationFn: () => startReadingSession(bookId!, accessToken!),
@@ -597,8 +639,8 @@ function MainPage() {
     requestAnimationFrame(animateScroll);
   };
   const navigateBackToText = () => {
-    setScale(1)
-    smoothScroll(-200 / scale, offsetPositionRef.current.y /scale, 500);
+    setScale(1);
+    smoothScroll(-200 / scale, offsetPositionRef.current.y / scale, 500);
   };
 
   // Add a ref to the KonvaStage with proper typing
@@ -663,9 +705,9 @@ function MainPage() {
   }
   return (
     <div className="flex min-h-screen flex-row w-full bg-zinc-800 text-gray-300 relative">
-      <BookSidebar 
-        isCollapsed={sidebarCollapsed} 
-        toggleCollapse={toggleSidebar} 
+      <BookSidebar
+        isCollapsed={sidebarCollapsed}
+        toggleCollapse={toggleSidebar}
       />
       <KonvaStage
         ref={konvaStageRef}

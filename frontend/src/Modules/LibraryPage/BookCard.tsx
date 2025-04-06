@@ -51,6 +51,7 @@ export default function BookCard({
     const [themeMode] = useAtom(themeModeAtom);
     const isDarkMode = themeMode === "dark";
     const {accessToken} = useAuth();
+ 
     useEffect(() => {
         const updateBook = async () => {
             await fetch(`/api/book/${book.id}`, {

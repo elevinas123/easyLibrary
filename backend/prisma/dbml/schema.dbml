@@ -1,0 +1,387 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Settings {
+  id String [pk]
+  userId String [unique, not null]
+  fontSize Int [not null, default: 16]
+  fontFamily String [not null, default: 'Arial']
+  lineHeight Int [not null, default: 3]
+  backgroundColor String [not null, default: '#111111']
+  textColor String [not null, default: '#ffffff']
+  darkMode Boolean [not null, default: false]
+  user User [not null]
+}
+
+Table User {
+  id String [pk]
+  username String [unique, not null]
+  password String [not null]
+  comment String
+  books Book [not null]
+  bookshelves Bookshelve [not null]
+  settings Settings
+  readingSessions ReadingSession [not null]
+  readingStreak ReadingStreak
+  bookProgress BookProgress [not null]
+  readingGoals ReadingGoal [not null]
+  readingStats ReadingStats
+  collections Collection [not null]
+}
+
+Table Genre {
+  id String [pk]
+  name String [unique, not null]
+  books BookGenre [not null]
+}
+
+Table BookGenre {
+  bookId String [not null]
+  genreId String [not null]
+  book Book [not null]
+  genre Genre [not null]
+
+  indexes {
+    (bookId, genreId) [pk]
+  }
+}
+
+Table Book {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  author String [not null]
+  genres BookGenre [not null]
+  bookshelves Bookshelve [not null]
+  imageUrl String [not null]
+  liked Boolean [not null]
+  dateAdded DateTime [not null]
+  scale Float [not null]
+  offsetPosition OffsetPosition
+  userId String [not null]
+  user User [not null]
+  bookElements ProcessedElement [not null]
+  highlights Highlight [not null]
+  canvaElements CanvaElementSkeleton [not null]
+  curveElements CurveElementSkeleton [not null]
+  chaptersData ChaptersData [not null]
+  readingSessions ReadingSession [not null]
+  bookProgress BookProgress [not null]
+  totalPages Int [not null, default: 0]
+  collections BookCollection [not null]
+}
+
+Table Bookshelve {
+  id String [pk]
+  name String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  userId String [not null]
+  user User [not null]
+  books Book [not null]
+}
+
+Table ProcessedElement {
+  id String [pk]
+  elementId String [not null]
+  text String [not null]
+  lineX Float [not null]
+  lineWidth Float [not null]
+  lineY Float [not null]
+  bookId String [not null]
+  book Book [not null]
+}
+
+Table Highlight {
+  id String [pk]
+  startingX Float [not null]
+  startingY Float [not null]
+  endX Float [not null]
+  endY Float [not null]
+  bookId String [not null]
+  book Book [not null]
+}
+
+Table OffsetPosition {
+  id String [pk]
+  x Float [not null]
+  y Float [not null]
+  bookId String [unique, not null]
+  book Book [not null]
+}
+
+Table ChaptersData {
+  id String [pk]
+  elementId String [not null]
+  title String [not null]
+  href String
+  indentLevel Int
+  bookId String [not null]
+  book Book [not null]
+}
+
+Table Point {
+  id String [pk]
+  x Float [not null]
+  y Float [not null]
+  curveId String
+  canvaId String
+  curve CurveElementSkeleton
+  canva CanvaElementSkeleton
+}
+
+Table CanvaElementSkeleton {
+  id String [pk]
+  fill String [not null]
+  x Float [not null]
+  y Float [not null]
+  width Float [not null]
+  height Float [not null]
+  strokeColor String [not null]
+  strokeWidth Float [not null]
+  opacity Float [not null]
+  rotation Float [not null]
+  type String [not null]
+  points Point [not null]
+  outgoingArrows ArrowElement [not null]
+  incomingArrows ArrowElement [not null]
+  circleElement CircleElement
+  rectElement RectElement
+  textElement TextElement
+  bookId String [not null]
+  book Book [not null]
+}
+
+Table CurveElementSkeleton {
+  id String [pk]
+  points Point [not null]
+  fill String [not null]
+  text String
+  roughness Float [not null]
+  bowing Float [not null]
+  seed Float [not null]
+  strokeWidth Float [not null]
+  strokeStyle String [not null]
+  stroke String [not null]
+  fillStyle String [not null]
+  fillWeight Float [not null]
+  hachureAngle Float [not null]
+  hachureGap Float [not null]
+  type String [not null]
+  bookId String [not null]
+  book Book [not null]
+  arrowElements ArrowElement [not null]
+}
+
+Table ArrowElement {
+  id String [pk]
+  startId String
+  endId String
+  type String [not null]
+  startType String
+  endType String
+  from CanvaElementSkeleton [not null]
+  to CanvaElementSkeleton [not null]
+  fromId String [not null]
+  toId String [not null]
+  curveId String
+  curve CurveElementSkeleton
+}
+
+Table CircleElement {
+  id String [pk]
+  fillStyle String [not null]
+  roughness Float [not null]
+  seed Float [not null]
+  hachureGap Float [not null]
+  hachureAngle Float [not null]
+  radius Float [not null]
+  type String [not null]
+  canvaId String [unique, not null]
+  canva CanvaElementSkeleton [not null]
+}
+
+Table RectElement {
+  id String [pk]
+  fillStyle String [not null]
+  roughness Float [not null]
+  seed Float [not null]
+  hachureGap Float [not null]
+  hachureAngle Float [not null]
+  type String [not null]
+  canvaId String [unique, not null]
+  canva CanvaElementSkeleton [not null]
+}
+
+Table TextElement {
+  id String [pk]
+  text String [not null]
+  fontFamily String [not null]
+  fontSize Float [not null]
+  fontWeight String [not null, default: 'normal']
+  fontStyle String [not null, default: 'normal']
+  textDecoration String [not null, default: 'none']
+  type String [not null]
+  canvaId String [unique, not null]
+  canva CanvaElementSkeleton [not null]
+}
+
+Table ReadingSession {
+  id String [pk]
+  userId String [not null]
+  bookId String [not null]
+  startTime DateTime [not null]
+  endTime DateTime
+  duration Int
+  pagesRead Int
+  lastPosition Float
+  createdAt DateTime [default: `now()`, not null]
+  user User [not null]
+  book Book [not null]
+}
+
+Table ReadingStreak {
+  id String [pk]
+  userId String [unique, not null]
+  currentStreak Int [not null, default: 0]
+  longestStreak Int [not null, default: 0]
+  lastReadDate DateTime
+  totalReadDays Int [not null, default: 0]
+  user User [not null]
+}
+
+Table BookProgress {
+  id String [pk]
+  userId String [not null]
+  bookId String [not null]
+  percentComplete Float [not null, default: 0]
+  currentPage Int [not null, default: 0]
+  totalPages Int [not null, default: 0]
+  isCompleted Boolean [not null, default: false]
+  startedAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+  lastReadAt DateTime
+  timeSpentReading Int [not null, default: 0]
+  user User [not null]
+  book Book [not null]
+
+  indexes {
+    (userId, bookId) [unique]
+  }
+}
+
+Table ReadingGoal {
+  id String [pk]
+  userId String [not null]
+  goalType String [not null]
+  targetValue Int [not null]
+  currentValue Int [not null, default: 0]
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime
+  isCompleted Boolean [not null, default: false]
+  user User [not null]
+}
+
+Table ReadingStats {
+  id String [pk]
+  userId String [unique, not null]
+  totalBooksRead Int [not null, default: 0]
+  totalPagesRead Int [not null, default: 0]
+  totalReadingTime Int [not null, default: 0]
+  averageReadingSpeed Float
+  favoriteGenre String
+  lastUpdated DateTime [default: `now()`, not null]
+  user User [not null]
+}
+
+Table Collection {
+  id String [pk]
+  name String [not null]
+  description String
+  imageUrl String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  userId String [not null]
+  user User [not null]
+  books BookCollection [not null]
+
+  indexes {
+    (name, userId) [unique]
+  }
+}
+
+Table BookCollection {
+  id String [pk]
+  bookId String [not null]
+  collectionId String [not null]
+  addedAt DateTime [default: `now()`, not null]
+  book Book [not null]
+  collection Collection [not null]
+
+  indexes {
+    (bookId, collectionId) [unique]
+  }
+}
+
+Table BookToBookshelve {
+  bookshelvesId String [ref: > Bookshelve.id]
+  booksId String [ref: > Book.id]
+}
+
+Ref: Settings.userId - User.id
+
+Ref: BookGenre.bookId > Book.id [delete: Cascade]
+
+Ref: BookGenre.genreId > Genre.id
+
+Ref: Book.userId > User.id
+
+Ref: Bookshelve.userId > User.id
+
+Ref: ProcessedElement.bookId > Book.id [delete: Cascade]
+
+Ref: Highlight.bookId > Book.id [delete: Cascade]
+
+Ref: OffsetPosition.bookId - Book.id [delete: Cascade]
+
+Ref: ChaptersData.bookId > Book.id [delete: Cascade]
+
+Ref: Point.curveId > CurveElementSkeleton.id
+
+Ref: Point.canvaId > CanvaElementSkeleton.id
+
+Ref: CanvaElementSkeleton.bookId > Book.id [delete: Cascade]
+
+Ref: CurveElementSkeleton.bookId > Book.id [delete: Cascade]
+
+Ref: ArrowElement.fromId > CanvaElementSkeleton.id
+
+Ref: ArrowElement.toId > CanvaElementSkeleton.id
+
+Ref: ArrowElement.curveId > CurveElementSkeleton.id
+
+Ref: CircleElement.canvaId - CanvaElementSkeleton.id
+
+Ref: RectElement.canvaId - CanvaElementSkeleton.id
+
+Ref: TextElement.canvaId - CanvaElementSkeleton.id
+
+Ref: ReadingSession.userId > User.id
+
+Ref: ReadingSession.bookId > Book.id [delete: Cascade]
+
+Ref: ReadingStreak.userId - User.id
+
+Ref: BookProgress.userId > User.id
+
+Ref: BookProgress.bookId > Book.id [delete: Cascade]
+
+Ref: ReadingGoal.userId > User.id
+
+Ref: ReadingStats.userId - User.id
+
+Ref: Collection.userId > User.id [delete: Cascade]
+
+Ref: BookCollection.bookId > Book.id [delete: Cascade]
+
+Ref: BookCollection.collectionId > Collection.id [delete: Cascade]

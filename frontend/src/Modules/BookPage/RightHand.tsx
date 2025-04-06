@@ -193,19 +193,7 @@ export default function RightHand({
                                             />
                                         </div>
                                         
-                                        <Button 
-                                            variant={isDarkMode ? "outline" : "secondary"}
-                                            size="sm"
-                                            className={cn(
-                                                "w-full text-xs",
-                                                isDarkMode 
-                                                    ? "border-gray-700 hover:bg-zinc-700 hover:text-white" 
-                                                    : "text-gray-700 hover:text-gray-900"
-                                            )}
-                                            onClick={onEndSession}
-                                        >
-                                            End Reading Session
-                                        </Button>
+                                      
                                     </CardContent>
                                 </Card>
                             </div>

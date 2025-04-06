@@ -173,7 +173,7 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
             offsetPositionRef.current.x = offsetPosition.x
             offsetPositionRef.current.y = offsetPosition.y
 
-            smoothScroll((note.points[0].x + 30 )/ scale, (targetY + 200 )/scale, 500);
+            smoothScroll((note.points[0].x-600  ), (targetY +100 ), 500);
         }
     };
 

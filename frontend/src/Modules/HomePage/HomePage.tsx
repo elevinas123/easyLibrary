@@ -367,7 +367,7 @@ export default function HomePage() {
                     You're not currently reading any books
                   </p>
                   <Button
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/library")}
                     className="bg-amber-600 hover:bg-amber-700 text-white"
                   >
                     Browse your library
@@ -494,7 +494,7 @@ export default function HomePage() {
                       You haven't added any favorites yet
                     </p>
                     <Button
-                      onClick={() => navigate("/")}
+                      onClick={() => navigate("/library")}
                       className="bg-red-600 hover:bg-red-700 text-white"
                     >
                       Browse your library

@@ -1,19 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { ActivityItem as ActivityItemType } from "../../../api/trackingApi";
 import { formatDistanceToNow } from "date-fns";
+import { Book, BookOpen, CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type ActivityItemProps = {
-    description: string;
-    timestamp: string;
+    activity: ActivityItemType;
 }
 
-function ActivityItem({ description, timestamp }: ActivityItemProps) {
-    const formattedTime = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+function ActivityItem({ activity }: ActivityItemProps) {
+    const formattedTime = formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true });
+    
+    // Determine icon based on activity type
+    const getActivityIcon = () => {
+        switch (activity.type) {
+            case 'reading':
+                return <BookOpen className="h-5 w-5 text-blue-500 mr-3" />;
+            case 'completed':
+                return <CheckCircle className="h-5 w-5 text-green-500 mr-3" />;
+            default:
+                return <Book className="h-5 w-5 text-muted-foreground mr-3" />;
+        }
+    };
     
     return (
-        <div className="flex justify-between items-center py-2">
-            <p className="text-foreground">{description}</p>
-            <span className="text-sm text-muted-foreground">{formattedTime}</span>
+        <div className="flex justify-between items-center py-3 border-b border-border last:border-0">
+            <div className="flex items-center">
+                {getActivityIcon()}
+                <div>
+                    <p className="text-foreground">{activity.description}</p>
+                    {activity.bookId && (
+                        <Link 
+                            to={`/book/${activity.bookId}`}
+                            className="text-xs text-primary hover:underline"
+                        >
+                            View book
+                        </Link>
+                    )}
+                </div>
+            </div>
+            <span className="text-sm text-muted-foreground ml-4">{formattedTime}</span>
         </div>
     );
 }
@@ -34,12 +60,11 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                         No recent activity to display
                     </p>
                 ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         {activities.map((activity, index) => (
                             <ActivityItem 
                                 key={index}
-                                description={activity.description}
-                                timestamp={activity.timestamp}
+                                activity={activity}
                             />
                         ))}
                     </div>

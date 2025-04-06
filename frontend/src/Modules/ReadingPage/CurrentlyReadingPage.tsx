@@ -241,13 +241,6 @@ export default function CurrentlyReadingPage() {
                                                             </div>
                                                             
                                                             <div className="flex items-center text-sm">
-                                                                <Clock className="h-4 w-4 mr-1.5" />
-                                                                <span className={isDarkMode ? "text-gray-400" : "text-gray-500"}>
-                                                                    Read for {formatReadingTime(progress.timeSpentReading)}
-                                                                </span>
-                                                            </div>
-                                                            
-                                                            <div className="flex items-center text-sm">
                                                                 <Calendar className="h-4 w-4 mr-1.5" />
                                                                 <span className={isDarkMode ? "text-gray-400" : "text-gray-500"}>
                                                                     Last read on {formatDate(progress.lastReadAt)}
@@ -334,26 +327,7 @@ export default function CurrentlyReadingPage() {
                             </div>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <Card className={cn(
-                                    isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                                )}>
-                                    <CardHeader className="pb-2">
-                                        <CardTitle className="text-sm font-normal flex items-center text-gray-500">
-                                            <Clock className="h-4 w-4 mr-1.5" />
-                                            Time Reading
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className={cn(
-                                            "text-2xl font-bold",
-                                            isDarkMode ? "text-white" : "text-amber-800"
-                                        )}>
-                                            {formatReadingTime(
-                                                bookProgress?.reduce((total, p) => total + (p.timeSpentReading || 0), 0) || 0
-                                            )}
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                
                                 
                                 <Card className={cn(
                                     isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"

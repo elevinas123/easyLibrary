@@ -14,7 +14,9 @@ import {
     Bookmark,
     LayoutDashboard,
     FileText,
-    FolderHeart
+    FolderHeart,
+    Sun,
+    Moon
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
@@ -122,7 +124,7 @@ export default function Sidebar({
     const [searchParams] = useSearchParams();
     const currentBookId = searchParams.get("id");
     const [textVisible, setTextVisible] = useState(!isCollapsed);
-    const [themeMode] = useAtom(themeModeAtom);
+    const [themeMode, setThemeMode] = useAtom(themeModeAtom);
     const isDarkMode = themeMode === "dark";
     const { accessToken } = useAuth();
 
@@ -342,7 +344,50 @@ export default function Sidebar({
                 "p-2 border-t",
                 isDarkMode ? "border-gray-800" : "border-gray-200"
             )}>
-               
+                {/* Add Dark Mode Toggle Button */}
+                <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    "w-full justify-start",
+                                    isDarkMode 
+                                        ? "text-gray-300 hover:text-white hover:bg-gray-800" 
+                                        : "text-gray-700 hover:text-gray-900 hover:bg-amber-50"
+                                )}
+                                onClick={() => {
+                                    const newMode = themeMode === "dark" ? "light" : "dark";
+                                    setThemeMode(newMode);
+                                    // Update settings if they exist
+                                    if (accessToken) {
+                                        axios.patch('/api/settings', { darkMode: newMode === "dark" }, {
+                                            headers: { Authorization: `Bearer ${accessToken}` }
+                                        }).catch(err => console.error("Failed to update dark mode setting", err));
+                                    }
+                                }}
+                            >
+                                {themeMode === "dark" ? (
+                                    <Sun size={20} className="text-amber-400" />
+                                ) : (
+                                    <Moon size={20} className="text-indigo-600" />
+                                )}
+                                {!isCollapsed && textVisible && (
+                                    <span className="ml-2 transition-opacity duration-150 opacity-100">
+                                        {themeMode === "dark" ? "Light Mode" : "Dark Mode"}
+                                    </span>
+                                )}
+                            </Button>
+                        </TooltipTrigger>
+                        {isCollapsed && (
+                            <TooltipContent side="right">
+                                {themeMode === "dark" ? "Light Mode" : "Dark Mode"}
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                </TooltipProvider>
+                
                 <SidebarButton
                     icon={Settings}
                     label="Settings"
