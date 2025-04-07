@@ -484,7 +484,6 @@ export default function FavoritesPage() {
                                                                     "h-1.5",
                                                                     isDarkMode ? "bg-gray-700" : "bg-gray-200"
                                                                 )}
-                                                                indicatorClassName="bg-amber-500"
                                                             />
                                                             <div className="flex justify-between">
                                                                 <span className={cn(
@@ -597,7 +596,6 @@ export default function FavoritesPage() {
                                                                     "h-1.5",
                                                                     isDarkMode ? "bg-gray-700" : "bg-gray-200"
                                                                 )}
-                                                                indicatorClassName="bg-amber-500"
                                                             />
                                                         </div>
                                                     ) : (

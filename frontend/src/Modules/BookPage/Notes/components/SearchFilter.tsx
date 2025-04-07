@@ -50,47 +50,7 @@ export const SearchFilter = ({
                     </button>
                 )}
             </div>
-            
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button 
-                        variant={isDarkMode ? "outline" : "secondary"} 
-                        size="sm" 
-                        className={cn(
-                            "h-8 text-xs gap-1",
-                            activeFilter !== "all" && (isDarkMode ? "border-amber-700" : "bg-amber-100 text-amber-900")
-                        )}
-                    >
-                        <Filter className="h-3 w-3" />
-                        {activeFilter !== "all" && (
-                            <span className="capitalize">
-                                {activeFilter.replace("-", " ")}
-                            </span>
-                        )}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                        onClick={() => setActiveFilter("all")}
-                        className="flex justify-between"
-                    >
-                        <span>All</span>
-                        <Badge variant="outline" className="ml-2">{noteCounts.all || 0}</Badge>
-                    </DropdownMenuItem>
-                    {["text-annotation", "note-reference", "text-connection", "note-note", "image-connection"].map(type => (
-                        noteCounts[type] > 0 && (
-                            <DropdownMenuItem 
-                                key={type}
-                                onClick={() => setActiveFilter(type)}
-                                className="flex justify-between"
-                            >
-                                <span className="capitalize">{type.replace("-", " ")}</span>
-                                <Badge variant="outline" className="ml-2">{noteCounts[type] || 0}</Badge>
-                            </DropdownMenuItem>
-                        )
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+        
         </div>
     );
 }; 

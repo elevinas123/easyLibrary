@@ -121,6 +121,39 @@
 119. [preprocess/epub/extractToc.ts](#file-119-preprocess-epub-extracttoc-ts)
 120. [preprocess/epub/htmlToBookElements.ts](#file-120-preprocess-epub-htmltobookelements-ts)
 121. [preprocess/epub/preprocessEpub.ts](#file-121-preprocess-epub-preprocessepub-ts)
+122. [ReturnTypeDecorator.ts](#file-122-returntypedecorator-ts)
+123. [app.controller.ts](#file-123-app-controller-ts)
+124. [app.module.ts](#file-124-app-module-ts)
+125. [app.service.ts](#file-125-app-service-ts)
+126. [auth/auth.controller.ts](#file-126-auth-auth-controller-ts)
+127. [auth/auth.module.ts](#file-127-auth-auth-module-ts)
+128. [auth/auth.service.ts](#file-128-auth-auth-service-ts)
+129. [auth/constants.ts](#file-129-auth-constants-ts)
+130. [auth/jwt-auth.guard.ts](#file-130-auth-jwt-auth-guard-ts)
+131. [auth/jwt.strategy.ts](#file-131-auth-jwt-strategy-ts)
+132. [auth/local.strategy.ts](#file-132-auth-local-strategy-ts)
+133. [auth/localAuthGuard.ts](#file-133-auth-localauthguard-ts)
+134. [book/book.controller.ts](#file-134-book-book-controller-ts)
+135. [book/book.module.ts](#file-135-book-book-module-ts)
+136. [book/book.service.ts](#file-136-book-book-service-ts)
+137. [bookshelve/bookshelve.controller.ts](#file-137-bookshelve-bookshelve-controller-ts)
+138. [bookshelve/bookshelve.module.ts](#file-138-bookshelve-bookshelve-module-ts)
+139. [bookshelve/bookshelve.service.ts](#file-139-bookshelve-bookshelve-service-ts)
+140. [collection/collection.controller.ts](#file-140-collection-collection-controller-ts)
+141. [collection/collection.module.ts](#file-141-collection-collection-module-ts)
+142. [collection/collection.service.ts](#file-142-collection-collection-service-ts)
+143. [main.ts](#file-143-main-ts)
+144. [prisma/prisma.module.ts](#file-144-prisma-prisma-module-ts)
+145. [prisma/prisma.service.ts](#file-145-prisma-prisma-service-ts)
+146. [settings/settings.controller.ts](#file-146-settings-settings-controller-ts)
+147. [settings/settings.module.ts](#file-147-settings-settings-module-ts)
+148. [settings/settings.service.ts](#file-148-settings-settings-service-ts)
+149. [tracking/tracking.controller.ts](#file-149-tracking-tracking-controller-ts)
+150. [tracking/tracking.module.ts](#file-150-tracking-tracking-module-ts)
+151. [tracking/tracking.service.ts](#file-151-tracking-tracking-service-ts)
+152. [user/user.controller.ts](#file-152-user-user-controller-ts)
+153. [user/user.module.ts](#file-153-user-user-module-ts)
+154. [user/user.service.ts](#file-154-user-user-service-ts)
 
 
 ---
@@ -20810,6 +20843,2407 @@ export function preprocessEpub(epub: string[]): HtmlObject[] {
             elements,
         };
     });
+}
+
+```
+
+
+
+
+
+<h2 id="file-122-returntypedecorator-ts">File 122: ReturnTypeDecorator.ts</h2>
+
+```typescript
+import 'reflect-metadata';
+
+export function ReturnType(type: any) {
+  return (target: any, propertyKey: string) => {
+    Reflect.defineMetadata('returnType', type, target, propertyKey);
+  };
+}
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-123-app-controller-ts">File 123: app.controller.ts</h2>
+
+```typescript
+import { Controller, Get } from "@nestjs/common";
+import { AppService } from "./app.service";
+
+@Controller()
+export class AppController {
+    constructor(private readonly appService: AppService) {}
+
+    @Get()
+    getHello(): string {
+        return this.appService.getHello();
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-124-app-module-ts">File 124: app.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { AuthModule } from "./auth/auth.module";
+import { BookModule } from "./book/book.module";
+import { BookshelveModule } from "./bookshelve/bookshelve.module";
+import { CollectionModule } from "./collection/collection.module";
+import { PrismaModule } from "./prisma/prisma.module";
+import { SettingsModule } from "./settings/settings.module";
+import { UserModule } from "./user/user.module";
+import { TrackingModule } from './tracking/tracking.module';
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true, // Makes ConfigModule available globally
+        }),
+        JwtModule,
+        UserModule,
+        BookModule,
+        BookshelveModule,
+        AuthModule,
+        SettingsModule,
+        PrismaModule,
+        TrackingModule,
+        CollectionModule,
+    ],
+
+    controllers: [AppController],
+    providers: [AppService],
+})
+export class AppModule {
+    constructor() {}
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-125-app-service-ts">File 125: app.service.ts</h2>
+
+```typescript
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class AppService {
+  getHello(): string {
+    return 'Hello World!';
+  }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-126-auth-auth-controller-ts">File 126: auth/auth.controller.ts</h2>
+
+```typescript
+import { Body, Controller, Post, Request, UseGuards, Put } from "@nestjs/common";
+
+import { Prisma } from "@prisma/client";
+import { AuthService } from "./auth.service";
+import { LocalAuthGuard } from "./localAuthGuard";
+
+@Controller("auth")
+export class AuthController {
+    constructor(private authService: AuthService) {}
+
+    @UseGuards(LocalAuthGuard)
+    @Post("login")
+    async login(@Request() req: any) {
+        return this.authService.login(req.user);
+    }
+
+    @Post('register')
+    async register(@Body() data: Prisma.UserCreateInput) {
+      return this.authService.register(data);
+    }
+
+    @Post('password-match')
+    async passwordMatch(@Body() data: { username: string, password: string }) {
+        return this.authService.passwordMatch(data.username, data.password);
+    }
+
+    @Put('password')
+    async updatePassword(@Body() data: { username: string, password: string }) {
+        return this.authService.updatePassword(data.username, data.password);
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-127-auth-auth-module-ts">File 127: auth/auth.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+import { jwtConstants } from "./constants";
+import { JwtStrategy } from "./jwt.strategy"; // Import JwtStrategy
+import { LocalStrategy } from "./local.strategy"; // Import LocalStrategy
+
+@Module({
+    imports: [
+        PassportModule.register({ defaultStrategy: "jwt" }),
+        JwtModule.register({
+            secret: jwtConstants.secret,
+            signOptions: { expiresIn: "60m" },
+        }),
+    ],
+    controllers: [AuthController],
+    providers: [
+        AuthService,
+        PrismaService,
+        JwtStrategy, // Register JwtStrategy
+        LocalStrategy, // Register LocalStrategy
+    ],
+    exports: [AuthService],
+})
+export class AuthModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-128-auth-auth-service-ts">File 128: auth/auth.service.ts</h2>
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Prisma } from "@prisma/client";
+import * as bcrypt from "bcrypt"; // Import bcrypt for password hashing
+
+import { PrismaService } from "../prisma/prisma.service";
+
+
+@Injectable()
+export class AuthService {
+    constructor(
+        private readonly jwtService: JwtService,
+        private readonly prisma: PrismaService
+    ) {}
+    async passwordMatch(username: string, password: string): Promise<boolean> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+        });
+        if (!user) {
+            return false;
+        }
+        return await bcrypt.compare(password, user.password);
+    }
+
+    async validateUser(username: string, password: string): Promise<any> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+        });
+        if (user && (await bcrypt.compare(password, user.password))) {
+            return user;
+        }
+        return null;
+    }
+
+    async login(user: any) {
+        const payload = { username: user.username, sub: user.id };
+        return {
+            access_token: this.jwtService.sign(payload),
+            user,
+        };
+    }
+
+    async register(data: Prisma.UserCreateInput) {
+      const hashedPassword =
+          await bcrypt.hash(data.password, 10);  // Hash the password
+      return this.prisma.user.create({
+        data: {
+          ...data,
+          password: hashedPassword,  // Store hashed password
+        },
+      });
+    }
+
+    async updatePassword(username: string, password: string) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.prisma.user.update({
+            where: { username },
+            data: { password: hashedPassword },
+        });
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-129-auth-constants-ts">File 129: auth/constants.ts</h2>
+
+```typescript
+// auth/constants.ts
+export const jwtConstants = {
+    secret: "key", // Replace with a secure key
+};
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-130-auth-jwt-auth-guard-ts">File 130: auth/jwt-auth.guard.ts</h2>
+
+```typescript
+import {Injectable} from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
+
+@Injectable() export class JwtAuthGuard extends AuthGuard
+('jwt') {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-131-auth-jwt-strategy-ts">File 131: auth/jwt.strategy.ts</h2>
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { jwtConstants } from "./constants";
+import { ExtractJwt, Strategy } from "passport-jwt";
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+    constructor() {
+        super({
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: jwtConstants.secret,
+        });
+        console.log("JwtStrategy initialized");
+    }
+
+    async validate(payload: any) {
+        return { userId: payload.sub, username: payload.username };
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-132-auth-local-strategy-ts">File 132: auth/local.strategy.ts</h2>
+
+```typescript
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {PassportStrategy} from '@nestjs/passport';
+
+import {AuthService} from './auth.service';
+import { Strategy } from 'passport-local';
+
+@Injectable() export class LocalStrategy extends PassportStrategy
+(Strategy) {
+  constructor(private authService: AuthService) {
+    super();
+  }
+
+    async validate(username: string, password: string): Promise<any> {
+    const user = await this.authService.validateUser(username, password);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-133-auth-localauthguard-ts">File 133: auth/localAuthGuard.ts</h2>
+
+```typescript
+import { ExecutionContext, Injectable } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+
+import { AuthService } from "./auth.service";
+
+@Injectable()
+export class LocalAuthGuard extends AuthGuard("local") {
+    constructor(private authService: AuthService) {
+        super();
+    }
+
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const request = context.switchToHttp().getRequest();
+        const { username, password } = request.body;
+
+        const user = await this.authService.validateUser(username, password);
+        if (!user) {
+            return false;
+        }
+
+        request.user = user; // Attach user to the request object
+        return true;
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-134-book-book-controller-ts">File 134: book/book.controller.ts</h2>
+
+```typescript
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
+} from "@nestjs/common";
+import { Prisma } from "@prisma/client"; // Import Prisma types
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+
+import { BookService } from "./book.service";
+
+@UseGuards(JwtAuthGuard)
+@Controller("book")
+export class BookController {
+  constructor(private readonly bookService: BookService) {}
+
+  @Get()
+  async getAllBooks() {
+    return this.bookService.getAllBooks();
+  }
+
+  @Get("/getUserBooks")
+  async getUserBooks(@Query("userId") userId: string) {
+    return this.bookService.getUserBooks(userId);
+  }
+
+  @Get("/getCurrentlyReading")
+  async getCurrentlyReading(@Query("userId") userId: string) {
+    return this.bookService.getCurrentlyReading(userId);
+  }
+  @Get("/getFavorites")
+  async getFavoriteBooks(@Query("userId") userId: string) {
+    return this.bookService.getFavoriteBooks(userId);
+  }
+
+  @Patch(":id")
+  async updateBook(
+    @Param("id") id: string,
+    @Body() data: Prisma.BookUpdateInput
+  ) {
+    return this.bookService.updateBook(id, data);
+  }
+
+  @Get(":id")
+  async getBookById(@Param("id") id: string) {
+    return this.bookService.getBookById(id);
+  }
+
+  @Post()
+  async addBook(@Body() data: Prisma.BookCreateInput) {
+    return this.bookService.addBook(data);
+  }
+
+  @Delete(":id")
+  async deleteBook(@Param("id") id: string) {
+    return this.bookService.deleteBook(id);
+  }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-135-book-book-module-ts">File 135: book/book.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+import { BookController } from "./book.controller";
+import { BookService } from "./book.service";
+
+@Module({
+    controllers: [BookController],
+    providers: [BookService, PrismaService], // Add PrismaService here
+    exports: [BookService],
+})
+export class BookModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-136-book-book-service-ts">File 136: book/book.service.ts</h2>
+
+```typescript
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+
+import { PrismaService } from "../prisma/prisma.service"; // Import PrismaService
+
+@Injectable()
+export class BookService {
+    constructor(private readonly prisma: PrismaService) {}
+    async addBook(data: any) {
+        const {
+            userId,
+            genres, // Array of genre names
+            bookshelves,
+            bookElements,
+            canvaElements,
+            curveElements,
+            highlights,
+            offsetPosition,
+            chaptersData,
+            id,
+            ...rest
+        } = data;
+
+        console.log("data", data);
+        return this.prisma.book.create({
+            data: {
+                ...rest,
+                user: {
+                    connect: { id: userId },
+                },
+                genres: {
+                    create: genres.map((genreName: string) => ({
+                        genre: {
+                            connectOrCreate: {
+                                where: { name: genreName },
+                                create: { name: genreName },
+                            },
+                        },
+                    })),
+                },
+                bookshelves: {
+                    connect: bookshelves.map((shelfId: string) => ({
+                        id: shelfId,
+                    })),
+                },
+                bookElements: {
+                    create: bookElements || [],
+                },
+                canvaElements: {
+                    create: canvaElements?.map((canvaElement) => ({
+                        ...canvaElement,
+                        points: {
+                            create: canvaElement.points || [],
+                        },
+                        outgoingArrows: {
+                            create: canvaElement.outgoingArrows || [],
+                        },
+                        incomingArrows: {
+                            create: canvaElement.incomingArrows || [],
+                        },
+                        circleElements: {
+                            create: canvaElement.circleElements || [],
+                        },
+                        rectElements: {
+                            create: canvaElement.rectElements || [],
+                        },
+                        textElements: {
+                            create: canvaElement.textElements || [],
+                        },
+                    })),
+                },
+                curveElements: {
+                    create: curveElements?.map((curveElement) => ({
+                        ...curveElement,
+                        points: {
+                            create: curveElement.points || [],
+                        },
+                        arrowElements: {
+                            create: curveElement.arrowElements || [],
+                        },
+                    })),
+                },
+                highlights: {
+                    create: highlights || [],
+                },
+                offsetPosition: offsetPosition
+                    ? { create: offsetPosition }
+                    : undefined,
+                chaptersData: {
+                    create: chaptersData || [],
+                },
+                totalPages: data.totalPages || 0,
+            },
+        });
+    }
+
+    async getAllBooks() {
+        return this.prisma.book.findMany();
+    }
+
+    async getUserBooks(userId: string) {
+        return this.prisma.book.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                author: true,
+                imageUrl: true,
+                totalPages: true,
+                dateAdded: true,
+                liked: true,
+                // Exclude bookElements or any other fields as needed
+            },
+        });
+    }
+
+    async getBookById(id: string) {
+        const book = await this.prisma.book.findUnique({
+            where: { id },
+            include: {
+                genres: true,
+                bookshelves: true,
+                bookElements: {
+                    orderBy: {
+                        lineY: "asc",
+                    },
+                },
+                canvaElements: true,
+                curveElements: true,
+                highlights: true,
+                offsetPosition: true,
+                chaptersData: true,
+                
+            },
+        });
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+        return book;
+    }
+
+    async updateBook(id: string, data: Prisma.BookUpdateInput) {
+        console.log("Updating book", id, data);
+        const updatedBook = await this.prisma.book.update({
+            where: { id },
+            data,
+        });
+        if (!updatedBook) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+        return updatedBook;
+    }
+
+    async deleteBook(id: string) {
+        const deletedBook = await this.prisma.book.delete({ where: { id } });
+        if (!deletedBook) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+        return deletedBook;
+    }
+
+    async getCurrentlyReading(userId: string) {
+        // Get books that the user is currently reading (in progress but not completed)
+        try {
+            console.log("userId", userId);
+            // Alternative approach - get bookIds ordered by lastReadAt first
+            const bookProgressOrdered = await this.prisma.bookProgress.findMany({
+                where: {
+                    userId: userId,
+                    isCompleted: false,
+                },
+                orderBy: {
+                    lastReadAt: 'desc'
+                },
+                select: {
+                    bookId: true
+                }
+            });
+            console.log("bookProgressOrdered", bookProgressOrdered);
+            
+            // Use this ordered list to fetch books in the correct order
+            const bookIds = bookProgressOrdered.map(progress => progress.bookId);
+            
+            // Now fetch the actual books with those IDs
+            const books = await this.prisma.book.findMany({
+                where: {
+                    id: {
+                        in: bookIds
+                    }
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    author: true,
+                    imageUrl: true,
+                    liked: true,
+                    dateAdded: true,
+                    scale: true,
+                    userId: true,
+                    totalPages: true,
+                    genres: {
+                        include: {
+                            genre: true
+                        }
+                    },
+                    bookProgress: {
+                        orderBy: {
+                            lastReadAt: 'desc'
+                        }
+                    }
+                }
+            });
+            console.log("books", books);
+            // Manually sort books to match the order of bookIds
+            const sortedBooks = bookIds.map(id => 
+                books.find(book => book.id === id)
+            ).filter(Boolean);
+            console.log("sortedBooks", sortedBooks);
+            
+            return {
+                success: true,
+                data: sortedBooks
+            };
+        } catch (error) {
+            console.error('Error fetching currently reading books:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch currently reading books'
+            };
+        }
+    }
+
+    async getFavoriteBooks(userId: string) {
+        try {
+            const books = await this.prisma.book.findMany({
+                where: { 
+                    userId,
+                    liked: true 
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    author: true,
+                    imageUrl: true,
+                    liked: true,
+                    dateAdded: true,
+                    scale: true,
+                    userId: true,
+                    totalPages: true,
+                    genres: {
+                        include: {
+                            genre: true
+                        }
+                    }
+                }
+            });
+            
+            // Transform the data to include the genres properly
+            const booksWithGenres = books.map(book => ({
+                ...book,
+                genres: book.genres.map(g => g.genre.name)
+            }));
+            
+            return {
+                success: true,
+                data: booksWithGenres
+            };
+        } catch (error) {
+            console.error('Error fetching favorite books:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch favorite books'
+            };
+        }
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-137-bookshelve-bookshelve-controller-ts">File 137: bookshelve/bookshelve.controller.ts</h2>
+
+```typescript
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
+    UseGuards,
+} from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+
+import { BookshelveService } from "./bookshelve.service";
+
+@UseGuards(JwtAuthGuard)
+@Controller("bookshelve")
+export class BookshelveController {
+    constructor(private readonly bookshelveService: BookshelveService) {}
+
+    @Get()
+    async getAllBooks() {
+        return this.bookshelveService.getAllBookshelves();
+    }
+
+    @Post()
+    async addBookshelve(@Body() data: Prisma.BookshelveCreateInput) {
+        return this.bookshelveService.addBookshelve(data);
+    }
+
+    @Put(":id")
+    async updateBookshelve(
+        @Param("id") id: string,
+        @Body() data: Prisma.BookshelveUpdateInput
+    ) {
+        return this.bookshelveService.updateBookshelve(id, data);
+    }
+
+    @Post(":bookshelveId/books/:bookId")
+    async addBookToBookshelve(
+        @Param("bookshelveId") bookshelveId: string,
+        @Param("bookId") bookId: string
+    ) {
+        return this.bookshelveService.addBookToBookshelve(bookshelveId, bookId);
+    }
+
+    @Delete(":id")
+    async deleteBookshelve(@Param("id") id: string) {
+        return this.bookshelveService.deleteBookshelve(id);
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-138-bookshelve-bookshelve-module-ts">File 138: bookshelve/bookshelve.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+
+import { BookModule } from "../book/book.module";
+import { PrismaService } from "../prisma/prisma.service";
+
+import { BookshelveController } from "./bookshelve.controller";
+import { BookshelveService } from "./bookshelve.service";
+
+@Module({
+    controllers: [BookshelveController],
+    providers: [BookshelveService, PrismaService],
+    imports: [BookModule],
+})
+export class BookshelveModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-139-bookshelve-bookshelve-service-ts">File 139: bookshelve/bookshelve.service.ts</h2>
+
+```typescript
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+@Injectable()
+export class BookshelveService {
+    constructor(private readonly prisma: PrismaService) {}
+
+    async addBookshelve(data: Prisma.BookshelveCreateInput) {
+        return this.prisma.bookshelve.create({ data });
+    }
+
+    async getAllBookshelves() {
+        return this.prisma.bookshelve.findMany();
+    }
+
+    async getBookshelveById(id: string) {
+        const bookshelve = await this.prisma.bookshelve.findUnique({
+            where: { id },
+        });
+        if (!bookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
+        }
+        return bookshelve;
+    }
+
+    async updateBookshelve(id: string, data: Prisma.BookshelveUpdateInput) {
+        const updatedBookshelve = await this.prisma.bookshelve.update({
+            where: { id },
+            data,
+        });
+        if (!updatedBookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
+        }
+        return updatedBookshelve;
+    }
+
+    async addBookToBookshelve(bookshelveId: string, bookId: string) {
+        const bookshelve = await this.prisma.bookshelve.findUnique({
+            where: { id: bookshelveId },
+            include: { books: true },
+        });
+        if (!bookshelve) {
+            throw new NotFoundException(
+                `Bookshelve with ID ${bookshelveId} not found`
+            );
+        }
+
+        const bookAlreadyExists = bookshelve.books.some(
+            (book) => book.id === bookId
+        );
+        if (bookAlreadyExists) {
+            throw new NotFoundException(
+                `Book with ID ${bookId} already exists in the bookshelve`
+            );
+        }
+
+        return this.prisma.bookshelve.update({
+            where: { id: bookshelveId },
+            data: {
+                books: {
+                    connect: { id: bookId },
+                },
+            },
+        });
+    }
+
+    async deleteBookshelve(id: string) {
+        const deletedBookshelve = await this.prisma.bookshelve.delete({
+            where: { id },
+        });
+        if (!deletedBookshelve) {
+            throw new NotFoundException(`Bookshelve with ID ${id} not found`);
+        }
+        return deletedBookshelve;
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-140-collection-collection-controller-ts">File 140: collection/collection.controller.ts</h2>
+
+```typescript
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Put, 
+  Delete, 
+  Body, 
+  Param, 
+  Query, 
+  UseGuards,
+  Request
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CollectionService } from './collection.service';
+
+@Controller('collection')
+@UseGuards(JwtAuthGuard)
+export class CollectionController {
+  constructor(private readonly collectionService: CollectionService) {}
+
+  @Get()
+  async getUserCollections(@Request() req, @Query('userId') userId: string) {
+    return this.collectionService.getUserCollections(userId || req.user.userId);
+  }
+
+  @Get(':id')
+  async getCollection(@Param('id') id: string) {
+    return this.collectionService.getCollectionById(id);
+  }
+
+  @Post()
+  async createCollection(
+    @Request() req,
+    @Body() data: { name: string; description?: string; imageUrl?: string }
+  ) {
+    return this.collectionService.createCollection({
+      ...data,
+      userId: req.user.userId
+    });
+  }
+
+  @Put(':id')
+  async updateCollection(
+    @Param('id') id: string,
+    @Body() data: { name?: string; description?: string; imageUrl?: string }
+  ) {
+    return this.collectionService.updateCollection(id, data);
+  }
+
+  @Delete(':id')
+  async deleteCollection(@Param('id') id: string) {
+    return this.collectionService.deleteCollection(id);
+  }
+
+  @Post(':collectionId/books/:bookId')
+  async addBookToCollection(
+    @Param('collectionId') collectionId: string,
+    @Param('bookId') bookId: string
+  ) {
+    return this.collectionService.addBookToCollection(collectionId, bookId);
+  }
+
+  @Delete(':collectionId/books/:bookId')
+  async removeBookFromCollection(
+    @Param('collectionId') collectionId: string,
+    @Param('bookId') bookId: string
+  ) {
+    return this.collectionService.removeBookFromCollection(collectionId, bookId);
+  }
+} 
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-141-collection-collection-module-ts">File 141: collection/collection.module.ts</h2>
+
+```typescript
+import { Module } from '@nestjs/common';
+import { CollectionController } from './collection.controller';
+import { CollectionService } from './collection.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Module({
+  controllers: [CollectionController],
+  providers: [CollectionService, PrismaService],
+  exports: [CollectionService],
+})
+export class CollectionModule {} 
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-142-collection-collection-service-ts">File 142: collection/collection.service.ts</h2>
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class CollectionService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getUserCollections(userId: string) {
+    try {
+      const collections = await this.prisma.collection.findMany({
+        where: { userId },
+        include: {
+          books: {
+            include: {
+              book: {
+                select: {
+                  id: true,
+                  title: true,
+                  author: true,
+                  imageUrl: true
+                }
+              }
+            }
+          },
+          _count: {
+            select: { books: true }
+          }
+        }
+      });
+
+      const formattedCollections = collections.map(collection => ({
+        id: collection.id,
+        name: collection.name,
+        description: collection.description,
+        imageUrl: collection.imageUrl,
+        createdAt: collection.createdAt,
+        updatedAt: collection.updatedAt,
+        bookCount: collection._count.books,
+        books: collection.books.map(entry => ({
+          id: entry.book.id,
+          title: entry.book.title,
+          author: entry.book.author,
+          imageUrl: entry.book.imageUrl,
+          addedAt: entry.addedAt
+        }))
+      }));
+
+      return {
+        success: true,
+        data: formattedCollections
+      };
+    } catch (error) {
+      console.error('Error fetching user collections:', error);
+      return {
+        success: false,
+        error: 'Failed to fetch collections'
+      };
+    }
+  }
+
+  async getCollectionById(id: string) {
+    try {
+      const collection = await this.prisma.collection.findUnique({
+        where: { id },
+        include: {
+          books: {
+            include: {
+              book: {
+                select: {
+                  id: true,
+                  title: true,
+                  author: true,
+                  description: true,
+                  imageUrl: true,
+                  dateAdded: true,
+                  genres: {
+                    include: {
+                      genre: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!collection) {
+        return {
+          success: false,
+          error: `Collection with ID ${id} not found`
+        };
+      }
+
+      // Transform the data
+      const booksWithDetails = collection.books.map(entry => ({
+        ...entry.book,
+        addedAt: entry.addedAt,
+        genres: entry.book.genres.map(g => g.genre.name)
+      }));
+
+      return {
+        success: true,
+        data: {
+          ...collection,
+          books: booksWithDetails
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching collection:', error);
+      return {
+        success: false,
+        error: 'Failed to fetch collection'
+      };
+    }
+  }
+
+  async createCollection(data: { 
+    name: string; 
+    description?: string; 
+    imageUrl?: string;
+    userId: string 
+  }) {
+    try {
+      // Check if collection with same name already exists for this user
+      const existingCollection = await this.prisma.collection.findFirst({
+        where: {
+          name: data.name,
+          userId: data.userId
+        }
+      });
+
+      if (existingCollection) {
+        return {
+          success: false,
+          error: `Collection named "${data.name}" already exists`
+        };
+      }
+
+      const newCollection = await this.prisma.collection.create({
+        data
+      });
+
+      return {
+        success: true,
+        data: newCollection
+      };
+    } catch (error) {
+      console.error('Error creating collection:', error);
+      return {
+        success: false,
+        error: 'Failed to create collection'
+      };
+    }
+  }
+
+  async updateCollection(
+    id: string, 
+    data: { name?: string; description?: string; imageUrl?: string }
+  ) {
+    try {
+      const collection = await this.prisma.collection.findUnique({
+        where: { id }
+      });
+
+      if (!collection) {
+        return {
+          success: false,
+          error: `Collection with ID ${id} not found`
+        };
+      }
+
+      const updatedCollection = await this.prisma.collection.update({
+        where: { id },
+        data
+      });
+
+      return {
+        success: true,
+        data: updatedCollection
+      };
+    } catch (error) {
+      console.error('Error updating collection:', error);
+      return {
+        success: false,
+        error: 'Failed to update collection'
+      };
+    }
+  }
+
+  async deleteCollection(id: string) {
+    try {
+      const collection = await this.prisma.collection.findUnique({
+        where: { id }
+      });
+
+      if (!collection) {
+        return {
+          success: false,
+          error: `Collection with ID ${id} not found`
+        };
+      }
+
+      await this.prisma.collection.delete({
+        where: { id }
+      });
+
+      return {
+        success: true,
+        message: 'Collection deleted successfully'
+      };
+    } catch (error) {
+      console.error('Error deleting collection:', error);
+      return {
+        success: false,
+        error: 'Failed to delete collection'
+      };
+    }
+  }
+
+  async addBookToCollection(collectionId: string, bookId: string) {
+    try {
+      // Check if collection exists
+      const collection = await this.prisma.collection.findUnique({
+        where: { id: collectionId }
+      });
+
+      if (!collection) {
+        return {
+          success: false,
+          error: `Collection with ID ${collectionId} not found`
+        };
+      }
+
+      // Check if book exists
+      const book = await this.prisma.book.findUnique({
+        where: { id: bookId }
+      });
+
+      if (!book) {
+        return {
+          success: false,
+          error: `Book with ID ${bookId} not found`
+        };
+      }
+
+      // Check if book is already in collection
+      const existingEntry = await this.prisma.bookCollection.findUnique({
+        where: {
+          bookId_collectionId: {
+            bookId,
+            collectionId
+          }
+        }
+      });
+
+      if (existingEntry) {
+        return {
+          success: false,
+          error: 'Book already exists in this collection'
+        };
+      }
+
+      // Add book to collection
+      const bookCollection = await this.prisma.bookCollection.create({
+        data: {
+          book: { connect: { id: bookId } },
+          collection: { connect: { id: collectionId } }
+        },
+        include: {
+          book: true
+        }
+      });
+
+      return {
+        success: true,
+        data: bookCollection
+      };
+    } catch (error) {
+      console.error('Error adding book to collection:', error);
+      return {
+        success: false,
+        error: 'Failed to add book to collection'
+      };
+    }
+  }
+
+  async removeBookFromCollection(collectionId: string, bookId: string) {
+    try {
+      // Check if the book is in the collection
+      const bookCollection = await this.prisma.bookCollection.findUnique({
+        where: {
+          bookId_collectionId: {
+            bookId,
+            collectionId
+          }
+        }
+      });
+
+      if (!bookCollection) {
+        return {
+          success: false,
+          error: 'Book is not in this collection'
+        };
+      }
+
+      // Remove book from collection
+      await this.prisma.bookCollection.delete({
+        where: {
+          bookId_collectionId: {
+            bookId,
+            collectionId
+          }
+        }
+      });
+
+      return {
+        success: true,
+        message: 'Book removed from collection successfully'
+      };
+    } catch (error) {
+      console.error('Error removing book from collection:', error);
+      return {
+        success: false,
+        error: 'Failed to remove book from collection'
+      };
+    }
+  }
+} 
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-143-main-ts">File 143: main.ts</h2>
+
+```typescript
+import "reflect-metadata";
+
+import { NestFactory } from "@nestjs/core";
+import * as bodyParser from "body-parser";
+import { AppModule } from "./app.module";
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+    app.use(bodyParser.json({ limit: "50mb" }));
+    app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+    await app.listen(3000);
+}
+bootstrap();
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-144-prisma-prisma-module-ts">File 144: prisma/prisma.module.ts</h2>
+
+```typescript
+import { Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
+
+
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService],
+})
+export class PrismaModule {
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-145-prisma-prisma-service-ts">File 145: prisma/prisma.service.ts</h2>
+
+```typescript
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { PrismaClient } from "@prisma/client";
+
+@Injectable()
+export class PrismaService
+    extends PrismaClient
+    implements OnModuleInit, OnModuleDestroy
+{
+    constructor() {
+        super(); // Call PrismaClient constructor
+    }
+
+    async onModuleInit() {
+        await this.$connect(); // Connect to the database
+    }
+
+    async onModuleDestroy() {
+        await this.$disconnect(); // Disconnect from the database
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-146-settings-settings-controller-ts">File 146: settings/settings.controller.ts</h2>
+
+```typescript
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Post,
+    UseGuards,
+} from "@nestjs/common";
+import { Prisma, Settings } from "@prisma/client"; // Import Prisma-generated types
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+
+import { SettingsService } from "./settings.service";
+
+@UseGuards(JwtAuthGuard)
+@Controller("settings")
+export class SettingsController {
+    constructor(private readonly settingsService: SettingsService) {}
+
+    @Get()
+    async getAllSettings(): Promise<Settings[]> {
+        return this.settingsService.getAllSettings();
+    }
+
+    @Get("user/:userId")
+    async getSettingsByUserId(
+        @Param("userId") userId: string
+    ): Promise<Settings> {
+        return this.settingsService.getSettingsByUserId(userId);
+    }
+
+    @Get(":id")
+    async getSettingsById(@Param("id") id: string): Promise<Settings> {
+        return this.settingsService.getSettingsById(id);
+    }
+
+    @Patch(":id")
+    async updateSettings(
+        @Param("id") id: string,
+        @Body() data: Prisma.SettingsUpdateInput
+    ): Promise<Settings> {
+        return this.settingsService.updateSettings(id, data);
+    }
+
+    @Patch("user/:userId")
+    async updateSettingsForUser(
+        @Param("userId") userId: string,
+        @Body() data: Prisma.SettingsUpdateInput
+    ): Promise<Settings> {
+        return this.settingsService.updateSettingsForUser(userId, data);
+    }
+
+    @Post()
+    async createSettings(
+        @Body() data: Prisma.SettingsCreateInput
+    ): Promise<Settings> {
+        return this.settingsService.createSettings(data);
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-147-settings-settings-module-ts">File 147: settings/settings.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+import { SettingsController } from "./settings.controller";
+import { SettingsService } from "./settings.service";
+
+@Module({
+    controllers: [SettingsController],
+    providers: [SettingsService, PrismaService],
+    exports: [SettingsService],
+})
+export class SettingsModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-148-settings-settings-service-ts">File 148: settings/settings.service.ts</h2>
+
+```typescript
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+@Injectable()
+export class SettingsService {
+    constructor(private readonly prisma: PrismaService) {}
+
+    // Get all settings
+    async getAllSettings() {
+        return this.prisma.settings.findMany();
+    }
+
+    // Get settings by ID
+    async getSettingsById(id: string) {
+        const settings = await this.prisma.settings.findUnique({
+            where: { id },
+        });
+        if (!settings) {
+            throw new NotFoundException(`Settings with ID ${id} not found`);
+        }
+        return settings;
+    }
+
+    // Get settings by User ID
+    async getSettingsByUserId(userId: string) {
+        const settings = await this.prisma.settings.findUnique({
+            where: { userId },
+        });
+        if (!settings) {
+            throw new NotFoundException(
+                `Settings with user ID ${userId} not found`
+            );
+        }
+        return settings;
+    }
+
+    // Create new settings
+    async createSettings(data: Prisma.SettingsCreateInput) {
+        return this.prisma.settings.create({ data });
+    }
+
+    // Update settings for a User
+    async updateSettingsForUser(
+        userId: string,
+        data: Prisma.SettingsUpdateInput
+    ) {
+        const settings = await this.prisma.settings.update({
+            where: { userId },
+            data,
+        });
+        if (!settings) {
+            throw new NotFoundException(
+                `Settings with user ID ${userId} not found`
+            );
+        }
+        return settings;
+    }
+
+    // Update settings by ID
+    async updateSettings(id: string, data: Prisma.SettingsUpdateInput) {
+        const settings = await this.prisma.settings.update({
+            where: { id },
+            data,
+        });
+        if (!settings) {
+            throw new NotFoundException(`Settings with ID ${id} not found`);
+        }
+        return settings;
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-149-tracking-tracking-controller-ts">File 149: tracking/tracking.controller.ts</h2>
+
+```typescript
+import { 
+  Controller, 
+  Post, 
+  Get, 
+  Body, 
+  Param, 
+  UseGuards,
+  Request,
+  Query
+} from '@nestjs/common';
+import { TrackingService } from './tracking.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+@Controller('tracking')
+@UseGuards(JwtAuthGuard)
+export class TrackingController {
+  constructor(private readonly trackingService: TrackingService) {}
+
+  @Post('session/start')
+  async startReadingSession(
+    @Request() req,
+    @Body() data: { bookId: string }
+  ) {
+    return this.trackingService.startReadingSession(
+      req.user.userId,
+      data.bookId
+    );
+  }
+
+  @Post('session/end')
+  async endReadingSession(
+    @Body() data: { 
+      sessionId: string; 
+      pagesRead: number; 
+      lastPosition: number 
+    }
+  ) {
+    return this.trackingService.endReadingSession(
+      data.sessionId,
+      data.pagesRead,
+      data.lastPosition
+    );
+  }
+
+  @Get('sessions/recent')
+  async getRecentSessions(@Request() req) {
+    return this.trackingService.getRecentSessions(req.user.userId);
+  }
+
+  @Get('progress/book/:bookId')
+  async getBookProgress(@Request() req, @Param('bookId') bookId: string) {
+    return this.trackingService.getBookProgress(req.user.userId, bookId);
+  }
+
+  @Get('progress/all')
+  async getAllBookProgress(@Request() req) {
+    return this.trackingService.getAllBookProgress(req.user.userId);
+  }
+
+  @Get('streak')
+  async getReadingStreak(@Request() req) {
+    return this.trackingService.getReadingStreak(req.user.userId);
+  }
+
+  @Get('stats')
+  async getReadingStats(@Request() req) {
+    return this.trackingService.getReadingStats(req.user.userId);
+  }
+
+  @Get('dashboard')
+  async getDashboardData(@Query('userId') userId: string) {
+    return this.trackingService.getDashboardData(userId);
+  }
+
+  @Post('progress/update')
+  async updateBookProgress(@Request() req, @Body() body: { bookId: string, percentComplete: number, currentPage: number }) {
+    const userId = req.user.userId;
+    const { bookId, percentComplete, currentPage } = body;
+    
+    return this.trackingService.updateBookProgressDirect(
+      userId,
+      bookId,
+      percentComplete,
+      currentPage
+    );
+  }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-150-tracking-tracking-module-ts">File 150: tracking/tracking.module.ts</h2>
+
+```typescript
+import { Module } from '@nestjs/common';
+import { TrackingController } from './tracking.controller';
+import { TrackingService } from './tracking.service';
+import { PrismaModule } from '../prisma/prisma.module';
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [TrackingController],
+  providers: [TrackingService],
+  exports: [TrackingService]
+})
+export class TrackingModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-151-tracking-tracking-service-ts">File 151: tracking/tracking.service.ts</h2>
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+
+@Injectable()
+export class TrackingService {
+  constructor(private prisma: PrismaService) {}
+
+  // Reading Session Methods
+  async startReadingSession(userId: string, bookId: string) {
+    return this.prisma.readingSession.create({
+      data: {
+        userId,
+        bookId,
+        startTime: new Date(),
+      },
+    });
+  }
+
+  async endReadingSession(
+    sessionId: string,
+    pagesRead: number,
+    lastPosition: number
+  ) {
+    console.log("Ending reading session", sessionId, pagesRead, lastPosition);
+    const session = await this.prisma.readingSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new Error("Reading session not found");
+    }
+
+    const endTime = new Date();
+    const duration = Math.floor(
+      (endTime.getTime() - session.startTime.getTime()) / 1000
+    );
+
+    // Update the session
+    const updatedSession = await this.prisma.readingSession.update({
+      where: { id: sessionId },
+      data: {
+        endTime,
+        duration,
+        pagesRead,
+        lastPosition,
+      },
+    });
+
+    // Update book progress
+    await this.updateBookProgress(
+      session.userId,
+      session.bookId,
+      lastPosition,
+      pagesRead,
+      duration
+    );
+
+    // Update reading streak
+    await this.updateReadingStreak(session.userId);
+
+    return updatedSession;
+  }
+
+  async getRecentSessions(userId: string, limit = 10) {
+    return this.prisma.readingSession.findMany({
+      where: { userId },
+      orderBy: { startTime: "desc" },
+      take: limit,
+      include: {
+        book: {
+          select: {
+            id: true,
+            title: true,
+            author: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+  }
+
+  // Book Progress Methods
+  async updateBookProgress(
+    userId: string,
+    bookId: string,
+    percentComplete: number,
+    pagesRead: number,
+    duration: number
+  ) {
+    // Get or create book progress
+    const bookProgress = await this.prisma.bookProgress.upsert({
+      where: {
+        userId_bookId: {
+          userId,
+          bookId,
+        },
+      },
+      update: {
+        percentComplete: percentComplete,
+        // Set currentPage directly instead of incrementing
+        currentPage: pagesRead,
+        lastReadAt: new Date(),
+        timeSpentReading: {
+          increment: duration,
+        },
+      },
+      create: {
+        userId,
+        bookId,
+        percentComplete: percentComplete,
+        currentPage: pagesRead,
+        lastReadAt: new Date(),
+        timeSpentReading: duration,
+      },
+    });
+
+    // Check if book is completed
+    if (bookProgress.percentComplete >= 0.98 && !bookProgress.isCompleted) {
+      await this.prisma.bookProgress.update({
+        where: { id: bookProgress.id },
+        data: {
+          isCompleted: true,
+          completedAt: new Date(),
+        },
+      });
+
+      // Update reading stats
+      await this.updateReadingStats(userId);
+    }
+
+    return bookProgress;
+  }
+
+  async getBookProgress(userId: string, bookId: string) {
+    return this.prisma.bookProgress.findUnique({
+      where: {
+        userId_bookId: {
+          userId,
+          bookId,
+        },
+      },
+    });
+  }
+
+  async getAllBookProgress(userId: string) {
+    console.log("userId", userId);
+    return this.prisma.bookProgress.findMany({
+      where: { userId },
+      include: {
+        book: {
+          select: {
+            id: true,
+            title: true,
+            author: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+  }
+
+  // Reading Streak Methods
+  async updateReadingStreak(userId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get or create reading streak
+    const streak = await this.prisma.readingStreak.findUnique({
+      where: { userId },
+    });
+
+    if (!streak) {
+      return this.prisma.readingStreak.create({
+        data: {
+          userId,
+          currentStreak: 1,
+          longestStreak: 1,
+          lastReadDate: today,
+          totalReadDays: 1,
+        },
+      });
+    }
+
+    // If already read today, no need to update
+    if (
+      streak.lastReadDate &&
+      streak.lastReadDate.getTime() === today.getTime()
+    ) {
+      return streak;
+    }
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    let currentStreak = streak.currentStreak;
+    let longestStreak = streak.longestStreak;
+    let totalReadDays = streak.totalReadDays + 1;
+
+    // Check if the streak continues
+    if (
+      streak.lastReadDate &&
+      streak.lastReadDate.getTime() === yesterday.getTime()
+    ) {
+      currentStreak += 1;
+      if (currentStreak > longestStreak) {
+        longestStreak = currentStreak;
+      }
+    } else {
+      // Streak broken
+      currentStreak = 1;
+    }
+
+    return this.prisma.readingStreak.update({
+      where: { userId },
+      data: {
+        currentStreak,
+        longestStreak,
+        lastReadDate: today,
+        totalReadDays,
+      },
+    });
+  }
+
+  async getReadingStreak(userId: string) {
+    return this.prisma.readingStreak.findUnique({
+      where: { userId },
+    });
+  }
+
+  // Reading Stats Methods
+  async updateReadingStats(userId: string) {
+    // Get completed books
+    const completedBooks = await this.prisma.bookProgress.findMany({
+      where: {
+        userId,
+        isCompleted: true,
+      },
+    });
+
+    // Calculate total reading time
+    const totalReadingTime = await this.prisma.readingSession.aggregate({
+      where: { userId },
+      _sum: { duration: true },
+    });
+
+    // Calculate total pages read based on maximum progress for each book
+    // This prevents counting the same pages multiple times
+    const bookProgresses = await this.prisma.bookProgress.findMany({
+      where: { userId },
+      include: {
+        book: {
+          select: {
+            totalPages: true,
+          },
+        },
+      },
+    });
+
+    // Sum the current page from each book's progress
+    const totalPagesRead = bookProgresses.reduce((total, progress) => {
+      // Use currentPage if available, otherwise calculate from percentComplete if book has totalPages
+      if (progress.currentPage) {
+        return total + progress.currentPage;
+      } else if (progress.book?.totalPages && progress.percentComplete) {
+        return (
+          total +
+          Math.floor(progress.book.totalPages * progress.percentComplete)
+        );
+      }
+      return total;
+    }, 0);
+
+    // Find favorite genre (would require more complex query in a real app)
+    // For now, we'll leave it null
+
+    return this.prisma.readingStats.upsert({
+      where: { userId },
+      update: {
+        totalBooksRead: completedBooks.length,
+        totalReadingTime: totalReadingTime._sum.duration || 0,
+        totalPagesRead: totalPagesRead,
+        lastUpdated: new Date(),
+      },
+      create: {
+        userId,
+        totalBooksRead: completedBooks.length,
+        totalReadingTime: totalReadingTime._sum.duration || 0,
+        totalPagesRead: totalPagesRead,
+        lastUpdated: new Date(),
+      },
+    });
+  }
+
+  async getReadingStats(userId: string) {
+    return this.prisma.readingStats.findUnique({
+      where: { userId },
+    });
+  }
+
+  // Dashboard Data
+  async getDashboardData(userId: string) {
+    const [readingStats, readingStreak, recentSessions, bookProgress] =
+      await Promise.all([
+        this.getReadingStats(userId),
+        this.getReadingStreak(userId),
+        this.getRecentSessions(userId, 5),
+        this.getAllBookProgress(userId),
+      ]);
+    console.log("readingStats", readingStats);
+    console.log("userId", userId);
+
+    // Calculate reading progress over time (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const readingActivity = await this.prisma.readingSession.findMany({
+      where: {
+        userId,
+        startTime: {
+          gte: sevenDaysAgo,
+        },
+      },
+      orderBy: {
+        startTime: "asc",
+      },
+    });
+
+    // Group by day for chart data
+    const readingProgressData = this.groupReadingSessionsByDay(readingActivity);
+
+    // Get genre distribution
+    const genreDistribution = await this.getGenreDistribution(userId);
+
+    return {
+      stats: readingStats || {
+        totalBooksRead: 0,
+        totalPagesRead: 0,
+        totalReadingTime: 0,
+      },
+      streak: readingStreak || {
+        currentStreak: 0,
+        longestStreak: 0,
+        totalReadDays: 0,
+      },
+      recentActivity: this.formatRecentActivity(recentSessions, bookProgress),
+      readingProgressData,
+      genreDistribution,
+    };
+  }
+
+  private groupReadingSessionsByDay(sessions) {
+    const groupedByDay = {};
+
+    sessions.forEach((session) => {
+      const date = new Date(session.startTime);
+      const day = date.toISOString().split("T")[0];
+
+      if (!groupedByDay[day]) {
+        groupedByDay[day] = {
+          day,
+          totalMinutes: 0,
+          pagesRead: 0,
+          maxPageReached: 0,
+          bookPageCounts: {}, // Track max page per book
+        };
+      }
+
+      if (session.duration) {
+        groupedByDay[day].totalMinutes += Math.floor(session.duration / 60);
+      }
+
+      // Track the highest page number for each book separately
+      if (session.pagesRead && session.bookId) {
+        const currentMax =
+          groupedByDay[day].bookPageCounts[session.bookId] || 0;
+        if (session.pagesRead > currentMax) {
+          // If this session has a higher page count for this book, update it
+          groupedByDay[day].bookPageCounts[session.bookId] = session.pagesRead;
+        }
+      }
+    });
+
+    // Calculate total pages read by summing the max pages for each book
+    Object.values(groupedByDay).forEach((dayData: any) => {
+      dayData.pagesRead = Object.values(dayData.bookPageCounts).reduce(
+        (sum: number, pages: number) => sum + pages,
+        0
+      );
+      // Remove the temporary tracking object
+      delete dayData.bookPageCounts;
+    });
+
+    return Object.values(groupedByDay);
+  }
+
+  private formatRecentActivity(sessions, bookProgress) {
+    // Define the activity array with a proper type
+    const activity: Array<{
+      type: string;
+      description: string;
+      timestamp: Date | string;
+      bookId: string;
+    }> = [];
+
+    // Add reading sessions
+    sessions.forEach((session) => {
+      if (session.endTime) {
+        // Format duration more precisely
+        let durationText = "";
+        const durationSeconds = session.duration || 0;
+
+        if (durationSeconds < 60) {
+          // Less than a minute
+          durationText = `${durationSeconds} seconds`;
+        } else {
+          const minutes = Math.floor(durationSeconds / 60);
+          const seconds = durationSeconds % 60;
+
+          if (seconds === 0) {
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+          } else {
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""} and ${seconds} second${seconds !== 1 ? "s" : ""}`;
+          }
+        }
+
+        activity.push({
+          type: "reading",
+          description: `Read "${session.book.title}" for ${durationText}`,
+          timestamp: session.endTime,
+          bookId: session.bookId,
+        });
+      }
+    });
+
+    // Add completed books
+    const completedBooks = bookProgress
+      .filter((progress) => progress.isCompleted && progress.completedAt)
+      .map((progress) => ({
+        type: "completed",
+        description: `Finished reading "${progress.book.title}"`,
+        timestamp: progress.completedAt,
+        bookId: progress.bookId,
+      }));
+
+    return [...activity, ...completedBooks]
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
+      .slice(0, 5);
+  }
+
+  async getGenreDistribution(_: string) {
+    // This would be a more complex query in a real app
+    // For now, we'll return mock data
+    return [
+      { genre: "Fiction", count: 5 },
+      { genre: "Non-Fiction", count: 3 },
+      { genre: "Science Fiction", count: 2 },
+      { genre: "Fantasy", count: 4 },
+      { genre: "Mystery", count: 1 },
+    ];
+  }
+
+  // Add this new method to handle direct progress updates from the reading page
+  async updateBookProgressDirect(
+    userId: string,
+    bookId: string,
+    percentComplete: number,
+    currentPage: number
+  ) {
+    try {
+      // Get existing book progress or create new one
+      const bookProgress = await this.prisma.bookProgress.upsert({
+        where: {
+          userId_bookId: {
+            userId,
+            bookId,
+          },
+        },
+        update: {
+          percentComplete: Math.min(Math.max(percentComplete, 0), 1), // Ensure between 0-1
+          currentPage: currentPage,
+          lastReadAt: new Date(),
+        },
+        create: {
+          userId,
+          bookId,
+          percentComplete: Math.min(Math.max(percentComplete, 0), 1),
+          currentPage: currentPage,
+          lastReadAt: new Date(),
+          timeSpentReading: 0, // Initial value
+        },
+      });
+
+      // Check if book is completed (98% or more)
+      if (bookProgress.percentComplete >= 0.98 && !bookProgress.isCompleted) {
+        await this.prisma.bookProgress.update({
+          where: { id: bookProgress.id },
+          data: {
+            isCompleted: true,
+            completedAt: new Date(),
+          },
+        });
+
+        // Update reading stats
+      }
+      await this.updateReadingStats(userId);
+
+      return {
+        success: true,
+        data: bookProgress,
+      };
+    } catch (error) {
+      console.error("Error updating book progress:", error);
+      return {
+        success: false,
+        error: "Failed to update book progress",
+      };
+    }
+  }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-152-user-user-controller-ts">File 152: user/user.controller.ts</h2>
+
+```typescript
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Headers,
+    Param,
+    Post,
+    Put,
+    UseGuards,
+} from "@nestjs/common";
+import { Prisma, User } from "@prisma/client"; // Import Prisma's User type
+
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+
+import { UserService } from "./user.service";
+
+@UseGuards(JwtAuthGuard)
+@Controller("user")
+export class UserController {
+    constructor(private readonly userService: UserService) {}
+
+    @Post()
+    async create(@Body() data: Prisma.UserCreateInput): Promise<User> {
+        return this.userService.create(data);
+    }
+
+    @Get()
+    async findAll(): Promise<User[]> {
+        return this.userService.findAll();
+    }
+
+    @Get("/findOneByJwtPayload")
+    async findOneByJwtPayload(
+        @Headers("authorization") authorization: string
+    ): Promise<User> {
+        const token = authorization.split(" ")[1];
+        return this.userService.findOneByJwtPayload(token);
+    }
+
+    @Get(":id")
+    async findOne(@Param("id") id: string): Promise<User> {
+        return this.userService.findOne(id);
+    }
+
+    @Get("username/:username")
+    async findOneByUsername(
+        @Param("username") username: string
+    ): Promise<User> {
+        return this.userService.findOneByUsername(username);
+    }
+
+    @Put(":id")
+    async update(
+        @Param("id") id: string,
+        @Body() data: Prisma.UserUpdateInput
+    ): Promise<User> {
+        return this.userService.update(id, data);
+    }
+
+    @Delete(":id")
+    async remove(@Param("id") id: string): Promise<User> {
+        return this.userService.remove(id);
+    }
+}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-153-user-user-module-ts">File 153: user/user.module.ts</h2>
+
+```typescript
+import { Module } from "@nestjs/common";
+import { JwtModule } from "@nestjs/jwt";
+
+import { PrismaService } from "../prisma/prisma.service";
+
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+
+@Module({
+    providers: [UserService, PrismaService],
+    controllers: [UserController],
+    imports: [JwtModule],
+    exports: [UserService],
+})
+export class UserModule {}
+
+```
+
+<div style='page-break-after: always;'></div>
+
+<h2 id="file-154-user-user-service-ts">File 154: user/user.service.ts</h2>
+
+```typescript
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Prisma, User } from "@prisma/client"; // Import Prisma's User type
+
+import { PrismaService } from "../prisma/prisma.service";
+@Injectable()
+export class UserService {
+    constructor(
+        private readonly prisma: PrismaService,
+        private jwtService: JwtService
+    ) {}
+
+    // Create a new user
+    async create(data: Prisma.UserCreateInput): Promise<User> {
+        return this.prisma.user.create({ data });
+    }
+
+    // Get all users
+    async findAll(): Promise<User[]> {
+        return this.prisma.user.findMany();
+    }
+
+    // Find a user by username
+    async findOneByUsername(username: string): Promise<User> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+        });
+        if (!user) {
+            throw new NotFoundException(
+                `User with username ${username} not found`
+            );
+        }
+        return user;
+    }
+
+    // Find a user by JWT payload
+    async findOneByJwtPayload(jwt: string): Promise<User> {
+        const decodedToken = this.jwtService.decode(jwt) as {
+            username?: string;
+        };
+        const username = decodedToken?.username;
+        if (!username) {
+            throw new Error("Invalid JWT");
+        }
+        return this.findOneByUsername(username);
+    }
+
+    // Find a user by ID
+    async findOne(id: string): Promise<User> {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+        });
+        if (!user) {
+            throw new NotFoundException(`User with ID ${id} not found`);
+        }
+        return user;
+    }
+
+    // Update a user by ID
+    async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+        const user = await this.prisma.user.update({
+            where: { id },
+            data,
+        });
+        if (!user) {
+            throw new NotFoundException(`User with ID ${id} not found`);
+        }
+        return user;
+    }
+
+    // Remove a user by ID
+    async remove(id: string): Promise<User> {
+        const user = await this.prisma.user.delete({
+            where: { id },
+        });
+        if (!user) {
+            throw new NotFoundException(`User with ID ${id} not found`);
+        }
+        return user;
+    }
 }
 
 ```

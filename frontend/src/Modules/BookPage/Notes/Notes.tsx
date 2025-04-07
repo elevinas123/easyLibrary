@@ -169,11 +169,11 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
     const handleNoteClick = (note: Note) => {
         console.log("note singular", note);
         if (note.points && note.points.length >= 2) {
-            const targetY = -note.points[0].y;
+            const targetY = note.points[0].y;
             offsetPositionRef.current.x = offsetPosition.x
             offsetPositionRef.current.y = offsetPosition.y
 
-            smoothScroll((note.points[0].x-600  ), (targetY +100 ), 500);
+            smoothScroll((-note.points[0].x+500  ), (-targetY +500 ), 500);
         }
     };
 
@@ -185,7 +185,7 @@ export const Notes = ({ isDarkMode = false }: NotesProps) => {
 
     return (
         <div className={cn(
-            "h-full flex flex-col",
+            " flex flex-col w-72",
             isDarkMode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
         )}>
             {/* Header with title, count, and view options */}

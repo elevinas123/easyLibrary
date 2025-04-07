@@ -292,6 +292,10 @@ const KonvaStage = forwardRef<
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+      const pos = getPos(offsetPosition, scale, e);
+      console.log("handleMouseMove", pos, offsetPosition, scale);
+
+
       removeHoversNotUnderMouse(e);
       if (activeTool === "Pan" || e.evt.buttons === 4) {
         handleMouseMoveForPan();

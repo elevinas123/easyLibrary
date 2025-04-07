@@ -64,7 +64,7 @@ export default function RightHand({
             )}
         >
             <div className={cn(
-                "flex flex-row h-14 w-full items-center justify-center border-b",
+                "flex flex-row min-h-10 w-full items-center justify-center border-b",
                 isDarkMode ? "border-gray-800" : "border-gray-200"
             )}>
                 <Button 
@@ -138,11 +138,11 @@ export default function RightHand({
                                 </TabsTrigger>
                             </TabsList>
                             
-                            <TabsContent value="notes" className="flex-grow overflow-auto p-4">
+                            <TabsContent value="notes" className="flex-grow overflow-auto">
                                 <Notes />
                             </TabsContent>
                             
-                            <TabsContent value="settings" className="flex-grow overflow-auto p-4">
+                            <TabsContent value="settings" className="flex-grow overflow-auto">
                                 <Settings />
                             </TabsContent>
                         </Tabs>

@@ -394,7 +394,7 @@ export default function ReadingHistoryPage() {
                             isDarkMode ? "text-gray-400" : "text-gray-500"
                           }
                         >
-                          Books Read
+                          Books Completed
                         </div>
                       </div>
 

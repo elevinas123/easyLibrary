@@ -1,5 +1,46 @@
+# Table of Contents
 
-// ===== File: ReturnTypeDecorator.ts =====
+122. [ReturnTypeDecorator.ts](#file-122-returntypedecorator-ts)
+123. [app.controller.ts](#file-123-app-controller-ts)
+124. [app.module.ts](#file-124-app-module-ts)
+125. [app.service.ts](#file-125-app-service-ts)
+126. [auth/auth.controller.ts](#file-126-auth-auth-controller-ts)
+127. [auth/auth.module.ts](#file-127-auth-auth-module-ts)
+128. [auth/auth.service.ts](#file-128-auth-auth-service-ts)
+129. [auth/constants.ts](#file-129-auth-constants-ts)
+130. [auth/jwt-auth.guard.ts](#file-130-auth-jwt-auth-guard-ts)
+131. [auth/jwt.strategy.ts](#file-131-auth-jwt-strategy-ts)
+132. [auth/local.strategy.ts](#file-132-auth-local-strategy-ts)
+133. [auth/localAuthGuard.ts](#file-133-auth-localauthguard-ts)
+134. [book/book.controller.ts](#file-134-book-book-controller-ts)
+135. [book/book.module.ts](#file-135-book-book-module-ts)
+136. [book/book.service.ts](#file-136-book-book-service-ts)
+137. [bookshelve/bookshelve.controller.ts](#file-137-bookshelve-bookshelve-controller-ts)
+138. [bookshelve/bookshelve.module.ts](#file-138-bookshelve-bookshelve-module-ts)
+139. [bookshelve/bookshelve.service.ts](#file-139-bookshelve-bookshelve-service-ts)
+140. [collection/collection.controller.ts](#file-140-collection-collection-controller-ts)
+141. [collection/collection.module.ts](#file-141-collection-collection-module-ts)
+142. [collection/collection.service.ts](#file-142-collection-collection-service-ts)
+143. [main.ts](#file-143-main-ts)
+144. [prisma/prisma.module.ts](#file-144-prisma-prisma-module-ts)
+145. [prisma/prisma.service.ts](#file-145-prisma-prisma-service-ts)
+146. [settings/settings.controller.ts](#file-146-settings-settings-controller-ts)
+147. [settings/settings.module.ts](#file-147-settings-settings-module-ts)
+148. [settings/settings.service.ts](#file-148-settings-settings-service-ts)
+149. [tracking/tracking.controller.ts](#file-149-tracking-tracking-controller-ts)
+150. [tracking/tracking.module.ts](#file-150-tracking-tracking-module-ts)
+151. [tracking/tracking.service.ts](#file-151-tracking-tracking-service-ts)
+152. [user/user.controller.ts](#file-152-user-user-controller-ts)
+153. [user/user.module.ts](#file-153-user-user-module-ts)
+154. [user/user.service.ts](#file-154-user-user-service-ts)
+
+
+---
+
+<a id="file-122-returntypedecorator-ts"></a>
+## File 122: ReturnTypeDecorator.ts
+
+```typescript
 import 'reflect-metadata';
 
 export function ReturnType(type: any) {
@@ -7,8 +48,14 @@ export function ReturnType(type: any) {
     Reflect.defineMetadata('returnType', type, target, propertyKey);
   };
 }
+```
 
-// ===== File: app.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-123-app-controller-ts"></a>
+## File 123: app.controller.ts
+
+```typescript
 import { Controller, Get } from "@nestjs/common";
 import { AppService } from "./app.service";
 
@@ -22,8 +69,14 @@ export class AppController {
     }
 }
 
+```
 
-// ===== File: app.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-124-app-module-ts"></a>
+## File 124: app.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
@@ -62,8 +115,14 @@ export class AppModule {
     constructor() {}
 }
 
+```
 
-// ===== File: app.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-125-app-service-ts"></a>
+## File 125: app.service.ts
+
+```typescript
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -73,8 +132,14 @@ export class AppService {
   }
 }
 
+```
 
-// ===== File: auth/auth.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-126-auth-auth-controller-ts"></a>
+## File 126: auth/auth.controller.ts
+
+```typescript
 import { Body, Controller, Post, Request, UseGuards, Put } from "@nestjs/common";
 
 import { Prisma } from "@prisma/client";
@@ -107,8 +172,14 @@ export class AuthController {
     }
 }
 
+```
 
-// ===== File: auth/auth.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-127-auth-auth-module-ts"></a>
+## File 127: auth/auth.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
@@ -140,8 +211,14 @@ import { LocalStrategy } from "./local.strategy"; // Import LocalStrategy
 })
 export class AuthModule {}
 
+```
 
-// ===== File: auth/auth.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-128-auth-auth-service-ts"></a>
+## File 128: auth/auth.service.ts
+
+```typescript
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Prisma } from "@prisma/client";
@@ -204,23 +281,41 @@ export class AuthService {
     }
 }
 
+```
 
-// ===== File: auth/constants.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-129-auth-constants-ts"></a>
+## File 129: auth/constants.ts
+
+```typescript
 // auth/constants.ts
 export const jwtConstants = {
     secret: "key", // Replace with a secure key
 };
 
+```
 
-// ===== File: auth/jwt-auth.guard.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-130-auth-jwt-auth-guard-ts"></a>
+## File 130: auth/jwt-auth.guard.ts
+
+```typescript
 import {Injectable} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 
 @Injectable() export class JwtAuthGuard extends AuthGuard
 ('jwt') {}
 
+```
 
-// ===== File: auth/jwt.strategy.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-131-auth-jwt-strategy-ts"></a>
+## File 131: auth/jwt.strategy.ts
+
+```typescript
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { jwtConstants } from "./constants";
@@ -242,8 +337,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 }
 
+```
 
-// ===== File: auth/local.strategy.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-132-auth-local-strategy-ts"></a>
+## File 132: auth/local.strategy.ts
+
+```typescript
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {PassportStrategy} from '@nestjs/passport';
 
@@ -265,8 +366,14 @@ import { Strategy } from 'passport-local';
   }
 }
 
+```
 
-// ===== File: auth/localAuthGuard.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-133-auth-localauthguard-ts"></a>
+## File 133: auth/localAuthGuard.ts
+
+```typescript
 import { ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -292,8 +399,14 @@ export class LocalAuthGuard extends AuthGuard("local") {
     }
 }
 
+```
 
-// ===== File: book/book.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-134-book-book-controller-ts"></a>
+## File 134: book/book.controller.ts
+
+```typescript
 import {
     Body,
     Controller,
@@ -359,8 +472,14 @@ export class BookController {
   }
 }
 
+```
 
-// ===== File: book/book.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-135-book-book-module-ts"></a>
+## File 135: book/book.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -375,8 +494,14 @@ import { BookService } from "./book.service";
 })
 export class BookModule {}
 
+```
 
-// ===== File: book/book.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-136-book-book-service-ts"></a>
+## File 136: book/book.service.ts
+
+```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -657,8 +782,14 @@ export class BookService {
     }
 }
 
+```
 
-// ===== File: bookshelve/bookshelve.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-137-bookshelve-bookshelve-controller-ts"></a>
+## File 137: bookshelve/bookshelve.controller.ts
+
+```typescript
 import {
     Body,
     Controller,
@@ -712,8 +843,14 @@ export class BookshelveController {
     }
 }
 
+```
 
-// ===== File: bookshelve/bookshelve.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-138-bookshelve-bookshelve-module-ts"></a>
+## File 138: bookshelve/bookshelve.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 
 import { BookModule } from "../book/book.module";
@@ -729,8 +866,14 @@ import { BookshelveService } from "./bookshelve.service";
 })
 export class BookshelveModule {}
 
+```
 
-// ===== File: bookshelve/bookshelve.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-139-bookshelve-bookshelve-service-ts"></a>
+## File 139: bookshelve/bookshelve.service.ts
+
+```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -810,8 +953,14 @@ export class BookshelveService {
     }
 }
 
+```
 
-// ===== File: collection/collection.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-140-collection-collection-controller-ts"></a>
+## File 140: collection/collection.controller.ts
+
+```typescript
 import { 
   Controller, 
   Get, 
@@ -882,8 +1031,14 @@ export class CollectionController {
     return this.collectionService.removeBookFromCollection(collectionId, bookId);
   }
 } 
+```
 
-// ===== File: collection/collection.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-141-collection-collection-module-ts"></a>
+## File 141: collection/collection.module.ts
+
+```typescript
 import { Module } from '@nestjs/common';
 import { CollectionController } from './collection.controller';
 import { CollectionService } from './collection.service';
@@ -895,8 +1050,14 @@ import { PrismaService } from '../prisma/prisma.service';
   exports: [CollectionService],
 })
 export class CollectionModule {} 
+```
 
-// ===== File: collection/collection.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-142-collection-collection-service-ts"></a>
+## File 142: collection/collection.service.ts
+
+```typescript
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -1226,8 +1387,14 @@ export class CollectionService {
     }
   }
 } 
+```
 
-// ===== File: main.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-143-main-ts"></a>
+## File 143: main.ts
+
+```typescript
 import "reflect-metadata";
 
 import { NestFactory } from "@nestjs/core";
@@ -1242,8 +1409,14 @@ async function bootstrap() {
 }
 bootstrap();
 
+```
 
-// ===== File: prisma/prisma.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-144-prisma-prisma-module-ts"></a>
+## File 144: prisma/prisma.module.ts
+
+```typescript
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 
@@ -1255,8 +1428,14 @@ import { PrismaService } from './prisma.service';
 export class PrismaModule {
 }
 
+```
 
-// ===== File: prisma/prisma.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-145-prisma-prisma-service-ts"></a>
+## File 145: prisma/prisma.service.ts
+
+```typescript
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
@@ -1278,8 +1457,14 @@ export class PrismaService
     }
 }
 
+```
 
-// ===== File: settings/settings.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-146-settings-settings-controller-ts"></a>
+## File 146: settings/settings.controller.ts
+
+```typescript
 import {
     Body,
     Controller,
@@ -1341,8 +1526,14 @@ export class SettingsController {
     }
 }
 
+```
 
-// ===== File: settings/settings.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-147-settings-settings-module-ts"></a>
+## File 147: settings/settings.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -1357,8 +1548,14 @@ import { SettingsService } from "./settings.service";
 })
 export class SettingsModule {}
 
+```
 
-// ===== File: settings/settings.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-148-settings-settings-service-ts"></a>
+## File 148: settings/settings.service.ts
+
+```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -1432,8 +1629,14 @@ export class SettingsService {
     }
 }
 
+```
 
-// ===== File: tracking/tracking.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-149-tracking-tracking-controller-ts"></a>
+## File 149: tracking/tracking.controller.ts
+
+```typescript
 import { 
   Controller, 
   Post, 
@@ -1522,8 +1725,14 @@ export class TrackingController {
   }
 }
 
+```
 
-// ===== File: tracking/tracking.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-150-tracking-tracking-module-ts"></a>
+## File 150: tracking/tracking.module.ts
+
+```typescript
 import { Module } from '@nestjs/common';
 import { TrackingController } from './tracking.controller';
 import { TrackingService } from './tracking.service';
@@ -1537,10 +1746,16 @@ import { PrismaModule } from '../prisma/prisma.module';
 })
 export class TrackingModule {}
 
+```
 
-// ===== File: tracking/tracking.service.ts =====
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+<div style='page-break-after: always;'></div>
+
+<a id="file-151-tracking-tracking-service-ts"></a>
+## File 151: tracking/tracking.service.ts
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class TrackingService {
@@ -1558,8 +1773,8 @@ export class TrackingService {
   }
 
   async endReadingSession(
-    sessionId: string, 
-    pagesRead: number, 
+    sessionId: string,
+    pagesRead: number,
     lastPosition: number
   ) {
     console.log("Ending reading session", sessionId, pagesRead, lastPosition);
@@ -1568,7 +1783,7 @@ export class TrackingService {
     });
 
     if (!session) {
-      throw new Error('Reading session not found');
+      throw new Error("Reading session not found");
     }
 
     const endTime = new Date();
@@ -1605,7 +1820,7 @@ export class TrackingService {
   async getRecentSessions(userId: string, limit = 10) {
     return this.prisma.readingSession.findMany({
       where: { userId },
-      orderBy: { startTime: 'desc' },
+      orderBy: { startTime: "desc" },
       take: limit,
       include: {
         book: {
@@ -1628,8 +1843,6 @@ export class TrackingService {
     pagesRead: number,
     duration: number
   ) {
-    
-
     // Get or create book progress
     const bookProgress = await this.prisma.bookProgress.upsert({
       where: {
@@ -1725,7 +1938,10 @@ export class TrackingService {
     }
 
     // If already read today, no need to update
-    if (streak.lastReadDate && streak.lastReadDate.getTime() === today.getTime()) {
+    if (
+      streak.lastReadDate &&
+      streak.lastReadDate.getTime() === today.getTime()
+    ) {
       return streak;
     }
 
@@ -1795,14 +2011,17 @@ export class TrackingService {
         },
       },
     });
-    
+
     // Sum the current page from each book's progress
     const totalPagesRead = bookProgresses.reduce((total, progress) => {
       // Use currentPage if available, otherwise calculate from percentComplete if book has totalPages
       if (progress.currentPage) {
         return total + progress.currentPage;
       } else if (progress.book?.totalPages && progress.percentComplete) {
-        return total + Math.floor(progress.book.totalPages * progress.percentComplete);
+        return (
+          total +
+          Math.floor(progress.book.totalPages * progress.percentComplete)
+        );
       }
       return total;
     }, 0);
@@ -1836,17 +2055,15 @@ export class TrackingService {
 
   // Dashboard Data
   async getDashboardData(userId: string) {
-    const [
-      readingStats,
-      readingStreak,
-      recentSessions,
-      bookProgress
-    ] = await Promise.all([
-      this.getReadingStats(userId),
-      this.getReadingStreak(userId),
-      this.getRecentSessions(userId, 5),
-      this.getAllBookProgress(userId),
-    ]);
+    const [readingStats, readingStreak, recentSessions, bookProgress] =
+      await Promise.all([
+        this.getReadingStats(userId),
+        this.getReadingStreak(userId),
+        this.getRecentSessions(userId, 5),
+        this.getAllBookProgress(userId),
+      ]);
+    console.log("readingStats", readingStats);
+    console.log("userId", userId);
 
     // Calculate reading progress over time (last 7 days)
     const sevenDaysAgo = new Date();
@@ -1860,7 +2077,7 @@ export class TrackingService {
         },
       },
       orderBy: {
-        startTime: 'asc',
+        startTime: "asc",
       },
     });
 
@@ -1889,11 +2106,11 @@ export class TrackingService {
 
   private groupReadingSessionsByDay(sessions) {
     const groupedByDay = {};
-    
-    sessions.forEach(session => {
+
+    sessions.forEach((session) => {
       const date = new Date(session.startTime);
-      const day = date.toISOString().split('T')[0];
-      
+      const day = date.toISOString().split("T")[0];
+
       if (!groupedByDay[day]) {
         groupedByDay[day] = {
           day,
@@ -1903,31 +2120,32 @@ export class TrackingService {
           bookPageCounts: {}, // Track max page per book
         };
       }
-      
+
       if (session.duration) {
         groupedByDay[day].totalMinutes += Math.floor(session.duration / 60);
       }
-      
+
       // Track the highest page number for each book separately
       if (session.pagesRead && session.bookId) {
-        const currentMax = groupedByDay[day].bookPageCounts[session.bookId] || 0;
+        const currentMax =
+          groupedByDay[day].bookPageCounts[session.bookId] || 0;
         if (session.pagesRead > currentMax) {
           // If this session has a higher page count for this book, update it
           groupedByDay[day].bookPageCounts[session.bookId] = session.pagesRead;
         }
       }
     });
-    
+
     // Calculate total pages read by summing the max pages for each book
     Object.values(groupedByDay).forEach((dayData: any) => {
       dayData.pagesRead = Object.values(dayData.bookPageCounts).reduce(
-        (sum: number, pages: number) => sum + pages, 
+        (sum: number, pages: number) => sum + pages,
         0
       );
       // Remove the temporary tracking object
       delete dayData.bookPageCounts;
     });
-    
+
     return Object.values(groupedByDay);
   }
 
@@ -1939,49 +2157,52 @@ export class TrackingService {
       timestamp: Date | string;
       bookId: string;
     }> = [];
-    
+
     // Add reading sessions
-    sessions.forEach(session => {
+    sessions.forEach((session) => {
       if (session.endTime) {
         // Format duration more precisely
         let durationText = "";
         const durationSeconds = session.duration || 0;
-        
+
         if (durationSeconds < 60) {
           // Less than a minute
           durationText = `${durationSeconds} seconds`;
         } else {
           const minutes = Math.floor(durationSeconds / 60);
           const seconds = durationSeconds % 60;
-          
+
           if (seconds === 0) {
-            durationText = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""}`;
           } else {
-            durationText = `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`;
+            durationText = `${minutes} minute${minutes !== 1 ? "s" : ""} and ${seconds} second${seconds !== 1 ? "s" : ""}`;
           }
         }
-        
+
         activity.push({
-          type: 'reading',
+          type: "reading",
           description: `Read "${session.book.title}" for ${durationText}`,
           timestamp: session.endTime,
           bookId: session.bookId,
         });
       }
     });
-    
+
     // Add completed books
     const completedBooks = bookProgress
-      .filter(progress => progress.isCompleted && progress.completedAt)
-      .map(progress => ({
-        type: 'completed',
+      .filter((progress) => progress.isCompleted && progress.completedAt)
+      .map((progress) => ({
+        type: "completed",
         description: `Finished reading "${progress.book.title}"`,
         timestamp: progress.completedAt,
         bookId: progress.bookId,
       }));
-    
+
     return [...activity, ...completedBooks]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 5);
   }
 
@@ -1989,11 +2210,11 @@ export class TrackingService {
     // This would be a more complex query in a real app
     // For now, we'll return mock data
     return [
-      { genre: 'Fiction', count: 5 },
-      { genre: 'Non-Fiction', count: 3 },
-      { genre: 'Science Fiction', count: 2 },
-      { genre: 'Fantasy', count: 4 },
-      { genre: 'Mystery', count: 1 },
+      { genre: "Fiction", count: 5 },
+      { genre: "Non-Fiction", count: 3 },
+      { genre: "Science Fiction", count: 2 },
+      { genre: "Fantasy", count: 4 },
+      { genre: "Mystery", count: 1 },
     ];
   }
 
@@ -2039,25 +2260,31 @@ export class TrackingService {
         });
 
         // Update reading stats
-        await this.updateReadingStats(userId);
       }
+      await this.updateReadingStats(userId);
 
       return {
         success: true,
-        data: bookProgress
+        data: bookProgress,
       };
     } catch (error) {
-      console.error('Error updating book progress:', error);
+      console.error("Error updating book progress:", error);
       return {
         success: false,
-        error: 'Failed to update book progress'
+        error: "Failed to update book progress",
       };
     }
   }
 }
 
+```
 
-// ===== File: user/user.controller.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-152-user-user-controller-ts"></a>
+## File 152: user/user.controller.ts
+
+```typescript
 import {
     Body,
     Controller,
@@ -2124,8 +2351,14 @@ export class UserController {
     }
 }
 
+```
 
-// ===== File: user/user.module.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-153-user-user-module-ts"></a>
+## File 153: user/user.module.ts
+
+```typescript
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 
@@ -2142,8 +2375,14 @@ import { UserService } from "./user.service";
 })
 export class UserModule {}
 
+```
 
-// ===== File: user/user.service.ts =====
+<div style='page-break-after: always;'></div>
+
+<a id="file-154-user-user-service-ts"></a>
+## File 154: user/user.service.ts
+
+```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Prisma, User } from "@prisma/client"; // Import Prisma's User type
@@ -2225,4 +2464,6 @@ export class UserService {
         return user;
     }
 }
+
+```
 

@@ -9,19 +9,26 @@ import Sidebar from "../LibraryPage/Sidebar";
 import { useSidebar } from "../../hooks/useSidebar";
 import { apiFetch } from "../../endPointTypes/apiClient";
 import { Book } from "../../endPointTypes/types";
-import { 
-  BookOpen, 
-  Heart, 
-  History, 
-  FolderHeart, 
-  BarChart3, 
-  Clock, 
+import {
+  BookOpen,
+  Heart,
+  History,
+  FolderHeart,
+  BarChart3,
+  Clock,
   BookText,
   ChevronRight,
-  Plus
+  Plus,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { fetchUserCollections } from "../../api/collectionsApi";
 import { getDashboardData } from "../../api/trackingApi";
@@ -203,7 +210,7 @@ export default function HomePage() {
             />
 
             <StatCard
-              title="Books Read"
+              title="Books Completed"
               value={dashboardData?.stats?.totalBooksRead?.toString() || "0"}
               icon={<BookText className="h-5 w-5" />}
               description="Completed books"
@@ -273,7 +280,7 @@ export default function HomePage() {
                         ? "bg-gray-800 border-gray-700"
                         : "bg-white border-gray-200"
                     )}
-                    onClick={() => navigate(`/book?id=${item.book.id}`)}
+                    onClick={() => navigate(`/book?id=${item.id}`)}
                   >
                     <CardContent className="flex p-4">
                       <div className="mr-4">
@@ -334,7 +341,8 @@ export default function HomePage() {
                               isDarkMode ? "text-gray-400" : "text-gray-500"
                             )}
                           >
-                            Last read: {formatDate(getBookProgress(item.id)?.lastReadAt)}
+                            Last read:{" "}
+                            {formatDate(getBookProgress(item.id)?.lastReadAt)}
                           </p>
                         </div>
                       </div>
@@ -777,13 +785,24 @@ interface StatCardProps {
   isDarkMode?: boolean;
 }
 
-function StatCard({ title, value, icon, description, isLoading, isDarkMode }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  icon,
+  description,
+  isLoading,
+  isDarkMode,
+}: StatCardProps) {
   if (isLoading) {
     return (
-      <Card className={cn(
-        "border",
-        isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-      )}>
+      <Card
+        className={cn(
+          "border",
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
+            : "bg-white border-gray-200"
+        )}
+      >
         <CardContent className="p-6">
           <div className="flex items-center mb-2">
             <Skeleton className="h-5 w-5 rounded-full mr-2" />
@@ -795,37 +814,45 @@ function StatCard({ title, value, icon, description, isLoading, isDarkMode }: St
       </Card>
     );
   }
-  
+
   return (
-    <Card className={cn(
-      "border",
-      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-    )}>
+    <Card
+      className={cn(
+        "border",
+        isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+      )}
+    >
       <CardContent className="p-6">
         <div className="flex items-center mb-2">
-          <div className={cn(
-            "mr-2",
-            isDarkMode ? "text-amber-500" : "text-amber-600"
-          )}>
+          <div
+            className={cn(
+              "mr-2",
+              isDarkMode ? "text-amber-500" : "text-amber-600"
+            )}
+          >
             {icon}
           </div>
-          <h3 className={cn(
-            "text-sm font-medium",
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          )}>
+          <h3
+            className={cn(
+              "text-sm font-medium",
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            )}
+          >
             {title}
           </h3>
         </div>
         <p className="text-2xl font-bold">{value}</p>
         {description && (
-          <p className={cn(
-            "text-xs mt-1",
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          )}>
+          <p
+            className={cn(
+              "text-xs mt-1",
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            )}
+          >
             {description}
           </p>
         )}
       </CardContent>
     </Card>
   );
-} 
+}
